@@ -49,10 +49,8 @@ class CustomSonosCard extends LitElement {
       if (stateObj.attributes.sonos_group.length > 1 && stateObj.attributes.sonos_group[0] === entity) {
 
         for (let member of stateObj.attributes.sonos_group) {
-          if (member !== entity) {
-            const state = this.hass.states[member];
-            zones[entity].members[member] = state.attributes.friendly_name;
-          }
+          const state = this.hass.states[member];
+          zones[entity].members[member] = state.attributes.friendly_name;
         }
 
         if (stateObj.state === 'playing' && this.active === '') {
@@ -109,8 +107,8 @@ class CustomSonosCard extends LitElement {
 
       playerTemplate = html`
           <div class="player__container">
-              ${this.config.headerImage ? html`
-                  <img src="${this.config.headerImage}" width="100%" alt="Sonos"/>
+              ${activeStateObj.attributes.entity_picture ? html`
+                  <img src="${activeStateObj.attributes.entity_picture}" width="100%" alt="Sonos"/>
               ` : ''}
               <div class="player__body">
                   <div class="body__cover">
@@ -453,15 +451,35 @@ class CustomSonosCard extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      @media only screen and (max-width: 500px) {
+        .groups {
+          max-width: calc(100% - 40px)!important;
+        }
+        .sidebar {
+          max-width: calc(100% - 40px)!important;
+        }
+      }
+      @media only screen and (max-width: 530px) {
+        .players {
+          max-width: calc(100% - 40px)!important;
+        }
+      }
+
+      @media only screen and (min-width: 850px) {
+        .groups {
+          max-width: calc(50% - 13rem) !important;
+        }
+        .sidebar {
+          max-width: calc(50% - 13rem) !important;
+        }
+      }
 
       .players {
         max-width: 20rem;
         width:100%;
-        max-width: 20rem;
       }
       .player__container {
         margin:0;
-        max-width: 20rem;
         background: #fff;
         border-radius: 0.25rem;
         box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.19), 0 6px 6px -10px rgba(0, 0, 0, 0.23);
@@ -690,6 +708,7 @@ class CustomSonosCard extends LitElement {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+        max-width: 1500px
       }
 
       .groups {
