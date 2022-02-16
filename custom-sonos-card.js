@@ -30,6 +30,10 @@ class CustomSonosCard extends LitElement {
     const zones = [];
     for (const entity of this.config.entities) {
       const stateObj = this.hass.states[entity];
+      if (!stateObj) {
+        console.error(entity, 'not found. Check your config. Ignoring and moving on to next entity (if any).');
+        continue;
+      }
       //Get favorites list
       if (!this.favorites.length) {
         for (const favorite of stateObj.attributes.source_list) {
