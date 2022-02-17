@@ -1,8 +1,4 @@
-import {
-  LitElement,
-  html,
-  css
-} from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
+import {css, html, LitElement} from "https://unpkg.com/lit-element@2.0.1/lit-element.js?module";
 
 class CustomSonosCard extends LitElement {
 
@@ -94,26 +90,30 @@ class CustomSonosCard extends LitElement {
     for (const key in zones) {
       let stateObj = this.hass.states[key];
       groupTemplates.push(html`
-          <div class="group" data-id="${key}">
-              <div class="wrap ${this.active === key ? 'active' : ''}">
-                  <ul class="speakers">
-                      ${stateObj.attributes.sonos_group.map(speaker => {
-                          return html`
-                              <li>${speakerNames[speaker]}</li>`;
-                      })}
-                  </ul>
-                  <div class="play">
-                      <div class="content">
-                          <span class="currentTrack">${stateObj.attributes.media_artist} - ${stateObj.attributes.media_title}</span>
-                      </div>
-                      <div class="player ${stateObj.state === 'playing' ? 'active' : ''}">
-                          <div class="bar"></div>
-                          <div class="bar"></div>
-                          <div class="bar"></div>
-                      </div>
-                  </div>
+        <div class="group" @click="${() => {
+          this.setActivePlayer(key);
+          this.showVolumes = false;
+        }}">
+          <div class="wrap ${this.active === key ? 'active' : ''}">
+            <ul class="speakers">
+              ${stateObj.attributes.sonos_group.map(speaker => {
+                return html`
+                  <li>${speakerNames[speaker]}</li>`;
+              })}
+            </ul>
+            <div class="play">
+              <div class="content">
+                <span
+                    class="currentTrack">${stateObj.attributes.media_artist} - ${stateObj.attributes.media_title}</span>
               </div>
+              <div class="player ${stateObj.state === 'playing' ? 'active' : ''}">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+            </div>
           </div>
+        </div>
       `);
     }
     if (groupTemplates.length !== this.groupSize) {
@@ -129,255 +129,233 @@ class CustomSonosCard extends LitElement {
         allVolumes = activeStateObj.attributes.sonos_group.map(member => this.getVolumeTemplate(member, this.hass.states[member].attributes.friendly_name));
       }
       playerTemplate = html`
-          <div class="player__container" style="background-position-x:center;background-repeat: no-repeat;background-size: cover;
-              ${activeStateObj.attributes.entity_picture ? `background-image: url(${activeStateObj.attributes.entity_picture});`: ''}
+        <div class="player__container" style="background-position-x:center;background-repeat: no-repeat;background-size: cover;
+              ${activeStateObj.attributes.entity_picture ? `background-image: url(${activeStateObj.attributes.entity_picture});` : ''}
               ">
-              <div class="player__body">
-                  ${activeStateObj.attributes.media_title ? html`
-                  <div class="body__info">
-                      <div class="info__album">${activeStateObj.attributes.media_album_name}</div>
-                      <div class="info__song">${activeStateObj.attributes.media_title}</div>
-                      <div class="info__artist">${activeStateObj.attributes.media_artist}</div>
-                  </div>
-                  <div class="${this.showVolumes ? 'hidden' : 'body__buttons ' + (activeStateObj.attributes.entity_picture ? 'padded__buttons': '')}">
-                      <a class="list__link">
-                          <ha-icon @click="${() => this.prev(this.active)}" .icon=${"mdi:skip-backward"}></ha-icon>
-                      </a>
-                      <a class="list__link">
-                          ${activeStateObj.state !== 'playing' ? html`
-                              <ha-icon @click="${() => this.play(this.active)}"
-                                       .icon=${"mdi:play"}></ha-icon>` : html`
-                              <ha-icon @click="${() => this.pause(this.active)}" .icon=${"mdi:stop"}></ha-icon>
-                          `}
-                      </a>
-                      <a class="list__link">
-                          <ha-icon @click="${() => this.next(this.active)}" .icon=${"mdi:skip-forward"}></ha-icon>
-                      </a>
-                  </div>
-                  ` : html`<div style="width: 100%; text-align: center; padding: 3rem 0">${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}</div>`}
+          <div class="player__body">
+            ${activeStateObj.attributes.media_title ? html`
+              <div class="body__info">
+                <div class="info__album">${activeStateObj.attributes.media_album_name}</div>
+                <div class="info__song">${activeStateObj.attributes.media_title}</div>
+                <div class="info__artist">${activeStateObj.attributes.media_artist}</div>
               </div>
-              <div class="player__footer">
-                  ${this.getVolumeTemplate(this.active, this.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '', zones[this.active].members)}
-                  <div style="display: ${this.showVolumes ? 'block' : 'none'}">
-                      ${allVolumes}
-                  </div>
-                  <div class="player__footer-icons">
-                      <ha-icon @click="${() => this.volumeDown(this.active, zones[this.active].members)}"
-                               .icon=${"mdi:volume-minus"}></ha-icon>
-                      <ha-icon @click="${() => this.shuffle(this.active, !activeStateObj.attributes.shuffle)}"
-                               .icon=${activeStateObj.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}></ha-icon>
-                      <ha-icon style="display: ${isGroup ? 'block' : 'none'}"
-                               @click="${() => this.toggleShowAllVolumes()}"
-                               .icon=${this.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}></ha-icon>
-                      <ha-icon @click="${() => this.repeat(this.active, activeStateObj.attributes.repeat)}"
-                               .icon=${activeStateObj.attributes.repeat === 'all' ? 'mdi:repeat' : activeStateObj.attributes.repeat === 'one' ? 'mdi:repeat-once' : 'mdi:repeat-off'}></ha-icon>
-                      <ha-icon @click="${() => this.volumeUp(this.active, zones[this.active].members)}"
-                               .icon=${"mdi:volume-plus"}></ha-icon>
-                  </div>
+              <div
+                  class="${this.showVolumes ? 'hidden' : 'body__buttons ' + (activeStateObj.attributes.entity_picture ? 'padded__buttons' : '')}">
+                <a class="list__link">
+                  <ha-icon @click="${() => this.prev(this.active)}" .icon=${"mdi:skip-backward"}></ha-icon>
+                </a>
+                <a class="list__link">
+                  ${activeStateObj.state !== 'playing' ? html`
+                    <ha-icon @click="${() => this.play(this.active)}"
+                             .icon=${"mdi:play"}></ha-icon>` : html`
+                    <ha-icon @click="${() => this.pause(this.active)}" .icon=${"mdi:stop"}></ha-icon>
+                  `}
+                </a>
+                <a class="list__link">
+                  <ha-icon @click="${() => this.next(this.active)}" .icon=${"mdi:skip-forward"}></ha-icon>
+                </a>
               </div>
+            ` : html`
+              <div style="width: 100%; text-align: center; padding: 3rem 0">
+                ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
+              </div>`}
           </div>
+          <div class="player__footer">
+            ${this.getVolumeTemplate(this.active, this.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '', zones[this.active].members)}
+            <div style="display: ${this.showVolumes ? 'block' : 'none'}">
+              ${allVolumes}
+            </div>
+            <div class="player__footer-icons">
+              <ha-icon @click="${() => this.volumeDown(this.active, zones[this.active].members)}"
+                       .icon=${"mdi:volume-minus"}></ha-icon>
+              <ha-icon @click="${() => this.shuffle(this.active, !activeStateObj.attributes.shuffle)}"
+                       .icon=${activeStateObj.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}></ha-icon>
+              <ha-icon style="display: ${isGroup ? 'block' : 'none'}"
+                       @click="${() => this.toggleShowAllVolumes()}"
+                       .icon=${this.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}></ha-icon>
+              <ha-icon @click="${() => this.repeat(this.active, activeStateObj.attributes.repeat)}"
+                       .icon=${activeStateObj.attributes.repeat === 'all' ? 'mdi:repeat' : activeStateObj.attributes.repeat === 'one' ? 'mdi:repeat-once' : 'mdi:repeat-off'}></ha-icon>
+              <ha-icon @click="${() => this.volumeUp(this.active, zones[this.active].members)}"
+                       .icon=${"mdi:volume-plus"}></ha-icon>
+            </div>
+          </div>
+        </div>
       `;
 
       const spinner = html`
-          <svg xmlns="http://www.w3.org/2000/svg"
-               style="margin: 0;display: block;float: left;"
-               width="20px" height="20px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-              <g transform="rotate(0 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(30 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(60 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(90 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(120 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(150 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(180 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(210 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(240 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(270 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s"
-                               begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(300 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s"
-                               begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-              <g transform="rotate(330 50 50)">
-                  <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
-                      <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s"
-                               repeatCount="indefinite"></animate>
-                  </rect>
-              </g>
-          </svg>
+        <svg xmlns="http://www.w3.org/2000/svg"
+             style="margin: 0;display: block;float: left;"
+             width="20px" height="20px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+          <g transform="rotate(0 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.9166666666666666s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(30 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.8333333333333334s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(60 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.75s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(90 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.6666666666666666s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(120 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5833333333333334s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(150 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.5s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(180 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.4166666666666667s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(210 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.3333333333333333s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(240 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="-0.25s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(270 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s"
+                       begin="-0.16666666666666666s" repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(300 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s"
+                       begin="-0.08333333333333333s" repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+          <g transform="rotate(330 50 50)">
+            <rect x="47" y="24" rx="3" ry="6" width="6" height="12" fill="gray">
+              <animate attributeName="opacity" values="1;0" keyTimes="0;1" dur="1s" begin="0s"
+                       repeatCount="indefinite"></animate>
+            </rect>
+          </g>
+        </svg>
       `;
       for (const member in zones[this.active].members) {
         joinedZones.push(member);
         memberTemplates.push(html`
-            <div class="member unjoin-member" data-member="${member}">
-                <span>${zones[this.active].members[member]} </span>
-                ${this.groupButtonClicked === member ? spinner : html`
-                    <ha-icon .icon=${"mdi:minus"}></ha-icon>
-                `}
-            </div>
+          <div class="member" @click="${() => this.callSonosService('unjoin', {entity_id: member})}">
+            <span>${zones[this.active].members[member]} </span>
+            ${this.groupButtonClicked === member ? spinner : html`
+              <ha-icon .icon=${"mdi:minus"}></ha-icon>
+            `}
+          </div>
         `);
       }
       for (const zonesKey in zones) {
         if (zonesKey !== this.active) {
           notJoinedZones.push(zonesKey);
           memberTemplates.push(html`
-              <div class="member join-member" data-member="${zonesKey}">
-                  <span>${zones[zonesKey].roomName} </span>
-                  ${this.groupButtonClicked === zonesKey ? spinner : html`
-                      <ha-icon .icon=${"mdi:plus"}></ha-icon>
-                  `}
-              </div>
+            <div class="member" @click="${() => this.sonosJoin(zonesKey)}">
+              <span>${zones[zonesKey].roomName} </span>
+              ${this.groupButtonClicked === zonesKey ? spinner : html`
+                <ha-icon .icon=${"mdi:plus"}></ha-icon>
+              `}
+            </div>
           `);
         }
       }
 
       for (const favorite of this.favorites) {
         favoriteTemplates.push(html`
-            <div class="favorite" data-favorite="${favorite}"><span>${favorite}</span>
-                <ha-icon .icon=${"mdi:play"}></ha-icon>
-            </div>
+          <div class="favorite" @click="${() => this.callMediaService('select_source', {
+            source: favorite,
+            entity_id: this.active
+          })}"><span>${favorite}</span>
+            <ha-icon .icon=${"mdi:play"}></ha-icon>
+          </div>
         `);
       }
     }
 
 
     return html`
-        ${this.config.name ? html`
-            <div class="header">
-                <div class="name">${this.config.name}</div>
-            </div>
-        ` : ''}
-        <div class="center">
-            <div class="groups">
-                <div class="title">${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}</div>
-                ${groupTemplates}
-            </div>
-
-            <div class="players">
-                ${playerTemplate}
-                <div class="title">${this.config.groupingTitle ? this.config.groupingTitle : 'Grouping'}</div>
-                <div class="members">
-                    ${memberTemplates}
-                </div>
-                <div class="members">
-                    <div class="member join-all" data-zones="${notJoinedZones.join(',')}">
-                        <ha-icon .icon=${"mdi:checkbox-multiple-marked-outline"}></ha-icon>
-                    </div>
-                    <div class="member unjoin-all" data-zones="${joinedZones.join(',')}">
-                        <ha-icon .icon=${"mdi:minus-box-multiple-outline"}></ha-icon>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar">
-                <div class="title">${this.config.favoritesTitle ? this.config.favoritesTitle : 'Favorites'}</div>
-                <div class="favorites">
-                    ${favoriteTemplates}
-                </div>
-            </div>
+      ${this.config.name ? html`
+        <div class="header">
+          <div class="name">${this.config.name}</div>
         </div>
+      ` : ''}
+      <div class="center">
+        <div class="groups">
+          <div class="title">${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}</div>
+          ${groupTemplates}
+        </div>
+
+        <div class="players">
+          ${playerTemplate}
+          <div class="title">${this.config.groupingTitle ? this.config.groupingTitle : 'Grouping'}</div>
+          <div class="members">
+            ${memberTemplates}
+          </div>
+          <div class="members">
+            <div class="member join-all" @click="${() => this.callSonosService('join', {
+              master: this.active,
+              entity_id: notJoinedZones.join(',')
+            })}">
+              <ha-icon .icon=${"mdi:checkbox-multiple-marked-outline"}></ha-icon>
+            </div>
+            <div class="member unjoin-all"
+                 @click="${() => this.callSonosService('unjoin', {entity_id: joinedZones.join(',')})}">
+              <ha-icon .icon=${"mdi:minus-box-multiple-outline"}></ha-icon>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar">
+          <div class="title">${this.config.favoritesTitle ? this.config.favoritesTitle : 'Favorites'}</div>
+          <div class="favorites">
+            ${favoriteTemplates}
+          </div>
+        </div>
+      </div>
     `;
   }
 
-  updated() {
-    //Set active player
-    this.shadowRoot.querySelectorAll(".group").forEach(group => {
-      group.addEventListener('click', () => {
-        this.setActivePlayer(group.dataset.id);
-        this.showVolumes = false;
-      })
-    });
-    //Set favorite as Source
-    this.shadowRoot.querySelectorAll(".favorite").forEach(favorite => {
-      favorite.addEventListener('click', () => {
-        this.hass.callService("media_player", "select_source", {
-          source: favorite.dataset.favorite,
-          entity_id: this.active
-        });
-      })
-    });
-    this.shadowRoot.querySelectorAll(".join-all").forEach(member => {
-      member.addEventListener('click', () => {
-        this.hass.callService("sonos", "join", {
-          master: this.active,
-          entity_id: member.dataset.zones
-        });
-      })
-    });
-    this.shadowRoot.querySelectorAll(".unjoin-all").forEach(member => {
-      member.addEventListener('click', () => {
-        this.hass.callService("sonos", "unjoin", {
-          entity_id: member.dataset.zones
-        });
-      })
-    });
-    this.shadowRoot.querySelectorAll(".join-member").forEach(member => {
-      member.addEventListener('click', () => {
-        this.hass.callService("sonos", "join", {
-          master: this.active,
-          entity_id: member.dataset.member
-        });
-        this.groupButtonClicked = member.dataset.member;
-      })
-    });
-    this.shadowRoot.querySelectorAll(".unjoin-member").forEach(member => {
-      member.addEventListener('click', () => {
-        this.hass.callService("sonos", "unjoin", {
-          entity_id: member.dataset.member
-        });
-      })
-    });
+  sonosJoin(zonesKey) {
+    this.callSonosService('join', {
+      master: this.active,
+      entity_id: zonesKey
+    })
+    this.groupButtonClicked = zonesKey;
   }
+
+  callSonosService(service, inOptions) {
+    this.hass.callService('sonos', service, inOptions);
+  }
+
+  callMediaService(service, inOptions) {
+    this.hass.callService('media_player', service, inOptions);
+  }
+
 
   getVolumeTemplate(entity, name, members = {}) {
     const volume = 100 * this.hass.states[entity].attributes.volume_level;
@@ -388,47 +366,47 @@ class CustomSonosCard extends LitElement {
       inputColor = 'rgb(72,187,14)';
     }
     return html`
-        ${name ? html`
-            <div style="margin-top: 1rem; margin-left: 0.4rem;">${name}</div>` : ''}
-        <div style="font-size: x-small; margin: 0 0.4rem; display: flex;">
-            <div style="flex: ${volume}">0%</div>
-            <div style="flex: 2">${Math.round(volume)}%</div>
-            <div style="flex: ${max-volume};text-align: right">${max}%</div>
-        </div>
-        <input type="range" .value="${volume}"
-               @change=${e => this.volumeSet(entity, members, e.target.value)}
-               min="0" max="${max}" id="volumeRange" class="volumeRange"
-               style="background: linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${volume * 100 / max}%, rgb(211, 211, 211) ${volume * 100 / max}%, rgb(211, 211, 211) 100%);">
+      ${name ? html`
+        <div style="margin-top: 1rem; margin-left: 0.4rem;">${name}</div>` : ''}
+      <div style="font-size: x-small; margin: 0 0.4rem; display: flex;">
+        <div style="flex: ${volume}">0%</div>
+        <div style="flex: 2">${Math.round(volume)}%</div>
+        <div style="flex: ${max - volume};text-align: right">${max}%</div>
+      </div>
+      <input type="range" .value="${volume}"
+             @change=${e => this.volumeSet(entity, members, e.target.value)}
+             min="0" max="${max}" id="volumeRange" class="volumeRange"
+             style="background: linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${volume * 100 / max}%, rgb(211, 211, 211) ${volume * 100 / max}%, rgb(211, 211, 211) 100%);">
     `;
   }
 
 
   pause(entity) {
-    this.hass.callService("media_player", "media_pause", {
+    this.callMediaService('media_pause', {
       entity_id: entity
     });
   }
 
   prev(entity) {
-    this.hass.callService("media_player", "media_previous_track", {
+    this.callMediaService('media_previous_track', {
       entity_id: entity
     });
   }
 
   next(entity) {
-    this.hass.callService("media_player", "media_next_track", {
+    this.callMediaService('media_next_track', {
       entity_id: entity
     });
   }
 
   play(entity) {
-    this.hass.callService("media_player", "media_play", {
+    this.callMediaService('media_play', {
       entity_id: entity
     });
   }
 
   shuffle(entity, state) {
-    this.hass.callService("media_player", "shuffle_set", {
+    this.callMediaService('shuffle_set', {
       entity_id: entity,
       shuffle: state
     });
@@ -436,20 +414,20 @@ class CustomSonosCard extends LitElement {
 
   repeat(entity, currentState) {
     const state = currentState === 'all' ? 'one' : currentState === 'one' ? 'off' : 'all';
-    this.hass.callService("media_player", "repeat_set", {
+    this.callMediaService('repeat_set', {
       entity_id: entity,
       repeat: state
     });
   }
 
   volumeDown(entity, members) {
-    this.hass.callService("media_player", "volume_down", {
+    this.callMediaService('volume_down', {
       entity_id: entity
     });
 
 
     for (const member in members) {
-      this.hass.callService("media_player", "volume_down", {
+      this.callMediaService('volume_down', {
         entity_id: member
       });
     }
@@ -457,12 +435,12 @@ class CustomSonosCard extends LitElement {
   }
 
   volumeUp(entity, members) {
-    this.hass.callService("media_player", "volume_up", {
+    this.callMediaService('volume_up', {
       entity_id: entity
     });
 
     for (const member in members) {
-      this.hass.callService("media_player", "volume_up", {
+      this.callMediaService('volume_up', {
         entity_id: member
       });
     }
@@ -471,13 +449,13 @@ class CustomSonosCard extends LitElement {
   volumeSet(entity, members, volume) {
     const volumeFloat = volume / 100;
 
-    this.hass.callService("media_player", "volume_set", {
+    this.callMediaService('volume_set', {
       entity_id: entity,
       volume_level: volumeFloat
     });
 
     for (const member in members) {
-      this.hass.callService("media_player", "volume_set", {
+      this.callMediaService('volume_set', {
         entity_id: member,
         volume_level: volumeFloat
       });
@@ -502,7 +480,7 @@ class CustomSonosCard extends LitElement {
     if (this.showVolumes) {
       this.timerToggleShowAllVolumes = setTimeout(() => {
         this.showVolumes = false;
-        window.scrollTo(0,0);
+        window.scrollTo(0, 0);
       }, 30000);
     }
   }
