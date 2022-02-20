@@ -1,5 +1,4 @@
 {
     "name": "Sonos Card",
-    "render_readme": true,
-    "filename": "custom-sonos-card.js"
+    "render_readme": true
 }
