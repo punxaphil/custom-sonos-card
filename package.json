@@ -27,7 +27,7 @@
   "scripts": {
     "build": "npm run webpack && npm run babel",
     "webpack": "webpack",
-    "babel": "babel custom-sonos-card.js --out-file custom-sonos-card.js",
+    "babel": "babel dist/custom-sonos-card.js --out-file dist/custom-sonos-card.js",
     "watch": "webpack --watch",
     "dev": "webpack --watch"
   }
