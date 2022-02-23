@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v1
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@{latest-release}
         with:
           failOnError: true
           commitMode: true
@@ -24,7 +24,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
-          body: ${{steps.github_release.outputs.changelog}}
+          body: ${{steps.build_changelog.outputs.changelog}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
