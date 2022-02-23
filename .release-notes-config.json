@@ -1,4 +1,5 @@
 {
-  "template": "${{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n${{UNCATEGORIZED}}\n</details>",
-  "empty_template": "${{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n${{UNCATEGORIZED}}\n</details>"
+  "template": "${{UNCATEGORIZED}}",
+  "pr_template": "- ${{TITLE}}",
+  "empty_template": "Empty: ${{UNCATEGORIZED}}"
 }
