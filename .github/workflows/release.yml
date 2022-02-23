@@ -10,12 +10,15 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+        -
       - name: Build Changelog
         id: build_changelog
         uses: mikepenz/release-changelog-builder-action@v2.9.0
         with:
           failOnError: true
           commitMode: true
+          configuration: ".release-notes-config.json"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -27,8 +30,6 @@ jobs:
           body: ${{steps.build_changelog.outputs.changelog}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/checkout@v1
 
       # Build
       - name: Build the file
