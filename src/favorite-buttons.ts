@@ -1,9 +1,10 @@
 import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import Service from './service';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, MediaPlayerItem } from './types';
 
+@customElement('sonos-favorite-buttons')
 class FavoriteButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
@@ -103,5 +104,3 @@ class FavoriteButtons extends LitElement {
     `;
   }
 }
-
-customElements.define('sonos-favorite-buttons', FavoriteButtons);

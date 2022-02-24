@@ -1,5 +1,5 @@
 import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { getEntityName } from './utils';
 
 import Service from './service';
@@ -8,6 +8,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 
 import { CustomSonosCard } from './main';
 
+@customElement('sonos-player')
 class Player extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
@@ -238,5 +239,3 @@ class Player extends LitElement {
     `;
   }
 }
-
-customElements.define('sonos-player', Player);

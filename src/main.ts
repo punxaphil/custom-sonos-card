@@ -1,5 +1,5 @@
 import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import Service from './service';
 import './player';
 import './group';
@@ -18,6 +18,7 @@ window.customCards.push({
   preview: true,
 });
 
+@customElement('custom-sonos-card')
 export class CustomSonosCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
@@ -220,5 +221,3 @@ export class CustomSonosCard extends LitElement {
     window.location.href = `${newUrl}#${player}`;
   }
 }
-
-customElements.define('custom-sonos-card', CustomSonosCard);
