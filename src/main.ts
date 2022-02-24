@@ -5,7 +5,7 @@ import './player';
 import './group';
 import './grouping-buttons';
 import './favorite-buttons';
-import { getEntityName } from './utils';
+import { createPlayerGroups, getMediaPlayers } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups } from './types';
 
@@ -27,8 +27,8 @@ export class CustomSonosCard extends LitElement {
 
   render() {
     this.service = new Service(this.hass);
-    const mediaPlayers = this.getMediaPlayers();
-    const playerGroups = this.createPlayerGroups(mediaPlayers);
+    const mediaPlayers = getMediaPlayers(this.config, this.hass);
+    const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);
     return html`
       ${this.config.name
@@ -95,17 +95,6 @@ export class CustomSonosCard extends LitElement {
     `;
   }
 
-  private getMediaPlayers() {
-    if (this.config.entities) {
-      return [...new Set(this.config.entities)].sort().filter((player) => this.hass.states[player]);
-    } else {
-      return Object.values(this.hass.states)
-        .filter((state) => state.attributes.sonos_group)
-        .map((state) => state.entity_id)
-        .sort();
-    }
-  }
-
   determineActivePlayer(playerGroups: PlayerGroups) {
     const selected_player = window.location.href.indexOf('#') > 0 ? window.location.href.replaceAll(/.*#/g, '') : '';
     if (this.active) {
@@ -134,45 +123,6 @@ export class CustomSonosCard extends LitElement {
     if (!this.active) {
       this.setActivePlayer(Object.keys(playerGroups)[0]);
     }
-  }
-
-  createPlayerGroups(mediaPlayers: string[]): PlayerGroups {
-    const groupMasters = mediaPlayers.filter((player) => {
-      const state = this.hass.states[player];
-      try {
-        const stateAttributes = state.attributes;
-        const sonosGroup = stateAttributes.sonos_group.filter((member: string) => mediaPlayers.indexOf(member) > -1);
-        const isGrouped = sonosGroup?.length > 1;
-        const isMasterInGroup = isGrouped && sonosGroup && sonosGroup[0] === player;
-        return !isGrouped || isMasterInGroup;
-      } catch (e) {
-        console.error('Failed to determine group master', JSON.stringify(state), e);
-        return false;
-      }
-    });
-    const groupArray = groupMasters.map((groupMaster) => {
-      const state = this.hass.states[groupMaster];
-      try {
-        const membersArray = state.attributes.sonos_group.filter((member: string) => {
-          return member !== groupMaster && mediaPlayers.indexOf(member) > -1;
-        });
-        return {
-          entity: groupMaster,
-          state: state.state,
-          roomName: getEntityName(this.hass, this.config, groupMaster),
-          members: Object.fromEntries(
-            membersArray.map((member: string) => {
-              const friendlyName = getEntityName(this.hass, this.config, member);
-              return [member, friendlyName];
-            }),
-          ),
-        };
-      } catch (e) {
-        console.error('Failed to create group', JSON.stringify(state), e);
-        return {};
-      }
-    });
-    return Object.fromEntries(groupArray.map((group) => [group.entity, group]));
   }
 
   setConfig(config: CardConfig) {
