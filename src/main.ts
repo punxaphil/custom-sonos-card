@@ -30,6 +30,10 @@ export class CustomSonosCard extends LitElement {
     const mediaPlayers = this.getMediaPlayers();
     const playerGroups = this.createPlayerGroups(mediaPlayers);
     this.determineActivePlayer(playerGroups);
+
+    const groupsWidth = this.config.groupsWidth || (innerWidth < 650 ? '100%' : '25%');
+    const playersWidth = this.config.playersWidth || (innerWidth < 650 ? '100%' : '25%');
+    const favoritesWidth = this.config.favoritesWidth || (innerWidth < 650 ? '100%' : '25%');
     return html`
       ${this.config.name
         ? html`
@@ -39,7 +43,7 @@ export class CustomSonosCard extends LitElement {
           `
         : ''}
       <div class="content">
-        <div class="groups">
+        <div style="width: ${groupsWidth};max-width: ${groupsWidth}" class="groups">
           <div class="title">${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}</div>
           ${Object.keys(playerGroups).map(
             (group) => html`
@@ -58,7 +62,7 @@ export class CustomSonosCard extends LitElement {
           )}
         </div>
 
-        <div class="players">
+        <div style="width: ${playersWidth};max-width: ${playersWidth}" class="players">
           <sonos-player
             .hass=${this.hass}
             .config=${this.config}
@@ -80,7 +84,7 @@ export class CustomSonosCard extends LitElement {
           </sonos-grouping-buttons>
         </div>
 
-        <div class="sidebar">
+        <div style="width: ${favoritesWidth};max-width: ${favoritesWidth}" class="sidebar">
           <div class="title">${this.config.favoritesTitle ? this.config.favoritesTitle : 'Favorites'}</div>
           <sonos-favorite-buttons
             .hass=${this.hass}
@@ -180,7 +184,7 @@ export class CustomSonosCard extends LitElement {
   }
 
   getCardSize() {
-    return this.config.entities.length + 1;
+    return 3;
   }
 
   static get styles() {
@@ -214,10 +218,6 @@ export class CustomSonosCard extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .players {
-        flex: 0 0 45%;
-        max-width: 45%;
-      }
       .content {
         display: flex;
         flex-direction: row;
@@ -227,14 +227,10 @@ export class CustomSonosCard extends LitElement {
       .groups {
         margin: 0 20px 0 20px;
         padding: 0;
-        flex: 0 0 25%;
-        max-width: 25%;
       }
       .sidebar {
         margin: 0 20px 0 20px;
         padding: 0;
-        flex: 0 0 25%;
-        max-width: 25%;
       }
       .title {
         margin-top: 10px;
@@ -257,8 +253,7 @@ export class CustomSonosCard extends LitElement {
           order: 2;
         }
         .content div {
-          max-width: 100%;
-          margin: 5px;
+          margin: 0px;
         }
       }
     `;

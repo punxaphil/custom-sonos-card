@@ -24,17 +24,22 @@ class FavoriteButtons extends LitElement {
         this.favorites = value;
       });
     }
+    const favoriteWidth = this.config.favoriteWidth || (innerWidth < 650 ? '16%' : '33%');
     return html`
       <div class="favorites">
         ${this.active !== '' &&
         this.favorites.map(
           (favorite) => html`
-            <div
-              class="favorite ${favorite.thumbnail ? 'image' : ''}"
-              style="${favorite.thumbnail ? `background-image: url(${favorite.thumbnail});` : ''}"
-              @click="${() => this.service.setSource(this.active, favorite.title)}"
-            >
-              <div class="title ${favorite.thumbnail ? 'title-with-image' : ''}">${favorite.title}</div>
+            <div class="favorite-wrapper" style="width: ${favoriteWidth};max-width: ${favoriteWidth};">
+              <div
+                class="favorite ${favorite.thumbnail ? 'image' : ''}"
+                style="
+                  ${favorite.thumbnail ? `background-image: url(${favorite.thumbnail});` : ''};
+                "
+                @click="${() => this.service.setSource(this.active, favorite.title)}"
+              >
+                <div class="title ${favorite.thumbnail ? 'title-with-image' : ''}">${favorite.title}</div>
+              </div>
             </div>
           `,
         )}
@@ -57,12 +62,12 @@ class FavoriteButtons extends LitElement {
         display: flex;
         flex-wrap: wrap;
       }
+      .favorite-wrapper {
+        padding: 2px;
+        box-sizing: border-box;
+      }
       .favorite {
-        width: 28%;
-        max-width: 28%;
         border: 2px solid var(--sonos-int-background-color);
-        margin: 2px;
-        padding: 1px;
         display: flex;
         flex-direction: column;
         border-radius: var(--sonos-int-border-radius);
@@ -71,15 +76,21 @@ class FavoriteButtons extends LitElement {
         box-shadow: var(--sonos-int-box-shadow);
       }
       .image {
-        padding-bottom: 21%;
         background-position-x: center;
         background-repeat: no-repeat;
         background-size: cover;
+        position: relative;
+        width: 95%;
+        height: 0;
+        padding-bottom: 95%;
       }
       .title {
         width: 100%;
         text-align: center;
         font-size: 10px;
+        position: absolute;
+        top: 0;
+        left: 0;
       }
       .title-with-image {
         text-overflow: ellipsis;
@@ -90,15 +101,6 @@ class FavoriteButtons extends LitElement {
       .favorite:focus,
       .favorite:hover {
         border-color: var(--sonos-int-accent-color);
-      }
-      @media (max-width: 650px) {
-        .favorite {
-          width: 17%;
-          max-width: 17%;
-        }
-        .image {
-          padding-bottom: 13%;
-        }
       }
     `;
   }
