@@ -5,9 +5,10 @@ import './player';
 import './group';
 import './grouping-buttons';
 import './favorite-buttons';
-import { createPlayerGroups, getMediaPlayers } from './utils';
+import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, PlayerGroups } from './types';
+import { CardConfig, PlayerGroups, Size } from './types';
+import { styleMap, StyleInfo } from 'lit-html/directives/style-map.js';
 
 // This puts your card into the UI card picker dialog
 window.customCards = window.customCards || [];
@@ -31,6 +32,7 @@ export class CustomSonosCard extends LitElement {
     const mediaPlayers = getMediaPlayers(this.config, this.hass);
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);
+    window.onresize = () => setTimeout(() => this.render(), 1000);
     return html`
       ${this.config.name
         ? html`
@@ -39,8 +41,8 @@ export class CustomSonosCard extends LitElement {
             </div>
           `
         : ''}
-      <div class="content">
-        <div class="groups">
+      <div class="content" style="flex-direction: ${isMobile(this.config) ? 'column' : 'row'}">
+        <div style=${this.groupsStyle()} class="groups">
           <div class="title">${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}</div>
           ${Object.keys(playerGroups).map(
             (group) => html`
@@ -59,7 +61,7 @@ export class CustomSonosCard extends LitElement {
           )}
         </div>
 
-        <div class="players">
+        <div style=${this.playersStyle()} class="players">
           <sonos-player
             .hass=${this.hass}
             .config=${this.config}
@@ -81,7 +83,7 @@ export class CustomSonosCard extends LitElement {
           </sonos-grouping-buttons>
         </div>
 
-        <div class="sidebar">
+        <div style=${this.sidebarStyle()} class="sidebar">
           <div class="title">${this.config.favoritesTitle ? this.config.favoritesTitle : 'Favorites'}</div>
           <sonos-favorite-buttons
             .hass=${this.hass}
@@ -94,6 +96,36 @@ export class CustomSonosCard extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private groupsStyle() {
+    return this.columnStyle(this.config.layout?.groups, '1', '25%');
+  }
+
+  private playersStyle() {
+    return this.columnStyle(this.config.layout?.players, '0', '45%');
+  }
+
+  private sidebarStyle() {
+    return this.columnStyle(this.config.layout?.favorites, '2', '25%');
+  }
+
+  private columnStyle(size: Size | undefined, order: string, defaultWidth: string) {
+    const width = getWidth(this.config, defaultWidth, '100%', size);
+    let style: StyleInfo = {
+      width: width,
+      maxWidth: width,
+    };
+    if (isMobile(this.config)) {
+      style = {
+        ...style,
+        order,
+        padding: '0.5rem',
+        margin: '0',
+        boxSizing: 'border-box',
+      };
+    }
+    return styleMap(style);
   }
 
   determineActivePlayer(playerGroups: PlayerGroups) {
@@ -131,7 +163,7 @@ export class CustomSonosCard extends LitElement {
   }
 
   getCardSize() {
-    return this.config.entities.length + 1;
+    return 3;
   }
 
   static get styles() {
@@ -165,27 +197,18 @@ export class CustomSonosCard extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .players {
-        flex: 0 0 45%;
-        max-width: 45%;
-      }
       .content {
         display: flex;
-        flex-direction: row;
         flex-wrap: nowrap;
         justify-content: center;
       }
       .groups {
         margin: 0 20px 0 20px;
         padding: 0;
-        flex: 0 0 25%;
-        max-width: 25%;
       }
       .sidebar {
         margin: 0 20px 0 20px;
         padding: 0;
-        flex: 0 0 25%;
-        max-width: 25%;
       }
       .title {
         margin-top: 10px;
@@ -193,24 +216,6 @@ export class CustomSonosCard extends LitElement {
         font-weight: bold;
         font-size: larger;
         color: var(--sonos-int-title-color);
-      }
-      @media (max-width: 650px) {
-        .content {
-          flex-direction: column;
-        }
-        .players {
-          order: 0;
-        }
-        .groups {
-          order: 1;
-        }
-        .sidebar {
-          order: 2;
-        }
-        .content div {
-          max-width: 100%;
-          margin: 5px;
-        }
       }
     `;
   }

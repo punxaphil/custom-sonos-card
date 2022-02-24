@@ -6,6 +6,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups } from './types';
 
 @customElement('sonos-grouping-buttons')
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class GroupingButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;

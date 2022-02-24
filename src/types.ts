@@ -18,7 +18,21 @@ export interface CardConfig extends LovelaceCardConfig {
   allVolumesText?: string;
   entityNameRegexToReplace?: string;
   entityNameReplacement?: string;
+  layout?: Layout;
   entities: string[];
+}
+
+export interface Layout {
+  mobileThresholdPx?: string;
+  groups?: Size;
+  players?: Size;
+  favorites?: Size;
+  favorite?: Size;
+}
+
+export interface Size {
+  width?: string;
+  mobileWidth?: string;
 }
 
 export interface PlayerGroups {

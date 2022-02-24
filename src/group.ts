@@ -5,6 +5,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig } from './types';
 
 @customElement('sonos-group')
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class Group extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;

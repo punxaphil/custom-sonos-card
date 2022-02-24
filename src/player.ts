@@ -9,6 +9,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { CustomSonosCard } from './main';
 
 @customElement('sonos-player')
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class Player extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;

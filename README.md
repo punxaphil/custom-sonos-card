@@ -53,6 +53,20 @@ noMediaText: 'No media selected'
 allVolumesText: 'All volumes'
 entityNameRegexToReplace: 'SONOS ' # Regex pattern to replace parts of the entity names
 entityNameReplacement: ''
+layout:
+  mobileThresholdPx: 500 # Default is 650
+  groups: 
+    width: '20%' # Default 25%
+    mobileWidth: '80%' # Default 100%
+  players:
+    width: '20%' # Default 25%
+    mobileWidth: '80%' # Default 100%
+  favorites:
+    width: '20%' # Default 33%
+    mobileWidth: '80%' # Default 100%
+  favorite:
+    width: '20%' # Default 33%
+    mobileWidth: '25%' # Default 16%
 entities: # Deprecated, entities are now automatically discovered if you don't supply this setting
   - media_player.sonos_kitchen
   - media_player.sonos_hallway

@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, PlayerGroups } from './types';
+import { CardConfig, PlayerGroups, Size } from './types';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
@@ -71,4 +71,12 @@ function createGroupMembers(membersArray: string[], hass: HomeAssistant, config:
       return [member, friendlyName];
     }),
   );
+}
+
+export function getWidth(config: CardConfig, defaultWidth: string, defaultMobileWidth: string, size?: Size) {
+  return isMobile(config) ? size?.mobileWidth || defaultMobileWidth : size?.width || defaultWidth;
+}
+
+export function isMobile(config: CardConfig) {
+  return innerWidth < (config.layout?.mobileThresholdPx || 650);
 }
