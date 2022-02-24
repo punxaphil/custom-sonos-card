@@ -180,7 +180,7 @@ class Player extends LitElement {
       }
 
       .footer div ha-icon {
-        padding: 10px;
+        padding: 0.3rem;
         --mdc-icon-size: min(100%, 24px);
       }
 
