@@ -64,7 +64,7 @@ function createGroupArray(hass: HomeAssistant, groupMaster: string, mediaPlayers
   }
 }
 
-function createGroupMembers(membersArray: any, hass: HomeAssistant, config: CardConfig) {
+function createGroupMembers(membersArray: string[], hass: HomeAssistant, config: CardConfig) {
   return Object.fromEntries(
     membersArray.map((member: string) => {
       const friendlyName = getEntityName(hass, config, member);
