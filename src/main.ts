@@ -199,6 +199,7 @@ export class CustomSonosCard extends LitElement {
         --sonos-int-accent-color: var(--sonos-accent-color, var(--accent-color));
         --sonos-int-title-color: var(--sonos-title-color, var(--card-background-color));
         --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
+        --sonos-int-border-width: var(--sonos-border-width, 8px);
         --mdc-icon-size: 18px;
         color: var(--sonos-int-color);
       }
