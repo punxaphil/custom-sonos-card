@@ -72,7 +72,7 @@ The following variables are available and can be set in your theme to change the
 | --sonos-accent-color | var(--accent-color)
 | --sonos-title-color | var(--card-background-color)
 | --sonos-border-radius | 0.25rem
-| --sonos-border-width | 0.5rem
+| --sonos-border-width | 0.125rem
 
 ## Linking to specific player
 Append `#media_player.my_sonos_player` to page URL to have that player selected. 
