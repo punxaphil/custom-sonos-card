@@ -86,7 +86,7 @@ class FavoriteButtons extends LitElement {
         overflow: hidden;
         white-space: nowrap;
         background-color: var(--sonos-int-player-section-background);
-        border-radius: var(--sonos-int-border-radius) 0;
+        border-radius: calc(var(--sonos-int-border-radius) - 4px) calc(var(--sonos-int-border-radius) - 4px) 0 0;
       }
       .favorite:focus,
       .favorite:hover {
