@@ -52,16 +52,14 @@ class Group extends LitElement {
       }
       .group .wrap {
         border-radius: var(--sonos-int-border-radius);
-        margin: 2px;
+        margin: 5px 0;
         padding: 9px;
+        border: thin solid var(--sonos-int-background-color);
         background-color: var(--sonos-int-background-color);
         box-shadow: var(--sonos-int-box-shadow);
       }
       .group .wrap.active {
-        margin: 5px 0;
-        border-color: var(--sonos-int-accent-color);
-        border-width: thin;
-        border-style: solid;
+        border: thin solid var(--sonos-int-accent-color);
         font-weight: bold;
       }
       .group:first-child .wrap {
