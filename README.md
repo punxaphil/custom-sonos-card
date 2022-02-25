@@ -71,6 +71,8 @@ The following variables are available and can be set in your theme to change the
 | --sonos-artist-album-text-color | var(--primary-text-color)
 | --sonos-accent-color | var(--accent-color)
 | --sonos-title-color | var(--card-background-color)
+| --sonos-border-radius | 0.25rem
+| --sonos-border-width | 0.5rem
 
 ## Linking to specific player
 Append `#media_player.my_sonos_player` to page URL to have that player selected. 
