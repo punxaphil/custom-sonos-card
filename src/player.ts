@@ -148,6 +148,7 @@ class Player extends LitElement {
         border-radius: var(--sonos-int-border-radius);
         box-shadow: var(--sonos-int-box-shadow);
         padding-bottom: 100%;
+        border: var(--sonos-int-border-width) solid var(--sonos-int-background-color);
         background-position-x: center;
         background-repeat: no-repeat;
         background-size: cover;
