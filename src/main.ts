@@ -238,7 +238,7 @@ export class CustomSonosCard extends LitElement {
         max-width: 25%;
       }
       .title {
-        margin-top: 10px 0;
+        margin: 10px 0;
         text-align: center;
         font-weight: bold;
         font-size: larger;
