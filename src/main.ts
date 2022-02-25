@@ -216,7 +216,7 @@ export class CustomSonosCard extends LitElement {
       }
       .players {
         flex: 0 0 45%;
-        max-width: 45%;
+        max-width: 700px;
       }
       .content {
         display: flex;
