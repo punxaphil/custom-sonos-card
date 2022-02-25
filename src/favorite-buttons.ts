@@ -58,6 +58,7 @@ class FavoriteButtons extends LitElement {
         flex-wrap: wrap;
       }
       .favorite {
+        overflow: hidden;
         width: 28%;
         max-width: 28%;
         border: 2px solid var(--sonos-int-background-color);
