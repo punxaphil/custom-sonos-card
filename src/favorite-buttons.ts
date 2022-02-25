@@ -58,7 +58,6 @@ class FavoriteButtons extends LitElement {
         flex-wrap: wrap;
       }
       .favorite {
-        overflow: hidden;
         width: 28%;
         max-width: 28%;
         border: 2px solid var(--sonos-int-background-color);
@@ -87,6 +86,7 @@ class FavoriteButtons extends LitElement {
         overflow: hidden;
         white-space: nowrap;
         background-color: var(--sonos-int-player-section-background);
+        border-radius: var(--sonos-int-border-radius) 0;
       }
       .favorite:focus,
       .favorite:hover {
