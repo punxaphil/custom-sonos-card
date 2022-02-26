@@ -61,7 +61,7 @@ class FavoriteButtons extends LitElement {
         flex-wrap: wrap;
       }
       .favorite-wrapper {
-        padding: 0.1rem;
+        padding: 0.1rem 0.1rem 0.3rem;
         box-sizing: border-box;
       }
       .favorite {
