@@ -61,7 +61,7 @@ class FavoriteButtons extends LitElement {
         flex-wrap: wrap;
       }
       .favorite-wrapper {
-        padding: 0.1rem 0.1rem 0.3rem;
+        padding: 0 .6rem 0.4rem 0;
         box-sizing: border-box;
       }
       .favorite {
@@ -79,9 +79,9 @@ class FavoriteButtons extends LitElement {
         background-repeat: no-repeat;
         background-size: cover;
         position: relative;
-        width: 95%;
+        width: 100%;
         height: 0;
-        padding-bottom: 95%;
+        padding-bottom: 100%;
       }
       .title {
         width: calc(100% - 0.2rem);
