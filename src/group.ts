@@ -52,7 +52,7 @@ class Group extends LitElement {
       }
       .group .wrap {
         border-radius: var(--sonos-int-border-radius);
-        margin: 0.1rem 0;
+        margin: 0.5rem 0;
         padding: 0.5rem;
         border: thin solid var(--sonos-int-background-color);
         background-color: var(--sonos-int-background-color);
