@@ -122,6 +122,7 @@ The following variables are available and can be set in your theme to change the
 | --sonos-title-color | var(--card-background-color)
 | --sonos-border-radius | 0.25rem
 | --sonos-border-width | 0.125rem
+| --sonos-favorites-multiline | nowrap
 
 ### Example
 Here is a themed version with more rounded corners,different accent color and no transparency (thanks @giuliandenicola1).
