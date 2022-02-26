@@ -74,7 +74,7 @@ class GroupingButtons extends LitElement {
       .member {
         flex-grow: 1;
         border-radius: var(--sonos-int-border-radius);
-        margin: 0.05rem;
+        margin: 0 0.25rem 0.5rem;
         padding: 0.45rem;
         display: flex;
         justify-content: center;
