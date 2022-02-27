@@ -1,15 +1,15 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import Service from './service';
-import { getEntityName } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, PlayerGroups } from './types';
+import { CardConfig, PlayerGroups } from '../types';
+import MediaControlService from '../services/media-control-service';
+import { getEntityName } from '../utils';
 
 class GroupingButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
   @property() active!: string;
-  @property() service!: Service;
+  @property() mediaControlService!: MediaControlService;
   @property() groups!: PlayerGroups;
   @property() mediaPlayers!: string[];
 
@@ -29,14 +29,14 @@ class GroupingButtons extends LitElement {
           .map((entity) => {
             if (this.groups[this.active].members[entity]) {
               return html`
-                <div class="member" @click="${() => this.service.unjoin(entity)}">
+                <div class="member" @click="${() => this.mediaControlService.unjoin(entity)}">
                   <span>${this.groups[this.active].members[entity]} </span>
                   <ha-icon .icon=${'mdi:minus'}></ha-icon>
                 </div>
               `;
             } else {
               return html`
-                <div class="member" @click="${() => this.service.join(this.active, entity)}">
+                <div class="member" @click="${() => this.mediaControlService.join(this.active, entity)}">
                   <span>${getEntityName(this.hass, this.config, entity)} </span>
                   <ha-icon .icon=${'mdi:plus'}></ha-icon>
                 </div>
@@ -45,14 +45,17 @@ class GroupingButtons extends LitElement {
           })}
         ${notJoinedPlayers.length
           ? html`
-              <div class="member" @click="${() => this.service.join(this.active, notJoinedPlayers.join(','))}">
+              <div
+                class="member"
+                @click="${() => this.mediaControlService.join(this.active, notJoinedPlayers.join(','))}"
+              >
                 <ha-icon .icon=${'mdi:checkbox-multiple-marked-outline'}></ha-icon>
               </div>
             `
           : ''}
         ${joinedPlayers.length
           ? html`
-              <div class="member" @click="${() => this.service.unjoin(joinedPlayers.join(','))}">
+              <div class="member" @click="${() => this.mediaControlService.unjoin(joinedPlayers.join(','))}">
                 <ha-icon .icon=${'mdi:minus-box-multiple-outline'}></ha-icon>
               </div>
             `

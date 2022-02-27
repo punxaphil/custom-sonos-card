@@ -1,14 +1,16 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import Service from './service';
-import './player';
-import './group';
-import './grouping-buttons';
-import './favorite-buttons';
+import './components/player';
+import './components/group';
+import './components/grouping-buttons';
+import './components/favorite-buttons';
 import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups, Size } from './types';
 import { styleMap, StyleInfo } from 'lit-html/directives/style-map.js';
+import MediaBrowseService from './services/media-browse-service';
+import MediaControlService from './services/media-control-service';
+import HassService from './services/hass-service';
 
 // This puts your card into the UI card picker dialog
 window.customCards = window.customCards || [];
@@ -24,10 +26,14 @@ export class CustomSonosCard extends LitElement {
   @property() config!: CardConfig;
   @state() private active!: string;
   @state() showVolumes!: boolean;
-  private service!: Service;
+  private mediaBrowseService!: MediaBrowseService;
+  private mediaControlService!: MediaControlService;
+  private hassService!: HassService;
 
   render() {
-    this.service = new Service(this.hass);
+    this.hassService = new HassService(this.hass);
+    this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
+    this.mediaControlService = new MediaControlService(this.hassService);
     const mediaPlayers = getMediaPlayers(this.config, this.hass);
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);
@@ -66,7 +72,7 @@ export class CustomSonosCard extends LitElement {
             .entityId=${this.active}
             .main=${this}
             .members=${playerGroups[this.active].members}
-            .service=${this.service}
+            .mediaControlService=${this.mediaControlService}
           >
           </sonos-player>
           <div class="title">${this.config.groupingTitle ? this.config.groupingTitle : 'Grouping'}</div>
@@ -76,7 +82,7 @@ export class CustomSonosCard extends LitElement {
             .groups=${playerGroups}
             .mediaPlayers=${mediaPlayers}
             .active=${this.active}
-            .service=${this.service}
+            .mediaControlService=${this.mediaControlService}
           >
           </sonos-grouping-buttons>
         </div>
@@ -88,7 +94,8 @@ export class CustomSonosCard extends LitElement {
             .config=${this.config}
             .mediaPlayers=${mediaPlayers}
             .active=${this.active}
-            .service=${this.service}
+            .mediaControlService=${this.mediaControlService}
+            .mediaBrowseService=${this.mediaBrowseService}
           >
           </sonos-favorite-buttons>
         </div>

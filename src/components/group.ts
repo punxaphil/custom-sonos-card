@@ -1,8 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { getEntityName } from './utils';
+import { getEntityName } from '../utils';
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig } from './types';
+import { CardConfig } from '../types';
 
 class Group extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

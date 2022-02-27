@@ -1,22 +1,24 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import Service from './service';
+import MediaBrowseService from '../services/media-browse-service';
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, MediaPlayerItem } from './types';
-import { getWidth } from './utils';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { getWidth } from '../utils';
+import MediaControlService from '../services/media-control-service';
 
 class FavoriteButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
   @property() active!: string;
-  @property() service!: Service;
+  @property() mediaBrowseService!: MediaBrowseService;
+  @property() mediaControlService!: MediaControlService;
   @property() mediaPlayers!: string[];
 
   @state() private favorites: MediaPlayerItem[] = [];
 
   render() {
     if (!this.favorites.length) {
-      this.service.getFavorites(this.mediaPlayers).then((value) => {
+      this.mediaBrowseService.getFavorites(this.mediaPlayers).then((value) => {
         if (this.config.shuffleFavorites) {
           this.shuffleArray(value);
         } else {
@@ -35,7 +37,7 @@ class FavoriteButtons extends LitElement {
               <div
                 class="favorite ${favorite.thumbnail ? 'image' : ''}"
                 style="${favorite.thumbnail ? `background-image: url(${favorite.thumbnail});` : ''};"
-                @click="${() => this.service.setSource(this.active, favorite.title)}"
+                @click="${() => this.mediaControlService.setSource(this.active, favorite.title)}"
               >
                 <div class="title ${favorite.thumbnail ? 'title-with-image' : ''}">${favorite.title}</div>
               </div>

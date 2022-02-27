@@ -1,18 +1,18 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { getEntityName } from './utils';
+import { getEntityName } from '../utils';
 
-import Service from './service';
-import { CardConfig, Members } from './types';
+import { CardConfig, Members } from '../types';
 import { HomeAssistant } from 'custom-card-helpers';
 
-import { CustomSonosCard } from './main';
+import { CustomSonosCard } from '../main';
+import MediaControlService from '../services/media-control-service';
 
 class Player extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
   @property() entityId!: string;
-  @property() service!: Service;
+  @property() mediaControlService!: MediaControlService;
   @property() members!: Members;
   @property() main!: CustomSonosCard;
   @state() private timerToggleShowAllVolumes!: number;
@@ -55,20 +55,34 @@ class Player extends LitElement {
             <div style="display: ${this.main.showVolumes ? 'block' : 'none'}">${allVolumes}</div>
             <div class="footer-icons">
               <ha-icon
-                @click="${() => this.service.volumeDown(this.entityId, this.members)}"
+                @click="${() => this.mediaControlService.volumeDown(this.entityId, this.members)}"
                 .icon=${'mdi:volume-minus'}
               ></ha-icon>
-              <ha-icon @click="${() => this.service.prev(this.entityId)}" .icon=${'mdi:skip-backward'}></ha-icon>
-              ${activeStateObj.state !== 'playing'
-                ? html` <ha-icon @click="${() => this.service.play(this.entityId)}" .icon=${'mdi:play'}></ha-icon>`
-                : html` <ha-icon @click="${() => this.service.pause(this.entityId)}" .icon=${'mdi:stop'}></ha-icon> `}
-              <ha-icon @click="${() => this.service.next(this.entityId)}" .icon=${'mdi:skip-forward'}></ha-icon>
               <ha-icon
-                @click="${() => this.service.shuffle(this.entityId, !activeStateObj.attributes.shuffle)}"
+                @click="${() => this.mediaControlService.prev(this.entityId)}"
+                .icon=${'mdi:skip-backward'}
+              ></ha-icon>
+              ${activeStateObj.state !== 'playing'
+                ? html` <ha-icon
+                    @click="${() => this.mediaControlService.play(this.entityId)}"
+                    .icon=${'mdi:play'}
+                  ></ha-icon>`
+                : html`
+                    <ha-icon
+                      @click="${() => this.mediaControlService.pause(this.entityId)}"
+                      .icon=${'mdi:stop'}
+                    ></ha-icon>
+                  `}
+              <ha-icon
+                @click="${() => this.mediaControlService.next(this.entityId)}"
+                .icon=${'mdi:skip-forward'}
+              ></ha-icon>
+              <ha-icon
+                @click="${() => this.mediaControlService.shuffle(this.entityId, !activeStateObj.attributes.shuffle)}"
                 .icon=${activeStateObj.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.service.repeat(this.entityId, activeStateObj.attributes.repeat)}"
+                @click="${() => this.mediaControlService.repeat(this.entityId, activeStateObj.attributes.repeat)}"
                 .icon=${activeStateObj.attributes.repeat === 'all'
                   ? 'mdi:repeat'
                   : activeStateObj.attributes.repeat === 'one'
@@ -81,7 +95,7 @@ class Player extends LitElement {
                 .icon=${this.main.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.service.volumeUp(this.entityId, this.members)}"
+                @click="${() => this.mediaControlService.volumeUp(this.entityId, this.members)}"
                 .icon=${'mdi:volume-plus'}
               ></ha-icon>
             </div>
@@ -109,7 +123,8 @@ class Player extends LitElement {
       <input
         type="range"
         .value="${volume}"
-        @change="${(e: Event) => this.service.volumeSet(entity, members, (e?.target as HTMLInputElement)?.value)}"
+        @change="${(e: Event) =>
+          this.mediaControlService.volumeSet(entity, members, (e?.target as HTMLInputElement)?.value)}"
         @click="${(e: Event) =>
           this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup)}"
         min="0"
