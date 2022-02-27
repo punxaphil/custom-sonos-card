@@ -17,7 +17,7 @@ export default class HassService {
     this.hass.callService('media_player', service, inOptions);
   }
 
-  async browseMedia(entity_id: string, media_content_type?: string, media_content_id = '') {
+  async browseMedia(entity_id: string, media_content_type?: string, media_content_id?: string) {
     return await this.hass.callWS<MediaPlayerItem>({
       type: 'media_player/browse_media',
       entity_id,

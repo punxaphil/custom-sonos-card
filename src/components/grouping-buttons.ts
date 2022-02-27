@@ -8,35 +8,35 @@ import { getEntityName } from '../utils';
 class GroupingButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  @property() active!: string;
+  @property() activePlayer!: string;
   @property() mediaControlService!: MediaControlService;
   @property() groups!: PlayerGroups;
   @property() mediaPlayers!: string[];
 
   render() {
     const joinedPlayers = this.mediaPlayers.filter(
-      (player) => player !== this.active && this.groups[this.active].members[player],
+      (player) => player !== this.activePlayer && this.groups[this.activePlayer].members[player],
     );
     const notJoinedPlayers = this.mediaPlayers.filter(
-      (player) => player !== this.active && !this.groups[this.active].members[player],
+      (player) => player !== this.activePlayer && !this.groups[this.activePlayer].members[player],
     );
 
     return html`
       <div class="members">
-        ${this.active &&
+        ${this.activePlayer &&
         this.mediaPlayers
-          .filter((entity) => entity !== this.active)
+          .filter((entity) => entity !== this.activePlayer)
           .map((entity) => {
-            if (this.groups[this.active].members[entity]) {
+            if (this.groups[this.activePlayer].members[entity]) {
               return html`
                 <div class="member" @click="${() => this.mediaControlService.unjoin(entity)}">
-                  <span>${this.groups[this.active].members[entity]} </span>
+                  <span>${this.groups[this.activePlayer].members[entity]} </span>
                   <ha-icon .icon=${'mdi:minus'}></ha-icon>
                 </div>
               `;
             } else {
               return html`
-                <div class="member" @click="${() => this.mediaControlService.join(this.active, entity)}">
+                <div class="member" @click="${() => this.mediaControlService.join(this.activePlayer, entity)}">
                   <span>${getEntityName(this.hass, this.config, entity)} </span>
                   <ha-icon .icon=${'mdi:plus'}></ha-icon>
                 </div>
@@ -47,7 +47,7 @@ class GroupingButtons extends LitElement {
           ? html`
               <div
                 class="member"
-                @click="${() => this.mediaControlService.join(this.active, notJoinedPlayers.join(','))}"
+                @click="${() => this.mediaControlService.join(this.activePlayer, notJoinedPlayers.join(','))}"
               >
                 <ha-icon .icon=${'mdi:checkbox-multiple-marked-outline'}></ha-icon>
               </div>

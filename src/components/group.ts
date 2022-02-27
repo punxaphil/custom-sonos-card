@@ -7,7 +7,7 @@ import { CardConfig } from '../types';
 class Group extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  @property() active!: string;
+  @property() activePlayer!: string;
   @property() group!: string;
 
   render() {
@@ -17,7 +17,7 @@ class Group extends LitElement {
     }`.replaceAll(/^ - /g, '');
     return html`
       <div class="group">
-        <div class="wrap ${this.active ? 'active' : ''}">
+        <div class="wrap ${this.activePlayer ? 'active' : ''}">
           <ul class="speakers">
             ${stateObj.attributes.sonos_group.map(
               (speaker: string) => html` <li>${getEntityName(this.hass, this.config, speaker)}</li>`,

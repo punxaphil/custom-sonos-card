@@ -49,7 +49,7 @@ type: custom:custom-sonos-card
 name: '' 
 groupsTitle: '' 
 groupingTitle: '' 
-favoritesTitle: '' 
+mediaTitle: '' 
 headerImage: '' 
 shuffleFavorites: false 
 noMediaText: 'No media selected' 

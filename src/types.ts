@@ -11,7 +11,7 @@ export interface CardConfig extends LovelaceCardConfig {
   name?: string;
   groupsTitle?: string;
   groupingTitle?: string;
-  favoritesTitle?: string;
+  mediaTitle?: string;
   headerImage?: string;
   shuffleFavorites?: boolean;
   noMediaText?: string;
@@ -54,6 +54,9 @@ export interface MediaPlayerItem {
   title: string;
   thumbnail?: string;
   children?: MediaPlayerItem[];
+  media_class?: string;
+  can_expand?: boolean;
+  can_play?: boolean;
 }
 
 export interface MediaPlayerItem {

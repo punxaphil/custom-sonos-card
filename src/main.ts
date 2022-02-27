@@ -24,7 +24,7 @@ window.customCards.push({
 export class CustomSonosCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  @state() private active!: string;
+  @state() private activePlayer!: string;
   @state() showVolumes!: boolean;
   private mediaBrowseService!: MediaBrowseService;
   private mediaControlService!: MediaControlService;
@@ -54,7 +54,7 @@ export class CustomSonosCard extends LitElement {
                 .hass=${this.hass}
                 .group=${group}
                 .config=${this.config}
-                .active=${this.active === group}
+                .activePlayer=${this.activePlayer === group}
                 @click="${() => {
                   this.setActivePlayer(group);
                   this.showVolumes = false;
@@ -69,9 +69,9 @@ export class CustomSonosCard extends LitElement {
           <sonos-player
             .hass=${this.hass}
             .config=${this.config}
-            .entityId=${this.active}
+            .entityId=${this.activePlayer}
             .main=${this}
-            .members=${playerGroups[this.active].members}
+            .members=${playerGroups[this.activePlayer].members}
             .mediaControlService=${this.mediaControlService}
           >
           </sonos-player>
@@ -81,19 +81,18 @@ export class CustomSonosCard extends LitElement {
             .config=${this.config}
             .groups=${playerGroups}
             .mediaPlayers=${mediaPlayers}
-            .active=${this.active}
+            .activePlayer=${this.activePlayer}
             .mediaControlService=${this.mediaControlService}
           >
           </sonos-grouping-buttons>
         </div>
 
         <div style=${this.sidebarStyle()} class="sidebar">
-          <div class="title">${this.config.favoritesTitle ? this.config.favoritesTitle : 'Favorites'}</div>
           <sonos-favorite-buttons
             .hass=${this.hass}
             .config=${this.config}
             .mediaPlayers=${mediaPlayers}
-            .active=${this.active}
+            .activePlayer=${this.activePlayer}
             .mediaControlService=${this.mediaControlService}
             .mediaBrowseService=${this.mediaBrowseService}
           >
@@ -135,10 +134,10 @@ export class CustomSonosCard extends LitElement {
 
   determineActivePlayer(playerGroups: PlayerGroups) {
     const selected_player = window.location.href.indexOf('#') > 0 ? window.location.href.replaceAll(/.*#/g, '') : '';
-    if (this.active) {
-      this.setActivePlayer(this.active);
+    if (this.activePlayer) {
+      this.setActivePlayer(this.activePlayer);
     }
-    if (!this.active) {
+    if (!this.activePlayer) {
       for (const player in playerGroups) {
         if (player === selected_player) {
           this.setActivePlayer(player);
@@ -151,14 +150,14 @@ export class CustomSonosCard extends LitElement {
         }
       }
     }
-    if (!this.active) {
+    if (!this.activePlayer) {
       for (const player in playerGroups) {
         if (playerGroups[player].state === 'playing') {
           this.setActivePlayer(player);
         }
       }
     }
-    if (!this.active) {
+    if (!this.activePlayer) {
       this.setActivePlayer(Object.keys(playerGroups)[0]);
     }
   }
@@ -225,7 +224,7 @@ export class CustomSonosCard extends LitElement {
   }
 
   setActivePlayer(player: string) {
-    this.active = player;
+    this.activePlayer = player;
     const newUrl = window.location.href.replaceAll(/#.*/g, '');
     window.location.href = `${newUrl}#${player}`;
   }

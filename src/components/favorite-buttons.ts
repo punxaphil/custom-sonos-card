@@ -5,47 +5,88 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { getWidth } from '../utils';
 import MediaControlService from '../services/media-control-service';
+import { until } from 'lit-html/directives/until.js';
 
 class FavoriteButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  @property() active!: string;
+  @property() activePlayer!: string;
   @property() mediaBrowseService!: MediaBrowseService;
   @property() mediaControlService!: MediaControlService;
   @property() mediaPlayers!: string[];
+  @state() private browse!: boolean;
+  @state() private currentDir?: MediaPlayerItem;
 
-  @state() private favorites: MediaPlayerItem[] = [];
+  @state() private mediaItems: MediaPlayerItem[] = [];
+  private parentDirs: MediaPlayerItem[] = [];
 
   render() {
-    if (!this.favorites.length) {
-      this.mediaBrowseService.getFavorites(this.mediaPlayers).then((value) => {
-        if (this.config.shuffleFavorites) {
-          this.shuffleArray(value);
-        } else {
-          value = value.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
-        }
-        this.favorites = value;
-      });
-    }
     const favoriteWidth = getWidth(this.config, '33%', '16%', this.config.layout?.favorite);
     return html`
-      <div class="favorites">
-        ${this.active !== '' &&
-        this.favorites.map(
-          (favorite) => html`
-            <div class="favorite-wrapper" style="width: ${favoriteWidth};max-width: ${favoriteWidth};">
-              <div
-                class="favorite ${favorite.thumbnail ? 'image' : ''}"
-                style="${favorite.thumbnail ? `background-image: url(${favorite.thumbnail});` : ''};"
-                @click="${() => this.mediaControlService.setSource(this.active, favorite.title)}"
-              >
-                <div class="title ${favorite.thumbnail ? 'title-with-image' : ''}">${favorite.title}</div>
-              </div>
-            </div>
-          `,
-        )}
+      <div>
+        <div class="header">
+          <div></div>
+          <div>${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
+          <div
+            @click="${() => {
+              if (this.parentDirs.length) {
+                this.currentDir = this.parentDirs.pop();
+              } else if (this.currentDir) {
+                this.currentDir = undefined;
+              } else {
+                this.browse = !this.browse;
+              }
+            }}"
+          >
+            ${this.browse
+              ? html` <ha-icon .icon=${'mdi:keyboard-backspace'}></ha-icon>`
+              : html` <ha-icon .icon=${'mdi:play-box-multiple'}></ha-icon> `}
+          </div>
+        </div>
+        <div class="favorites">
+          ${this.activePlayer !== '' &&
+          until(
+            (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) =>
+              items.map(
+                (mediaItem) => html`
+                  <div class="favorite-wrapper" style="width: ${favoriteWidth};max-width: ${favoriteWidth};">
+                    <div
+                      class="favorite ${mediaItem.thumbnail || mediaItem.can_expand ? 'image' : ''}"
+                      style="${mediaItem.thumbnail ? `background-image: url(${mediaItem.thumbnail});` : ''};"
+                      @click="${() => {
+                        if (mediaItem.can_expand) {
+                          this.currentDir && this.parentDirs.push(this.currentDir);
+                          this.currentDir = mediaItem;
+                        } else if (mediaItem.can_play) {
+                          this.mediaControlService.setSource(this.activePlayer, mediaItem.title);
+                        }
+                      }}"
+                    >
+                      <div class="title ${mediaItem.thumbnail || mediaItem.can_expand ? 'title-with-image' : ''}">
+                        ${mediaItem.title}
+                      </div>
+                      ${mediaItem.can_expand && !mediaItem.thumbnail
+                        ? html`<ha-icon class="folder" .icon=${'mdi:folder-music'}></ha-icon>`
+                        : ''}
+                    </div>
+                  </div>
+                `,
+              ),
+            ),
+          )}
+        </div>
       </div>
     `;
+  }
+
+  private async getAllFavorites() {
+    let allFavorites = await this.mediaBrowseService.getFavorites(this.mediaPlayers);
+    if (this.config.shuffleFavorites) {
+      this.shuffleArray(allFavorites);
+    } else {
+      allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
+    }
+    return allFavorites;
   }
 
   shuffleArray(array: MediaPlayerItem[]) {
@@ -55,8 +96,17 @@ class FavoriteButtons extends LitElement {
     }
   }
 
+  private async loadMediaDir(mediaItem?: MediaPlayerItem) {
+    return await (mediaItem
+      ? this.mediaBrowseService.getDir(this.activePlayer, mediaItem)
+      : this.mediaBrowseService.getRoot(this.activePlayer));
+  }
+
   static get styles() {
     return css`
+      :host {
+        text-align: center;
+      }
       .favorites {
         padding: 0;
         display: flex;
@@ -87,7 +137,6 @@ class FavoriteButtons extends LitElement {
       }
       .title {
         width: calc(100% - 0.2rem);
-        text-align: center;
         font-size: 0.6rem;
       }
       .title-with-image {
@@ -103,6 +152,19 @@ class FavoriteButtons extends LitElement {
       .favorite:focus,
       .favorite:hover {
         border-color: var(--sonos-int-accent-color);
+      }
+      .header {
+        margin: 0.5rem 0;
+        font-weight: bold;
+        font-size: larger;
+        color: var(--sonos-int-title-color);
+        display: flex;
+        justify-content: space-between;
+      }
+      .folder {
+        margin-bottom: -30%;
+        height: 100%;
+        --mdc-icon-size: 1;
       }
     `;
   }
