@@ -3,6 +3,7 @@ import { property, state } from 'lit/decorators.js';
 import './components/player';
 import './components/group';
 import './components/grouping-buttons';
+import './components/favorite';
 import './components/favorite-buttons';
 import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
@@ -33,7 +34,7 @@ export class CustomSonosCard extends LitElement {
   render() {
     this.hassService = new HassService(this.hass);
     this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
-    this.mediaControlService = new MediaControlService(this.hassService);
+    this.mediaControlService = new MediaControlService(this.hass, this.hassService);
     const mediaPlayers = getMediaPlayers(this.config, this.hass);
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);

@@ -1,11 +1,14 @@
-import { Members } from '../types';
+import { MediaPlayerItem, Members } from '../types';
 import HassService from './hass-service';
+import { HomeAssistant } from 'custom-card-helpers';
 
 export default class MediaControlService {
   private hassService: HassService;
+  private hass: HomeAssistant;
 
-  constructor(hassService: HassService) {
+  constructor(hass: HomeAssistant, hassService: HassService) {
     this.hassService = hassService;
+    this.hass = hass;
   }
 
   join(master: string, entities: string) {
@@ -76,5 +79,13 @@ export default class MediaControlService {
 
   setSource(entity_id: string, source: string) {
     this.hassService.callMediaService('select_source', { source: source, entity_id });
+  }
+
+  playMedia(entity_id: string, item: MediaPlayerItem) {
+    this.hassService.callMediaService('play_media', {
+      entity_id,
+      media_content_id: item.media_content_id,
+      media_content_type: item.media_content_type,
+    });
   }
 }

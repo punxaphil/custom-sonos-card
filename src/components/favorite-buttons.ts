@@ -21,13 +21,13 @@ class FavoriteButtons extends LitElement {
   private parentDirs: MediaPlayerItem[] = [];
 
   render() {
-    const favoriteWidth = getWidth(this.config, '33%', '16%', this.config.layout?.favorite);
     return html`
       <div>
         <div class="header">
           <div></div>
           <div>${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
           <div
+            class="browse"
             @click="${() => {
               if (this.parentDirs.length) {
                 this.currentDir = this.parentDirs.pop();
@@ -43,57 +43,76 @@ class FavoriteButtons extends LitElement {
               : html` <ha-icon .icon=${'mdi:play-box-multiple'}></ha-icon> `}
           </div>
         </div>
-        <div class="favorites">
-          ${this.activePlayer !== '' &&
-          until(
-            (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) =>
-              items.map(
-                (mediaItem) => html`
-                  <div class="favorite-wrapper" style="width: ${favoriteWidth};max-width: ${favoriteWidth};">
-                    <div
-                      class="favorite ${mediaItem.thumbnail || mediaItem.can_expand ? 'image' : ''}"
-                      style="${mediaItem.thumbnail ? `background-image: url(${mediaItem.thumbnail});` : ''};"
-                      @click="${() => {
-                        if (mediaItem.can_expand) {
-                          this.currentDir && this.parentDirs.push(this.currentDir);
-                          this.currentDir = mediaItem;
-                        } else if (mediaItem.can_play) {
-                          this.mediaControlService.setSource(this.activePlayer, mediaItem.title);
-                        }
-                      }}"
+        ${this.activePlayer !== '' &&
+        until(
+          (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
+            const itemsWithoutImage = FavoriteButtons.itemsWithoutImage(items);
+            const favoriteWidth = itemsWithoutImage
+              ? getWidth(this.config, '33%', '16%', this.config.layout?.favorite)
+              : '100%';
+            return html` <div class="favorites ${itemsWithoutImage ? '' : 'no-thumbs'}">
+              ${this.currentDir?.can_play
+                ? html`
+                    <sonos-favorite
+                      style="width: ${favoriteWidth};max-width: ${favoriteWidth};font-weight: bold;"
+                      .mediaItem="${{ title: 'Play all' }}"
+                      @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
                     >
-                      <div class="title ${mediaItem.thumbnail || mediaItem.can_expand ? 'title-with-image' : ''}">
-                        ${mediaItem.title}
-                      </div>
-                      ${mediaItem.can_expand && !mediaItem.thumbnail
-                        ? html`<ha-icon class="folder" .icon=${'mdi:folder-music'}></ha-icon>`
-                        : ''}
-                    </div>
-                  </div>
+                    </sonos-favorite>
+                  `
+                : ''}
+              ${items.map(
+                (mediaItem) => html`
+                  <sonos-favorite
+                    style="width: ${favoriteWidth};max-width: ${favoriteWidth};"
+                    .mediaItem="${mediaItem}"
+                    @click="${() => this.onFavoriteClick(mediaItem)}"
+                  />
                 `,
-              ),
-            ),
-          )}
-        </div>
+              )}
+            </div>`;
+          }),
+        )}
       </div>
     `;
+  }
+
+  private onFavoriteClick(mediaItem: MediaPlayerItem) {
+    if (mediaItem.can_expand) {
+      this.currentDir && this.parentDirs.push(this.currentDir);
+      this.currentDir = mediaItem;
+    } else if (mediaItem.can_play) {
+      this.playItem(mediaItem);
+    }
+  }
+
+  private playItem(mediaItem: MediaPlayerItem) {
+    if (mediaItem.media_content_type || mediaItem.media_content_id) {
+      this.mediaControlService.playMedia(this.activePlayer, mediaItem);
+    } else {
+      this.mediaControlService.setSource(this.activePlayer, mediaItem.title);
+    }
   }
 
   private async getAllFavorites() {
     let allFavorites = await this.mediaBrowseService.getFavorites(this.mediaPlayers);
     if (this.config.shuffleFavorites) {
-      this.shuffleArray(allFavorites);
+      FavoriteButtons.shuffleArray(allFavorites);
     } else {
       allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
     }
     return allFavorites;
   }
 
-  shuffleArray(array: MediaPlayerItem[]) {
+  private static shuffleArray(array: MediaPlayerItem[]) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
+  }
+
+  private static itemsWithoutImage(items: MediaPlayerItem[]) {
+    return items.some((item) => item.thumbnail || item.can_expand);
   }
 
   private async loadMediaDir(mediaItem?: MediaPlayerItem) {
@@ -107,52 +126,6 @@ class FavoriteButtons extends LitElement {
       :host {
         text-align: center;
       }
-      .favorites {
-        padding: 0;
-        display: flex;
-        flex-wrap: wrap;
-      }
-      .favorite-wrapper {
-        padding: 0 0.6rem 0.4rem 0;
-        box-sizing: border-box;
-      }
-      .favorite {
-        overflow: hidden;
-        border: 0.1rem solid var(--sonos-int-background-color);
-        display: flex;
-        flex-direction: column;
-        border-radius: var(--sonos-int-border-radius);
-        justify-content: center;
-        background-color: var(--sonos-int-background-color);
-        box-shadow: var(--sonos-int-box-shadow);
-      }
-      .image {
-        background-position-x: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: 100%;
-      }
-      .title {
-        width: calc(100% - 0.2rem);
-        font-size: 0.6rem;
-      }
-      .title-with-image {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: var(--sonos-int-favorites-white-space);
-        background-color: var(--sonos-int-player-section-background);
-        border-radius: calc(var(--sonos-int-border-radius) - 0.25rem) calc(var(--sonos-int-border-radius) - 0.25rem) 0 0;
-        position: absolute;
-        top: 0.1rem;
-        left: 0.1rem;
-      }
-      .favorite:focus,
-      .favorite:hover {
-        border-color: var(--sonos-int-accent-color);
-      }
       .header {
         margin: 0.5rem 0;
         font-weight: bold;
@@ -161,10 +134,23 @@ class FavoriteButtons extends LitElement {
         display: flex;
         justify-content: space-between;
       }
-      .folder {
-        margin-bottom: -30%;
-        height: 100%;
-        --mdc-icon-size: 1;
+      .header div {
+        flex: 1;
+      }
+      .favorites {
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .no-thumbs {
+        flex-direction: column;
+      }
+      .browse {
+        --mdc-icon-size: 2vw;
+      }
+      .browse:focus,
+      .browse:hover {
+        color: var(--sonos-int-accent-color);
       }
     `;
   }

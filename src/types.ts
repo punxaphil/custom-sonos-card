@@ -57,12 +57,6 @@ export interface MediaPlayerItem {
   media_class?: string;
   can_expand?: boolean;
   can_play?: boolean;
-}
-
-export interface MediaPlayerItem {
-  title: string;
   media_content_type?: string;
   media_content_id?: string;
-  thumbnail?: string;
-  children?: MediaPlayerItem[];
 }
