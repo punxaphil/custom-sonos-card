@@ -189,6 +189,7 @@ export class CustomSonosCard extends LitElement {
         --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
         --sonos-int-border-width: var(--sonos-border-width, 0.125rem);
         --sonos-int-favorites-white-space: var(--sonos-favorites-multiline, nowrap);
+        --mdc-icon-size: 1rem;
         color: var(--sonos-int-color);
       }
       .header {
