@@ -58,7 +58,7 @@ class Group extends LitElement {
         background-color: var(--sonos-int-background-color);
         box-shadow: var(--sonos-int-box-shadow);
       }
-      .group .wrap.active {
+      .group .wrap.active .speakers {
         border: thin solid var(--sonos-int-accent-color);
         font-weight: bold;
       }
