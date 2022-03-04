@@ -86,7 +86,7 @@ class GroupingButtons extends LitElement {
       }
       .member span {
         align-self: center;
-        font-size: 0.8rem;
+        font-size: 1rem;
       }
       .member ha-icon {
         align-self: center;

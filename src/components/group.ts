@@ -53,7 +53,7 @@ class Group extends LitElement {
       .group .wrap {
         border-radius: var(--sonos-int-border-radius);
         margin: 0.5rem 0;
-        padding: 0.5rem;
+        padding: 0.8rem;
         border: thin solid var(--sonos-int-background-color);
         background-color: var(--sonos-int-background-color);
         box-shadow: var(--sonos-int-box-shadow);
@@ -72,7 +72,7 @@ class Group extends LitElement {
       }
       .speakers li {
         display: block;
-        font-size: 0.8rem;
+        font-size: 1rem;
         margin: 0.25rem 0 0 0;
         color: var(--sonos-int-color);
       }
@@ -88,7 +88,7 @@ class Group extends LitElement {
       }
       .group .play .content .currentTrack {
         display: block;
-        font-size: 0.5rem;
+        font-size: 0.8rem;
       }
       .group .play .player {
         width: 0.55rem;
