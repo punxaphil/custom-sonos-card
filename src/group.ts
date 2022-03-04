@@ -60,24 +60,29 @@ class Group extends LitElement {
       }
       .group .wrap.active {
         border: thin solid var(--sonos-int-accent-color);
+      }
+      .group .wrap.active .speakers {
         font-weight: bold;
       }
       .group:first-child .wrap {
         margin-top: 0;
       }
       .speakers {
-        list-style: none;
+        overflow: hidden;
         margin: 0;
         padding: 0;
       }
       .speakers li {
-        display: block;
-        font-size: 0.8rem;
-        margin: 0.25rem 0 0 0;
+        font-size: 1rem;
         color: var(--sonos-int-color);
+        display: list-item;
+        list-style-type: "+ ";
+        float: left;
+        margin-left: 1rem;
       }
       .speakers li:first-child {
-        margin: 0;
+        display: block;
+        margin-left: 0;
       }
       .group .play {
         display: flex;
@@ -88,7 +93,7 @@ class Group extends LitElement {
       }
       .group .play .content .currentTrack {
         display: block;
-        font-size: 0.5rem;
+        font-size: 0.8rem;
       }
       .group .play .player {
         width: 0.55rem;
