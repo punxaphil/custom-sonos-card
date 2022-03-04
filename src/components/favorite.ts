@@ -40,8 +40,7 @@ class Favorite extends LitElement {
         box-shadow: var(--sonos-int-box-shadow);
       }
       .image {
-        background-position-x: center;
-        background-position-y: bottom;
+        background-position: center center;
         background-repeat: no-repeat;
         background-size: contain;
         position: relative;
