@@ -146,7 +146,10 @@ class FavoriteButtons extends LitElement {
         flex-direction: column;
       }
       .browse {
-        --mdc-icon-size: 2vw;
+        --mdc-icon-size: 1.5rem;
+        text-align: right;
+        padding-right: .5rem;
+        margin-left: -.5rem;
       }
       .browse:focus,
       .browse:hover {

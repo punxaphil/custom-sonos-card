@@ -40,8 +40,7 @@ class Favorite extends LitElement {
         box-shadow: var(--sonos-int-box-shadow);
       }
       .image {
-        background-position-x: center;
-        background-position-y: bottom;
+        background-position: center center;
         background-repeat: no-repeat;
         background-size: contain;
         position: relative;
@@ -50,8 +49,9 @@ class Favorite extends LitElement {
         padding-bottom: 100%;
       }
       .title {
-        width: calc(100% - 0.2rem);
-        font-size: 0.6rem;
+        width: calc(100% - 1.2rem);
+        font-size: 1rem;
+        padding: 0px 0.5rem;
       }
       .title-with-image {
         text-overflow: ellipsis;
