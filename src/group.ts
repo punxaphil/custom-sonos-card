@@ -68,21 +68,20 @@ class Group extends LitElement {
         margin-top: 0;
       }
       .speakers {
-        overflow: hidden;
         margin: 0;
         padding: 0;
       }
       .speakers li {
+        display: list-item;
+        list-style-position: inside;
+        list-style-type: "+ ";
+        margin-right: .3rem;
+        float: left;
         font-size: 1rem;
         color: var(--sonos-int-color);
-        display: list-item;
-        list-style-type: "+ ";
-        float: left;
-        margin-left: 1rem;
-      }
-      .speakers li:first-child {
-        display: block;
-        margin-left: 0;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .group .play {
         display: flex;
