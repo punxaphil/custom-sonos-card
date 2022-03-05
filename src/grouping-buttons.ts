@@ -80,10 +80,13 @@ class GroupingButtons extends LitElement {
         justify-content: center;
         background-color: var(--sonos-int-background-color);
         box-shadow: var(--sonos-int-box-shadow);
+        max-width: calc(100% - 1.4rem);
       }
       .member span {
         align-self: center;
         font-size: 0.8rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .member ha-icon {
         align-self: center;
