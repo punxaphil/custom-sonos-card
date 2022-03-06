@@ -60,28 +60,39 @@ class Group extends LitElement {
       }
       .group .wrap.active {
         border: thin solid var(--sonos-int-accent-color);
+      }
+      .group .wrap.active .speakers {
         font-weight: bold;
       }
       .group:first-child .wrap {
         margin-top: 0;
       }
       .speakers {
-        list-style: none;
         margin: 0;
         padding: 0;
       }
+      .speakers li:first-child::before {
+        content: "";
+        margin-right: 0;
+      }
+      .speakers li::before {
+        content: "+";
+        margin-right: .3em;
+      }
       .speakers li {
         display: block;
+        margin-right: .3rem;
+        float: left;
         font-size: 1rem;
-        margin: 0.25rem 0 0 0;
         color: var(--sonos-int-color);
-      }
-      .speakers li:first-child {
-        margin: 0;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .group .play {
         display: flex;
         flex-direction: row;
+        clear: both;
       }
       .group .play .content {
         flex: 1;

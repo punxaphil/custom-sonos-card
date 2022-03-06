@@ -220,6 +220,8 @@ class Player extends LitElement {
 
       .artist,
       .album {
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 0.75rem;
         font-weight: 300;
         color: var(--sonos-int-artist-album-text-color);
@@ -227,6 +229,8 @@ class Player extends LitElement {
       }
 
       .song {
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 1.15rem;
         font-weight: 400;
         color: var(--sonos-int-accent-color);
