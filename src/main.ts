@@ -3,8 +3,8 @@ import { property, state } from 'lit/decorators.js';
 import './components/player';
 import './components/group';
 import './components/grouping-buttons';
-import './components/favorite';
-import './components/favorite-buttons';
+import './components/media-button';
+import './components/media-buttons';
 import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups, Size } from './types';
@@ -89,7 +89,7 @@ export class CustomSonosCard extends LitElement {
         </div>
 
         <div style=${this.sidebarStyle()} class="sidebar">
-          <sonos-favorite-buttons
+          <sonos-media-buttons
             .hass=${this.hass}
             .config=${this.config}
             .mediaPlayers=${mediaPlayers}
@@ -97,7 +97,7 @@ export class CustomSonosCard extends LitElement {
             .mediaControlService=${this.mediaControlService}
             .mediaBrowseService=${this.mediaBrowseService}
           >
-          </sonos-favorite-buttons>
+          </sonos-media-buttons>
         </div>
       </div>
     `;
@@ -112,7 +112,7 @@ export class CustomSonosCard extends LitElement {
   }
 
   private sidebarStyle() {
-    return this.columnStyle(this.config.layout?.favorites, '2', '25%');
+    return this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%');
   }
 
   private columnStyle(size: Size | undefined, order: string, defaultWidth: string) {
@@ -164,6 +164,12 @@ export class CustomSonosCard extends LitElement {
   }
 
   setConfig(config: CardConfig) {
+    if (this.config.layout && !this.config.layout?.mediaBrowser && this.config.layout.favorites) {
+      this.config.layout.mediaBrowser = this.config.layout.favorites;
+    }
+    if (this.config.layout && !this.config.layout?.mediaItem && this.config.layout.favorite) {
+      this.config.layout.mediaItem = this.config.layout.favorite;
+    }
     this.config = config;
   }
 
@@ -188,7 +194,10 @@ export class CustomSonosCard extends LitElement {
         --sonos-int-title-color: var(--sonos-title-color, var(--card-background-color));
         --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
         --sonos-int-border-width: var(--sonos-border-width, 0.125rem);
-        --sonos-int-favorites-white-space: var(--sonos-favorites-multiline, nowrap);
+        --sonos-int-media-button-white-space: var(
+          --sonos-media-buttons-multiline,
+          var(--sonos-favorites-multiline, nowrap)
+        );
         --mdc-icon-size: 1rem;
         color: var(--sonos-int-color);
       }

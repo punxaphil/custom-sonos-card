@@ -2,14 +2,14 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { MediaPlayerItem } from '../types';
 
-class Favorite extends LitElement {
+class MediaButton extends LitElement {
   @property() mediaItem!: MediaPlayerItem;
 
   render() {
     return html`
-      <div class="favorite-wrapper">
+      <div class="media-button-wrapper">
         <div
-          class="favorite ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'image' : ''}"
+          class="media-button ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'image' : ''}"
           style="${this.mediaItem.thumbnail ? `background-image: url(${this.mediaItem.thumbnail});` : ''};"
         >
           <div class="title ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}">
@@ -25,11 +25,11 @@ class Favorite extends LitElement {
 
   static get styles() {
     return css`
-      .favorite-wrapper {
+      .media-button-wrapper {
         padding: 0 0.3rem 0.4rem 0.3rem;
         box-sizing: border-box;
       }
-      .favorite {
+      .media-button {
         overflow: hidden;
         border: 0.1rem solid var(--sonos-int-background-color);
         display: flex;
@@ -56,15 +56,15 @@ class Favorite extends LitElement {
       .title-with-image {
         text-overflow: ellipsis;
         overflow: hidden;
-        white-space: var(--sonos-int-favorites-white-space);
+        white-space: var(--sonos-int-media-button-white-space);
         background-color: var(--sonos-int-player-section-background);
         border-radius: calc(var(--sonos-int-border-radius) - 0.25rem) calc(var(--sonos-int-border-radius) - 0.25rem) 0 0;
         position: absolute;
         top: 0.1rem;
         left: 0.1rem;
       }
-      .favorite:focus,
-      .favorite:hover {
+      .media-button:focus,
+      .media-button:hover {
         border-color: var(--sonos-int-accent-color);
       }
       .folder {
@@ -76,4 +76,4 @@ class Favorite extends LitElement {
   }
 }
 
-customElements.define('sonos-favorite', Favorite);
+customElements.define('sonos-media-button', MediaButton);

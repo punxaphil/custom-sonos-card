@@ -26,7 +26,11 @@ export interface Layout {
   mobileThresholdPx?: string;
   groups?: Size;
   players?: Size;
+  mediaBrowser?: Size;
+  mediaItem?: Size;
+  // deprecated
   favorites?: Size;
+  // deprecated
   favorite?: Size;
 }
 

@@ -26,19 +26,19 @@ export default class MediaBrowseService {
     }
   }
 
-  async getFavorites(mediaPlayers: string[]): Promise<MediaPlayerItem[]> {
+  async getAllFavorites(mediaPlayers: string[]): Promise<MediaPlayerItem[]> {
     if (!mediaPlayers.length) {
       return [];
     }
     const favoritesForAllPlayers = await Promise.all(mediaPlayers.map((player) => this.getFavoritesForPlayer(player)));
     let favorites = favoritesForAllPlayers.flatMap((f) => f);
-    favorites = this.removeDuplicateFavorites(favorites);
+    favorites = this.removeDuplicates(favorites);
     return favorites.length ? favorites : this.getFavoritesFromStates(mediaPlayers);
   }
 
-  private removeDuplicateFavorites(favorites: MediaPlayerItem[]) {
-    return favorites.filter((value, index, self) => {
-      return index === self.findIndex((t) => t.title === value.title);
+  private removeDuplicates(items: MediaPlayerItem[]) {
+    return items.filter((item, index, all) => {
+      return index === all.findIndex((current) => current.title === item.title);
     });
   }
 

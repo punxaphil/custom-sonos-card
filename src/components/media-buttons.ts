@@ -7,7 +7,7 @@ import { getWidth } from '../utils';
 import MediaControlService from '../services/media-control-service';
 import { until } from 'lit-html/directives/until.js';
 
-class FavoriteButtons extends LitElement {
+class MediaButtons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
   @property() activePlayer!: string;
@@ -53,17 +53,17 @@ class FavoriteButtons extends LitElement {
         ${this.activePlayer !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
-            const itemsWithoutImage = FavoriteButtons.itemsWithoutImage(items);
-            const favoriteWidth = itemsWithoutImage
-              ? getWidth(this.config, '33%', '16%', this.config.layout?.favorite)
+            const itemsWithoutImage = MediaButtons.itemsWithoutImage(items);
+            const mediaItemWidth = itemsWithoutImage
+              ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
               : '100%';
-            return html` <div class="favorites ${itemsWithoutImage ? '' : 'no-thumbs'}">
+            return html` <div class="media-buttons ${itemsWithoutImage ? '' : 'no-thumbs'}">
               ${items.map(
                 (mediaItem) => html`
-                  <sonos-favorite
-                    style="width: ${favoriteWidth};max-width: ${favoriteWidth};"
+                  <sonos-media-button
+                    style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
                     .mediaItem="${mediaItem}"
-                    @click="${() => this.onFavoriteClick(mediaItem)}"
+                    @click="${() => this.onMediaItemClick(mediaItem)}"
                   />
                 `,
               )}
@@ -74,7 +74,7 @@ class FavoriteButtons extends LitElement {
     `;
   }
 
-  private onFavoriteClick(mediaItem: MediaPlayerItem) {
+  private onMediaItemClick(mediaItem: MediaPlayerItem) {
     if (mediaItem.can_expand) {
       this.currentDir && this.parentDirs.push(this.currentDir);
       this.currentDir = mediaItem;
@@ -92,9 +92,9 @@ class FavoriteButtons extends LitElement {
   }
 
   private async getAllFavorites() {
-    let allFavorites = await this.mediaBrowseService.getFavorites(this.mediaPlayers);
+    let allFavorites = await this.mediaBrowseService.getAllFavorites(this.mediaPlayers);
     if (this.config.shuffleFavorites) {
-      FavoriteButtons.shuffleArray(allFavorites);
+      MediaButtons.shuffleArray(allFavorites);
     } else {
       allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
     }
@@ -135,7 +135,7 @@ class FavoriteButtons extends LitElement {
         flex: 1;
         --mdc-icon-size: 1.5rem;
       }
-      .favorites {
+      .media-buttons {
         padding: 0;
         display: flex;
         flex-wrap: wrap;
@@ -163,4 +163,4 @@ class FavoriteButtons extends LitElement {
   }
 }
 
-customElements.define('sonos-favorite-buttons', FavoriteButtons);
+customElements.define('sonos-media-buttons', MediaButtons);
