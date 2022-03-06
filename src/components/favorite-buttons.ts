@@ -24,7 +24,14 @@ class FavoriteButtons extends LitElement {
     return html`
       <div>
         <div class="header">
-          <div></div>
+          <div class="play-dir">
+            ${this.currentDir?.can_play
+              ? html` <ha-icon
+                  .icon=${'mdi:play-circle'}
+                  @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
+                ></ha-icon>`
+              : ''}
+          </div>
           <div>${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
           <div
             class="browse"
@@ -51,16 +58,6 @@ class FavoriteButtons extends LitElement {
               ? getWidth(this.config, '33%', '16%', this.config.layout?.favorite)
               : '100%';
             return html` <div class="favorites ${itemsWithoutImage ? '' : 'no-thumbs'}">
-              ${this.currentDir?.can_play
-                ? html`
-                    <sonos-favorite
-                      style="width: ${favoriteWidth};max-width: ${favoriteWidth};font-weight: bold;"
-                      .mediaItem="${{ title: 'Play all' }}"
-                      @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
-                    >
-                    </sonos-favorite>
-                  `
-                : ''}
               ${items.map(
                 (mediaItem) => html`
                   <sonos-favorite
@@ -145,14 +142,17 @@ class FavoriteButtons extends LitElement {
       .no-thumbs {
         flex-direction: column;
       }
-      .browse {
+      .browse,
+      .play-dir {
         --mdc-icon-size: 1.5rem;
         text-align: right;
         padding-right: .5rem;
         margin-left: -.5rem;
       }
       .browse:focus,
-      .browse:hover {
+      .browse:hover,
+      .play-dir:focus,
+      .play-dir:hover {
         color: var(--sonos-int-accent-color);
       }
     `;
