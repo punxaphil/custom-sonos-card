@@ -27,7 +27,7 @@ class FavoriteButtons extends LitElement {
           <div class="play-dir">
             ${this.currentDir?.can_play
               ? html` <ha-icon
-                  .icon=${'mdi:play-circle'}
+                  .icon=${'mdi:play'}
                   @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
                 ></ha-icon>`
               : ''}
@@ -46,7 +46,7 @@ class FavoriteButtons extends LitElement {
             }}"
           >
             ${this.browse
-              ? html` <ha-icon .icon=${'mdi:keyboard-backspace'}></ha-icon>`
+              ? html` <ha-icon .icon=${'mdi:arrow-left-bold'}></ha-icon>`
               : html` <ha-icon .icon=${'mdi:play-box-multiple'}></ha-icon> `}
           </div>
         </div>
@@ -133,6 +133,7 @@ class FavoriteButtons extends LitElement {
       }
       .header div {
         flex: 1;
+        --mdc-icon-size: 1.5rem;
       }
       .favorites {
         padding: 0;
@@ -142,12 +143,15 @@ class FavoriteButtons extends LitElement {
       .no-thumbs {
         flex-direction: column;
       }
-      .browse,
-      .play-dir {
-        --mdc-icon-size: 1.5rem;
+      .browse {
         text-align: right;
-        padding-right: .5rem;
-        margin-left: -.5rem;
+        padding-right: 0.5rem;
+        margin-left: -0.5rem;
+      }
+      .play-dir {
+        text-align: left;
+        padding-right: -0.5rem;
+        margin-left: 0.5rem;
       }
       .browse:focus,
       .browse:hover,

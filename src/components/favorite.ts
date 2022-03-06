@@ -26,7 +26,7 @@ class Favorite extends LitElement {
   static get styles() {
     return css`
       .favorite-wrapper {
-        padding: 0 0.6rem 0.4rem 0;
+        padding: 0 0.3rem 0.4rem 0.3rem;
         box-sizing: border-box;
       }
       .favorite {
