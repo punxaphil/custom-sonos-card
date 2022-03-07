@@ -64,10 +64,10 @@ layout:
   players:
     width: '20%' # Default 25%
     mobileWidth: '80%' # Default 100%
-  favorites:
+  mediaBrowser:
     width: '20%' # Default 33%
     mobileWidth: '80%' # Default 100%
-  favorite:
+  mediaItem:
     width: '20%' # Default 33%
     mobileWidth: '25%' # Default 16%
 entities: # Deprecated, entities are now automatically discovered if you don't supply this setting
@@ -90,10 +90,10 @@ layout:
   players:
     width: 20%
     mobileWidth: 90%
-  favorites:
+  mediaBrowser:
     width: 60%
     mobileWidth: 70%
-  favorite:
+  mediaItem:
     width: 20%
     mobileWidth: 50%
 ```
@@ -112,17 +112,17 @@ Yet another example (with different config):
 ## Theme variables
 The following variables are available and can be set in your theme to change the appearence of the card.
 
-| Name | Default |
-|------|---------|
-| --sonos-background-color | var(--card-background-color)
+| Name                              | Default |
+|-----------------------------------|---------|
+| --sonos-background-color          | var(--card-background-color)
 | --sonos-player-section-background | #ffffffe6
-| --sonos-color | var(--secondary-text-color)
-| --sonos-artist-album-text-color | var(--primary-text-color)
-| --sonos-accent-color | var(--accent-color)
-| --sonos-title-color | var(--card-background-color)
-| --sonos-border-radius | 0.25rem
-| --sonos-border-width | 0.125rem
-| --sonos-favorites-multiline | nowrap
+| --sonos-color                     | var(--secondary-text-color)
+| --sonos-artist-album-text-color   | var(--primary-text-color)
+| --sonos-accent-color              | var(--accent-color)
+| --sonos-title-color               | var(--card-background-color)
+| --sonos-border-radius             | 0.25rem
+| --sonos-border-width              | 0.125rem
+| --sonos-media-buttons-multiline   | nowrap
 
 ### Example
 Here is a themed version with more rounded corners,different accent color and no transparency (thanks @giuliandenicola1).

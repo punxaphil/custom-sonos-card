@@ -8,7 +8,7 @@ import './components/media-buttons';
 import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups, Size } from './types';
-import { styleMap, StyleInfo } from 'lit-html/directives/style-map.js';
+import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
 import MediaBrowseService from './services/media-browse-service';
 import MediaControlService from './services/media-control-service';
 import HassService from './services/hass-service';
@@ -164,13 +164,18 @@ export class CustomSonosCard extends LitElement {
   }
 
   setConfig(config: CardConfig) {
+    this.config = JSON.parse(JSON.stringify(config));
+    // Handle deprecated configs
+    const deprecatedMessage = (deprecated: string, instead: string) =>
+      console.log('Sonos Card: ' + deprecated + ' configuration is deprecated. Please use ' + instead + ' instead.');
     if (this.config.layout && !this.config.layout?.mediaBrowser && this.config.layout.favorites) {
+      deprecatedMessage('layout.favorites', 'layout.mediaBrowser');
       this.config.layout.mediaBrowser = this.config.layout.favorites;
     }
     if (this.config.layout && !this.config.layout?.mediaItem && this.config.layout.favorite) {
+      deprecatedMessage('layout.favorite', 'layout.mediaItem');
       this.config.layout.mediaItem = this.config.layout.favorite;
     }
-    this.config = config;
   }
 
   getCardSize() {
