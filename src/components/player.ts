@@ -23,7 +23,7 @@ class Player extends LitElement {
     let allVolumes = [];
     if (isGroup) {
       allVolumes = activeStateObj.attributes.sonos_group.map((member: string) =>
-        this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup),
+        this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup, true),
       );
     }
     return html`
@@ -50,6 +50,7 @@ class Player extends LitElement {
               this.entityId,
               this.main.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
               isGroup,
+              false,
               this.members,
             )}
             <div style="display: ${this.main.showVolumes ? 'block' : 'none'}">${allVolumes}</div>
@@ -105,7 +106,7 @@ class Player extends LitElement {
     `;
   }
 
-  getVolumeTemplate(entity: string, name: string, isGroup: boolean, members = {}) {
+  getVolumeTemplate(entity: string, name: string, isGroup: boolean, isGroupMember: boolean, members = {}) {
     const volume = 100 * this.hass.states[entity].attributes.volume_level;
     let max = 100;
     let inputColor = 'rgb(211, 3, 32)';
@@ -113,27 +114,36 @@ class Player extends LitElement {
       max = 30;
       inputColor = 'rgb(72,187,14)';
     }
+    const volumeMuted = this.hass.states[entity].attributes.is_volume_muted;
     return html`
-      ${name ? html` <div style="margin-top: 1rem; margin-left: 0.4rem;">${name}</div>` : ''}
-      <div style="font-size: x-small; margin: 0 0.4rem; display: flex;">
-        <div style="flex: ${volume}">0%</div>
-        ${volume > 0 ? html` <div style="flex: 2">${Math.round(volume)}%</div>` : ''}
-        <div style="flex: ${max - volume};text-align: right">${max}%</div>
+      <div class="volume ${isGroupMember ? 'group-member-volume' : ''}">
+        ${name ? html` <div class="volume-name">${name}</div>` : ''}
+        <ha-icon
+          style="--mdc-icon-size: 1.25rem; align-self: center"
+          @click="${() => this.mediaControlService.volumeMute(entity, members, !volumeMuted)}"
+          .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
+        ></ha-icon>
+        <div class="volume-slider">
+          <div class="volume-level">
+            <div style="flex: ${volume}">0%</div>
+            ${volume > 0 ? html` <div style="flex: 2">${Math.round(volume)}%</div>` : ''}
+            <div style="flex: ${max - volume};text-align: right">${max}%</div>
+          </div>
+          <input
+            type="range"
+            .value="${volume}"
+            @change="${(e: Event) =>
+              this.mediaControlService.volumeSet(entity, members, (e?.target as HTMLInputElement)?.value)}"
+            @click="${(e: Event) =>
+              this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup)}"
+            min="0"
+            max="${max}"
+            class="volumeRange"
+            style="background: linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${(volume * 100) /
+            max}%, rgb(211, 211, 211) ${(volume * 100) / max}%, rgb(211, 211, 211) 100%);"
+          />
+        </div>
       </div>
-      <input
-        type="range"
-        .value="${volume}"
-        @change="${(e: Event) =>
-          this.mediaControlService.volumeSet(entity, members, (e?.target as HTMLInputElement)?.value)}"
-        @click="${(e: Event) =>
-          this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup)}"
-        min="0"
-        max="${max}"
-        id="volumeRange"
-        class="volumeRange"
-        style="background: linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${(volume * 100) /
-        max}%, rgb(211, 211, 211) ${(volume * 100) / max}%, rgb(211, 211, 211) 100%);"
-      />
     `;
   }
 
@@ -247,6 +257,33 @@ class Player extends LitElement {
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+      .volume {
+        display: flex;
+      }
+      .volume-name {
+        margin-top: 1rem;
+        margin-left: 0.4rem;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .volume-slider {
+        flex: 4;
+      }
+      .volume-level {
+        font-size: x-small;
+        margin: 0 0.4rem;
+        display: flex;
+      }
+      .group-member-volume {
+        border-top: dotted var(--sonos-int-color);
+        margin-top: 0.4rem;
+      }
+      .mute {
+        --mdc-icon-size: 1.25rem;
+        align-self: center;
       }
     `;
   }

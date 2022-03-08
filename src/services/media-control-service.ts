@@ -77,6 +77,14 @@ export default class MediaControlService {
     }
   }
 
+  volumeMute(entity_id: string, members: Members, is_volume_muted: boolean) {
+    this.hassService.callMediaService('volume_mute', { entity_id, is_volume_muted });
+
+    for (const entity_id in members) {
+      this.hassService.callMediaService('volume_mute', { entity_id, is_volume_muted });
+    }
+  }
+
   setSource(entity_id: string, source: string) {
     this.hassService.callMediaService('select_source', { source: source, entity_id });
   }
