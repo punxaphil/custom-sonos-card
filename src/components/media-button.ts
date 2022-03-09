@@ -34,10 +34,12 @@ class MediaButton extends LitElement {
   static get styles() {
     return css`
       .media-button-wrapper {
-        padding: 0 0.3rem 0.4rem 0.3rem;
-        box-sizing: border-box;
+        padding: 0 0.3rem 0.6rem 0.3rem;
       }
       .media-button {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
         overflow: hidden;
         border: var(--sonos-int-border-width) solid var(--sonos-int-background-color);
         display: flex;
@@ -49,15 +51,13 @@ class MediaButton extends LitElement {
       }
       .image {
         background-position: center center;
-        background-repeat: no-repeat;
         background-size: contain;
         position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: 100%;
+        height: 100%;
+        padding-bottom: calc(100% - (var(--sonos-int-border-width) * 2));
       }
       .title {
-        width: calc(100% - 1.2rem);
+        width: calc(100% - 1rem);
         font-size: 1rem;
         padding: 0px 0.5rem;
       }
@@ -66,10 +66,9 @@ class MediaButton extends LitElement {
         overflow: hidden;
         white-space: var(--sonos-int-media-button-white-space);
         background-color: var(--sonos-int-player-section-background);
-        border-radius: calc(var(--sonos-int-border-radius) - 0.25rem) calc(var(--sonos-int-border-radius) - 0.25rem) 0 0;
         position: absolute;
-        top: 0.1rem;
-        left: 0.1rem;
+        top: 0rem;
+        left: 0rem;
       }
       .media-button:focus,
       .media-button:hover {
