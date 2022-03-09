@@ -60,6 +60,7 @@ class MediaButton extends LitElement {
         padding: 0px 0.5rem;
       }
       .title-with-image {
+        z-index: 1;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: var(--sonos-int-media-button-white-space);
@@ -73,8 +74,7 @@ class MediaButton extends LitElement {
         border-color: var(--sonos-int-accent-color);
       }
       .folder {
-        margin-bottom: -30%;
-        height: 100%;
+        margin-bottom: -120%;
         --mdc-icon-size: 1;
       }
     `;
