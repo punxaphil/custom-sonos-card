@@ -50,10 +50,8 @@ class MediaButton extends LitElement {
         box-shadow: var(--sonos-int-box-shadow);
       }
       .image {
-        background-position: center center;
         background-size: contain;
         position: relative;
-        height: 100%;
         padding-bottom: calc(100% - (var(--sonos-int-border-width) * 2));
       }
       .title {
