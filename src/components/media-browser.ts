@@ -27,20 +27,23 @@ class MediaBrowser extends LitElement {
     this.mediaControlService = this.main.mediaControlService;
     this.mediaBrowseService = this.main.mediaBrowseService;
     const stylable = this.main.stylable;
+    const styleConfigForName = (name: string) => {
+      return { config: this.config, name };
+    };
     return html`
-      <sonos-stylable .config="${this.config}" name="buttonSection">
-        <div class="header" style="${stylable('mediaBrowserHeader')}">
-          <div class="play-dir">
+      <div-styled .using="${styleConfigForName('button-section')}">
+        <div-styled .using="${styleConfigForName('media-browser-header')}">
+          <div-styled .using="${styleConfigForName('media-browser-play-dir')}">
             ${this.currentDir?.can_play
               ? html` <ha-icon
                   .icon=${'mdi:play'}
                   @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
                 ></ha-icon>`
               : ''}
-          </div>
-          <div class="title" style="${stylable('title')}">
+          </div-styled>
+          <div-styled .using="${styleConfigForName('title')}">
             ${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}
-          </div>
+          </div-styled>
           <div
             class="browse"
             @click="${() => {
@@ -57,7 +60,7 @@ class MediaBrowser extends LitElement {
               ? html` <ha-icon .icon=${'mdi:arrow-left-bold'}></ha-icon>`
               : html` <ha-icon .icon=${'mdi:play-box-multiple'}></ha-icon> `}
           </div>
-        </div>
+        </div-styled>
         ${this.activePlayer !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
@@ -82,7 +85,7 @@ class MediaBrowser extends LitElement {
             </div>`;
           }),
         )}
-      </sonos-stylable>
+      </div-styled>
     `;
   }
 

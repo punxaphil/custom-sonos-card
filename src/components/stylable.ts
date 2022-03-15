@@ -4,19 +4,18 @@ import { CardConfig } from '../types';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
 
 class Stylable extends LitElement {
-  @property() config!: CardConfig;
-  @property() name!: string;
+  @property() config!: { config: CardConfig; name: string };
   @property() additionalStyle!: StyleInfo;
   @property() show = true;
 
   render() {
-    let style = this.config.styles?.[this.name] || {};
+    let style = this.config.config.styles?.[this.config.name] || {};
     style = { ...this.additionalStyle, ...style };
     if (!this.show) {
       style = { ...style, display: 'none' };
     }
     return html`
-      <div class="${this.name}" style="${styleMap(style)}">
+      <div class="${this.config.name}" style="${styleMap(style)}">
         <slot></slot>
       </div>
     `;
@@ -31,4 +30,4 @@ class Stylable extends LitElement {
   }
 }
 
-customElements.define('sonos-stylable', Stylable);
+customElements.define('div-styled', Stylable);
