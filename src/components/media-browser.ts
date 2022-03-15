@@ -1,30 +1,35 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import MediaBrowseService from '../services/media-browse-service';
-import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { getWidth } from '../utils';
 import MediaControlService from '../services/media-control-service';
 import { until } from 'lit-html/directives/until.js';
 import sharedStyle from '../sharedStyle';
+import { CustomSonosCard } from '../main';
+import './media-button';
 
 class MediaBrowser extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() activePlayer!: string;
-  @property() mediaBrowseService!: MediaBrowseService;
-  @property() mediaControlService!: MediaControlService;
+  @property() main!: CustomSonosCard;
   @property() mediaPlayers!: string[];
   @state() private browse!: boolean;
   @state() private currentDir?: MediaPlayerItem;
-
   @state() private mediaItems: MediaPlayerItem[] = [];
   private parentDirs: MediaPlayerItem[] = [];
+  private config!: CardConfig;
+  private activePlayer!: string;
+  private mediaControlService!: MediaControlService;
+  private mediaBrowseService!: MediaBrowseService;
 
   render() {
+    this.config = this.main.config;
+    this.activePlayer = this.main.activePlayer;
+    this.mediaControlService = this.main.mediaControlService;
+    this.mediaBrowseService = this.main.mediaBrowseService;
+    const stylable = this.main.stylable;
     return html`
-      <div class="${this.config.backgroundBehindButtonSections ? 'button-section-background' : ''}">
-        <div class="header">
+      <sonos-stylable .config="${this.config}" name="buttonSection">
+        <div class="header" style="${stylable('mediaBrowserHeader')}">
           <div class="play-dir">
             ${this.currentDir?.can_play
               ? html` <ha-icon
@@ -33,7 +38,9 @@ class MediaBrowser extends LitElement {
                 ></ha-icon>`
               : ''}
           </div>
-          <div>${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
+          <div class="title" style="${stylable('title')}">
+            ${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}
+          </div>
           <div
             class="browse"
             @click="${() => {
@@ -58,20 +65,24 @@ class MediaBrowser extends LitElement {
             const mediaItemWidth = itemsWithoutImage
               ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
               : '100%';
-            return html` <div class="media-buttons ${itemsWithoutImage ? '' : 'no-thumbs'}">
+            return html` <div
+              class="media-buttons ${itemsWithoutImage ? '' : 'no-thumbs'}"
+              style="${stylable('mediaButtons')}"
+            >
               ${items.map(
                 (mediaItem) => html`
                   <sonos-media-button
                     style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
                     .mediaItem="${mediaItem}"
                     @click="${() => this.onMediaItemClick(mediaItem)}"
-                  />
+                    .main="${this.main}"
+                  ></sonos-media-button>
                 `,
               )}
             </div>`;
           }),
         )}
-      </div>
+      </sonos-stylable>
     `;
   }
 
@@ -135,9 +146,6 @@ class MediaBrowser extends LitElement {
           text-align: center;
         }
         .header {
-          margin: 0.5rem 0;
-          font-weight: bold;
-          font-size: larger;
           color: var(--sonos-int-title-color);
           display: flex;
           justify-content: space-between;

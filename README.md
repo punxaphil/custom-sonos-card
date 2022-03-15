@@ -108,13 +108,6 @@ mediaArtworkOverrides:
 ...
 ```
 
-### Background behind button sections
-```yaml
-backgroundBehindButtonSections: true
-```
-![img/background-behind-button-sections.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/background-behind-button-sections.png)
-
-
 ## Layout
 As seen in the yaml example above, layout can be controlled for the major sections.
 
@@ -163,7 +156,6 @@ Read more about using theme variables here: https://www.home-assistant.io/integr
 | `--sonos-border-radius`                   | `0.25rem`                      |
 | `--sonos-border-width`                    | `0.125rem`                     |
 | `--sonos-media-buttons-multiline`         | `nowrap`                       |
-| `--sonos-button-section-background-color` | `#626b75cc`                    |
 
 ### Example with rounded corners
 Here is a themed version with more rounded corners,different accent color and no transparency (thanks @giuliandenicola1).

@@ -1,29 +1,32 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { getEntityName } from '../utils';
-import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig } from '../types';
+import { CustomSonosCard } from '../main';
 
 class Group extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() activePlayer!: string;
+  @property() main!: CustomSonosCard;
   @property() group!: string;
 
   render() {
-    const stateObj = this.hass.states[this.group];
+    const config = this.main.config;
+    const stateObj = this.main.hass.states[this.group];
+    const activePlayer = this.main.activePlayer === this.group;
     const currentTrack = `${stateObj.attributes.media_artist || ''} - ${
       stateObj.attributes.media_title || ''
     }`.replaceAll(/^ - /g, '');
+    const stylable = this.main.stylable;
     return html`
-      <div class="group">
-        <div class="wrap ${this.activePlayer ? 'active' : ''}">
-          <ul class="speakers">
+      <div class="group" @click="${() => this.handleGroupClicked()}" style="${stylable('group')}">
+        <div class="wrap ${activePlayer ? 'active' : ''}">
+          <ul class="speakers" style="${stylable('groupSpeakers')}">
             ${stateObj.attributes.sonos_group.map(
-              (speaker: string) => html` <li>${getEntityName(this.hass, this.config, speaker)}</li>`,
+              (speaker: string) =>
+                html` <li class="speaker" style="${stylable('groupSpeaker')}">
+                  ${getEntityName(this.main.hass, config, speaker)}
+                </li>`,
             )}
           </ul>
-          <div class="play">
+          <div class="info" style="${stylable('groupInfo')}">
             ${currentTrack
               ? html` <div class="content">
                     <span class="currentTrack">${currentTrack}</span>
@@ -42,6 +45,11 @@ class Group extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private handleGroupClicked() {
+    this.main.setActivePlayer(this.group);
+    this.main.showVolumes = false;
   }
 
   static get styles() {
@@ -89,23 +97,23 @@ class Group extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .group .play {
+      .group .info {
         display: flex;
         flex-direction: row;
         clear: both;
       }
-      .group .play .content {
+      .group .info .content {
         flex: 1;
       }
-      .group .play .content .currentTrack {
+      .group .info .content .currentTrack {
         display: block;
         font-size: 0.8rem;
       }
-      .group .play .player {
+      .group .info .player {
         width: 0.55rem;
         position: relative;
       }
-      .group .play .player .bar {
+      .group .info .player .bar {
         background: var(--sonos-int-color);
         bottom: 0.05rem;
         height: 0.15rem;
@@ -114,18 +122,18 @@ class Group extends LitElement {
         animation: sound 0ms -800ms linear infinite alternate;
         display: none;
       }
-      .group .play .player.active .bar {
+      .group .info .player.active .bar {
         display: block;
       }
-      .group .play .player .bar:nth-child(1) {
+      .group .info .player .bar:nth-child(1) {
         left: 0.05rem;
         animation-duration: 474ms;
       }
-      .group .play .player .bar:nth-child(2) {
+      .group .info .player .bar:nth-child(2) {
         left: 0.25rem;
         animation-duration: 433ms;
       }
-      .group .play .player .bar:nth-child(3) {
+      .group .info .player .bar:nth-child(3) {
         left: 0.45rem;
         animation-duration: 407ms;
       }

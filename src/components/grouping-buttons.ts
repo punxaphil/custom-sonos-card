@@ -1,44 +1,44 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, PlayerGroups } from '../types';
-import MediaControlService from '../services/media-control-service';
+import { PlayerGroups } from '../types';
 import { getEntityName } from '../utils';
+import { CustomSonosCard } from '../main';
 
 class GroupingButtons extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() activePlayer!: string;
-  @property() mediaControlService!: MediaControlService;
+  @property() main!: CustomSonosCard;
   @property() groups!: PlayerGroups;
   @property() mediaPlayers!: string[];
 
   render() {
+    const activePlayer = this.main.activePlayer;
+    const mediaControlService = this.main.mediaControlService;
     const joinedPlayers = this.mediaPlayers.filter(
-      (player) => player !== this.activePlayer && this.groups[this.activePlayer].members[player],
+      (player) => player !== activePlayer && this.groups[activePlayer].members[player],
     );
     const notJoinedPlayers = this.mediaPlayers.filter(
-      (player) => player !== this.activePlayer && !this.groups[this.activePlayer].members[player],
+      (player) => player !== activePlayer && !this.groups[activePlayer].members[player],
     );
+    const stylable = this.main.stylable;
 
     return html`
-      <div class="members">
-        ${this.activePlayer &&
+      <div class="members" style="${stylable('members')}">
+        ${activePlayer &&
         this.mediaPlayers.map((entity) => {
-          if (
-            this.groups[this.activePlayer].members[entity] ||
-            (entity === this.activePlayer && joinedPlayers.length > 0)
-          ) {
+          if (this.groups[activePlayer].members[entity] || (entity === activePlayer && joinedPlayers.length > 0)) {
             return html`
-              <div class="member" @click="${() => this.mediaControlService.unjoin(entity)}">
-                <span>${getEntityName(this.hass, this.config, entity)} </span>
+              <div class="member" @click="${() => mediaControlService.unjoin(entity)}" style="${stylable('member')}">
+                <span>${getEntityName(this.main.hass, this.main.config, entity)} </span>
                 <ha-icon .icon=${'mdi:minus'}></ha-icon>
               </div>
             `;
-          } else if (entity !== this.activePlayer) {
+          } else if (entity !== activePlayer) {
             return html`
-              <div class="member" @click="${() => this.mediaControlService.join(this.activePlayer, entity)}">
-                <span>${getEntityName(this.hass, this.config, entity)} </span>
+              <div
+                class="member"
+                @click="${() => mediaControlService.join(activePlayer, entity)}"
+                style="${stylable('member')}"
+              >
+                <span>${getEntityName(this.main.hass, this.main.config, entity)} </span>
                 <ha-icon .icon=${'mdi:plus'}></ha-icon>
               </div>
             `;
@@ -50,7 +50,8 @@ class GroupingButtons extends LitElement {
           ? html`
               <div
                 class="member"
-                @click="${() => this.mediaControlService.join(this.activePlayer, notJoinedPlayers.join(','))}"
+                @click="${() => mediaControlService.join(activePlayer, notJoinedPlayers.join(','))}"
+                style="${stylable('member')}"
               >
                 <ha-icon .icon=${'mdi:checkbox-multiple-marked-outline'}></ha-icon>
               </div>
@@ -58,7 +59,11 @@ class GroupingButtons extends LitElement {
           : ''}
         ${joinedPlayers.length
           ? html`
-              <div class="member" @click="${() => this.mediaControlService.unjoin(joinedPlayers.join(','))}">
+              <div
+                class="member"
+                @click="${() => mediaControlService.unjoin(joinedPlayers.join(','))}"
+                style="${stylable('member')}"
+              >
                 <ha-icon .icon=${'mdi:minus-box-multiple-outline'}></ha-icon>
               </div>
             `

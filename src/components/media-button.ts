@@ -1,18 +1,24 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { MediaPlayerItem } from '../types';
+import { CustomSonosCard } from '../main';
 
 class MediaButton extends LitElement {
   @property() mediaItem!: MediaPlayerItem;
+  @property() main!: CustomSonosCard;
 
   render() {
+    const stylable = this.main.stylable;
     return html`
-      <div class="media-button-wrapper">
+      <div class="media-button-wrapper" style="${stylable('mediaButtonWrapper')}">
         <div
           class="media-button ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'image' : ''}"
           style="${this.getThumbnail()};"
         >
-          <div class="title ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}">
+          <div
+            class="title ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}"
+            style="${stylable('mediaButtonTitle')}"
+          >
             ${this.mediaItem.title}
           </div>
           ${this.mediaItem.can_expand && !this.mediaItem.thumbnail

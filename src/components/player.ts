@@ -8,46 +8,57 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { CustomSonosCard } from '../main';
 import MediaControlService from '../services/media-control-service';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
+import { HassEntity } from 'home-assistant-js-websocket';
+import { directive, DirectiveResult } from 'lit-html/directive.js';
 
 class Player extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() entityId!: string;
-  @property() mediaControlService!: MediaControlService;
-  @property() members!: Members;
   @property() main!: CustomSonosCard;
+  @property() members!: Members;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private entityId!: string;
+  private mediaControlService!: MediaControlService;
   @state() private timerToggleShowAllVolumes!: number;
+  private stylable?: (name: string) => DirectiveResult;
 
   render() {
-    const activeStateObj = this.hass.states[this.entityId];
-    const isGroup = activeStateObj.attributes.sonos_group.length > 1;
+    this.hass = this.main.hass;
+    this.entityId = this.main.activePlayer;
+    this.config = this.main.config;
+    this.mediaControlService = this.main.mediaControlService;
+    this.stylable = this.main.stylable('player');
+    const entityState = this.hass.states[this.entityId];
+    const isGroup = entityState.attributes.sonos_group.length > 1;
     let allVolumes = [];
     if (isGroup) {
-      allVolumes = activeStateObj.attributes.sonos_group.map((member: string) =>
+      allVolumes = entityState.attributes.sonos_group.map((member: string) =>
         this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup, true),
       );
     }
     return html`
       <div
         class="container"
-        style="${this.backgroundImageStyle(
-          activeStateObj.attributes.entity_picture,
-          activeStateObj.attributes.media_title,
-        )}"
+        style="${{ ...this.backgroundImageStyle(entityState), ...this.stylable?.('container') }}"
       >
-        <div class="body">
-          ${activeStateObj.attributes.media_title
-            ? html`
-                <div class="info">
-                  <div class="album">${activeStateObj.attributes.media_album_name}</div>
-                  <div class="song">${activeStateObj.attributes.media_title}</div>
-                  <div class="artist">${activeStateObj.attributes.media_artist}</div>
-                </div>
-              `
-            : html` <div class="noMediaText">
-                ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
-              </div>`}
-          <div class="footer">
+        <div class="body" style="${this.stylable?.('body')}">
+          ${
+            entityState.attributes.media_title
+              ? html`
+                  <div class="info" style="${this.stylable?.('info')}">
+                    <div class="album" style="${this.stylable?.('album')}">
+                      ${entityState.attributes.media_album_name}
+                    </div>
+                    <div class="song" style="${this.stylable?.('song')}">${entityState.attributes.media_title}</div>
+                    <div class="artist" style="${this.stylable?.('artist')}">
+                      ${entityState.attributes.media_artist}
+                    </div>
+                  </div>
+                `
+              : html` <div class="noMediaText" style="${this.stylable?.('noMediaText')}">
+                  ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
+                </div>`
+          }
+          <div class="footer" style="${this.stylable?.('footer')}">
             ${this.getVolumeTemplate(
               this.entityId,
               this.main.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
@@ -55,8 +66,8 @@ class Player extends LitElement {
               false,
               this.members,
             )}
-            <div style="display: ${this.main.showVolumes ? 'block' : 'none'}">${allVolumes}</div>
-            <div class="footer-icons">
+            <div ?hidden="${!this.main.showVolumes}" style="${this.stylable?.('allVolumes')}">${allVolumes}</div>
+            <div class="footer-icons" style="${this.stylable?.('footer-icons')}">
               <ha-icon
                 @click="${() => this.mediaControlService.volumeDown(this.entityId, this.members)}"
                 .icon=${'mdi:volume-minus'}
@@ -65,35 +76,39 @@ class Player extends LitElement {
                 @click="${() => this.mediaControlService.prev(this.entityId)}"
                 .icon=${'mdi:skip-backward'}
               ></ha-icon>
-              ${activeStateObj.state !== 'playing'
-                ? html` <ha-icon
-                    @click="${() => this.mediaControlService.play(this.entityId)}"
-                    .icon=${'mdi:play'}
-                  ></ha-icon>`
-                : html`
-                    <ha-icon
-                      @click="${() => this.mediaControlService.pause(this.entityId)}"
-                      .icon=${'mdi:stop'}
-                    ></ha-icon>
-                  `}
+              ${
+                entityState.state !== 'playing'
+                  ? html` <ha-icon
+                      @click="${() => this.mediaControlService.play(this.entityId)}"
+                      .icon=${'mdi:play'}
+                    ></ha-icon>`
+                  : html`
+                      <ha-icon
+                        @click="${() => this.mediaControlService.pause(this.entityId)}"
+                        .icon=${'mdi:stop'}
+                      ></ha-icon>
+                    `
+              }
               <ha-icon
                 @click="${() => this.mediaControlService.next(this.entityId)}"
                 .icon=${'mdi:skip-forward'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.mediaControlService.shuffle(this.entityId, !activeStateObj.attributes.shuffle)}"
-                .icon=${activeStateObj.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}
+                @click="${() => this.mediaControlService.shuffle(this.entityId, !entityState.attributes.shuffle)}"
+                .icon=${entityState.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.mediaControlService.repeat(this.entityId, activeStateObj.attributes.repeat)}"
-                .icon=${activeStateObj.attributes.repeat === 'all'
-                  ? 'mdi:repeat'
-                  : activeStateObj.attributes.repeat === 'one'
-                  ? 'mdi:repeat-once'
-                  : 'mdi:repeat-off'}
+                @click="${() => this.mediaControlService.repeat(this.entityId, entityState.attributes.repeat)}"
+                .icon=${
+                  entityState.attributes.repeat === 'all'
+                    ? 'mdi:repeat'
+                    : entityState.attributes.repeat === 'one'
+                    ? 'mdi:repeat-once'
+                    : 'mdi:repeat-off'
+                }
               ></ha-icon>
               <ha-icon
-                style="display: ${isGroup ? 'block' : 'none'}"
+                ?hidden=${!isGroup}"
                 @click="${() => this.toggleShowAllVolumes()}"
                 .icon=${this.main.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}
               ></ha-icon>
@@ -171,7 +186,9 @@ class Player extends LitElement {
     }
   }
 
-  private backgroundImageStyle(entityImage?: string, mediaTitle?: string) {
+  private backgroundImageStyle(entityState: HassEntity) {
+    const entityImage = entityState.attributes.entity_picture;
+    const mediaTitle = entityState.attributes.media_title;
     let style: StyleInfo = {
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',

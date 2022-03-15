@@ -1,10 +1,10 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import './components/player';
-import './components/group';
-import './components/grouping-buttons';
-import './components/media-button';
+import './components/groups';
+import './components/grouping';
 import './components/media-browser';
+import './components/stylable';
 import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups, Size } from './types';
@@ -26,98 +26,59 @@ window.customCards.push({
 export class CustomSonosCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  @state() private activePlayer!: string;
+  @state() activePlayer!: string;
   @state() showVolumes!: boolean;
-  private mediaBrowseService!: MediaBrowseService;
-  private mediaControlService!: MediaControlService;
-  private hassService!: HassService;
+  mediaBrowseService!: MediaBrowseService;
+  mediaControlService!: MediaControlService;
 
   render() {
-    this.hassService = new HassService(this.hass);
-    this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
-    this.mediaControlService = new MediaControlService(this.hass, this.hassService);
+    if (!this.mediaBrowseService) {
+      const hassService = new HassService(this.hass);
+      this.mediaBrowseService = new MediaBrowseService(this.hass, hassService);
+      this.mediaControlService = new MediaControlService(this.hass, hassService);
+    }
     const mediaPlayers = getMediaPlayers(this.config, this.hass);
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);
     return html`
-      ${this.config.name
-        ? html`
-            <div class="header">
-              <div class="name">${this.config.name}</div>
-            </div>
-          `
-        : ''}
+      <div class="title" ?hidden="${!this.config.name}" style="${this.stylable('title')}">${this.config.name}</div>
       <div class="content">
         <div style=${this.groupsStyle()} class="groups">
-          <div class="${this.config.backgroundBehindButtonSections ? 'button-section-background' : ''}">
-            <div class="title">${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}</div>
-            ${Object.keys(playerGroups).map(
-              (group) => html`
-                <sonos-group
-                  .hass=${this.hass}
-                  .group=${group}
-                  .config=${this.config}
-                  .activePlayer=${this.activePlayer === group}
-                  @click="${() => {
-                    this.setActivePlayer(group);
-                    this.showVolumes = false;
-                  }}"
-                >
-                </sonos-group>
-              `,
-            )}
-          </div>
+          <sonos-groups .main="${this}" .groups="${playerGroups}" />
         </div>
 
         <div style=${this.playersStyle()} class="players">
-          <sonos-player
-            .hass=${this.hass}
-            .config=${this.config}
-            .entityId=${this.activePlayer}
-            .main=${this}
-            .members=${playerGroups[this.activePlayer].members}
-            .mediaControlService=${this.mediaControlService}
-          >
-          </sonos-player>
-          <div class="${this.config.backgroundBehindButtonSections ? 'button-section-background' : ''}">
-            <div class="title">${this.config.groupingTitle ? this.config.groupingTitle : 'Grouping'}</div>
-            <sonos-grouping-buttons
-              .hass=${this.hass}
-              .config=${this.config}
-              .groups=${playerGroups}
-              .mediaPlayers=${mediaPlayers}
-              .activePlayer=${this.activePlayer}
-              .mediaControlService=${this.mediaControlService}
-            >
-            </sonos-grouping-buttons>
-          </div>
+          <sonos-player .main=${this} .members=${playerGroups[this.activePlayer].members}></sonos-player>
+          <sonos-grouping .main=${this} .groups=${playerGroups} .mediaPlayers=${mediaPlayers}></sonos-grouping>
         </div>
 
         <div style=${this.sidebarStyle()} class="sidebar">
-          <sonos-media-browser
-            .hass=${this.hass}
-            .config=${this.config}
-            .mediaPlayers=${mediaPlayers}
-            .activePlayer=${this.activePlayer}
-            .mediaControlService=${this.mediaControlService}
-            .mediaBrowseService=${this.mediaBrowseService}
-          >
-          </sonos-media-browser>
+          <sonos-media-browser .main=${this} .mediaPlayers=${mediaPlayers}></sonos-media-browser>
         </div>
       </div>
     `;
   }
 
+  stylable(prefix: string) {
+    return (name: string) => {
+      const capitalizeFirstLetter = (txt: string) => txt.charAt(0).toUpperCase() + txt.slice(1);
+      const style = this.config.styles?.[prefix + capitalizeFirstLetter(name)];
+      return style ? styleMap(style) : '';
+    };
+  }
   private groupsStyle() {
-    return this.columnStyle(this.config.layout?.groups, '1', '25%');
+    return { ...this.columnStyle(this.config.layout?.groups, '1', '25%'), ...this.stylable('groups') };
   }
 
   private playersStyle() {
-    return this.columnStyle(this.config.layout?.players, '0', '45%');
+    return { ...this.columnStyle(this.config.layout?.players, '0', '40%'), ...this.stylable('players') };
   }
 
   private sidebarStyle() {
-    return this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%');
+    return {
+      ...this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%'),
+      ...this.stylable('mediaBrowser'),
+    };
   }
 
   private columnStyle(size: Size | undefined, order: string, defaultWidth: string) {
@@ -170,6 +131,12 @@ export class CustomSonosCard extends LitElement {
     }
   }
 
+  setActivePlayer(player: string) {
+    this.activePlayer = player;
+    const newUrl = window.location.href.replaceAll(/#.*/g, '');
+    window.location.href = `${newUrl}#${player}`;
+  }
+
   setConfig(config: CardConfig) {
     this.config = JSON.parse(JSON.stringify(config));
     // Handle deprecated configs
@@ -212,21 +179,8 @@ export class CustomSonosCard extends LitElement {
             --sonos-media-buttons-multiline,
             var(--sonos-favorites-multiline, nowrap)
           );
-          --sonos-int-button-section-background-color: var(--sonos-button-section-background-color, #626b75cc);
           --mdc-icon-size: 1rem;
           color: var(--sonos-int-color);
-        }
-        .header {
-          font-size: 1.2rem;
-          letter-spacing: -0.012em;
-          line-height: 1.6rem;
-          padding: 0.2rem 0 0.6rem;
-          display: block;
-        }
-        .header .name {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
         .content {
           display: flex;
@@ -238,21 +192,8 @@ export class CustomSonosCard extends LitElement {
           padding: 0 1rem;
           box-sizing: border-box;
         }
-        .title {
-          margin: 0.5rem 0;
-          text-align: center;
-          font-weight: bold;
-          font-size: larger;
-          color: var(--sonos-int-title-color);
-        }
       `,
     ];
-  }
-
-  setActivePlayer(player: string) {
-    this.activePlayer = player;
-    const newUrl = window.location.href.replaceAll(/#.*/g, '');
-    window.location.href = `${newUrl}#${player}`;
   }
 }
 
