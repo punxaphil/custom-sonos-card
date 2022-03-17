@@ -2,7 +2,7 @@ import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import MediaBrowseService from '../services/media-browse-service';
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, MediaPlayerItem } from '../types';
+import { CardConfig, MediaPlayerItem, Members } from '../types';
 import { getWidth } from '../utils';
 import MediaControlService from '../services/media-control-service';
 import { until } from 'lit-html/directives/until.js';
@@ -15,6 +15,7 @@ class MediaBrowser extends LitElement {
   @property() mediaBrowseService!: MediaBrowseService;
   @property() mediaControlService!: MediaControlService;
   @property() mediaPlayers!: string[];
+  @property() members!: Members;
   @state() private browse!: boolean;
   @state() private currentDir?: MediaPlayerItem;
 
@@ -88,8 +89,33 @@ class MediaBrowser extends LitElement {
     if (mediaItem.media_content_type || mediaItem.media_content_id) {
       this.mediaControlService.playMedia(this.activePlayer, mediaItem);
     } else {
-      this.mediaControlService.setSource(this.activePlayer, mediaItem.title);
+      const master = this.getMasterIfCustomSource(mediaItem) || this.activePlayer;
+      if (master !== this.activePlayer) {
+        this.switchMasterAndPlay(master, mediaItem);
+      } else {
+        this.mediaControlService.setSource(master, mediaItem.title);
+      }
     }
+  }
+
+  private switchMasterAndPlay(master: string, mediaItem: MediaPlayerItem) {
+    this.mediaControlService.join(master, ...Object.keys(this.members), this.activePlayer);
+    setTimeout(() => {
+      this.mediaControlService.setSource(master, mediaItem.title);
+    }, 3000);
+  }
+
+  private getMasterIfCustomSource(mediaItem: MediaPlayerItem) {
+    let result: string | undefined;
+    if (mediaItem.customForEntity && this.config.customSources) {
+      result = Object.keys(this.config.customSources).find((entity: string) => {
+        return (
+          mediaItem.customForEntity === entity &&
+          this.config.customSources?.[entity].find((customItem) => customItem.title === mediaItem.title)
+        );
+      });
+    }
+    return result;
   }
 
   private async getAllFavorites() {
@@ -99,15 +125,20 @@ class MediaBrowser extends LitElement {
     } else {
       allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
     }
+    const customMemberFavorites = [...Object.keys(this.members), this.activePlayer]?.flatMap(
+      (member) => this.config.customSources?.[member]?.map(MediaBrowser.createSource(member)) || [],
+    );
     return [
-      ...(this.config.customSources?.[this.activePlayer]?.map(MediaBrowser.createSource) || []),
-      ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
+      ...customMemberFavorites,
+      ...(this.config.customSources?.all?.map(MediaBrowser.createSource('all')) || []),
       ...allFavorites,
     ];
   }
 
-  private static createSource(source: MediaPlayerItem) {
-    return { ...source, can_play: true };
+  private static createSource(entity: string) {
+    return (source: MediaPlayerItem) => {
+      return { ...source, can_play: true, customForEntity: entity };
+    };
   }
 
   private static shuffleArray(array: MediaPlayerItem[]) {

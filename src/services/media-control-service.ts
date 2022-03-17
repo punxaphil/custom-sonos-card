@@ -11,16 +11,16 @@ export default class MediaControlService {
     this.hass = hass;
   }
 
-  join(master: string, entities: string) {
+  join(master: string, ...entities: string[]) {
     this.hassService.callSonosService('join', {
       master,
-      entity_id: entities,
+      entity_id: entities.join(','),
     });
   }
 
-  unjoin(entities: string) {
+  unjoin(...entities: string[]) {
     this.hassService.callSonosService('unjoin', {
-      entity_id: entities,
+      entity_id: entities.join(','),
     });
   }
 

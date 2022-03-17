@@ -30,14 +30,14 @@ class GroupingButtons extends LitElement {
             (entity === this.activePlayer && joinedPlayers.length > 0)
           ) {
             return html`
-              <div class="member" @click="${() => this.mediaControlService.unjoin(entity)}">
+              <div class="member" @click="${this.unjoin(entity)}">
                 <span>${getEntityName(this.hass, this.config, entity)} </span>
                 <ha-icon .icon=${'mdi:minus'}></ha-icon>
               </div>
             `;
           } else if (entity !== this.activePlayer) {
             return html`
-              <div class="member" @click="${() => this.mediaControlService.join(this.activePlayer, entity)}">
+              <div class="member" @click="${this.join(entity)}">
                 <span>${getEntityName(this.hass, this.config, entity)} </span>
                 <ha-icon .icon=${'mdi:plus'}></ha-icon>
               </div>
@@ -48,23 +48,28 @@ class GroupingButtons extends LitElement {
         })}
         ${notJoinedPlayers.length
           ? html`
-              <div
-                class="member"
-                @click="${() => this.mediaControlService.join(this.activePlayer, notJoinedPlayers.join(','))}"
-              >
+              <div class="member" @click="${this.join(...notJoinedPlayers)}">
                 <ha-icon .icon=${'mdi:checkbox-multiple-marked-outline'}></ha-icon>
               </div>
             `
           : ''}
         ${joinedPlayers.length
           ? html`
-              <div class="member" @click="${() => this.mediaControlService.unjoin(joinedPlayers.join(','))}">
+              <div class="member" @click="${this.unjoin(...joinedPlayers)}">
                 <ha-icon .icon=${'mdi:minus-box-multiple-outline'}></ha-icon>
               </div>
             `
           : ''}
       </div>
     `;
+  }
+
+  private join(...entities: string[]) {
+    return () => this.mediaControlService.join(this.activePlayer, ...entities);
+  }
+
+  private unjoin(...entities: string[]) {
+    return () => this.mediaControlService.unjoin(...entities);
   }
 
   static get styles() {

@@ -99,6 +99,7 @@ export class CustomSonosCard extends LitElement {
               .hass=${this.hass}
               .config=${this.config}
               .mediaPlayers=${mediaPlayers}
+              .members=${playerGroups[this.activePlayer].members}
               .activePlayer=${this.activePlayer}
               .mediaControlService=${this.mediaControlService}
               .mediaBrowseService=${this.mediaBrowseService}
