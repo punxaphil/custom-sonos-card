@@ -207,6 +207,7 @@ export class CustomSonosCard extends LitElement {
           --sonos-int-player-section-background: var(--sonos-player-section-background, #ffffffe6);
           --sonos-int-color: var(--sonos-color, var(--secondary-text-color));
           --sonos-int-artist-album-text-color: var(--sonos-artist-album-text-color, var(--secondary-text-color));
+          --sonos-int-song-text-color: var(--sonos-song-text-color, var(--accent-color));
           --sonos-int-accent-color: var(--sonos-accent-color, var(--accent-color));
           --sonos-int-title-color: var(--sonos-title-color, var(--secondary-text-color));
           --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
