@@ -159,6 +159,7 @@ Read more about using theme variables here: https://www.home-assistant.io/integr
 | `--sonos-player-section-background`       | `#ffffffe6`                                                       |
 | `--sonos-color`                           | `var(--secondary-text-color)`                                     |
 | `--sonos-artist-album-text-color`         | `var(--secondary-text-color)`                                       |
+| `--sonos-song-text-color`                 | `var(--sonos-accent-color)`                                       |
 | `--sonos-accent-color`                    | `var(--accent-color)`                                             |
 | `--sonos-title-color`                     | `var(--secondary-text-color)`                                    |
 | `--sonos-border-radius`                   | `0.25rem`                                                         |
