@@ -64,6 +64,7 @@ class MediaBrowser extends LitElement {
                   <sonos-media-button
                     style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
                     .mediaItem="${mediaItem}"
+                    .config="${this.config}"
                     @click="${() => this.onMediaItemClick(mediaItem)}"
                   />
                 `,

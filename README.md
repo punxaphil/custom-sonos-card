@@ -86,6 +86,9 @@ customSources: # Main usecase is probably to set tv media player to play TV soun
   media_player.tv: # set this to 'all' to show the custom source for all players
     - title: TV
       thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
+customThumbnailIfMissing: # for the media browser section
+  Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
+  Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
 backgroundBehindButtonSections: true # default is false, which means no background behind the different button sections
 hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
 entities: # Deprecated, entities are now automatically discovered if you don't supply this setting

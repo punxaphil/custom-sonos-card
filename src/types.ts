@@ -24,6 +24,7 @@ export interface CardConfig extends LovelaceCardConfig {
   selectedPlayer?: string;
   customSources?: CustomSources;
   hideGroupCurrentTrack: boolean;
+  customThumbnailIfMissing?: CustomThumbnail;
 }
 
 export interface Layout {
@@ -65,6 +66,10 @@ export interface PlayerGroups {
 
 export interface Members {
   [name: string]: string;
+}
+
+export interface CustomThumbnail {
+  [title: string]: string;
 }
 
 export interface PlayerGroup {
