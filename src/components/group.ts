@@ -11,9 +11,10 @@ class Group extends LitElement {
     const config = this.main.config;
     const stateObj = this.main.hass.states[this.group];
     const activePlayer = this.main.activePlayer === this.group;
-    const currentTrack = `${stateObj.attributes.media_artist || ''} - ${
-      stateObj.attributes.media_title || ''
-    }`.replaceAll(/^ - /g, '');
+    const currentTrack = `${stateObj.attributes.media_artist || ''} - ${stateObj.attributes.media_title || ''}`.replace(
+      /^ - /g,
+      '',
+    );
     const stylable = this.main.stylable;
     return html`
       <div class="group" @click="${() => this.handleGroupClicked()}" style="${stylable('group')}">
@@ -29,7 +30,9 @@ class Group extends LitElement {
           <div class="info" style="${stylable('groupInfo')}">
             ${currentTrack
               ? html` <div class="content">
-                    <span class="currentTrack">${currentTrack}</span>
+                    <span class="currentTrack" style="display: ${this.config.hideGroupCurrentTrack ? 'none' : 'inline'}"
+                      >${currentTrack}</span
+                    >
                   </div>
                   ${stateObj.state === 'playing'
                     ? html`
@@ -62,12 +65,12 @@ class Group extends LitElement {
         border-radius: var(--sonos-int-border-radius);
         margin: 0.5rem 0;
         padding: 0.8rem;
-        border: var(--sonos-int-border-width) solid var(--sonos-int-background-color);
+        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
         background-color: var(--sonos-int-background-color);
-        box-shadow: var(--sonos-int-box-shadow);
       }
       .group .wrap.active {
         border: var(--sonos-int-border-width) solid var(--sonos-int-accent-color);
+        color: var(--sonos-int-accent-color);
       }
       .group .wrap.active .speakers {
         font-weight: bold;
@@ -92,7 +95,6 @@ class Group extends LitElement {
         margin-right: 0.3rem;
         float: left;
         font-size: 1rem;
-        color: var(--sonos-int-color);
         max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;

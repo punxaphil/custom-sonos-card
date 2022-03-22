@@ -41,6 +41,7 @@ export class CustomSonosCard extends LitElement {
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);
     return html`
+      <ha-card>
       <div class="title" ?hidden="${!this.config.name}" style="${this.stylable('title')}">${this.config.name}</div>
       <div class="content">
         <div style=${this.groupsStyle()} class="groups">
@@ -50,12 +51,12 @@ export class CustomSonosCard extends LitElement {
         <div style=${this.playersStyle()} class="players">
           <sonos-player .main=${this} .members=${playerGroups[this.activePlayer].members}></sonos-player>
           <sonos-grouping .main=${this} .groups=${playerGroups} .mediaPlayers=${mediaPlayers}></sonos-grouping>
-        </div>
+          </div>
 
         <div style=${this.sidebarStyle()} class="sidebar">
           <sonos-media-browser .main=${this} .mediaPlayers=${mediaPlayers}></sonos-media-browser>
         </div>
-      </div>
+      </div></ha-card>
     `;
   }
 
@@ -102,7 +103,7 @@ export class CustomSonosCard extends LitElement {
   determineActivePlayer(playerGroups: PlayerGroups) {
     const selected_player =
       this.config.selectedPlayer ||
-      (window.location.href.indexOf('#') > 0 ? window.location.href.replaceAll(/.*#/g, '') : '');
+      (window.location.href.indexOf('#') > 0 ? window.location.href.replace(/.*#/g, '') : '');
     if (this.activePlayer) {
       this.setActivePlayer(this.activePlayer);
     }
@@ -161,26 +162,35 @@ export class CustomSonosCard extends LitElement {
       sharedStyle,
       css`
         :host {
-          --sonos-int-box-shadow: var(
-            --ha-card-box-shadow,
-            0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-            0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-            0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+          --sonos-int-background-color: var(
+            --sonos-background-color,
+            var(--ha-card-background, var(--card-background-color, white))
           );
-          --sonos-int-background-color: var(--sonos-background-color, var(--card-background-color));
+          --sonos-int-ha-card-background-color: var(
+            --sonos-ha-card-background-color,
+            var(--ha-card-background, var(--card-background-color, white))
+          );
           --sonos-int-player-section-background: var(--sonos-player-section-background, #ffffffe6);
           --sonos-int-color: var(--sonos-color, var(--secondary-text-color));
-          --sonos-int-artist-album-text-color: var(--sonos-artist-album-text-color, var(--primary-text-color));
+          --sonos-int-artist-album-text-color: var(--sonos-artist-album-text-color, var(--secondary-text-color));
+          --sonos-int-song-text-color: var(--sonos-song-text-color, var(--sonos-accent-color, var(--accent-color)));
           --sonos-int-accent-color: var(--sonos-accent-color, var(--accent-color));
-          --sonos-int-title-color: var(--sonos-title-color, var(--card-background-color));
+          --sonos-int-title-color: var(--sonos-title-color, var(--secondary-text-color));
           --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
           --sonos-int-border-width: var(--sonos-border-width, 0.125rem);
           --sonos-int-media-button-white-space: var(
             --sonos-media-buttons-multiline,
             var(--sonos-favorites-multiline, nowrap)
           );
+          --sonos-int-button-section-background-color: var(
+            --sonos-button-section-background-color,
+            var(--card-background-color)
+          );
           --mdc-icon-size: 1rem;
+        }
+        ha-card {
           color: var(--sonos-int-color);
+          background: var(--sonos-int-ha-card-background-color);
         }
         .content {
           display: flex;

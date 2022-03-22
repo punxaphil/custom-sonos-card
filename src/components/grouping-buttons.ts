@@ -89,8 +89,8 @@ class GroupingButtons extends LitElement {
         padding: 0.45rem;
         display: flex;
         justify-content: center;
+        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
         background-color: var(--sonos-int-background-color);
-        box-shadow: var(--sonos-int-box-shadow);
         max-width: calc(100% - 1.4rem);
       }
       .member span {
@@ -103,8 +103,10 @@ class GroupingButtons extends LitElement {
         align-self: center;
         font-size: 0.5rem;
       }
-      .member:hover ha-icon {
+      .member:hover,
+      .member:focus {
         color: var(--sonos-int-accent-color);
+        border: var(--sonos-int-border-width) solid var(--sonos-int-accent-color);
       }
     `;
   }

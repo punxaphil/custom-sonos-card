@@ -86,7 +86,8 @@ customSources: # Main usecase is probably to set tv media player to play TV soun
   media_player.tv: # set this to 'all' to show the custom source for all players
     - title: TV
       thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
-backgroundBehindButtonSections: true # default is false, which means no background behind the different button sections 
+backgroundBehindButtonSections: true # default is false, which means no background behind the different button sections
+hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
 entities: # Deprecated, entities are now automatically discovered if you don't supply this setting
   - media_player.sonos_kitchen
   - media_player.sonos_hallway
@@ -145,17 +146,25 @@ The following variables are available and can be set in your theme to change the
 
 Read more about using theme variables here: https://www.home-assistant.io/integrations/frontend/#defining-themes
 
-| Name                                      | Default                        |
-|-------------------------------------------|--------------------------------|
-| `--sonos-background-color`                | `var(--card-background-color)` |
-| `--sonos-player-section-background`       | `#ffffffe6`                    |
-| `--sonos-color`                           | `var(--secondary-text-color)`  |
-| `--sonos-artist-album-text-color`         | `var(--primary-text-color)`    |
-| `--sonos-accent-color`                    | `var(--accent-color)`          |
-| `--sonos-title-color`                     | `var(--card-background-color)` |
-| `--sonos-border-radius`                   | `0.25rem`                      |
-| `--sonos-border-width`                    | `0.125rem`                     |
-| `--sonos-media-buttons-multiline`         | `nowrap`                       |
+| Name                                      | Default                                                           |
+|-------------------------------------------|-------------------------------------------------------------------|
+| `--sonos-background-color`                | `var(--ha-card-background, var(--card-background-color, white))`  |
+| `--sonos-ha-card-background-color`        | `var(--ha-card-background, var(--card-background-color, white))`  |
+| `--sonos-player-section-background`       | `#ffffffe6`                                                       |
+| `--sonos-color`                           | `var(--secondary-text-color)`                                     |
+| `--sonos-artist-album-text-color`         | `var(--secondary-text-color)`                                       |
+| `--sonos-song-text-color`                 | `var(--sonos-accent-color)`                                       |
+| `--sonos-accent-color`                    | `var(--accent-color)`                                             |
+| `--sonos-title-color`                     | `var(--secondary-text-color)`                                    |
+| `--sonos-border-radius`                   | `0.25rem`                                                         |
+| `--sonos-border-width`                    | `0.125rem`                                                        |
+| `--sonos-media-buttons-multiline`         | `nowrap`                                                          |
+| `--sonos-button-section-background-color` | `var(--card-background-color)`                                                       |
+
+### Default theme
+Without changing any theme variables:
+![img/default_theme.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/default_theme.png)
+
 
 ### Example with rounded corners
 Here is a themed version with more rounded corners,different accent color and no transparency (thanks @giuliandenicola1).
@@ -164,6 +173,8 @@ Here is a themed version with more rounded corners,different accent color and no
 ### Example with dark theme
 ```yaml
 sonos-background-color: var(--secondary-background-color)
+sonos-ha-card-background-color: none
+ha-card-box-shadow: none
 sonos-artist-album-text-color: rgb(198, 203, 210)
 sonos-title-color: rgb(198, 203, 210)
 sonos-color: rgb(198, 203, 210)

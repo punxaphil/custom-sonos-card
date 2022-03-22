@@ -23,6 +23,7 @@ export interface CardConfig extends LovelaceCardConfig {
   mediaArtworkOverrides?: MediaArtworkOverride[];
   selectedPlayer?: string;
   customSources?: CustomSources;
+  hideGroupCurrentTrack: boolean;
 }
 
 export interface Layout {
