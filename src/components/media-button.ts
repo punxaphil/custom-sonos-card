@@ -7,16 +7,14 @@ class MediaButton extends LitElement {
   @property() config!: CardConfig;
 
   render() {
+    const thumbnail = this.getThumbnail();
     return html`
       <div class="media-button-wrapper">
-        <div
-          class="media-button ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'image' : ''}"
-          style="${this.getThumbnail()}"
-        >
-          <div class="title ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}">
+        <div class="media-button ${thumbnail || this.mediaItem.can_expand ? 'image' : ''}" style="${thumbnail}">
+          <div class="title ${thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}">
             ${this.mediaItem.title}
           </div>
-          ${this.mediaItem.can_expand && !this.mediaItem.thumbnail
+          ${this.mediaItem.can_expand && !thumbnail
             ? html` <ha-icon class="folder" .icon=${'mdi:folder-music'}></ha-icon>`
             : ''}
         </div>
