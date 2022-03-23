@@ -1,27 +1,26 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { MediaPlayerItem } from '../types';
+import { CardConfig, MediaPlayerItem } from '../types';
 import { CustomSonosCard } from '../main';
 
 class MediaButton extends LitElement {
   @property() mediaItem!: MediaPlayerItem;
+  @property() config!: CardConfig;
   @property() main!: CustomSonosCard;
 
   render() {
+    const thumbnail = this.getThumbnail();
     const stylable = this.main.stylable;
     return html`
       <div class="media-button-wrapper" style="${stylable('media-button-wrapper')}">
-        <div
-          class="media-button ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'image' : ''}"
-          style="${this.getThumbnail()};"
-        >
+        <div class="media-button ${thumbnail || this.mediaItem.can_expand ? 'image' : ''}" style="${thumbnail}">
           <div
-            class="title ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}"
+            class="title ${thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}"
             style="${stylable('media-button-title')}"
           >
             ${this.mediaItem.title}
           </div>
-          ${this.mediaItem.can_expand && !this.mediaItem.thumbnail
+          ${this.mediaItem.can_expand && !thumbnail
             ? html` <ha-icon class="folder" .icon=${'mdi:folder-music'}></ha-icon>`
             : ''}
         </div>
@@ -31,9 +30,11 @@ class MediaButton extends LitElement {
 
   private getThumbnail() {
     let thumbnail = this.mediaItem.thumbnail;
-    thumbnail = thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)
-      ? thumbnail?.replace('logo.png', 'icon.png')
-      : thumbnail;
+    if (!thumbnail) {
+      thumbnail = this.config.customThumbnailIfMissing?.[this.mediaItem.title] || '';
+    } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
+      thumbnail = thumbnail?.replace('logo.png', 'icon.png');
+    }
     return thumbnail ? `background-image: url(${thumbnail});` : '';
   }
 
@@ -56,6 +57,8 @@ class MediaButton extends LitElement {
       }
       .image {
         background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
         position: relative;
         padding-bottom: calc(100% - (var(--sonos-int-border-width) * 2));
       }
