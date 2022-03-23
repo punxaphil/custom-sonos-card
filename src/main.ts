@@ -42,47 +42,47 @@ export class CustomSonosCard extends LitElement {
     this.determineActivePlayer(playerGroups);
     return html`
       <ha-card>
-      <div class="title" ?hidden="${!this.config.name}" style="${this.stylable('title')}">${this.config.name}</div>
-      <div class="content">
-        <div style=${this.groupsStyle()} class="groups">
-          <sonos-groups .main="${this}" .groups="${playerGroups}" />
-        </div>
-
-        <div style=${this.playersStyle()} class="players">
-          <sonos-player .main=${this} .members=${playerGroups[this.activePlayer].members}></sonos-player>
-          <sonos-grouping .main=${this} .groups=${playerGroups} .mediaPlayers=${mediaPlayers}></sonos-grouping>
+        <div class="title" ?hidden="${!this.config.name}" style="${this.titleStyle()}">${this.config.name}</div>
+        <div class="content">
+          <div style=${this.groupsStyle()} class="groups">
+            <sonos-groups .main="${this}" .groups="${playerGroups}" />
           </div>
 
-        <div style=${this.sidebarStyle()} class="sidebar">
-          <sonos-media-browser .main=${this} .mediaPlayers=${mediaPlayers}></sonos-media-browser>
+          <div style=${this.playersStyle()} class="players">
+            <sonos-player .main=${this} .members=${playerGroups[this.activePlayer].members}></sonos-player>
+            <sonos-grouping .main=${this} .groups=${playerGroups} .mediaPlayers=${mediaPlayers}></sonos-grouping>
+          </div>
+
+          <div style=${this.mediaBrowserStyle()} class="media-browser">
+            <sonos-media-browser .main=${this} .mediaPlayers=${mediaPlayers}></sonos-media-browser>
+          </div>
         </div>
-      </div></ha-card>
+      </ha-card>
     `;
   }
 
-  stylable(prefix: string) {
-    return (name: string) => {
-      const capitalizeFirstLetter = (txt: string) => txt.charAt(0).toUpperCase() + txt.slice(1);
-      const style = this.config.styles?.[prefix + capitalizeFirstLetter(name)];
-      return style ? styleMap(style) : '';
-    };
+  stylable(configName: string) {
+    const style = this.config.styles?.[configName];
+    return style ? styleMap(style) : '';
   }
+
+  private titleStyle() {
+    return this.stylable('title');
+  }
+
   private groupsStyle() {
-    return { ...this.columnStyle(this.config.layout?.groups, '1', '25%'), ...this.stylable('groups') };
+    return this.columnStyle(this.config.layout?.groups, '1', '25%', 'groups');
   }
 
   private playersStyle() {
-    return { ...this.columnStyle(this.config.layout?.players, '0', '40%'), ...this.stylable('players') };
+    return this.columnStyle(this.config.layout?.players, '0', '40%', 'players');
   }
 
-  private sidebarStyle() {
-    return {
-      ...this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%'),
-      ...this.stylable('mediaBrowser'),
-    };
+  private mediaBrowserStyle() {
+    return this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%', 'media-browser');
   }
 
-  private columnStyle(size: Size | undefined, order: string, defaultWidth: string) {
+  private columnStyle(size: Size | undefined, order: string, defaultWidth: string, name: string) {
     const width = getWidth(this.config, defaultWidth, '100%', size);
     let style: StyleInfo = {
       width: width,
@@ -97,7 +97,7 @@ export class CustomSonosCard extends LitElement {
         boxSizing: 'border-box',
       };
     }
-    return styleMap(style);
+    return { ...styleMap(style), ...this.stylable(name) };
   }
 
   determineActivePlayer(playerGroups: PlayerGroups) {
@@ -134,7 +134,7 @@ export class CustomSonosCard extends LitElement {
 
   setActivePlayer(player: string) {
     this.activePlayer = player;
-    const newUrl = window.location.href.replaceAll(/#.*/g, '');
+    const newUrl = window.location.href.replace(/#.*/g, '');
     window.location.href = `${newUrl}#${player}`;
   }
 
@@ -198,7 +198,7 @@ export class CustomSonosCard extends LitElement {
           justify-content: center;
         }
         .groups,
-        .sidebar {
+        .media-browser {
           padding: 0 1rem;
           box-sizing: border-box;
         }

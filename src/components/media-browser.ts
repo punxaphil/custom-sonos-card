@@ -70,7 +70,7 @@ class MediaBrowser extends LitElement {
               : '100%';
             return html` <div
               class="media-buttons ${itemsWithoutImage ? '' : 'no-thumbs'}"
-              style="${stylable('mediaButtons')}"
+              style="${stylable('media-buttons')}"
             >
               ${items.map(
                 (mediaItem) => html`

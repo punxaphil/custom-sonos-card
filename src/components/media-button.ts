@@ -10,14 +10,14 @@ class MediaButton extends LitElement {
   render() {
     const stylable = this.main.stylable;
     return html`
-      <div class="media-button-wrapper" style="${stylable('mediaButtonWrapper')}">
+      <div class="media-button-wrapper" style="${stylable('media-button-wrapper')}">
         <div
           class="media-button ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'image' : ''}"
           style="${this.getThumbnail()};"
         >
           <div
             class="title ${this.mediaItem.thumbnail || this.mediaItem.can_expand ? 'title-with-image' : ''}"
-            style="${stylable('mediaButtonTitle')}"
+            style="${stylable('media-button-title')}"
           >
             ${this.mediaItem.title}
           </div>

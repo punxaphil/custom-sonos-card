@@ -14,7 +14,7 @@ class Grouping extends LitElement {
     const config = this.main.config;
     const stylable = this.main.stylable;
     return html`
-      <div class="button-section" style="${stylable('buttonSection')}">
+      <div class="button-section" style="${stylable('button-section')}">
         <div class="title" style="${stylable('title')}">
           ${config.groupingTitle ? config.groupingTitle : 'Grouping'}
         </div>

@@ -14,7 +14,7 @@ class Groups extends LitElement {
     const config = this.main.config;
     const stylable = this.main.stylable;
     return html`
-      <div class="button-section" style="${stylable('buttonSection')}">
+      <div class="button-section" style="${stylable('button-section')}">
         <div class="title" style="${stylable('title')}">${config.groupsTitle ? config.groupsTitle : 'Groups'}</div>
         ${Object.keys(this.groups).map(
           (group) => html` <sonos-group .main=${this.main} .group=${group}></sonos-group> `,

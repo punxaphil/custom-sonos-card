@@ -19,18 +19,20 @@ class Group extends LitElement {
     return html`
       <div class="group" @click="${() => this.handleGroupClicked()}" style="${stylable('group')}">
         <div class="wrap ${activePlayer ? 'active' : ''}">
-          <ul class="speakers" style="${stylable('groupSpeakers')}">
+          <ul class="speakers" style="${stylable('group-speakers')}">
             ${stateObj.attributes.sonos_group.map(
               (speaker: string) =>
-                html` <li class="speaker" style="${stylable('groupSpeaker')}">
+                html` <li class="speaker" style="${stylable('group-speaker')}">
                   ${getEntityName(this.main.hass, config, speaker)}
                 </li>`,
             )}
           </ul>
-          <div class="info" style="${stylable('groupInfo')}">
+          <div class="info" style="${stylable('group-info')}">
             ${currentTrack
               ? html` <div class="content">
-                    <span class="currentTrack" style="display: ${this.config.hideGroupCurrentTrack ? 'none' : 'inline'}"
+                    <span
+                      class="currentTrack"
+                      style="display: ${this.main.config.hideGroupCurrentTrack ? 'none' : 'inline'}"
                       >${currentTrack}</span
                     >
                   </div>

@@ -19,14 +19,12 @@ class Player extends LitElement {
   private entityId!: string;
   private mediaControlService!: MediaControlService;
   @state() private timerToggleShowAllVolumes!: number;
-  private stylable?: (name: string) => DirectiveResult;
 
   render() {
     this.hass = this.main.hass;
     this.entityId = this.main.activePlayer;
     this.config = this.main.config;
     this.mediaControlService = this.main.mediaControlService;
-    this.stylable = this.main.stylable('player');
     const entityState = this.hass.states[this.entityId];
     const isGroup = entityState.attributes.sonos_group.length > 1;
     let allVolumes = [];
@@ -38,27 +36,29 @@ class Player extends LitElement {
     return html`
       <div
         class="container"
-        style="${{ ...this.backgroundImageStyle(entityState), ...this.stylable?.('container') }}"
+        style="${{ ...this.backgroundImageStyle(entityState), ...this.main.stylable('player-container') }}"
       >
-        <div class="body" style="${this.stylable?.('body')}">
+        <div class="body" style="${this.main.stylable('player-body')}">
           ${
             entityState.attributes.media_title
               ? html`
-                  <div class="info" style="${this.stylable?.('info')}">
-                    <div class="album" style="${this.stylable?.('album')}">
+                  <div class="info" style="${this.main.stylable('player-info')}">
+                    <div class="album" style="${this.main.stylable('player-album')}">
                       ${entityState.attributes.media_album_name}
                     </div>
-                    <div class="song" style="${this.stylable?.('song')}">${entityState.attributes.media_title}</div>
-                    <div class="artist" style="${this.stylable?.('artist')}">
+                    <div class="song" style="${this.main.stylable('player-song')}">
+                      ${entityState.attributes.media_title}
+                    </div>
+                    <div class="artist" style="${this.main.stylable('player-artist')}">
                       ${entityState.attributes.media_artist}
                     </div>
                   </div>
                 `
-              : html` <div class="noMediaText" style="${this.stylable?.('noMediaText')}">
+              : html` <div class="no-media-text" style="${this.main.stylable('no-media-text')}">
                   ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
                 </div>`
           }
-          <div class="footer" style="${this.stylable?.('footer')}">
+          <div class="footer" style="${this.main.stylable('player-footer')}">
             ${this.getVolumeTemplate(
               this.entityId,
               this.main.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
@@ -66,8 +66,8 @@ class Player extends LitElement {
               false,
               this.members,
             )}
-            <div ?hidden="${!this.main.showVolumes}" style="${this.stylable?.('allVolumes')}">${allVolumes}</div>
-            <div class="footer-icons" style="${this.stylable?.('footer-icons')}">
+            <div ?hidden="${!this.main.showVolumes}">${allVolumes}</div>
+            <div class="footer-icons" style="${this.main.stylable('player-footer-icons')}">
               <ha-icon
                 @click="${() => this.mediaControlService.volumeDown(this.entityId, this.members)}"
                 .icon=${'mdi:volume-minus'}
@@ -136,15 +136,15 @@ class Player extends LitElement {
         ? !Object.keys(members).some((member) => !this.hass.states[member].attributes.is_volume_muted)
         : this.hass.states[entity].attributes.is_volume_muted;
     return html`
-      <div class="volume ${isGroupMember ? 'group-member-volume' : ''}">
+      <div class="volume ${isGroupMember ? 'group-member-volume' : ''}" style="${this.main.stylable('volume')}">
         ${name ? html` <div class="volume-name">${name}</div>` : ''}
         <ha-icon
           style="--mdc-icon-size: 1.25rem; align-self: center"
           @click="${() => this.mediaControlService.volumeMute(entity, !volumeMuted, members)}"
           .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
         ></ha-icon>
-        <div class="volume-slider">
-          <div class="volume-level">
+        <div class="volume-slider" style="${this.main.stylable('volume-slider')}">
+          <div class="volume-level" style="${this.main.stylable('volume-level')}">
             <div style="flex: ${volume}">0%</div>
             ${volume > 0 && volume < 95
               ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
@@ -295,7 +295,7 @@ class Player extends LitElement {
         color: var(--sonos-int-accent-color);
       }
 
-      .noMediaText {
+      .no-media-text {
         flex-grow: 1;
         display: flex;
         justify-content: center;
