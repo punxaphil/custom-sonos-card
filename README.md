@@ -188,6 +188,50 @@ sonos-accent-color: rgb(198, 203, 210)
 
 (Thanks to BeastHouse)
 
+## CSS Styling
+For maximum control of look and feel, define your style with CSS under `styles`.
+
+Many elements in the card can be styled using this, but not all. Using your web browser's developer console, inspect the element and check the CSS. If the CSS contains
+`--sonos-card-style-name: [elementName];`, then the element can be styled using the `elementName`.
+
+Example:
+```yaml
+styles:
+  button-section:
+    backgroundColor: lightyellow
+    border: 1px solid blue
+  ha-card:
+    padding: 3rem
+    background-size: contain
+    background-image: >-
+      url(https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1200px-Flag_of_Ukraine.svg.png)
+  groups:
+    order: 1
+  players:
+    order: 2
+  player-body:
+    border: 5px black dashed
+  player-song:
+    color: '#005cbb'
+    font-family: Times New Roman
+    font-weight: 900
+  mediaBrowser:
+    order: 0
+  member:
+    background: '#005cbb'
+    color: yellow
+  title:
+    fontSize: 30px
+    fontWeight: lighter
+    textTransform: uppercase
+    color: darkblue
+```
+The above YAML renders the following:
+
+![img/stylable.png](img/stylable.png)
+
+<!-- TODO change URL to master -->
+
 ## Dynamic volume level slider
 The volume level slider is dynamically adjusting its scale. If volume is below 20% it will show a scale up to 30%. Above 20% it will show a scale up to 100%. The color will also change from green to red clearly indicating which scale is being used.
 

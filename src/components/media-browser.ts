@@ -5,7 +5,7 @@ import { CardConfig, MediaPlayerItem } from '../types';
 import { getWidth } from '../utils';
 import MediaControlService from '../services/media-control-service';
 import { until } from 'lit-html/directives/until.js';
-import sharedStyle from '../sharedStyle';
+import { buttonSectionBackgroundStyle, titleStyle } from '../sharedStyle';
 import { CustomSonosCard } from '../main';
 import './media-button';
 
@@ -26,24 +26,20 @@ class MediaBrowser extends LitElement {
     this.activePlayer = this.main.activePlayer;
     this.mediaControlService = this.main.mediaControlService;
     this.mediaBrowseService = this.main.mediaBrowseService;
-    const stylable = this.main.stylable;
-    const styleConfigForName = (name: string) => {
-      return { config: this.config, name };
-    };
     return html`
-      <div-styled .using="${styleConfigForName('button-section')}">
-        <div-styled .using="${styleConfigForName('media-browser-header')}">
-          <div-styled .using="${styleConfigForName('media-browser-play-dir')}">
+      <div style="${this.main.stylable('button-section', buttonSectionBackgroundStyle)}">
+        <div class="media-browser-header" style="${this.main.stylable('media-browser-header')}">
+          <div class="media-browser-play-dir" style="${this.main.stylable('media-browser-play-dir')}">
             ${this.currentDir?.can_play
               ? html` <ha-icon
                   .icon=${'mdi:play'}
                   @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
                 ></ha-icon>`
               : ''}
-          </div-styled>
-          <div-styled .using="${styleConfigForName('title')}">
+          </div>
+          <div style="${this.main.stylable('title', titleStyle)}">
             ${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}
-          </div-styled>
+          </div>
           <div
             class="browse"
             @click="${() => {
@@ -60,7 +56,7 @@ class MediaBrowser extends LitElement {
               ? html` <ha-icon .icon=${'mdi:arrow-left-bold'}></ha-icon>`
               : html` <ha-icon .icon=${'mdi:play-box-multiple'}></ha-icon> `}
           </div>
-        </div-styled>
+        </div>
         ${this.activePlayer !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
@@ -70,7 +66,7 @@ class MediaBrowser extends LitElement {
               : '100%';
             return html` <div
               class="media-buttons ${itemsWithoutImage ? '' : 'no-thumbs'}"
-              style="${stylable('media-buttons')}"
+              style="${this.main.stylable('media-buttons')}"
             >
               ${items.map(
                 (mediaItem) => html`
@@ -86,7 +82,7 @@ class MediaBrowser extends LitElement {
             </div>`;
           }),
         )}
-      </div-styled>
+      </div>
     `;
   }
 
@@ -143,47 +139,44 @@ class MediaBrowser extends LitElement {
   }
 
   static get styles() {
-    return [
-      sharedStyle,
-      css`
-        :host {
-          text-align: center;
-        }
-        .header {
-          color: var(--sonos-int-title-color);
-          display: flex;
-          justify-content: space-between;
-        }
-        .header div {
-          flex: 1;
-          --mdc-icon-size: 1.5rem;
-        }
-        .media-buttons {
-          padding: 0;
-          display: flex;
-          flex-wrap: wrap;
-        }
-        .no-thumbs {
-          flex-direction: column;
-        }
-        .browse {
-          text-align: right;
-          padding-right: 0.5rem;
-          margin-left: -0.5rem;
-        }
-        .play-dir {
-          text-align: left;
-          padding-right: -0.5rem;
-          margin-left: 0.5rem;
-        }
-        .browse:focus,
-        .browse:hover,
-        .play-dir:focus,
-        .play-dir:hover {
-          color: var(--sonos-int-accent-color);
-        }
-      `,
-    ];
+    return css`
+      :host {
+        text-align: center;
+      }
+      .header {
+        color: var(--sonos-int-title-color);
+        display: flex;
+        justify-content: space-between;
+      }
+      .header div {
+        flex: 1;
+        --mdc-icon-size: 1.5rem;
+      }
+      .media-buttons {
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .no-thumbs {
+        flex-direction: column;
+      }
+      .browse {
+        text-align: right;
+        padding-right: 0.5rem;
+        margin-left: -0.5rem;
+      }
+      .play-dir {
+        text-align: left;
+        padding-right: -0.5rem;
+        margin-left: 0.5rem;
+      }
+      .browse:focus,
+      .browse:hover,
+      .play-dir:focus,
+      .play-dir:hover {
+        color: var(--sonos-int-accent-color);
+      }
+    `;
   }
 }
 

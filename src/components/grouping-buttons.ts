@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import { PlayerGroups } from '../types';
 import { getEntityName } from '../utils';
 import { CustomSonosCard } from '../main';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 class GroupingButtons extends LitElement {
   @property() main!: CustomSonosCard;
@@ -11,100 +12,95 @@ class GroupingButtons extends LitElement {
 
   render() {
     const activePlayer = this.main.activePlayer;
-    const mediaControlService = this.main.mediaControlService;
     const joinedPlayers = this.mediaPlayers.filter(
       (player) => player !== activePlayer && this.groups[activePlayer].members[player],
     );
     const notJoinedPlayers = this.mediaPlayers.filter(
       (player) => player !== activePlayer && !this.groups[activePlayer].members[player],
     );
-    const stylable = this.main.stylable;
-
     return html`
-      <div class="members" style="${stylable('members')}">
+      <div style="${this.membersStyle()}">
         ${activePlayer &&
         this.mediaPlayers.map((entity) => {
+          const name = getEntityName(this.main.hass, this.main.config, entity);
           if (this.groups[activePlayer].members[entity] || (entity === activePlayer && joinedPlayers.length > 0)) {
-            return html`
-              <div class="member" @click="${() => mediaControlService.unjoin(entity)}" style="${stylable('member')}">
-                <span>${getEntityName(this.main.hass, this.main.config, entity)} </span>
-                <ha-icon .icon=${'mdi:minus'}></ha-icon>
-              </div>
-            `;
+            return this.getButton(() => this.main.mediaControlService.unjoin(entity), 'mdi:minus', name);
           } else if (entity !== activePlayer) {
-            return html`
-              <div
-                class="member"
-                @click="${() => mediaControlService.join(activePlayer, entity)}"
-                style="${stylable('member')}"
-              >
-                <span>${getEntityName(this.main.hass, this.main.config, entity)} </span>
-                <ha-icon .icon=${'mdi:plus'}></ha-icon>
-              </div>
-            `;
+            return this.getButton(() => this.main.mediaControlService.join(activePlayer, entity), 'mdi:plus', name);
           } else {
             return html``;
           }
         })}
         ${notJoinedPlayers.length
-          ? html`
-              <div
-                class="member"
-                @click="${() => mediaControlService.join(activePlayer, notJoinedPlayers.join(','))}"
-                style="${stylable('member')}"
-              >
-                <ha-icon .icon=${'mdi:checkbox-multiple-marked-outline'}></ha-icon>
-              </div>
-            `
+          ? this.getButton(
+              () => this.main.mediaControlService.join(activePlayer, notJoinedPlayers.join(',')),
+              'mdi:checkbox-multiple-marked-outline',
+            )
           : ''}
         ${joinedPlayers.length
-          ? html`
-              <div
-                class="member"
-                @click="${() => mediaControlService.unjoin(joinedPlayers.join(','))}"
-                style="${stylable('member')}"
-              >
-                <ha-icon .icon=${'mdi:minus-box-multiple-outline'}></ha-icon>
-              </div>
-            `
+          ? this.getButton(
+              () => this.main.mediaControlService.unjoin(joinedPlayers.join(',')),
+              'mdi:minus-box-multiple-outline',
+            )
           : ''}
       </div>
     `;
   }
 
+  private getButton(click: () => void, icon: string, name?: string) {
+    return html`
+      <div @click="${click}" style="${this.memberStyle()}" class="hoverable">
+        ${name ? html`<span style="${GroupingButtons.nameStyle()}">${name}</span>` : ''}
+        <ha-icon .icon=${icon} style="${GroupingButtons.iconStyle()}"></ha-icon>
+      </div>
+    `;
+  }
+
+  private membersStyle() {
+    return this.main.stylable('members', {
+      padding: '0',
+      margin: '0',
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    });
+  }
+
+  private memberStyle() {
+    return this.main.stylable('member', {
+      flexGrow: '1',
+      borderRadius: 'var(--sonos-int-border-radius)',
+      margin: '0 0.25rem 0.5rem',
+      padding: '0.45rem',
+      display: 'flex',
+      justifyContent: 'center',
+      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
+      backgroundColor: 'var(--sonos-int-background-color)',
+      maxWidth: 'calc(100% - 1.4rem)',
+    });
+  }
+
+  private static nameStyle() {
+    return styleMap({
+      alignSelf: 'center',
+      fontSize: '1rem',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    });
+  }
+
+  private static iconStyle() {
+    return styleMap({
+      alignSelf: 'center',
+      fontSize: '0.5rem',
+    });
+  }
+
   static get styles() {
     return css`
-      .members {
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: space-between;
-      }
-      .member {
-        flex-grow: 1;
-        border-radius: var(--sonos-int-border-radius);
-        margin: 0 0.25rem 0.5rem;
-        padding: 0.45rem;
-        display: flex;
-        justify-content: center;
-        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
-        background-color: var(--sonos-int-background-color);
-        max-width: calc(100% - 1.4rem);
-      }
-      .member span {
-        align-self: center;
-        font-size: 1rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .member ha-icon {
-        align-self: center;
-        font-size: 0.5rem;
-      }
-      .member:hover,
-      .member:focus {
+      .hoverable:hover,
+      .hoverable:focus {
         color: var(--sonos-int-accent-color);
         border: var(--sonos-int-border-width) solid var(--sonos-int-accent-color);
       }

@@ -4,7 +4,6 @@ import './components/player';
 import './components/groups';
 import './components/grouping';
 import './components/media-browser';
-import './components/stylable';
 import { createPlayerGroups, getMediaPlayers, getWidth, isMobile } from './utils';
 import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, PlayerGroups, Size } from './types';
@@ -12,7 +11,7 @@ import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
 import MediaBrowseService from './services/media-browse-service';
 import MediaControlService from './services/media-control-service';
 import HassService from './services/hass-service';
-import sharedStyle from './sharedStyle';
+import { titleStyle } from './sharedStyle';
 
 // This puts your card into the UI card picker dialog
 window.customCards = window.customCards || [];
@@ -41,19 +40,19 @@ export class CustomSonosCard extends LitElement {
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
     this.determineActivePlayer(playerGroups);
     return html`
-      <ha-card>
-        <div class="title" ?hidden="${!this.config.name}" style="${this.titleStyle()}">${this.config.name}</div>
-        <div class="content">
-          <div style=${this.groupsStyle()} class="groups">
-            <sonos-groups .main="${this}" .groups="${playerGroups}" />
+      <ha-card style="${this.haCardStyle()}">
+        <div style="${this.titleStyle()}">${this.config.name}</div>
+        <div style="${this.contentStyle()}">
+          <div style=${this.groupsStyle()}>
+            <sonos-groups .main="${this}" .groups="${playerGroups}" .activePlayer="${this.activePlayer}" />
           </div>
 
-          <div style=${this.playersStyle()} class="players">
+          <div style=${this.playersStyle()}>
             <sonos-player .main=${this} .members=${playerGroups[this.activePlayer].members}></sonos-player>
             <sonos-grouping .main=${this} .groups=${playerGroups} .mediaPlayers=${mediaPlayers}></sonos-grouping>
           </div>
 
-          <div style=${this.mediaBrowserStyle()} class="media-browser">
+          <div style=${this.mediaBrowserStyle()}>
             <sonos-media-browser .main=${this} .mediaPlayers=${mediaPlayers}></sonos-media-browser>
           </div>
         </div>
@@ -61,17 +60,25 @@ export class CustomSonosCard extends LitElement {
     `;
   }
 
-  stylable(configName: string) {
-    const style = this.config.styles?.[configName];
-    return style ? styleMap(style) : '';
+  stylable(configName: string, additionalStyle?: StyleInfo) {
+    return styleMap({
+      ...{
+        '--sonos-card-style-name': configName,
+      },
+      ...additionalStyle,
+      ...this.config?.styles?.[configName],
+    });
   }
 
   private titleStyle() {
-    return this.stylable('title');
+    return this.stylable('title', { display: this.config.name ? 'block' : 'none', ...titleStyle });
   }
 
   private groupsStyle() {
-    return this.columnStyle(this.config.layout?.groups, '1', '25%', 'groups');
+    return this.columnStyle(this.config.layout?.groups, '1', '25%', 'groups', {
+      padding: '0 1rem',
+      boxSizing: 'border-box',
+    });
   }
 
   private playersStyle() {
@@ -79,14 +86,24 @@ export class CustomSonosCard extends LitElement {
   }
 
   private mediaBrowserStyle() {
-    return this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%', 'media-browser');
+    return this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%', 'media-browser', {
+      padding: '0 1rem',
+      boxSizing: 'border-box',
+    });
   }
 
-  private columnStyle(size: Size | undefined, order: string, defaultWidth: string, name: string) {
+  private columnStyle(
+    size: Size | undefined,
+    order: string,
+    defaultWidth: string,
+    name: string,
+    additionalStyle?: StyleInfo,
+  ) {
     const width = getWidth(this.config, defaultWidth, '100%', size);
     let style: StyleInfo = {
       width: width,
       maxWidth: width,
+      ...additionalStyle,
     };
     if (isMobile(this.config)) {
       style = {
@@ -97,7 +114,22 @@ export class CustomSonosCard extends LitElement {
         boxSizing: 'border-box',
       };
     }
-    return { ...styleMap(style), ...this.stylable(name) };
+    return this.stylable(name, style);
+  }
+
+  private haCardStyle() {
+    return this.stylable('ha-card', {
+      color: 'var(--sonos-int-color)',
+      background: 'var(--sonos-int-ha-card-background-color)',
+    });
+  }
+
+  private contentStyle() {
+    return this.stylable('content', {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+    });
   }
 
   determineActivePlayer(playerGroups: PlayerGroups) {
@@ -158,52 +190,35 @@ export class CustomSonosCard extends LitElement {
   }
 
   static get styles() {
-    return [
-      sharedStyle,
-      css`
-        :host {
-          --sonos-int-background-color: var(
-            --sonos-background-color,
-            var(--ha-card-background, var(--card-background-color, white))
-          );
-          --sonos-int-ha-card-background-color: var(
-            --sonos-ha-card-background-color,
-            var(--ha-card-background, var(--card-background-color, white))
-          );
-          --sonos-int-player-section-background: var(--sonos-player-section-background, #ffffffe6);
-          --sonos-int-color: var(--sonos-color, var(--secondary-text-color));
-          --sonos-int-artist-album-text-color: var(--sonos-artist-album-text-color, var(--secondary-text-color));
-          --sonos-int-song-text-color: var(--sonos-song-text-color, var(--sonos-accent-color, var(--accent-color)));
-          --sonos-int-accent-color: var(--sonos-accent-color, var(--accent-color));
-          --sonos-int-title-color: var(--sonos-title-color, var(--secondary-text-color));
-          --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
-          --sonos-int-border-width: var(--sonos-border-width, 0.125rem);
-          --sonos-int-media-button-white-space: var(
-            --sonos-media-buttons-multiline,
-            var(--sonos-favorites-multiline, nowrap)
-          );
-          --sonos-int-button-section-background-color: var(
-            --sonos-button-section-background-color,
-            var(--card-background-color)
-          );
-          --mdc-icon-size: 1rem;
-        }
-        ha-card {
-          color: var(--sonos-int-color);
-          background: var(--sonos-int-ha-card-background-color);
-        }
-        .content {
-          display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        .groups,
-        .media-browser {
-          padding: 0 1rem;
-          box-sizing: border-box;
-        }
-      `,
-    ];
+    return css`
+      :host {
+        --sonos-int-background-color: var(
+          --sonos-background-color,
+          var(--ha-card-background, var(--card-background-color, white))
+        );
+        --sonos-int-ha-card-background-color: var(
+          --sonos-ha-card-background-color,
+          var(--ha-card-background, var(--card-background-color, white))
+        );
+        --sonos-int-player-section-background: var(--sonos-player-section-background, #ffffffe6);
+        --sonos-int-color: var(--sonos-color, var(--secondary-text-color));
+        --sonos-int-artist-album-text-color: var(--sonos-artist-album-text-color, var(--secondary-text-color));
+        --sonos-int-song-text-color: var(--sonos-song-text-color, var(--sonos-accent-color, var(--accent-color)));
+        --sonos-int-accent-color: var(--sonos-accent-color, var(--accent-color));
+        --sonos-int-title-color: var(--sonos-title-color, var(--secondary-text-color));
+        --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
+        --sonos-int-border-width: var(--sonos-border-width, 0.125rem);
+        --sonos-int-media-button-white-space: var(
+          --sonos-media-buttons-multiline,
+          var(--sonos-favorites-multiline, nowrap)
+        );
+        --sonos-int-button-section-background-color: var(
+          --sonos-button-section-background-color,
+          var(--card-background-color)
+        );
+        --mdc-icon-size: 1rem;
+      }
+    `;
   }
 }
 

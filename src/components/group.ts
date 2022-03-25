@@ -2,32 +2,32 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { getEntityName } from '../utils';
 import { CustomSonosCard } from '../main';
+import { PlayerGroup } from '../types';
 
 class Group extends LitElement {
   @property() main!: CustomSonosCard;
-  @property() group!: string;
+  @property() activePlayer!: string;
+  @property() group!: PlayerGroup;
 
   render() {
     const config = this.main.config;
-    const stateObj = this.main.hass.states[this.group];
-    const activePlayer = this.main.activePlayer === this.group;
+    const stateObj = this.main.hass.states[this.group.entity];
     const currentTrack = `${stateObj.attributes.media_artist || ''} - ${stateObj.attributes.media_title || ''}`.replace(
       /^ - /g,
       '',
     );
-    const stylable = this.main.stylable;
     return html`
-      <div class="group" @click="${() => this.handleGroupClicked()}" style="${stylable('group')}">
-        <div class="wrap ${activePlayer ? 'active' : ''}">
-          <ul class="speakers" style="${stylable('group-speakers')}">
+      <div class="group" @click="${() => this.handleGroupClicked()}" style="${this.main.stylable('group')}">
+        <div class="wrap ${this.activePlayer === this.group.entity ? 'active' : ''}">
+          <ul class="speakers" style="${this.main.stylable('group-speakers')}">
             ${stateObj.attributes.sonos_group.map(
               (speaker: string) =>
-                html` <li class="speaker" style="${stylable('group-speaker')}">
+                html` <li class="speaker" style="${this.main.stylable('group-speaker')}">
                   ${getEntityName(this.main.hass, config, speaker)}
                 </li>`,
             )}
           </ul>
-          <div class="info" style="${stylable('group-info')}">
+          <div class="info" style="${this.main.stylable('group-info')}">
             ${currentTrack
               ? html` <div class="content">
                     <span
@@ -53,7 +53,7 @@ class Group extends LitElement {
   }
 
   private handleGroupClicked() {
-    this.main.setActivePlayer(this.group);
+    this.main.setActivePlayer(this.group.entity);
     this.main.showVolumes = false;
   }
 

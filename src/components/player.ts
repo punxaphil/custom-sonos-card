@@ -9,7 +9,6 @@ import { CustomSonosCard } from '../main';
 import MediaControlService from '../services/media-control-service';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { directive, DirectiveResult } from 'lit-html/directive.js';
 
 class Player extends LitElement {
   @property() main!: CustomSonosCard;
@@ -34,10 +33,7 @@ class Player extends LitElement {
       );
     }
     return html`
-      <div
-        class="container"
-        style="${{ ...this.backgroundImageStyle(entityState), ...this.main.stylable('player-container') }}"
-      >
+      <div class="container" style="${this.containerStyle(entityState)}">
         <div class="body" style="${this.main.stylable('player-body')}">
           ${
             entityState.attributes.media_title
@@ -69,12 +65,12 @@ class Player extends LitElement {
             <div ?hidden="${!this.main.showVolumes}">${allVolumes}</div>
             <div class="footer-icons" style="${this.main.stylable('player-footer-icons')}">
               <ha-icon
-                @click="${() => this.mediaControlService.volumeDown(this.entityId, this.members)}"
-                .icon=${'mdi:volume-minus'}
+                  @click="${() => this.mediaControlService.volumeDown(this.entityId, this.members)}"
+                  .icon=${'mdi:volume-minus'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.mediaControlService.prev(this.entityId)}"
-                .icon=${'mdi:skip-backward'}
+                  @click="${() => this.mediaControlService.prev(this.entityId)}"
+                  .icon=${'mdi:skip-backward'}
               ></ha-icon>
               ${
                 entityState.state !== 'playing'
@@ -90,31 +86,31 @@ class Player extends LitElement {
                     `
               }
               <ha-icon
-                @click="${() => this.mediaControlService.next(this.entityId)}"
-                .icon=${'mdi:skip-forward'}
+                  @click="${() => this.mediaControlService.next(this.entityId)}"
+                  .icon=${'mdi:skip-forward'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.mediaControlService.shuffle(this.entityId, !entityState.attributes.shuffle)}"
-                .icon=${entityState.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}
+                  @click="${() => this.mediaControlService.shuffle(this.entityId, !entityState.attributes.shuffle)}"
+                  .icon=${entityState.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.mediaControlService.repeat(this.entityId, entityState.attributes.repeat)}"
-                .icon=${
-                  entityState.attributes.repeat === 'all'
-                    ? 'mdi:repeat'
-                    : entityState.attributes.repeat === 'one'
-                    ? 'mdi:repeat-once'
-                    : 'mdi:repeat-off'
-                }
+                  @click="${() => this.mediaControlService.repeat(this.entityId, entityState.attributes.repeat)}"
+                  .icon=${
+                    entityState.attributes.repeat === 'all'
+                      ? 'mdi:repeat'
+                      : entityState.attributes.repeat === 'one'
+                      ? 'mdi:repeat-once'
+                      : 'mdi:repeat-off'
+                  }
               ></ha-icon>
               <ha-icon
-                ?hidden=${!isGroup}"
-                @click="${() => this.toggleShowAllVolumes()}"
-                .icon=${this.main.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}
+                  ?hidden=${!isGroup}"
+                  @click="${() => this.toggleShowAllVolumes()}"
+                  .icon=${this.main.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}
               ></ha-icon>
               <ha-icon
-                @click="${() => this.mediaControlService.volumeUp(this.entityId, this.members)}"
-                .icon=${'mdi:volume-plus'}
+                  @click="${() => this.mediaControlService.volumeUp(this.entityId, this.members)}"
+                  .icon=${'mdi:volume-plus'}
               ></ha-icon>
             </div>
           </div>
@@ -186,7 +182,7 @@ class Player extends LitElement {
     }
   }
 
-  private backgroundImageStyle(entityState: HassEntity) {
+  private containerStyle(entityState: HassEntity) {
     const entityImage = entityState.attributes.entity_picture;
     const mediaTitle = entityState.attributes.media_title;
     let style: StyleInfo = {
@@ -208,7 +204,8 @@ class Player extends LitElement {
         };
       }
     }
-    return styleMap(style);
+
+    return styleMap({ ...style, ...this.main.stylable('player-container') });
   }
 
   static get styles() {
