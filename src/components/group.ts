@@ -3,6 +3,8 @@ import { property } from 'lit/decorators.js';
 import { getEntityName } from '../utils';
 import { CustomSonosCard } from '../main';
 import { PlayerGroup } from '../types';
+import { styleMap } from 'lit-html/directives/style-map.js';
+import { when } from 'lit/directives/when.js';
 
 class Group extends LitElement {
   @property() main!: CustomSonosCard;
@@ -16,40 +18,93 @@ class Group extends LitElement {
       /^ - /g,
       '',
     );
+    const speakerList = stateObj.attributes.sonos_group
+      .map((speaker: string) => getEntityName(this.main.hass, config, speaker))
+      .join(' + ');
     return html`
-      <div class="group" @click="${() => this.handleGroupClicked()}" style="${this.main.stylable('group')}">
-        <div class="wrap ${this.activePlayer === this.group.entity ? 'active' : ''}">
-          <ul class="speakers" style="${this.main.stylable('group-speakers')}">
-            ${stateObj.attributes.sonos_group.map(
-              (speaker: string) =>
-                html` <li class="speaker" style="${this.main.stylable('group-speaker')}">
-                  ${getEntityName(this.main.hass, config, speaker)}
-                </li>`,
-            )}
-          </ul>
-          <div class="info" style="${this.main.stylable('group-info')}">
-            ${currentTrack
-              ? html` <div class="content">
-                    <span
-                      class="currentTrack"
-                      style="display: ${this.main.config.hideGroupCurrentTrack ? 'none' : 'inline'}"
-                      >${currentTrack}</span
-                    >
-                  </div>
-                  ${stateObj.state === 'playing'
-                    ? html`
-                        <div class="player active">
-                          <div class="bar"></div>
-                          <div class="bar"></div>
-                          <div class="bar"></div>
-                        </div>
-                      `
-                    : ''}`
-              : ''}
-          </div>
+      <div @click="${() => this.handleGroupClicked()}" style="${this.groupStyle()}">
+        <ul style="${this.speakersStyle()}">
+          <span style="${this.speakerStyle()}">${speakerList}</span>
+        </ul>
+        <div style="${this.infoStyle()}">
+          ${currentTrack
+            ? html` <div style="flex: 1"><span style="${this.currentTrackStyle()}">${currentTrack}</span></div>
+                ${when(
+                  stateObj.state === 'playing',
+                  () => html`
+                    <div style="width: 0.55rem; position: relative;">
+                      <div style="${Group.barStyle(1)}"></div>
+                      <div style="${Group.barStyle(2)}"></div>
+                      <div style="${Group.barStyle(3)}"></div>
+                    </div>
+                  `,
+                )}`
+            : ''}
         </div>
       </div>
     `;
+  }
+
+  private groupStyle() {
+    const style = {
+      borderRadius: 'var(--sonos-int-border-radius)',
+      margin: '0.5rem 0',
+      padding: '0.8rem',
+      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
+      backgroundColor: 'var(--sonos-int-background-color)',
+      ...(this.activePlayer === this.group.entity && {
+        border: 'var(--sonos-int-border-width) solid var(--sonos-int-accent-color)',
+        color: 'var(--sonos-int-accent-color)',
+        fontWeight: 'bold',
+      }),
+    };
+    return this.main.stylable('group', style);
+  }
+
+  private speakersStyle() {
+    return this.main.stylable('group-speakers', {
+      margin: '0',
+      padding: '0',
+    });
+  }
+
+  private speakerStyle() {
+    return this.main.stylable('group-speaker', {
+      marginRight: '0.3rem',
+      fontSize: '1rem',
+      maxWidth: '100%',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    });
+  }
+
+  private infoStyle() {
+    return this.main.stylable('group-info', {
+      display: 'flex',
+      flexDirection: 'row',
+      clear: 'both',
+    });
+  }
+
+  private currentTrackStyle() {
+    return styleMap({
+      display: this.main.config.hideGroupCurrentTrack ? 'none' : 'inline',
+      fontSize: '0.8rem',
+    });
+  }
+
+  private static barStyle(order: number) {
+    return styleMap({
+      background: 'var(--sonos-int-color)',
+      bottom: '0.05rem',
+      height: '0.15rem',
+      position: 'absolute',
+      width: '0.15rem',
+      animation: 'sound 0ms -800ms linear infinite alternate',
+      display: 'block',
+      left: order == 1 ? '0.05rem' : order == 2 ? '0.25rem' : '0.45rem',
+      animationDuration: order == 1 ? '474ms' : order == 2 ? '433ms' : '407ms',
+    });
   }
 
   private handleGroupClicked() {
@@ -59,88 +114,6 @@ class Group extends LitElement {
 
   static get styles() {
     return css`
-      .group {
-        padding: 0;
-        margin: 0;
-      }
-      .group .wrap {
-        border-radius: var(--sonos-int-border-radius);
-        margin: 0.5rem 0;
-        padding: 0.8rem;
-        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
-        background-color: var(--sonos-int-background-color);
-      }
-      .group .wrap.active {
-        border: var(--sonos-int-border-width) solid var(--sonos-int-accent-color);
-        color: var(--sonos-int-accent-color);
-      }
-      .group .wrap.active .speakers {
-        font-weight: bold;
-      }
-      .group:first-child .wrap {
-        margin-top: 0;
-      }
-      .speakers {
-        margin: 0;
-        padding: 0;
-      }
-      .speakers li:first-child::before {
-        content: '';
-        margin-right: 0;
-      }
-      .speakers li::before {
-        content: '+';
-        margin-right: 0.3em;
-      }
-      .speakers li {
-        display: block;
-        margin-right: 0.3rem;
-        float: left;
-        font-size: 1rem;
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .group .info {
-        display: flex;
-        flex-direction: row;
-        clear: both;
-      }
-      .group .info .content {
-        flex: 1;
-      }
-      .group .info .content .currentTrack {
-        display: block;
-        font-size: 0.8rem;
-      }
-      .group .info .player {
-        width: 0.55rem;
-        position: relative;
-      }
-      .group .info .player .bar {
-        background: var(--sonos-int-color);
-        bottom: 0.05rem;
-        height: 0.15rem;
-        position: absolute;
-        width: 0.15rem;
-        animation: sound 0ms -800ms linear infinite alternate;
-        display: none;
-      }
-      .group .info .player.active .bar {
-        display: block;
-      }
-      .group .info .player .bar:nth-child(1) {
-        left: 0.05rem;
-        animation-duration: 474ms;
-      }
-      .group .info .player .bar:nth-child(2) {
-        left: 0.25rem;
-        animation-duration: 433ms;
-      }
-      .group .info .player .bar:nth-child(3) {
-        left: 0.45rem;
-        animation-duration: 407ms;
-      }
       @keyframes sound {
         0% {
           opacity: 0.35;

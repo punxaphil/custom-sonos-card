@@ -2,7 +2,7 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { PlayerGroups } from '../types';
 import { CustomSonosCard } from '../main';
-import { buttonSectionBackgroundStyle, titleStyle } from '../sharedStyle';
+import { titleStyle } from '../sharedStyle';
 import './grouping-buttons';
 
 class Grouping extends LitElement {
@@ -13,7 +13,7 @@ class Grouping extends LitElement {
   render() {
     const config = this.main.config;
     return html`
-      <div style="${this.main.stylable('button-section', buttonSectionBackgroundStyle)}">
+      <div style="${this.main.buttonSectionStyle()}">
         <div style="${this.main.stylable('title', titleStyle)}">
           ${config.groupingTitle ? config.groupingTitle : 'Grouping'}
         </div>

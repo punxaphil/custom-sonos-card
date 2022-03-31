@@ -7,7 +7,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 
 import { CustomSonosCard } from '../main';
 import MediaControlService from '../services/media-control-service';
-import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
+import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
 
 class Player extends LitElement {
@@ -24,37 +24,29 @@ class Player extends LitElement {
     this.entityId = this.main.activePlayer;
     this.config = this.main.config;
     this.mediaControlService = this.main.mediaControlService;
-    const entityState = this.hass.states[this.entityId];
-    const isGroup = entityState.attributes.sonos_group.length > 1;
+    const entityAttributes = this.getEntityAttributes();
+    const isGroup = entityAttributes.sonos_group.length > 1;
     let allVolumes = [];
     if (isGroup) {
-      allVolumes = entityState.attributes.sonos_group.map((member: string) =>
+      allVolumes = entityAttributes.sonos_group.map((member: string) =>
         this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup, true),
       );
     }
     return html`
-      <div class="container" style="${this.containerStyle(entityState)}">
-        <div class="body" style="${this.main.stylable('player-body')}">
-          ${
-            entityState.attributes.media_title
-              ? html`
-                  <div class="info" style="${this.main.stylable('player-info')}">
-                    <div class="album" style="${this.main.stylable('player-album')}">
-                      ${entityState.attributes.media_album_name}
-                    </div>
-                    <div class="song" style="${this.main.stylable('player-song')}">
-                      ${entityState.attributes.media_title}
-                    </div>
-                    <div class="artist" style="${this.main.stylable('player-artist')}">
-                      ${entityState.attributes.media_artist}
-                    </div>
-                  </div>
-                `
-              : html` <div class="no-media-text" style="${this.main.stylable('no-media-text')}">
-                  ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
-                </div>`
-          }
-          <div class="footer" style="${this.main.stylable('player-footer')}">
+      <div style="${this.containerStyle(this.hass.states[this.entityId])}">
+        <div style="${this.bodyStyle()}">
+          ${entityAttributes.media_title
+            ? html`
+                <div style="${this.infoStyle()}">
+                  <div style="${this.artistAlbumStyle()}">${entityAttributes.media_album_name}</div>
+                  <div style="${this.songStyle()}">${entityAttributes.media_title}</div>
+                  <div style="${this.artistAlbumStyle()}">${entityAttributes.media_artist}</div>
+                </div>
+              `
+            : html` <div style="${this.noMediaTextStyle()}">
+                ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
+              </div>`}
+          <div style="${this.footerStyle()}">
             ${this.getVolumeTemplate(
               this.entityId,
               this.main.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
@@ -63,60 +55,71 @@ class Player extends LitElement {
               this.members,
             )}
             <div ?hidden="${!this.main.showVolumes}">${allVolumes}</div>
-            <div class="footer-icons" style="${this.main.stylable('player-footer-icons')}">
-              <ha-icon
-                  @click="${() => this.mediaControlService.volumeDown(this.entityId, this.members)}"
-                  .icon=${'mdi:volume-minus'}
-              ></ha-icon>
-              <ha-icon
-                  @click="${() => this.mediaControlService.prev(this.entityId)}"
-                  .icon=${'mdi:skip-backward'}
-              ></ha-icon>
-              ${
-                entityState.state !== 'playing'
-                  ? html` <ha-icon
-                      @click="${() => this.mediaControlService.play(this.entityId)}"
-                      .icon=${'mdi:play'}
-                    ></ha-icon>`
-                  : html`
-                      <ha-icon
-                        @click="${() => this.mediaControlService.pause(this.entityId)}"
-                        .icon=${'mdi:stop'}
-                      ></ha-icon>
-                    `
-              }
-              <ha-icon
-                  @click="${() => this.mediaControlService.next(this.entityId)}"
-                  .icon=${'mdi:skip-forward'}
-              ></ha-icon>
-              <ha-icon
-                  @click="${() => this.mediaControlService.shuffle(this.entityId, !entityState.attributes.shuffle)}"
-                  .icon=${entityState.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled'}
-              ></ha-icon>
-              <ha-icon
-                  @click="${() => this.mediaControlService.repeat(this.entityId, entityState.attributes.repeat)}"
-                  .icon=${
-                    entityState.attributes.repeat === 'all'
-                      ? 'mdi:repeat'
-                      : entityState.attributes.repeat === 'one'
-                      ? 'mdi:repeat-once'
-                      : 'mdi:repeat-off'
-                  }
-              ></ha-icon>
-              <ha-icon
-                  ?hidden=${!isGroup}"
-                  @click="${() => this.toggleShowAllVolumes()}"
-                  .icon=${this.main.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical'}
-              ></ha-icon>
-              <ha-icon
-                  @click="${() => this.mediaControlService.volumeUp(this.entityId, this.members)}"
-                  .icon=${'mdi:volume-plus'}
-              ></ha-icon>
+            <div style="${this.iconsStyle()}">
+              ${this.clickableIcon('mdi:volume-minus', () => this.volumeDownClicked())}
+              ${this.clickableIcon('mdi:skip-backward', () => this.mediaControlService.prev(this.entityId))}
+              ${this.hass.states[this.entityId].state !== 'playing'
+                ? this.clickableIcon('mdi:play', () => this.mediaControlService.play(this.entityId))
+                : this.clickableIcon('mdi:stop', () => this.mediaControlService.pause(this.entityId))}
+              ${this.clickableIcon('mdi:skip-forward', () => this.mediaControlService.next(this.entityId))}
+              ${this.clickableIcon(this.shuffleIcon(), () => this.shuffleClicked())}
+              ${this.clickableIcon(this.repeatIcon(), () => this.repeatClicked())}
+              ${this.clickableIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !isGroup)}
+              ${this.clickableIcon('mdi:volume-plus', () => this.volumeUp())}
             </div>
           </div>
         </div>
       </div>
     `;
+  }
+
+  private volumeDownClicked() {
+    this.mediaControlService.volumeDown(this.entityId, this.members);
+  }
+
+  private allVolumesIcon() {
+    return this.main.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical';
+  }
+
+  private shuffleIcon() {
+    return this.getEntityAttributes().shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled';
+  }
+
+  private shuffleClicked() {
+    this.mediaControlService.shuffle(this.entityId, !this.getEntityAttributes().shuffle);
+  }
+
+  private repeatClicked() {
+    this.mediaControlService.repeat(this.entityId, this.getEntityAttributes().repeat);
+  }
+
+  private repeatIcon() {
+    const entityState = this.hass.states[this.entityId];
+    return entityState.attributes.repeat === 'all'
+      ? 'mdi:repeat'
+      : entityState.attributes.repeat === 'one'
+      ? 'mdi:repeat-once'
+      : 'mdi:repeat-off';
+  }
+
+  private volumeUp() {
+    this.mediaControlService.volumeUp(this.entityId, this.members);
+  }
+
+  private clickableIcon(icon: string, click: () => void, hidden = false) {
+    return html`
+      <ha-icon
+        @click="${click}"
+        style="${this.iconStyle()}"
+        class="hoverable"
+        .icon=${icon}
+        ?hidden="${hidden}"
+      ></ha-icon>
+    `;
+  }
+
+  private getEntityAttributes() {
+    return this.hass.states[this.entityId].attributes;
   }
 
   getVolumeTemplate(entity: string, name: string, isGroup: boolean, isGroupMember: boolean, members?: Members) {
@@ -132,15 +135,18 @@ class Player extends LitElement {
         ? !Object.keys(members).some((member) => !this.hass.states[member].attributes.is_volume_muted)
         : this.hass.states[entity].attributes.is_volume_muted;
     return html`
-      <div class="volume ${isGroupMember ? 'group-member-volume' : ''}" style="${this.main.stylable('volume')}">
-        ${name ? html` <div class="volume-name">${name}</div>` : ''}
+      <div style="${this.volumeStyle(isGroupMember)}">
+        ${name
+          ? html`
+          <div style="${this.volumeNameStyle()}" ${name}</div>`
+          : ''}
         <ha-icon
-          style="--mdc-icon-size: 1.25rem; align-self: center"
+          style="${this.muteStyle()}"
           @click="${() => this.mediaControlService.volumeMute(entity, !volumeMuted, members)}"
           .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
         ></ha-icon>
-        <div class="volume-slider" style="${this.main.stylable('volume-slider')}">
-          <div class="volume-level" style="${this.main.stylable('volume-level')}">
+        <div style="${this.volumeSliderStyle()}">
+          <div style="${this.volumeLevelStyle()}">
             <div style="flex: ${volume}">0%</div>
             ${volume > 0 && volume < 95
               ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
@@ -156,9 +162,7 @@ class Player extends LitElement {
               this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup)}"
             min="0"
             max="${max}"
-            class="volumeRange"
-            style="background: linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${(volume * 100) /
-            max}%, rgb(211, 211, 211) ${(volume * 100) / max}%, rgb(211, 211, 211) 100%);"
+            style="${this.volumeRangeStyle(inputColor, volume, max)}"
           />
         </div>
       </div>
@@ -204,126 +208,156 @@ class Player extends LitElement {
         };
       }
     }
+    return this.main.stylable('player-container', {
+      marginTop: '1rem',
+      position: 'relative',
+      background: 'var(--sonos-int-background-color)',
+      borderRadius: 'var(--sonos-int-border-radius)',
+      paddingBottom: '100%',
+      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
+      ...style,
+    });
+  }
 
-    return styleMap({ ...style, ...this.main.stylable('player-container') });
+  private bodyStyle() {
+    return this.main.stylable('player-body', {
+      position: 'absolute',
+      inset: '0px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+    });
+  }
+
+  private footerStyle() {
+    return this.main.stylable('player-footer', {
+      background: 'var(--sonos-int-player-section-background)',
+      margin: '0.25rem',
+      padding: '0.5rem',
+      borderRadius: 'var(--sonos-int-border-radius)',
+      overflow: 'hidden auto',
+    });
+  }
+
+  private iconsStyle() {
+    return this.main.stylable('player-footer-icons', {
+      justifyContent: 'space-between',
+      display: 'flex',
+    });
+  }
+
+  private iconStyle() {
+    return this.main.stylable('player-footer-icon', {
+      padding: '0.3rem',
+      '--mdc-icon-size': 'min(100%, 1.25rem)',
+    });
+  }
+
+  private volumeRangeStyle(inputColor: string, volume: number, max: number) {
+    return this.main.stylable('player-volume-range', {
+      '-webkit-appearance': 'none',
+      height: '0.25rem',
+      borderRadius: 'var(--sonos-int-border-radius)',
+      outline: 'none',
+      opacity: '0.7',
+      '-webkit-transition': '0.2s',
+      transition: 'opacity 0.2s',
+      margin: '0.25rem 0.25rem 0 0.25rem',
+      width: '97%',
+      background: `linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${
+        (volume * 100) / max
+      }%, rgb(211, 211, 211) ${(volume * 100) / max}%, rgb(211, 211, 211) 100%)`,
+    });
+  }
+
+  private infoStyle() {
+    return this.main.stylable('player-info', {
+      margin: '0.25rem',
+      padding: '0.5rem',
+      textAlign: 'center',
+      background: 'var(--sonos-int-player-section-background)',
+      borderRadius: 'var(--sonos-int-border-radius)',
+    });
+  }
+
+  private artistAlbumStyle() {
+    return this.main.stylable('player-artist-album', {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      fontSize: '0.75rem',
+      fontWeight: '300',
+      color: 'var(--sonos-int-artist-album-text-color)',
+      whiteSpace: 'wrap',
+    });
+  }
+
+  private songStyle() {
+    return this.main.stylable('player-song', {
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      fontSize: '1.15rem',
+      fontWeight: '400',
+      color: 'var(--sonos-int-song-text-color)',
+      whiteSpace: 'wrap',
+    });
+  }
+
+  private noMediaTextStyle() {
+    return this.main.stylable('no-media-text', {
+      flexGrow: '1',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    });
+  }
+
+  private volumeStyle(isGroupMember: boolean) {
+    return this.main.stylable('player-volume', {
+      display: 'flex',
+      ...(isGroupMember && {
+        borderTop: 'dotted var(--sonos-int-color)',
+        marginTop: '0.4rem',
+      }),
+    });
+  }
+
+  private volumeNameStyle() {
+    return this.main.stylable('player-volume-name', {
+      marginTop: '1rem',
+      marginLeft: '0.4rem',
+      flex: '1',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    });
+  }
+
+  private volumeSliderStyle() {
+    return this.main.stylable('player-volume-slider', {
+      flex: '4',
+    });
+  }
+
+  private volumeLevelStyle() {
+    return this.main.stylable('player-volume-level', {
+      fontSize: 'x-small',
+      margin: '0 0.4rem',
+      display: 'flex',
+    });
+  }
+
+  private muteStyle() {
+    return this.main.stylable('player-mute', {
+      '--mdc-icon-size': '1.25rem',
+      alignSelf: 'center',
+    });
   }
 
   static get styles() {
     return css`
-      .container {
-        margin-top: 1rem;
-        position: relative;
-        background: var(--sonos-int-background-color);
-        border-radius: var(--sonos-int-border-radius);
-        padding-bottom: 100%;
-        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
-      }
-
-      .body {
-        position: absolute;
-        inset: 0px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-
-      .footer {
-        background: var(--sonos-int-player-section-background);
-        margin: 0.25rem;
-        padding: 0.5rem;
-        border-radius: var(--sonos-int-border-radius);
-        overflow: hidden auto;
-      }
-
-      .footer input {
-        width: 97%;
-      }
-
-      .footer-icons {
-        justify-content: space-between;
-        display: flex;
-      }
-
-      .footer div ha-icon {
-        padding: 0.3rem;
-        --mdc-icon-size: min(100%, 1.25rem);
-      }
-
-      .volumeRange {
-        -webkit-appearance: none;
-        height: 0.25rem;
-        border-radius: var(--sonos-int-border-radius);
-        outline: none;
-        opacity: 0.7;
-        -webkit-transition: 0.2s;
-        transition: opacity 0.2s;
-        margin: 0.25rem 0.25rem 0 0.25rem;
-      }
-
-      .info {
-        margin: 0.25rem;
-        padding: 0.5rem;
-        text-align: center;
-        background: var(--sonos-int-player-section-background);
-        border-radius: var(--sonos-int-border-radius);
-      }
-
-      .artist,
-      .album {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 0.75rem;
-        font-weight: 300;
-        color: var(--sonos-int-artist-album-text-color);
-        white-space: wrap;
-      }
-
-      .song {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 1.15rem;
-        font-weight: 400;
-        color: var(--sonos-int-song-text-color);
-        white-space: wrap;
-      }
-
-      ha-icon:focus,
-      ha-icon:hover {
+      hoverable:focus,
+      hoverable:hover {
         color: var(--sonos-int-accent-color);
-      }
-
-      .no-media-text {
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .volume {
-        display: flex;
-      }
-      .volume-name {
-        margin-top: 1rem;
-        margin-left: 0.4rem;
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .volume-slider {
-        flex: 4;
-      }
-      .volume-level {
-        font-size: x-small;
-        margin: 0 0.4rem;
-        display: flex;
-      }
-      .group-member-volume {
-        border-top: dotted var(--sonos-int-color);
-        margin-top: 0.4rem;
-      }
-      .mute {
-        --mdc-icon-size: 1.25rem;
-        align-self: center;
       }
     `;
   }

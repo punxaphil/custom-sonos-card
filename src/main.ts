@@ -70,6 +70,16 @@ export class CustomSonosCard extends LitElement {
     });
   }
 
+  buttonSectionStyle(additionalStyle?: StyleInfo) {
+    return this.stylable('button-section', {
+      background: 'var(--sonos-int-button-section-background-color)',
+      borderRadius: 'var(--sonos-int-border-radius)',
+      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
+      marginTop: '1rem',
+      padding: '0 0.5rem',
+      ...additionalStyle,
+    });
+  }
   private titleStyle() {
     return this.stylable('title', { display: this.config.name ? 'block' : 'none', ...titleStyle });
   }
