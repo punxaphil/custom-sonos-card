@@ -45,11 +45,11 @@ class MediaBrowser extends LitElement {
         ${this.activePlayer !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
-            const itemsWithoutImage = MediaBrowser.itemsWithoutImage(items);
-            const mediaItemWidth = itemsWithoutImage
+            const itemsWithImage = MediaBrowser.itemsWithImage(items);
+            const mediaItemWidth = itemsWithImage
               ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
               : '100%';
-            return html` <div style="${this.mediaButtonsStyle(itemsWithoutImage)}">
+            return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
               ${items.map(
                 (mediaItem) => html`
                   <sonos-media-button
@@ -120,7 +120,7 @@ class MediaBrowser extends LitElement {
     }
   }
 
-  private static itemsWithoutImage(items: MediaPlayerItem[]) {
+  private static itemsWithImage(items: MediaPlayerItem[]) {
     return items.some((item) => item.thumbnail || item.can_expand);
   }
 
@@ -132,9 +132,9 @@ class MediaBrowser extends LitElement {
 
   private headerStyle() {
     return this.main.stylable('media-browser-header', {
-      color: 'var(--sonos-int-title-color)',
       display: 'flex',
       justifyContent: 'space-between',
+      ...titleStyle,
     });
   }
 
@@ -144,7 +144,7 @@ class MediaBrowser extends LitElement {
   };
 
   private titleStyle() {
-    return this.main.stylable('title', { ...titleStyle, ...this.headerChildStyle });
+    return this.main.stylable('title', this.headerChildStyle);
   }
 
   private playDirStyle() {
@@ -156,12 +156,12 @@ class MediaBrowser extends LitElement {
     });
   }
 
-  private mediaButtonsStyle(itemsWithoutImage: boolean) {
+  private mediaButtonsStyle(itemsWithImage: boolean) {
     return this.main.stylable('media-buttons', {
       padding: '0',
       display: 'flex',
       flexWrap: 'wrap',
-      ...(itemsWithoutImage && { flexDirection: 'column' }),
+      ...(!itemsWithImage && { flexDirection: 'column' }),
     });
   }
 
