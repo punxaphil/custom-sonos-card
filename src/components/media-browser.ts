@@ -5,11 +5,11 @@ import { CardConfig, MediaPlayerItem } from '../types';
 import { getWidth } from '../utils';
 import MediaControlService from '../services/media-control-service';
 import { until } from 'lit-html/directives/until.js';
-import { titleStyle } from '../sharedStyle';
 import { CustomSonosCard } from '../main';
 import './media-button';
+import './media-browser-header';
 
-class MediaBrowser extends LitElement {
+export class MediaBrowser extends LitElement {
   @property() main!: CustomSonosCard;
   @property() mediaPlayers!: string[];
   @state() private browse!: boolean;
@@ -28,20 +28,12 @@ class MediaBrowser extends LitElement {
     this.mediaBrowseService = this.main.mediaBrowseService;
     return html`
       <div style="${this.main.buttonSectionStyle({ textAlign: 'center' })}">
-        <div style="${this.headerStyle()}" class="hoverable">
-          <div style="${this.playDirStyle()}" class="hoverable">
-            ${this.currentDir?.can_play
-              ? html` <ha-icon
-                  .icon=${'mdi:play'}
-                  @click="${() => this.playItem(<MediaPlayerItem>this.currentDir)}"
-                ></ha-icon>`
-              : ''}
-          </div>
-          <div style="${this.titleStyle()}">${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
-          <div style="${this.browseStyle()}" @click="${() => this.browseClicked()}">
-            <ha-icon .icon=${this.browse ? 'mdi:arrow-left-bold' : 'mdi:play-box-multiple'}></ha-icon>
-          </div>
-        </div>
+        <sonos-media-browser-header
+          .main=${this.main}
+          .mediaBrowser=${this}
+          .browse=${this.browse}
+          .currentDir=${this.currentDir}
+        ></sonos-media-browser-header>
         ${this.activePlayer !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
@@ -68,7 +60,7 @@ class MediaBrowser extends LitElement {
     `;
   }
 
-  private browseClicked() {
+  browseClicked() {
     if (this.parentDirs.length) {
       this.currentDir = this.parentDirs.pop();
     } else if (this.currentDir) {
@@ -87,7 +79,7 @@ class MediaBrowser extends LitElement {
     }
   }
 
-  private playItem(mediaItem: MediaPlayerItem) {
+  playItem(mediaItem: MediaPlayerItem) {
     if (mediaItem.media_content_type || mediaItem.media_content_id) {
       this.mediaControlService.playMedia(this.activePlayer, mediaItem);
     } else {
@@ -129,33 +121,6 @@ class MediaBrowser extends LitElement {
       ? this.mediaBrowseService.getDir(this.activePlayer, mediaItem)
       : this.mediaBrowseService.getRoot(this.activePlayer));
   }
-
-  private headerStyle() {
-    return this.main.stylable('media-browser-header', {
-      display: 'flex',
-      justifyContent: 'space-between',
-      ...titleStyle,
-    });
-  }
-
-  private headerChildStyle = {
-    flex: '1',
-    '--mdc-icon-size': '1.5rem',
-  };
-
-  private titleStyle() {
-    return this.main.stylable('title', this.headerChildStyle);
-  }
-
-  private playDirStyle() {
-    return this.main.stylable('media-browser-play-dir', {
-      textAlign: 'left',
-      paddingRight: '-0.5rem',
-      marginLeft: '0.5rem',
-      ...this.headerChildStyle,
-    });
-  }
-
   private mediaButtonsStyle(itemsWithImage: boolean) {
     return this.main.stylable('media-buttons', {
       padding: '0',
@@ -163,24 +128,6 @@ class MediaBrowser extends LitElement {
       flexWrap: 'wrap',
       ...(!itemsWithImage && { flexDirection: 'column' }),
     });
-  }
-
-  private browseStyle() {
-    return this.main.stylable('media-browse', {
-      textAlign: 'right',
-      paddingRight: '0.5rem',
-      marginLeft: '-0.5rem',
-      ...this.headerChildStyle,
-    });
-  }
-
-  static get styles() {
-    return css`
-      .hoverable:focus,
-      .hoverable:hover {
-        color: var(--sonos-int-accent-color);
-      }
-    `;
   }
 }
 
