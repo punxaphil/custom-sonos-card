@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import MediaBrowseService from '../services/media-browse-service';
 import { CardConfig, MediaPlayerItem } from '../types';
