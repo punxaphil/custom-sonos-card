@@ -136,10 +136,7 @@ class Player extends LitElement {
         : this.hass.states[entity].attributes.is_volume_muted;
     return html`
       <div style="${this.volumeStyle(isGroupMember)}">
-        ${name
-          ? html`
-          <div style="${this.volumeNameStyle()}" ${name}</div>`
-          : ''}
+        ${name ? html` <div style="${this.volumeNameStyle()}">${name}</div>` : ''}
         <ha-icon
           style="${this.muteStyle()}"
           @click="${() => this.mediaControlService.volumeMute(entity, !volumeMuted, members)}"
