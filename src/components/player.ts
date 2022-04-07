@@ -9,6 +9,8 @@ import { CustomSonosCard } from '../main';
 import MediaControlService from '../services/media-control-service';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { until } from 'lit-html/directives/until.js';
+import HassService from '../services/hass-service';
 
 class Player extends LitElement {
   @property() main!: CustomSonosCard;
@@ -17,6 +19,8 @@ class Player extends LitElement {
   private config!: CardConfig;
   private entityId!: string;
   private mediaControlService!: MediaControlService;
+  private hassService!: HassService;
+
   @state() private timerToggleShowAllVolumes!: number;
 
   render() {
@@ -24,6 +28,7 @@ class Player extends LitElement {
     this.entityId = this.main.activePlayer;
     this.config = this.main.config;
     this.mediaControlService = this.main.mediaControlService;
+    this.hassService = this.main.hassService;
     const entityAttributes = this.getEntityAttributes();
     const isGroup = entityAttributes.sonos_group.length > 1;
     let allVolumes = [];
@@ -64,6 +69,7 @@ class Player extends LitElement {
               ${this.clickableIcon('mdi:skip-forward', () => this.mediaControlService.next(this.entityId))}
               ${this.clickableIcon(this.shuffleIcon(), () => this.shuffleClicked())}
               ${this.clickableIcon(this.repeatIcon(), () => this.repeatClicked())}
+              ${until(this.getAdditionalSwitches())}
               ${this.clickableIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !isGroup)}
               ${this.clickableIcon('mdi:volume-plus', () => this.volumeUp())}
             </div>
@@ -347,6 +353,26 @@ class Player extends LitElement {
     return this.main.stylable('player-mute', {
       '--mdc-icon-size': '1.25rem',
       alignSelf: 'center',
+    });
+  }
+
+  private getAdditionalSwitches() {
+    return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
+      return items.map((item: string) => {
+        return html`
+          <ha-icon
+            style="color: ${this.hass.states[item].state === 'on'
+              ? 'var(--sonos-int-accent-color)'
+              : 'var(--sonos-int-color)'}"
+            @click="${() => {
+              this.hass.callService('homeassistant', 'toggle', {
+                entity_id: item,
+              });
+            }}"
+            .icon=${this.hass.states[item].attributes.icon}
+          ></ha-icon>
+        `;
+      });
     });
   }
 

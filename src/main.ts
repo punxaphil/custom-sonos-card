@@ -29,12 +29,13 @@ export class CustomSonosCard extends LitElement {
   @state() showVolumes!: boolean;
   mediaBrowseService!: MediaBrowseService;
   mediaControlService!: MediaControlService;
+  hassService!: HassService;
 
   render() {
     if (!this.mediaBrowseService) {
-      const hassService = new HassService(this.hass);
-      this.mediaBrowseService = new MediaBrowseService(this.hass, hassService);
-      this.mediaControlService = new MediaControlService(this.hass, hassService);
+      this.hassService = new HassService(this.hass);
+      this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
+      this.mediaControlService = new MediaControlService(this.hass, this.hassService);
     }
     const mediaPlayers = getMediaPlayers(this.config, this.hass);
     const playerGroups = createPlayerGroups(mediaPlayers, this.hass, this.config);
