@@ -9,6 +9,8 @@ import { CustomSonosCard } from '../main';
 import MediaControlService from '../services/media-control-service';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { until } from 'lit-html/directives/until.js';
+import HassService from '../services/hass-service';
 
 class Player extends LitElement {
   @property() main!: CustomSonosCard;
@@ -17,6 +19,8 @@ class Player extends LitElement {
   private config!: CardConfig;
   private entityId!: string;
   private mediaControlService!: MediaControlService;
+  private hassService!: HassService;
+
   @state() private timerToggleShowAllVolumes!: number;
 
   render() {
@@ -24,6 +28,7 @@ class Player extends LitElement {
     this.entityId = this.main.activePlayer;
     this.config = this.main.config;
     this.mediaControlService = this.main.mediaControlService;
+    this.hassService = this.main.hassService;
     const entityAttributes = this.getEntityAttributes();
     const isGroup = entityAttributes.sonos_group.length > 1;
     let allVolumes = [];
@@ -64,6 +69,7 @@ class Player extends LitElement {
               ${this.clickableIcon('mdi:skip-forward', () => this.mediaControlService.next(this.entityId))}
               ${this.clickableIcon(this.shuffleIcon(), () => this.shuffleClicked())}
               ${this.clickableIcon(this.repeatIcon(), () => this.repeatClicked())}
+              ${until(this.getAdditionalSwitches())}
               ${this.clickableIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !isGroup)}
               ${this.clickableIcon('mdi:volume-plus', () => this.volumeUp())}
             </div>
@@ -106,11 +112,11 @@ class Player extends LitElement {
     this.mediaControlService.volumeUp(this.entityId, this.members);
   }
 
-  private clickableIcon(icon: string, click: () => void, hidden = false) {
+  private clickableIcon(icon: string, click: () => void, hidden = false, additionalStyle?: StyleInfo) {
     return html`
       <ha-icon
         @click="${click}"
-        style="${this.iconStyle()}"
+        style="${this.iconStyle(additionalStyle)}"
         class="hoverable"
         .icon=${icon}
         ?hidden="${hidden}"
@@ -164,6 +170,19 @@ class Player extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private getAdditionalSwitches() {
+    return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
+      return items.map((item: string) => {
+        return this.clickableIcon(
+          this.hass.states[item].attributes.icon || '',
+          () => this.hassService.toggle(item),
+          false,
+          this.hass.states[item].state === 'on' ? { color: 'var(--sonos-int-accent-color)' } : {},
+        );
+      });
+    });
   }
 
   private volumeClicked(oldVolume: number, newVolume: number, isGroup: boolean) {
@@ -243,10 +262,11 @@ class Player extends LitElement {
     });
   }
 
-  private iconStyle() {
+  private iconStyle(additionalStyle?: StyleInfo) {
     return this.main.stylable('player-footer-icon', {
       padding: '0.3rem',
       '--mdc-icon-size': 'min(100%, 1.25rem)',
+      ...additionalStyle,
     });
   }
 
@@ -352,8 +372,8 @@ class Player extends LitElement {
 
   static get styles() {
     return css`
-      hoverable:focus,
-      hoverable:hover {
+      .hoverable:focus,
+      .hoverable:hover {
         color: var(--sonos-int-accent-color);
       }
     `;

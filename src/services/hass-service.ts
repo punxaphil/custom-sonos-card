@@ -25,4 +25,18 @@ export default class HassService {
       media_content_type,
     });
   }
+
+  async getRelatedSwitchEntities(entityId: string) {
+    const response = await this.hass.callApi('POST', 'template', {
+      template: "{{ device_entities(device_id('" + entityId + "')) }}",
+    });
+    const items = JSON.parse((response as string).replace(/'/g, '"'));
+    return items.filter((item: string) => item.indexOf('switch') > -1);
+  }
+
+  async toggle(entity_id: string) {
+    await this.hass.callService('homeassistant', 'toggle', {
+      entity_id,
+    });
+  }
 }
