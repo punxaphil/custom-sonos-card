@@ -33,4 +33,10 @@ export default class HassService {
     const items = JSON.parse((response as string).replace(/'/g, '"'));
     return items.filter((item: string) => item.indexOf('switch') > -1);
   }
+
+  async toggle(entity_id: string) {
+    await this.hass.callService('homeassistant', 'toggle', {
+      entity_id,
+    });
+  }
 }

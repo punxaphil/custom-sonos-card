@@ -112,11 +112,11 @@ class Player extends LitElement {
     this.mediaControlService.volumeUp(this.entityId, this.members);
   }
 
-  private clickableIcon(icon: string, click: () => void, hidden = false) {
+  private clickableIcon(icon: string, click: () => void, hidden = false, additionalStyle?: StyleInfo) {
     return html`
       <ha-icon
         @click="${click}"
-        style="${this.iconStyle()}"
+        style="${this.iconStyle(additionalStyle)}"
         class="hoverable"
         .icon=${icon}
         ?hidden="${hidden}"
@@ -170,6 +170,19 @@ class Player extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private getAdditionalSwitches() {
+    return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
+      return items.map((item: string) => {
+        return this.clickableIcon(
+          this.hass.states[item].attributes.icon || '',
+          () => this.hassService.toggle(item),
+          false,
+          this.hass.states[item].state === 'on' ? { color: 'var(--sonos-int-accent-color)' } : {},
+        );
+      });
+    });
   }
 
   private volumeClicked(oldVolume: number, newVolume: number, isGroup: boolean) {
@@ -249,10 +262,11 @@ class Player extends LitElement {
     });
   }
 
-  private iconStyle() {
+  private iconStyle(additionalStyle?: StyleInfo) {
     return this.main.stylable('player-footer-icon', {
       padding: '0.3rem',
       '--mdc-icon-size': 'min(100%, 1.25rem)',
+      ...additionalStyle,
     });
   }
 
@@ -356,30 +370,10 @@ class Player extends LitElement {
     });
   }
 
-  private getAdditionalSwitches() {
-    return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
-      return items.map((item: string) => {
-        return html`
-          <ha-icon
-            style="color: ${this.hass.states[item].state === 'on'
-              ? 'var(--sonos-int-accent-color)'
-              : 'var(--sonos-int-color)'}"
-            @click="${() => {
-              this.hass.callService('homeassistant', 'toggle', {
-                entity_id: item,
-              });
-            }}"
-            .icon=${this.hass.states[item].attributes.icon}
-          ></ha-icon>
-        `;
-      });
-    });
-  }
-
   static get styles() {
     return css`
-      hoverable:focus,
-      hoverable:hover {
+      .hoverable:focus,
+      .hoverable:hover {
         color: var(--sonos-int-accent-color);
       }
     `;
