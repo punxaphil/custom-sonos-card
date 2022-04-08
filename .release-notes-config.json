@@ -11,6 +11,10 @@
     {
       "title": "## 📚 Documentation",
       "labels": ["doc"]
+    },
+    {
+      "title": "## 📦 Uncategorized",
+      "labels": []
     }
   ],
   "template": "${{CHANGELOG}}\n\n## 🛠 Under the hood\n\n${{UNCATEGORIZED}}",
