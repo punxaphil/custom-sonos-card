@@ -15,7 +15,7 @@
     {
       "title": "## 📦 Uncategorized",
       "labels": []
-    }
+    }<
   ],
   "template": "${{CHANGELOG}}\n\n## 🛠 Under the hood\n\n${{UNCATEGORIZED}}",
   "pr_template": "- [${{TITLE}}](https://github.com/johanfrick/custom-sonos-card/commit/${{MERGE_SHA}})",
