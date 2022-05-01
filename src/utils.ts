@@ -15,12 +15,16 @@ export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: s
   return name;
 }
 
+export function getGroupMembers(state: { attributes: { [p: string]: any } }) {
+  return state.attributes.sonos_group || state.attributes.group_members;
+}
+
 export function getMediaPlayers(config: CardConfig, hass: HomeAssistant) {
   if (config.entities) {
     return [...new Set(config.entities)].sort().filter((player) => hass.states[player]);
   } else {
     return Object.values(hass.states)
-      .filter((state) => state.attributes.sonos_group)
+      .filter(getGroupMembers)
       .map((state) => state.entity_id)
       .sort();
   }
@@ -35,8 +39,7 @@ export function createPlayerGroups(mediaPlayers: string[], hass: HomeAssistant, 
 function createGroupMasters(hass: HomeAssistant, player: string, mediaPlayers: string[]) {
   const state = hass.states[player];
   try {
-    const stateAttributes = state.attributes;
-    const sonosGroup = stateAttributes.sonos_group.filter((member: string) => mediaPlayers.indexOf(member) > -1);
+    const sonosGroup = getGroupMembers(state).filter((member: string) => mediaPlayers.indexOf(member) > -1);
     const isGrouped = sonosGroup?.length > 1;
     const isMasterInGroup = isGrouped && sonosGroup && sonosGroup[0] === player;
     return !isGrouped || isMasterInGroup;
@@ -49,7 +52,7 @@ function createGroupMasters(hass: HomeAssistant, player: string, mediaPlayers: s
 function createGroupArray(hass: HomeAssistant, groupMaster: string, mediaPlayers: string[], config: CardConfig) {
   const state = hass.states[groupMaster];
   try {
-    const membersArray = state.attributes.sonos_group.filter((member: string) => {
+    const membersArray = getGroupMembers(state).filter((member: string) => {
       return member !== groupMaster && mediaPlayers.indexOf(member) > -1;
     });
     return {

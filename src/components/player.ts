@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { getEntityName } from '../utils';
+import { getEntityName, getGroupMembers } from '../utils';
 
 import { CardConfig, Members } from '../types';
 import { HomeAssistant } from 'custom-card-helpers';
@@ -31,10 +31,10 @@ class Player extends LitElement {
     this.mediaControlService = this.main.mediaControlService;
     this.hassService = this.main.hassService;
     const entityAttributes = this.getEntityAttributes();
-    const isGroup = entityAttributes.sonos_group.length > 1;
+    const isGroup = getGroupMembers(this.hass.states[this.entityId]).length > 1;
     let allVolumes = [];
     if (isGroup) {
-      allVolumes = entityAttributes.sonos_group.map((member: string) =>
+      allVolumes = getGroupMembers(this.hass.states[this.entityId]).map((member: string) =>
         this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup, true),
       );
     }

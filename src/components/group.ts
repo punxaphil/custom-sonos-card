@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { getEntityName } from '../utils';
+import { getEntityName, getGroupMembers } from '../utils';
 import { CustomSonosCard } from '../main';
 import { PlayerGroup } from '../types';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -18,7 +18,7 @@ class Group extends LitElement {
       /^ - /g,
       '',
     );
-    const speakerList = stateObj.attributes.sonos_group
+    const speakerList = getGroupMembers(stateObj)
       .map((speaker: string) => getEntityName(this.main.hass, config, speaker))
       .join(' + ');
     return html`
