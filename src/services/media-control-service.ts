@@ -19,7 +19,7 @@ export default class MediaControlService {
   }
 
   unjoin(entities: string) {
-    this.hassService.callSonosService('unjoin', {
+    this.hassService.callMediaService('unjoin', {
       entity_id: entities,
     });
   }

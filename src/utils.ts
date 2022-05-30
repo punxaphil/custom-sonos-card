@@ -21,7 +21,7 @@ export function getGroupMembers(state: { attributes: { [p: string]: any } }) {
 
 export function getMediaPlayers(config: CardConfig, hass: HomeAssistant) {
   if (config.entities) {
-    return [...new Set(config.entities)].sort().filter((player) => hass.states[player]);
+    return [...new Set(config.entities)].filter((player) => hass.states[player]);
   } else {
     return Object.values(hass.states)
       .filter(getGroupMembers)

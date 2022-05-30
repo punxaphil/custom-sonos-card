@@ -136,7 +136,9 @@ class Player extends LitElement {
     let max = 100;
     let inputColor = 'rgb(211, 3, 32)';
     if (volume < 20) {
-      max = 30;
+      if (!this.config.disableDynamicVolumeSlider) {
+        max = 30;
+      }
       inputColor = 'rgb(72,187,14)';
     }
     const volumeMuted =
@@ -221,6 +223,7 @@ class Player extends LitElement {
   private containerStyle(entityState: HassEntity) {
     const entityImage = entityState.attributes.entity_picture;
     const mediaTitle = entityState.attributes.media_title;
+    const mediaContentId = entityState.attributes.media_content_id;
     let style: StyleInfo = {
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
@@ -228,9 +231,12 @@ class Player extends LitElement {
       backgroundImage: entityImage ? `url(${entityImage})` : '',
     };
     const overrides = this.config.mediaArtworkOverrides;
-    if (mediaTitle && overrides) {
+    if (overrides) {
       const override = overrides.find(
-        (value) => (!entityImage && value.ifMissing) || mediaTitle === value.mediaTitleEquals,
+        (value) =>
+          (!entityImage && value.ifMissing) ||
+          mediaTitle === value.mediaTitleEquals ||
+          mediaContentId === value.mediaContentIdEquals,
       );
       if (override) {
         style = {

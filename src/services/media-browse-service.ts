@@ -2,6 +2,16 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { MediaPlayerItem } from '../types';
 import HassService from './hass-service';
 
+function mediaBrowserFilter(ignoredTitles: string[], items?: MediaPlayerItem[]) {
+  return items?.filter((item) => {
+    console.log(item.title);
+    return (
+      ['media-source://tts', 'media-source://camera'].indexOf(item.media_content_id || '') === -1 &&
+      ignoredTitles.indexOf(item.title) === -1
+    );
+  });
+}
+
 export default class MediaBrowseService {
   private hass: HomeAssistant;
   private hassService: HassService;
@@ -11,30 +21,28 @@ export default class MediaBrowseService {
     this.hassService = hassService;
   }
 
-  async getRoot(mediaPlayer: string): Promise<MediaPlayerItem[]> {
+  async getRoot(mediaPlayer: string, ignoredTitles: string[]): Promise<MediaPlayerItem[]> {
     const root = await this.hassService.browseMedia(mediaPlayer);
-    return (
-      root.children?.filter((item) => {
-        return ['media-source://tts', 'media-source://camera'].indexOf(item.media_content_id || '') === -1;
-      }) || []
-    );
+    return mediaBrowserFilter(ignoredTitles, root.children) || [];
   }
 
-  async getDir(mediaPlayer: string, dir: MediaPlayerItem): Promise<MediaPlayerItem[]> {
+  async getDir(mediaPlayer: string, dir: MediaPlayerItem, ignoredTitles: string[]): Promise<MediaPlayerItem[]> {
     try {
       const dirItem = await this.hassService.browseMedia(mediaPlayer, dir.media_content_type, dir.media_content_id);
-      return dirItem.children || [];
+      return mediaBrowserFilter(ignoredTitles, dirItem.children) || [];
     } catch (e) {
       console.error(e);
       return [];
     }
   }
 
-  async getAllFavorites(mediaPlayers: string[]): Promise<MediaPlayerItem[]> {
+  async getAllFavorites(mediaPlayers: string[], ignoredTitles: string[]): Promise<MediaPlayerItem[]> {
     if (!mediaPlayers.length) {
       return [];
     }
-    const favoritesForAllPlayers = await Promise.all(mediaPlayers.map((player) => this.getFavoritesForPlayer(player)));
+    const favoritesForAllPlayers = await Promise.all(
+      mediaPlayers.map((player) => this.getFavoritesForPlayer(player, ignoredTitles)),
+    );
     let favorites = favoritesForAllPlayers.flatMap((f) => f);
     favorites = this.removeDuplicates(favorites);
     return favorites.length ? favorites : this.getFavoritesFromStates(mediaPlayers);
@@ -46,13 +54,13 @@ export default class MediaBrowseService {
     });
   }
 
-  private async getFavoritesForPlayer(player: string) {
+  private async getFavoritesForPlayer(player: string, ignoredTitles: string[]) {
     const favoritesRoot = await this.hassService.browseMedia(player, 'favorites', '');
     const favoriteTypesPromise = favoritesRoot.children?.map((favoriteItem) =>
       this.hassService.browseMedia(player, favoriteItem.media_content_type, favoriteItem.media_content_id),
     );
     const favoriteTypes = favoriteTypesPromise ? await Promise.all(favoriteTypesPromise) : [];
-    return favoriteTypes.flatMap((item) => item.children || []);
+    return favoriteTypes.flatMap((item) => mediaBrowserFilter(ignoredTitles, item.children) || []);
   }
 
   private getFavoritesFromStates(mediaPlayers: string[]) {

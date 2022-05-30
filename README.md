@@ -76,6 +76,8 @@ mediaArtworkOverrides: # Show your own selected artwork if certain rules match
   - mediaTitleEquals: TV
     imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
     sizePercentage: 40
+  - mediaContentIdEquals: "x-sonos-htastream:RINCON_949F3EC2E15B01400:spdif"
+    imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108783.png
   - mediaTitleEquals: p4malmo-aac-192
     imageUrl: >-
       https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
@@ -90,7 +92,11 @@ customThumbnailIfMissing: # for the media browser section
 backgroundBehindButtonSections: true # default is false, which means no background behind the different button sections
 hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
 skipAdditionalPlayerSwitches: true # default is false, which means additional switches will be shown in player if available (such as crossfade button)
-entities: # Deprecated, entities are now automatically discovered if you don't supply this setting
+disableDynamicVolumeSlider: true # default is false. See more in section further down.
+mediaBrowserTitlesToIgnore:
+  - Local Media
+  - My Bad Playlist
+entities: # Entities are automatically discovered if you don't supply this setting
   - media_player.sonos_kitchen
   - media_player.sonos_hallway
   - media_player.sonos_bedroom
@@ -275,6 +281,7 @@ The volume level slider is dynamically adjusting its scale. If volume is below 2
 
 ![img/volume-red.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/volume-red.png)
 
+Disable it in config with `disableDynamicVolumeSlider: true`
 
 ## Linking to specific player
 Append `#media_player.my_sonos_player` to page URL to have that player selected.

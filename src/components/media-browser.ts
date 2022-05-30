@@ -90,7 +90,10 @@ export class MediaBrowser extends LitElement {
   }
 
   private async getAllFavorites() {
-    let allFavorites = await this.mediaBrowseService.getAllFavorites(this.mediaPlayers);
+    let allFavorites = await this.mediaBrowseService.getAllFavorites(
+      this.mediaPlayers,
+      this.config.mediaBrowserTitlesToIgnore,
+    );
     if (this.config.shuffleFavorites) {
       MediaBrowser.shuffleArray(allFavorites);
     } else {
@@ -120,8 +123,8 @@ export class MediaBrowser extends LitElement {
 
   private async loadMediaDir(mediaItem?: MediaPlayerItem) {
     return await (mediaItem
-      ? this.mediaBrowseService.getDir(this.activePlayer, mediaItem)
-      : this.mediaBrowseService.getRoot(this.activePlayer));
+      ? this.mediaBrowseService.getDir(this.activePlayer, mediaItem, this.config.mediaBrowserTitlesToIgnore)
+      : this.mediaBrowseService.getRoot(this.activePlayer, this.config.mediaBrowserTitlesToIgnore));
   }
   private mediaButtonsStyle(itemsWithImage: boolean) {
     return this.main.stylable('media-buttons', {
