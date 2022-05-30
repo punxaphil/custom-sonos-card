@@ -38,9 +38,11 @@ export class MediaBrowser extends LitElement {
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
             const itemsWithImage = MediaBrowser.itemsWithImage(items);
-            const mediaItemWidth = itemsWithImage
-              ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
-              : '100%';
+            const mediaItemWidth =
+              //   itemsWithImage
+              // ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
+              // :
+              '100%';
             return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
               ${items.map(
                 (mediaItem) => html`
