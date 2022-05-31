@@ -7,6 +7,7 @@ import MediaControlService from '../services/media-control-service';
 import { until } from 'lit-html/directives/until.js';
 import { CustomSonosCard } from '../main';
 import './media-button';
+import './media-list-item';
 import './media-browser-header';
 
 export class MediaBrowser extends LitElement {
@@ -38,23 +39,33 @@ export class MediaBrowser extends LitElement {
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
             const itemsWithImage = MediaBrowser.itemsWithImage(items);
-            const mediaItemWidth =
-              //   itemsWithImage
-              // ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
-              // :
-              '100%';
             return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
-              ${items.map(
-                (mediaItem) => html`
-                  <sonos-media-button
-                    style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
-                    .mediaItem="${mediaItem}"
-                    .config="${this.config}"
-                    @click="${() => this.onMediaItemClick(mediaItem)}"
-                    .main="${this.main}"
-                  ></sonos-media-button>
-                `,
-              )}
+              ${items.map((mediaItem) => {
+                if (this.config.mediaBrowserItemsAsList) {
+                  return html`
+                    <sonos-media-list-item
+                      style="width: 100%;max-width: 100%;"
+                      .mediaItem="${mediaItem}"
+                      .config="${this.config}"
+                      @click="${() => this.onMediaItemClick(mediaItem)}"
+                      .main="${this.main}"
+                    ></sonos-media-list-item>
+                  `;
+                } else {
+                  const mediaItemWidth = itemsWithImage
+                    ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
+                    : '100%';
+                  return html`
+                    <sonos-media-button
+                      style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
+                      .mediaItem="${mediaItem}"
+                      .config="${this.config}"
+                      @click="${() => this.onMediaItemClick(mediaItem)}"
+                      .main="${this.main}"
+                    ></sonos-media-button>
+                  `;
+                }
+              })}
             </div>`;
           }),
         )}
