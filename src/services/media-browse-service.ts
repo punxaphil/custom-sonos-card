@@ -2,13 +2,12 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { MediaPlayerItem } from '../types';
 import HassService from './hass-service';
 
-function mediaBrowserFilter(ignoredTitles: string[], items?: MediaPlayerItem[]) {
-  return items?.filter((item) => {
-    return (
+function mediaBrowserFilter(ignoredTitles: string[] = [], items?: MediaPlayerItem[]) {
+  return items?.filter(
+    (item) =>
       ['media-source://tts', 'media-source://camera'].indexOf(item.media_content_id || '') === -1 &&
-      ignoredTitles.indexOf(item.title) === -1
-    );
-  });
+      ignoredTitles.indexOf(item.title) === -1,
+  );
 }
 
 export default class MediaBrowseService {
