@@ -9,6 +9,8 @@ import { CustomSonosCard } from '../main';
 import './media-button';
 import './media-browser-header';
 
+const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
+
 export class MediaBrowser extends LitElement {
   @property() main!: CustomSonosCard;
   @property() mediaPlayers!: string[];
@@ -26,6 +28,11 @@ export class MediaBrowser extends LitElement {
     this.activePlayer = this.main.activePlayer;
     this.mediaControlService = this.main.mediaControlService;
     this.mediaBrowseService = this.main.mediaBrowseService;
+    const currentDirJson = localStorage.getItem(LOCAL_STORAGE_CURRENT_DIR);
+    if (currentDirJson) {
+      this.currentDir = JSON.parse(currentDirJson);
+      this.browse = true;
+    }
     return html`
       <div style="${this.main.buttonSectionStyle({ textAlign: 'center' })}">
         <sonos-media-browser-header
@@ -62,18 +69,27 @@ export class MediaBrowser extends LitElement {
 
   browseClicked() {
     if (this.parentDirs.length) {
-      this.currentDir = this.parentDirs.pop();
+      this.setCurrentDir(this.parentDirs.pop());
     } else if (this.currentDir) {
-      this.currentDir = undefined;
+      this.setCurrentDir(undefined);
     } else {
       this.browse = !this.browse;
+    }
+  }
+
+  private setCurrentDir(mediaItem?: MediaPlayerItem) {
+    this.currentDir = mediaItem;
+    if (mediaItem) {
+      localStorage.setItem(LOCAL_STORAGE_CURRENT_DIR, JSON.stringify(mediaItem));
+    } else {
+      localStorage.removeItem(LOCAL_STORAGE_CURRENT_DIR);
     }
   }
 
   private onMediaItemClick(mediaItem: MediaPlayerItem) {
     if (mediaItem.can_expand) {
       this.currentDir && this.parentDirs.push(this.currentDir);
-      this.currentDir = mediaItem;
+      this.setCurrentDir(mediaItem);
     } else if (mediaItem.can_play) {
       this.playItem(mediaItem);
     }
