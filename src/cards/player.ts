@@ -13,6 +13,7 @@ import {
   validateConfig,
   wrapInHaCardUnlessAllSectionsShown,
 } from '../utils';
+import '../components/progress';
 
 import { CardConfig, Members } from '../types';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
@@ -26,12 +27,12 @@ import { HomeAssistant } from 'custom-card-helpers';
 export class Player extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  mediaControlService!: MediaControlService;
-  hassService!: HassService;
+  private mediaControlService!: MediaControlService;
+  private hassService!: HassService;
+  private entity!: HassEntity;
   @state() private members!: Members;
   @state() private entityId!: string;
   @state() showVolumes!: boolean;
-
   @state() private timerToggleShowAllVolumes!: number;
 
   activePlayerListener = (event: Event) => {
@@ -57,21 +58,23 @@ export class Player extends LitElement {
 
   render() {
     if (this.entityId && this.hass) {
+      this.entity = this.hass.states[this.entityId];
       this.hassService = new HassService(this.hass);
       this.mediaControlService = new MediaControlService(this.hass, this.hassService);
       const mediaPlayers = getMediaPlayers(this.config, this.hass);
       const groups = createPlayerGroups(mediaPlayers, this.hass, this.config);
       this.members = groups[this.entityId].members;
-      const entityAttributes = this.getEntityAttributes();
-      const isGroup = getGroupMembers(this.hass.states[this.entityId]).length > 1;
+      const entityAttributes = this.entity?.attributes;
+      const isGroup = getGroupMembers(this.entity).length > 1;
       let allVolumes = [];
       if (isGroup) {
-        allVolumes = getGroupMembers(this.hass.states[this.entityId]).map((member: string) =>
+        allVolumes = getGroupMembers(this.entity).map((member: string) =>
           this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup, true),
         );
       }
+
       const cardHtml = html`
-        <div style="${this.containerStyle(this.hass.states[this.entityId])}">
+        <div style="${this.containerStyle(this.entity)}">
           <div style="${this.bodyStyle()}">
             ${when(!this.showVolumes, () =>
               entityAttributes.media_title
@@ -101,7 +104,7 @@ export class Player extends LitElement {
                   'mdi:skip-backward',
                   async () => await this.mediaControlService.prev(this.entityId),
                 )}
-                ${this.hass.states[this.entityId].state !== 'playing'
+                ${this.entity.state !== 'playing'
                   ? this.clickableIcon('mdi:play', async () => await this.mediaControlService.play(this.entityId))
                   : this.clickableIcon('mdi:stop', async () => await this.mediaControlService.pause(this.entityId))}
                 ${this.clickableIcon(
@@ -114,6 +117,7 @@ export class Player extends LitElement {
                 ${this.clickableIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !isGroup)}
                 ${this.clickableIcon('mdi:volume-plus', async () => await this.volumeUp())}
               </div>
+              <sonos-progress .hass=${this.hass} .entityId=${this.entityId} .config=${this.config}></sonos-progress>
             </div>
           </div>
         </div>
@@ -132,24 +136,20 @@ export class Player extends LitElement {
   }
 
   private shuffleIcon() {
-    return this.getEntityAttributes().shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled';
+    return this.entity?.attributes.shuffle ? 'mdi:shuffle-variant' : 'mdi:shuffle-disabled';
   }
 
   private async shuffleClicked() {
-    await this.mediaControlService.shuffle(this.entityId, !this.getEntityAttributes().shuffle);
+    await this.mediaControlService.shuffle(this.entityId, !this.entity?.attributes.shuffle);
   }
 
   private async repeatClicked() {
-    await this.mediaControlService.repeat(this.entityId, this.getEntityAttributes().repeat);
+    await this.mediaControlService.repeat(this.entityId, this.entity?.attributes.repeat);
   }
 
   private repeatIcon() {
-    const entityState = this.hass.states[this.entityId];
-    return entityState.attributes.repeat === 'all'
-      ? 'mdi:repeat'
-      : entityState.attributes.repeat === 'one'
-      ? 'mdi:repeat-once'
-      : 'mdi:repeat-off';
+    const repeatState = this.entity?.attributes.repeat;
+    return repeatState === 'all' ? 'mdi:repeat' : repeatState === 'one' ? 'mdi:repeat-once' : 'mdi:repeat-off';
   }
 
   private async volumeUp() {
@@ -166,10 +166,6 @@ export class Player extends LitElement {
         ?hidden="${hidden}"
       ></ha-icon>
     `;
-  }
-
-  private getEntityAttributes() {
-    return this.hass.states[this.entityId].attributes;
   }
 
   getVolumeTemplate(entity: string, name: string, isGroup: boolean, isGroupMember: boolean, members?: Members) {
