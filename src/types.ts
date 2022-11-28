@@ -36,6 +36,7 @@ export interface CardConfig extends LovelaceCardConfig {
   hideGroupCurrentTrack: boolean;
   customThumbnailIfMissing?: CustomThumbnail;
   predefinedGroups?: PredefinedGroup[];
+  mediaBrowserItemsAsList?: boolean;
 }
 
 export interface Layout {

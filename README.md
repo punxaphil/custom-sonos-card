@@ -130,6 +130,7 @@ customThumbnailIfMissing:
 mediaBrowserTitlesToIgnore:
   - Local Media
   - My Bad Playlist
+mediaBrowserItemsAsList: true # default is false, which means showing items as icons
 ```
 
 ### Override artwork
