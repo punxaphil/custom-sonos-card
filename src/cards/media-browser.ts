@@ -14,7 +14,8 @@ import {
   wrapInHaCardUnlessAllSectionsShown,
 } from '../utils';
 import { until } from 'lit-html/directives/until.js';
-import '../components/media-button';
+import '../components/media-list-item';
+import '../components/media-icon-item';
 import '../components/media-browser-header';
 import { HomeAssistant } from 'custom-card-helpers';
 import HassService from '../services/hass-service';
@@ -87,18 +88,28 @@ export class MediaBrowser extends LitElement {
                 ? getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem)
                 : '100%';
               return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
-                ${items.map(
-                  (mediaItem) => html`
-                    <sonos-media-button
-                      style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
-                      .mediaItem="${mediaItem}"
-                      .config="${this.config}"
-                      @click="${async () => await this.onMediaItemClick(mediaItem)}"
-                      .config=${this.config}
-                      .hass=${this.hass}
-                    ></sonos-media-button>
-                  `,
-                )}
+                ${items.map((mediaItem) => {
+                  if (this.config.mediaBrowserItemsAsList) {
+                    return html`
+                      <sonos-media-list-item
+                        style="width: 100%;max-width: 100%;"
+                        .mediaItem="${mediaItem}"
+                        .config="${this.config}"
+                        @click="${() => this.onMediaItemClick(mediaItem)}"
+                      ></sonos-media-list-item>
+                    `;
+                  } else {
+                    return html`
+                      <sonos-media-icon-item
+                        style="width: ${mediaItemWidth};max-width: ${mediaItemWidth};"
+                        .mediaItem="${mediaItem}"
+                        .config="${this.config}"
+                        @click="${async () => await this.onMediaItemClick(mediaItem)}"
+                        .hass=${this.hass}
+                      ></sonos-media-icon-item>
+                    `;
+                  }
+                })}
               </div>`;
             }),
           )}

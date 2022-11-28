@@ -2,7 +2,6 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { titleStyle } from '../sharedStyle';
-import './media-button';
 import { HomeAssistant } from 'custom-card-helpers';
 import { stylable } from '../utils';
 import { MediaBrowser } from '../cards/media-browser';

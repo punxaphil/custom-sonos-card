@@ -1,10 +1,11 @@
-import { css, html, LitElement } from 'lit';
+import { html } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { HomeAssistant } from 'custom-card-helpers';
 import { stylable } from '../utils';
+import { MediaItem } from './media-item';
 
-class MediaButton extends LitElement {
+class MediaIconItem extends MediaItem {
   @property() mediaItem!: MediaPlayerItem;
   @property() hass!: HomeAssistant;
   @property() config!: CardConfig;
@@ -13,7 +14,7 @@ class MediaButton extends LitElement {
     const thumbnail = this.getThumbnail();
     return html`
       <div style="${this.wrapperStyle()}">
-        <div style="${this.mediaButtonStyle(thumbnail)}" class="hoverable">
+        <div style="${this.iconItemStyle(thumbnail)}" class="hoverable">
           <div style="${this.titleStyle(thumbnail)}">${this.mediaItem.title}</div>
           <ha-icon style="${this.folderStyle(thumbnail)}" .icon=${'mdi:folder-music'}></ha-icon>
         </div>
@@ -21,28 +22,9 @@ class MediaButton extends LitElement {
     `;
   }
 
-  private getThumbnail() {
-    let thumbnail = this.mediaItem.thumbnail;
-    if (!thumbnail) {
-      thumbnail = this.config.customThumbnailIfMissing?.[this.mediaItem.title] || '';
-    } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
-      thumbnail = thumbnail?.replace('logo.png', 'icon.png');
-    }
-    return thumbnail;
-  }
-  private wrapperStyle() {
-    return stylable('media-button-wrapper', this.config, {
-      padding: '0 0.3rem 0.6rem 0.3rem',
-    });
-  }
-  private mediaButtonStyle(thumbnail: string) {
+  private iconItemStyle(thumbnail: string) {
     return stylable('media-button', this.config, {
-      boxSizing: 'border-box',
-      '-moz-box-sizing': 'border-box',
-      '-webkit-box-sizing': 'border-box',
-      overflow: 'hidden',
-      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
-      display: 'flex',
+      ...this.mediaButtonStyle(),
       flexDirection: 'column',
       borderRadius: 'var(--sonos-int-border-radius)',
       justifyContent: 'center',
@@ -57,6 +39,7 @@ class MediaButton extends LitElement {
       ...(thumbnail && { backgroundImage: 'url(' + thumbnail + ')' }),
     });
   }
+
   private titleStyle(thumbnail: string) {
     return stylable('media-button-title', this.config, {
       width: 'calc(100% - 1rem)',
@@ -74,24 +57,6 @@ class MediaButton extends LitElement {
       }),
     });
   }
-
-  private folderStyle(thumbnail: string) {
-    return stylable('media-button-folder', this.config, {
-      marginBottom: '-120%',
-      '--mdc-icon-size': '1',
-      ...((!this.mediaItem.can_expand || thumbnail) && { display: 'none' }),
-    });
-  }
-
-  static get styles() {
-    return css`
-      .hoverable:focus,
-      .hoverable:hover {
-        border-color: var(--sonos-int-accent-color);
-        color: var(--sonos-int-accent-color);
-      }
-    `;
-  }
 }
 
-customElements.define('sonos-media-button', MediaButton);
+customElements.define('sonos-media-icon-item', MediaIconItem);
