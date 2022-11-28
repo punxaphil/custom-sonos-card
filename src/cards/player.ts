@@ -272,12 +272,12 @@ export class Player extends LitElement {
     };
     const overrides = this.config.mediaArtworkOverrides;
     if (overrides) {
-      const override = overrides.find(
-        (value) =>
-          (!entityImage && value.ifMissing) ||
-          mediaTitle === value.mediaTitleEquals ||
-          mediaContentId === value.mediaContentIdEquals,
+      let override = overrides.find(
+        (value) => mediaTitle === value.mediaTitleEquals || mediaContentId === value.mediaContentIdEquals,
       );
+      if (!override) {
+        override = overrides.find((value) => !entityImage && value.ifMissing);
+      }
       if (override) {
         style = {
           ...style,

@@ -104,8 +104,6 @@ predefinedGroupsTitle: 'My predefined groups' # default is 'Predefined Groups'
 noMediaText: 'No media selected'
 allVolumesText: 'All volumes'
 mediaArtworkOverrides: # Show your own selected artwork if certain rules match
-  - ifMissing: true
-    imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
   - mediaTitleEquals: TV
     imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
     sizePercentage: 40
@@ -114,6 +112,8 @@ mediaArtworkOverrides: # Show your own selected artwork if certain rules match
   - mediaTitleEquals: p4malmo-aac-192
     imageUrl: >-
       https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
+  - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
+    imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
 customSources: # Main usecase is probably to set tv media player to play TV sound
   media_player.tv: # set this to 'all' to show the custom source for all players
     - title: TV
