@@ -99,6 +99,7 @@ predefinedGroups: # defaults to empty
       - media_player.matrum
       - media_player.hall
 predefinedGroupsTitle: 'My predefined groups' # default is 'Predefined Groups'
+predefinedGroupsNoSeparateSection: true # default is false, which means predefined groups will be shown in their own grouping section
 
 # sonos-player specific
 noMediaText: 'No media selected'

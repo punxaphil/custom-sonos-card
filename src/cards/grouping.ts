@@ -19,6 +19,7 @@ import { when } from 'lit/directives/when.js';
 import { HomeAssistant } from 'custom-card-helpers';
 import MediaControlService from '../services/media-control-service';
 import HassService from '../services/hass-service';
+import { StyleInfo } from 'lit-html/development/directives/style-map';
 
 export class Grouping extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -85,8 +86,18 @@ export class Grouping extends LitElement {
                 'mdi:minus-box-multiple-outline',
               ),
             )}
+            ${when(this.config.predefinedGroups && this.config.predefinedGroupsNoSeparateSection, () =>
+              this.renderPredefinedGroups(),
+            )}
           </div>
-          ${when(this.config.predefinedGroups, () => this.renderPredefinedGroup())}
+          ${when(
+            this.config.predefinedGroups && !this.config.predefinedGroupsNoSeparateSection,
+            () =>
+              html`<div style="${stylable('title', this.config, titleStyle)}">
+                  ${this.config.predefinedGroupsTitle ? this.config.predefinedGroupsTitle : 'Predefined groups'}
+                </div>
+                <div style="${this.membersStyle()}">${this.renderPredefinedGroups()}</div>`,
+          )}
         </div>
       `;
       return wrapInHaCardUnlessAllSectionsShown(cardHtml, this.config);
@@ -106,31 +117,27 @@ export class Grouping extends LitElement {
     }
   }
 
-  private renderPredefinedGroup() {
+  private renderPredefinedGroups() {
     return html`
-      <div style="${stylable('title', this.config, titleStyle)}">
-        ${this.config.predefinedGroupsTitle ? this.config.predefinedGroupsTitle : 'Predefined groups'}
-      </div>
-      <div style="${this.membersStyle()}">
-        ${this.config.predefinedGroups
-          ?.filter((group) => group.entities.length > 1)
-          .map((group) => {
-            return this.getButton(
-              async () => {
-                await this.mediaControlService.unjoin(group.entities);
-                await this.mediaControlService.join(group.entities[0], group.entities);
-              },
-              '',
-              group.name,
-            );
-          })}
-      </div>
+      ${this.config.predefinedGroups
+        ?.filter((group) => group.entities.length > 1)
+        .map((group) => {
+          return this.getButton(
+            async () => {
+              await this.mediaControlService.unjoin(group.entities);
+              await this.mediaControlService.join(group.entities[0], group.entities);
+            },
+            this.config.predefinedGroupsNoSeparateSection ? 'mdi:speaker-multiple' : '',
+            group.name,
+            this.config.predefinedGroupsNoSeparateSection ? { fontStyle: 'italic' } : {},
+          );
+        })}
     `;
   }
 
-  private getButton(click: () => void, icon: string, name?: string) {
+  private getButton(click: () => void, icon: string, name?: string, additionalStyle?: StyleInfo) {
     return html`
-      <div @click="${click}" style="${this.memberStyle()}" class="hoverable">
+      <div @click="${click}" style="${this.memberStyle(additionalStyle)}" class="hoverable">
         ${name ? html`<span style="${this.nameStyle()}">${name}</span>` : ''}
         <ha-icon .icon=${icon} style="${this.iconStyle()}"></ha-icon>
       </div>
@@ -148,7 +155,7 @@ export class Grouping extends LitElement {
     });
   }
 
-  private memberStyle() {
+  private memberStyle(additionalStyle?: StyleInfo) {
     return stylable('member', this.config, {
       flexGrow: '1',
       borderRadius: 'var(--sonos-int-border-radius)',
@@ -159,6 +166,7 @@ export class Grouping extends LitElement {
       border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
       backgroundColor: 'var(--sonos-int-background-color)',
       maxWidth: 'calc(100% - 1.4rem)',
+      ...additionalStyle,
     });
   }
 
@@ -175,6 +183,7 @@ export class Grouping extends LitElement {
     return stylable('member-icon', this.config, {
       alignSelf: 'center',
       fontSize: '0.5rem',
+      paddingLeft: '0.1rem',
     });
   }
 
