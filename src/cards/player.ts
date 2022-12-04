@@ -14,6 +14,7 @@ import {
   wrapInHaCardUnlessAllSectionsShown,
 } from '../utils';
 import '../components/progress';
+import '../components/player-header';
 
 import { CardConfig, Members } from '../types';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
@@ -70,7 +71,6 @@ export class Player extends LitElement {
       const mediaPlayers = getMediaPlayers(this.config, this.hass);
       const groups = createPlayerGroups(mediaPlayers, this.hass, this.config);
       this.members = groups[this.entityId].members;
-      const entityAttributes = this.entity?.attributes;
       const isGroup = getGroupMembers(this.entity).length > 1;
       let allVolumes = [];
       if (isGroup) {
@@ -82,23 +82,13 @@ export class Player extends LitElement {
       const cardHtml = html`
         <div style="${this.containerStyle(this.entity)}">
           <div style="${this.bodyStyle()}">
-            ${when(!this.showVolumes, () =>
-              entityAttributes.media_title
-                ? html`
-                    <div style="${this.infoStyle()}">
-                      <div style="${this.artistAlbumStyle()}">${entityAttributes.media_album_name}</div>
-                      <div style="${this.songStyle()}">${entityAttributes.media_title}</div>
-                      <div style="${this.artistAlbumStyle()}">${entityAttributes.media_artist}</div>
-                      <sonos-progress
-                        .hass=${this.hass}
-                        .entityId=${this.entityId}
-                        .config=${this.config}
-                      ></sonos-progress>
-                    </div>
-                  `
-                : html` <div style="${this.noMediaTextStyle()}">
-                    ${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}
-                  </div>`,
+            ${when(
+              !this.showVolumes,
+              () => html`<sonos-player-header
+                .hass=${this.hass}
+                .entity=${this.entity}
+                .config=${this.config}
+              ></sonos-player-header>`,
             )}
             <div style="${this.footerStyle()}" id="footer">
               <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
@@ -364,47 +354,6 @@ export class Player extends LitElement {
       '--paper-progress-active-color': inputColor,
       '--paper-slider-knob-color': inputColor,
       '--paper-slider-height': '0.3rem',
-    });
-  }
-
-  private infoStyle() {
-    return stylable('player-info', this.config, {
-      margin: '0.25rem',
-      padding: '0.5rem',
-      textAlign: 'center',
-      background: 'var(--sonos-int-player-section-background)',
-      borderRadius: 'var(--sonos-int-border-radius)',
-    });
-  }
-
-  private artistAlbumStyle() {
-    return stylable('player-artist-album', this.config, {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      fontSize: '0.75rem',
-      fontWeight: '300',
-      color: 'var(--sonos-int-artist-album-text-color)',
-      whiteSpace: 'wrap',
-    });
-  }
-
-  private songStyle() {
-    return stylable('player-song', this.config, {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      fontSize: '1.15rem',
-      fontWeight: '400',
-      color: 'var(--sonos-int-song-text-color)',
-      whiteSpace: 'wrap',
-    });
-  }
-
-  private noMediaTextStyle() {
-    return stylable('no-media-text', this.config, {
-      flexGrow: '1',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
     });
   }
 
