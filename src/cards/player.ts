@@ -89,6 +89,11 @@ export class Player extends LitElement {
                       <div style="${this.artistAlbumStyle()}">${entityAttributes.media_album_name}</div>
                       <div style="${this.songStyle()}">${entityAttributes.media_title}</div>
                       <div style="${this.artistAlbumStyle()}">${entityAttributes.media_artist}</div>
+                      <sonos-progress
+                        .hass=${this.hass}
+                        .entityId=${this.entityId}
+                        .config=${this.config}
+                      ></sonos-progress>
                     </div>
                   `
                 : html` <div style="${this.noMediaTextStyle()}">
@@ -97,13 +102,6 @@ export class Player extends LitElement {
             )}
             <div style="${this.footerStyle()}" id="footer">
               <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
-              ${this.getVolumeTemplate(
-                this.entityId,
-                this.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
-                isGroup,
-                false,
-                this.members,
-              )}
               <div style="${this.iconsStyle()}">
                 ${this.clickableIcon('mdi:volume-minus', async () => await this.volumeDownClicked())}
                 ${this.clickableIcon(
@@ -123,7 +121,13 @@ export class Player extends LitElement {
                 ${this.clickableIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !isGroup)}
                 ${this.clickableIcon('mdi:volume-plus', async () => await this.volumeUp())}
               </div>
-              <sonos-progress .hass=${this.hass} .entityId=${this.entityId} .config=${this.config}></sonos-progress>
+              ${this.getVolumeTemplate(
+                this.entityId,
+                this.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
+                isGroup,
+                false,
+                this.members,
+              )}
             </div>
           </div>
         </div>
@@ -190,7 +194,20 @@ export class Player extends LitElement {
         : this.hass.states[entity].attributes.is_volume_muted;
     return html`
       <div style="${this.volumeStyle(isGroupMember)}">
-        ${name ? html` <div style="${this.volumeNameStyle()}">${name}</div>` : ''}
+        ${name
+          ? html`<div style="${this.volumeNameStyle()}">
+              <div style="${this.volumeNameTextStyle()}">${name}</div>
+              ${when(
+                isGroup && !isGroupMember,
+                () => html`<ha-icon
+                  .icon=${'mdi:arrow-left'}
+                  @click="${() => (this.showVolumes = false)}"
+                  class="hoverable"
+                  style="${this.volumeNameIconStyle()}"
+                ></ha-icon>`,
+              )}
+            </div>`
+          : ''}
         <ha-icon
           style="${this.muteStyle()}"
           @click="${async () => await this.mediaControlService.volumeMute(entity, !volumeMuted, members)}"
@@ -204,17 +221,22 @@ export class Player extends LitElement {
               : ''}
             <div style="flex: ${max - volume};text-align: right">${max}%</div>
           </div>
-          <input
-            type="range"
-            .value="${volume}"
+          <ha-slider
+            value="${volume}"
             @change="${async (e: Event) =>
               await this.mediaControlService.volumeSet(entity, (e?.target as HTMLInputElement)?.value, members)}"
-            @click="${(e: Event) =>
-              this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup)}"
+            @click="${(e: Event) => {
+              this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup);
+              e.stopPropagation();
+            }}"
             min="0"
             max="${max}"
-            style="${this.volumeRangeStyle(inputColor, volume, max)}"
-          />
+            step=${this.config.volume_step || 1}
+            dir=${'ltr'}
+            pin
+            style="${this.volumeRangeStyle(inputColor)}"
+          >
+          </ha-slider>
         </div>
       </div>
     `;
@@ -323,7 +345,7 @@ export class Player extends LitElement {
   private iconsStyle() {
     return stylable('player-footer-icons', this.config, {
       justifyContent: 'space-between',
-      display: 'flex',
+      display: this.showVolumes ? 'none' : 'flex',
     });
   }
 
@@ -335,20 +357,13 @@ export class Player extends LitElement {
     });
   }
 
-  private volumeRangeStyle(inputColor: string, volume: number, max: number) {
+  private volumeRangeStyle(inputColor: string) {
     return stylable('player-volume-range', this.config, {
-      '-webkit-appearance': 'none',
-      height: '0.25rem',
-      borderRadius: 'var(--sonos-int-border-radius)',
-      outline: 'none',
-      opacity: '0.7',
-      '-webkit-transition': '0.2s',
-      transition: 'opacity 0.2s',
-      margin: '0.25rem 0.25rem 0 0.25rem',
-      width: '97%',
-      background: `linear-gradient(to right, ${inputColor} 0%, ${inputColor} ${
-        (volume * 100) / max
-      }%, rgb(211, 211, 211) ${(volume * 100) / max}%, rgb(211, 211, 211) 100%)`,
+      width: '105%',
+      marginLeft: '-3%',
+      '--paper-progress-active-color': inputColor,
+      '--paper-slider-knob-color': inputColor,
+      '--paper-slider-height': '0.3rem',
     });
   }
 
@@ -397,7 +412,7 @@ export class Player extends LitElement {
     return stylable('player-volume', this.config, {
       display: 'flex',
       ...(isGroupMember && {
-        borderTop: 'dotted var(--sonos-int-color)',
+        borderBottom: 'dotted var(--sonos-int-color)',
         marginTop: '0.4rem',
       }),
     });
@@ -409,8 +424,24 @@ export class Player extends LitElement {
       marginLeft: '0.4rem',
       flex: '1',
       overflow: 'hidden',
+      flexDirection: 'column',
+    });
+  }
+
+  private volumeNameTextStyle() {
+    return stylable('player-volume-name-text', this.config, {
+      flex: '1',
+      overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
+    });
+  }
+
+  private volumeNameIconStyle() {
+    return stylable('player-volume-name-icon', this.config, {
+      flex: '1',
+      '--mdc-icon-size': '1.5rem',
+      marginLeft: '-0.3rem',
     });
   }
 
@@ -423,7 +454,6 @@ export class Player extends LitElement {
   private volumeLevelStyle() {
     return stylable('player-volume-level', this.config, {
       fontSize: 'x-small',
-      margin: '0 0.4rem',
       display: 'flex',
     });
   }
@@ -432,6 +462,7 @@ export class Player extends LitElement {
     return stylable('player-mute', this.config, {
       '--mdc-icon-size': '1.25rem',
       alignSelf: 'center',
+      marginRight: '0.7rem',
     });
   }
 
