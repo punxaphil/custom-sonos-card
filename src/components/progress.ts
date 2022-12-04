@@ -34,7 +34,7 @@ class Progress extends LitElement {
             <paper-progress
               value="${this.playingProgress}"
               max="${mediaDuration}"
-              style="flex-grow: 1"
+              style="${this.paperProgressStyle()}"
             ></paper-progress>
           </div>
           <span style="${this.timeStyle()}"> -${convertProgress(mediaDuration - this.playingProgress)}</span>
@@ -82,6 +82,13 @@ class Progress extends LitElement {
       clearInterval(this.tracker);
       this.tracker = undefined;
     }
+  }
+
+  private paperProgressStyle() {
+    return stylable('progress-bar-paper', this.config, {
+      flexGrow: '1',
+      '--paper-progress-active-color': 'var(--sonos-int-accent-color)',
+    });
   }
 }
 
