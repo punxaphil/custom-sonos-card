@@ -15,12 +15,14 @@ import {
 } from '../utils';
 import '../components/progress';
 import '../components/player-header';
+import '../components/volume';
 
 import { CardConfig, Members } from '../types';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
+import { DirectiveResult } from 'lit/directive.js';
 import HassService from '../services/hass-service';
 import MediaControlService from '../services/media-control-service';
 import { HomeAssistant } from 'custom-card-helpers';
@@ -31,6 +33,7 @@ export class Player extends LitElement {
   private mediaControlService!: MediaControlService;
   private hassService!: HassService;
   private entity!: HassEntity;
+  private isGroup!: boolean;
   @state() private members!: Members;
   @state() private entityId!: string;
   @state() showVolumes!: boolean;
@@ -71,12 +74,10 @@ export class Player extends LitElement {
       const mediaPlayers = getMediaPlayers(this.config, this.hass);
       const groups = createPlayerGroups(mediaPlayers, this.hass, this.config);
       this.members = groups[this.entityId].members;
-      const isGroup = getGroupMembers(this.entity).length > 1;
+      this.isGroup = getGroupMembers(this.entity).length > 1;
       let allVolumes = [];
-      if (isGroup) {
-        allVolumes = getGroupMembers(this.entity).map((member: string) =>
-          this.getVolumeTemplate(member, getEntityName(this.hass, this.config, member), isGroup, true),
-        );
+      if (this.isGroup) {
+        allVolumes = getGroupMembers(this.entity).map((entityId: string) => this.groupMemberVolume(entityId));
       }
 
       const cardHtml = html`
@@ -93,31 +94,19 @@ export class Player extends LitElement {
             <div style="${this.footerStyle()}" id="footer">
               <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
               <div style="${this.iconsStyle()}">
-                ${this.clickableIcon('mdi:volume-minus', async () => await this.volumeDownClicked())}
-                ${this.clickableIcon(
-                  'mdi:skip-backward',
-                  async () => await this.mediaControlService.prev(this.entityId),
-                )}
+                ${this.footerIcon('mdi:volume-minus', async () => await this.volumeDownClicked())}
+                ${this.footerIcon('mdi:skip-backward', async () => await this.mediaControlService.prev(this.entityId))}
                 ${this.entity.state !== 'playing'
-                  ? this.clickableIcon('mdi:play', async () => await this.mediaControlService.play(this.entityId))
-                  : this.clickableIcon('mdi:stop', async () => await this.mediaControlService.pause(this.entityId))}
-                ${this.clickableIcon(
-                  'mdi:skip-forward',
-                  async () => await this.mediaControlService.next(this.entityId),
-                )}
-                ${this.clickableIcon(this.shuffleIcon(), async () => await this.shuffleClicked())}
-                ${this.clickableIcon(this.repeatIcon(), async () => await this.repeatClicked())}
+                  ? this.footerIcon('mdi:play', async () => await this.mediaControlService.play(this.entityId))
+                  : this.footerIcon('mdi:stop', async () => await this.mediaControlService.pause(this.entityId))}
+                ${this.footerIcon('mdi:skip-forward', async () => await this.mediaControlService.next(this.entityId))}
+                ${this.footerIcon(this.shuffleIcon(), async () => await this.shuffleClicked())}
+                ${this.footerIcon(this.repeatIcon(), async () => await this.repeatClicked())}
                 ${until(this.getAdditionalSwitches())}
-                ${this.clickableIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !isGroup)}
-                ${this.clickableIcon('mdi:volume-plus', async () => await this.volumeUp())}
+                ${this.footerIcon(this.allVolumesIcon(), () => this.toggleShowAllVolumes(), !this.isGroup)}
+                ${this.footerIcon('mdi:volume-plus', async () => await this.volumeUp())}
               </div>
-              ${this.getVolumeTemplate(
-                this.entityId,
-                this.showVolumes ? (this.config.allVolumesText ? this.config.allVolumesText : 'All') : '',
-                isGroup,
-                false,
-                this.members,
-              )}
+              ${this.mainVolume()}
             </div>
           </div>
         </div>
@@ -127,9 +116,9 @@ export class Player extends LitElement {
     return noPlayerHtml;
   }
 
-  private async volumeDownClicked() {
+  private volumeDownClicked = async () => {
     await this.mediaControlService.volumeDown(this.entityId, this.members);
-  }
+  };
 
   private allVolumesIcon() {
     return this.showVolumes ? 'mdi:arrow-collapse-vertical' : 'mdi:arrow-expand-vertical';
@@ -156,87 +145,19 @@ export class Player extends LitElement {
     await this.mediaControlService.volumeUp(this.entityId, this.members);
   }
 
-  private clickableIcon(icon: string, click: () => void, hidden = false, additionalStyle?: StyleInfo) {
+  private footerIcon(icon: string, click: () => void, hidden = false, additionalStyle?: StyleInfo) {
+    return this.clickableIcon(icon, click, hidden, this.iconStyle(additionalStyle));
+  }
+  private clickableIcon(icon: string, click: () => void, hidden = false, style?: DirectiveResult) {
     return html`
-      <ha-icon
-        @click="${click}"
-        style="${this.iconStyle(additionalStyle)}"
-        class="hoverable"
-        .icon=${icon}
-        ?hidden="${hidden}"
-      ></ha-icon>
+      <ha-icon @click="${click}" style="${style}" class="hoverable" .icon=${icon} ?hidden="${hidden}"></ha-icon>
     `;
   }
-
-  getVolumeTemplate(entity: string, name: string, isGroup: boolean, isGroupMember: boolean, members?: Members) {
-    const volume = 100 * this.hass.states[entity].attributes.volume_level;
-    let max = 100;
-    let inputColor = 'rgb(211, 3, 32)';
-    if (volume < 20) {
-      if (!this.config.disableDynamicVolumeSlider) {
-        max = 30;
-      }
-      inputColor = 'rgb(72,187,14)';
-    }
-    const volumeMuted =
-      members && Object.keys(members).length
-        ? !Object.keys(members).some((member) => !this.hass.states[member].attributes.is_volume_muted)
-        : this.hass.states[entity].attributes.is_volume_muted;
-    return html`
-      <div style="${this.volumeStyle(isGroupMember)}">
-        ${name
-          ? html`<div style="${this.volumeNameStyle()}">
-              <div style="${this.volumeNameTextStyle()}">${name}</div>
-              ${when(
-                isGroup && !isGroupMember,
-                () => html`<ha-icon
-                  .icon=${'mdi:arrow-left'}
-                  @click="${() => (this.showVolumes = false)}"
-                  class="hoverable"
-                  style="${this.volumeNameIconStyle()}"
-                ></ha-icon>`,
-              )}
-            </div>`
-          : ''}
-        <ha-icon
-          style="${this.muteStyle()}"
-          @click="${async () => await this.mediaControlService.volumeMute(entity, !volumeMuted, members)}"
-          .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
-        ></ha-icon>
-        <div style="${this.volumeSliderStyle()}">
-          <div style="${this.volumeLevelStyle()}">
-            <div style="flex: ${volume}">0%</div>
-            ${volume > 0 && volume < 95
-              ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
-              : ''}
-            <div style="flex: ${max - volume};text-align: right">${max}%</div>
-          </div>
-          <ha-slider
-            value="${volume}"
-            @change="${async (e: Event) =>
-              await this.mediaControlService.volumeSet(entity, (e?.target as HTMLInputElement)?.value, members)}"
-            @click="${(e: Event) => {
-              this.volumeClicked(volume, Number.parseInt((e?.target as HTMLInputElement)?.value), isGroup);
-              e.stopPropagation();
-            }}"
-            min="0"
-            max="${max}"
-            step=${this.config.volume_step || 1}
-            dir=${'ltr'}
-            pin
-            style="${this.volumeRangeStyle(inputColor)}"
-          >
-          </ha-slider>
-        </div>
-      </div>
-    `;
-  }
-
   private getAdditionalSwitches() {
     if (!this.config.skipAdditionalPlayerSwitches) {
       return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
         return items.map((item: string) => {
-          return this.clickableIcon(
+          return this.footerIcon(
             this.hass.states[item].attributes.icon || '',
             () => this.hassService.toggle(item),
             false,
@@ -248,11 +169,11 @@ export class Player extends LitElement {
     return '';
   }
 
-  private volumeClicked(oldVolume: number, newVolume: number, isGroup: boolean) {
-    if (isGroup && oldVolume === newVolume) {
+  private volumeClicked = () => {
+    if (this.isGroup) {
       this.toggleShowAllVolumes();
     }
-  }
+  };
 
   toggleShowAllVolumes() {
     this.showVolumes = !this.showVolumes;
@@ -322,6 +243,16 @@ export class Player extends LitElement {
     });
   }
 
+  private volumeStyle(showVolumes: boolean, isGroup: boolean) {
+    return stylable('player-volume', this.config, {
+      flex: showVolumes ? '4' : '1',
+      ...(isGroup && {
+        borderBottom: 'dotted var(--sonos-int-color)',
+        marginTop: '0.4rem',
+      }),
+    });
+  }
+
   private footerStyle() {
     return stylable('player-footer', this.config, {
       background: 'var(--sonos-int-player-section-background)',
@@ -357,23 +288,14 @@ export class Player extends LitElement {
     });
   }
 
-  private volumeStyle(isGroupMember: boolean) {
-    return stylable('player-volume', this.config, {
-      display: 'flex',
-      ...(isGroupMember && {
-        borderBottom: 'dotted var(--sonos-int-color)',
-        marginTop: '0.4rem',
-      }),
-    });
-  }
-
-  private volumeNameStyle() {
+  private volumeNameStyle(hidden: boolean) {
     return stylable('player-volume-name', this.config, {
       marginTop: '1rem',
       marginLeft: '0.4rem',
       flex: '1',
       overflow: 'hidden',
       flexDirection: 'column',
+      ...(hidden && { display: 'none' }),
     });
   }
 
@@ -394,27 +316,6 @@ export class Player extends LitElement {
     });
   }
 
-  private volumeSliderStyle() {
-    return stylable('player-volume-slider', this.config, {
-      flex: '4',
-    });
-  }
-
-  private volumeLevelStyle() {
-    return stylable('player-volume-level', this.config, {
-      fontSize: 'x-small',
-      display: 'flex',
-    });
-  }
-
-  private muteStyle() {
-    return stylable('player-mute', this.config, {
-      '--mdc-icon-size': '1.25rem',
-      alignSelf: 'center',
-      marginRight: '0.7rem',
-    });
-  }
-
   static get styles() {
     return [
       css`
@@ -425,5 +326,31 @@ export class Player extends LitElement {
       `,
       sharedStyle,
     ];
+  }
+
+  private mainVolume() {
+    const name = this.config.allVolumesText ? this.config.allVolumesText : 'All';
+    return this.volume(this.entityId, name, this.members);
+  }
+
+  private groupMemberVolume(entityId: string) {
+    const name = getEntityName(this.hass, this.config, entityId);
+    return this.volume(entityId, name);
+  }
+  private volume(entityId: string, name: string, members?: Members) {
+    return html` <div style="display: flex">
+      <div style="${this.volumeNameStyle(!this.showVolumes)}">
+        <div style="${this.volumeNameTextStyle()}">${name}</div>
+        ${this.clickableIcon('mdi:arrow-left', () => (this.showVolumes = false), !members, this.volumeNameIconStyle())}
+      </div>
+      <sonos-volume
+        .hass=${this.hass}
+        .entityId=${entityId}
+        .config=${this.config}
+        .members=${members}
+        style="${this.volumeStyle(this.showVolumes, !members)}"
+        @volumeClicked=${this.volumeClicked}
+      ></sonos-volume>
+    </div>`;
   }
 }

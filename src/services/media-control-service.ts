@@ -67,8 +67,8 @@ export default class MediaControlService {
     }
   }
 
-  async volumeSet(entity_id: string, volume: string, members?: Members) {
-    const volume_level = Number.parseInt(volume) / 100;
+  async volumeSet(entity_id: string, volume: number, members?: Members) {
+    const volume_level = volume / 100;
 
     await this.hassService.callMediaService('volume_set', { entity_id, volume_level: volume_level });
 
