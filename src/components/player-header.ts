@@ -2,7 +2,7 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { stylable } from '../utils';
+import { sharedStyle, stylable } from '../utils';
 import { CardConfig } from '../types';
 
 class PlayerHeader extends LitElement {
@@ -67,6 +67,10 @@ class PlayerHeader extends LitElement {
       justifyContent: 'center',
       alignItems: 'center',
     });
+  }
+
+  static get styles() {
+    return sharedStyle;
   }
 }
 

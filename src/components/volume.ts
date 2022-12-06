@@ -11,7 +11,7 @@ class Volume extends LitElement {
   @property() config!: CardConfig;
   @property() entityId!: string;
   @property() members?: Members;
-  @property() volumeClicked?: (oldVolume: number, newVolume: number) => void;
+  @property() volumeClicked?: () => void;
   private mediaControlService!: MediaControlService;
 
   render() {
