@@ -121,6 +121,7 @@ customSources: # Main usecase is probably to set tv media player to play TV soun
       thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
 skipAdditionalPlayerSwitches: true # default is false, which means additional switches will be shown in player if available (such as crossfade button)
 disableDynamicVolumeSlider: true # default is false. See more in section further down.
+prefixArtwork: http://192.168.0.59:8123 #default is ''. This is your HA local IP-adress and is used to make the artwork work if you cast the dashboard with Google Cast.
 
 # sonos-media-browser specific
 mediaTitle: ''
