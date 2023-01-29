@@ -85,7 +85,8 @@ export class Player extends LitElement {
   }
 
   private containerStyle(entity: HassEntity) {
-    const entityImage = entity.attributes.entity_picture;
+    const prefix = this.config.prefixArtwork || '';
+    const entityImage = prefix + entity.attributes.entity_picture;
     const mediaTitle = entity.attributes.media_title;
     const mediaContentId = entity.attributes.media_content_id;
     let style: StyleInfo = {
