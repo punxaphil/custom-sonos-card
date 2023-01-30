@@ -85,7 +85,7 @@ export class Player extends LitElement {
   }
 
   private containerStyle(entity: HassEntity) {
-    const prefix = this.config.prefixArtwork || '';
+    const prefix = this.config.artworkHostname || '';
     const entityImage = prefix + entity.attributes.entity_picture;
     const mediaTitle = entity.attributes.media_title;
     const mediaContentId = entity.attributes.media_content_id;
