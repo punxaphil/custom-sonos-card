@@ -158,10 +158,7 @@ export function validateConfig(config: CardConfig) {
 
 export const sharedStyle = css`
   :host {
-    --sonos-int-background-color: var(
-      --sonos-background-color,
-      var(--ha-card-background, var(--card-background-color, white))
-    );
+    --sonos-int-background-color: var(--sonos-background-color, transparent);
     --sonos-int-ha-card-background-color: var(
       --sonos-ha-card-background-color,
       var(--ha-card-background, var(--card-background-color, white))
@@ -173,15 +170,12 @@ export const sharedStyle = css`
     --sonos-int-accent-color: var(--sonos-accent-color, var(--accent-color));
     --sonos-int-title-color: var(--sonos-title-color, var(--secondary-text-color));
     --sonos-int-border-radius: var(--sonos-border-radius, 0.25rem);
-    --sonos-int-border-width: var(--sonos-border-width, 0.125rem);
+    --sonos-int-border-width: var(--sonos-border-width, 0rem);
     --sonos-int-media-button-white-space: var(
       --sonos-media-buttons-multiline,
       var(--sonos-favorites-multiline, nowrap)
     );
-    --sonos-int-button-section-background-color: var(
-      --sonos-button-section-background-color,
-      var(--card-background-color)
-    );
+    --sonos-int-button-section-background-color: var(--sonos-button-section-background-color, transparent);
     --mdc-icon-size: 1rem;
   }
 `;

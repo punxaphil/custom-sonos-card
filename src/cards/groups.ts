@@ -34,21 +34,24 @@ export class Groups extends LitElement {
       this.groups = createPlayerGroups(mediaPlayers, this.hass, this.config);
       this.determineEntityId(this.groups);
       const cardHtml = html`
-        <div style="${buttonSectionStyle(this.config)}">
+        <div style="${buttonSectionStyle(this.config, { padding: '0' })}">
           <div style="${stylable('title', this.config, titleStyle)}">
             ${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}
           </div>
-          ${Object.values(this.groups).map(
-            (group) =>
-              html`
+
+          <mwc-list activatable style="${this.listStyle()}">
+            ${Object.values(this.groups).map((group) => {
+              const selected = this.entityId === group.entity;
+              return html`
                 <sonos-group
                   .config=${this.config}
                   .hass=${this.hass}
                   .group=${group}
-                  .selected="${this.entityId === group.entity}"
+                  .selected="${selected}"
                 ></sonos-group>
-              `,
-          )}
+              `;
+            })}
+          </mwc-list>
         </div>
       `;
       return wrapInHaCardUnlessAllSectionsShown(cardHtml, this.config);
@@ -56,6 +59,17 @@ export class Groups extends LitElement {
     return noPlayerHtml;
   }
 
+  private listStyle() {
+    return stylable('groups-list', this.config, {
+      '--mdc-theme-primary': 'var(--sonos-int-accent-color)',
+      '--mdc-list-vertical-padding': '0px',
+      ...(this.config.showAllSections && {
+        borderRadius: '10px',
+        border: '1px solid var(--ha-card-border-color, var(--divider-color, #e0e0e0))',
+        overflow: 'hidden',
+      }),
+    });
+  }
   determineEntityId(playerGroups: PlayerGroups) {
     if (!this.entityId) {
       const entityId =

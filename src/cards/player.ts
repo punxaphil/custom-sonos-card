@@ -14,7 +14,7 @@ import '../components/player-header';
 import '../components/volume';
 import '../components/media-controls';
 
-import { CardConfig } from '../types';
+import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig } from '../types';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { when } from 'lit/directives/when.js';
@@ -26,6 +26,9 @@ export class Player extends LitElement {
   private entity!: HassEntity;
   @state() private entityId!: string;
   @state() showVolumes!: boolean;
+  @state() showLoader!: boolean;
+  @state() loaderTimestamp!: number;
+  @state() cancelLoader!: boolean;
 
   entityIdListener = (event: Event) => {
     const newEntityId = (event as CustomEvent).detail.entityId;
@@ -38,6 +41,28 @@ export class Player extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     listenForEntityId(this.entityIdListener);
+    window.addEventListener(CALL_MEDIA_STARTED, () => {
+      if (!this.showLoader) {
+        this.cancelLoader = false;
+        setTimeout(() => {
+          if (!this.cancelLoader) {
+            this.showLoader = true;
+            this.loaderTimestamp = Date.now();
+          }
+        }, 300);
+      }
+    });
+    window.addEventListener(CALL_MEDIA_DONE, () => {
+      this.cancelLoader = true;
+      const duration = Date.now() - this.loaderTimestamp;
+      if (this.showLoader) {
+        if (duration < 1000) {
+          setTimeout(() => (this.showLoader = false), 1000 - duration);
+        } else {
+          this.showLoader = false;
+        }
+      }
+    });
   }
 
   disconnectedCallback() {
@@ -69,6 +94,10 @@ export class Player extends LitElement {
                 .config=${this.config}
               ></sonos-player-header>`,
             )}
+            <div class="loading" ?hidden="${!this.showLoader}">
+              <ha-circular-progress active="" progress="0"></ha-circular-progress>
+            </div>
+
             <sonos-media-controls
               .hass=${this.hass}
               .entity=${this.entity}
@@ -138,6 +167,13 @@ export class Player extends LitElement {
         .hoverable:focus,
         .hoverable:hover {
           color: var(--sonos-int-accent-color);
+        }
+        .hoverable:active {
+          color: var(--primary-color);
+        }
+        .loading {
+          text-align: center;
+          --mdc-theme-primary: var(--sonos-int-accent-color);
         }
       `,
       sharedStyle,

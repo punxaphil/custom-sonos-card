@@ -83,10 +83,9 @@ export class MediaBrowser extends LitElement {
           ${this.entityId !== '' &&
           until(
             (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
-              const itemsWithImage = MediaBrowser.hasItemsWithImage(items);
-              const hasFolderItems = MediaBrowser.hasFolderItems(items);
-              const mediaItemWidth = this.getMediaItemWidth(itemsWithImage, hasFolderItems);
-              return html` <div style="${this.mediaButtonsStyle(itemsWithImage, hasFolderItems)}">
+              const itemsWithImage = MediaBrowser.itemsWithImage(items);
+              const mediaItemWidth = this.getMediaItemWidth(itemsWithImage);
+              return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
                 ${items.map((item) => {
                   const itemClick = async () => await this.onMediaItemClick(item);
                   const style = `width: ${mediaItemWidth};max-width: ${mediaItemWidth};`;
@@ -123,8 +122,8 @@ export class MediaBrowser extends LitElement {
     }
   }
 
-  private getMediaItemWidth(hasItemsWithImage: boolean, hasFolderItems: boolean) {
-    if (hasItemsWithImage || hasFolderItems) {
+  private getMediaItemWidth(itemsWithImage: boolean) {
+    if (itemsWithImage) {
       if (this.config.mediaBrowserItemsAsList) {
         return getWidth(this.config, '100%', '100%', this.config.layout?.mediaItem);
       } else {
@@ -199,12 +198,8 @@ export class MediaBrowser extends LitElement {
     }
   }
 
-  private static hasItemsWithImage(items: MediaPlayerItem[]) {
+  private static itemsWithImage(items: MediaPlayerItem[]) {
     return items.some((item) => item.thumbnail);
-  }
-
-  private static hasFolderItems(items: MediaPlayerItem[]) {
-    return items.some((item) => item.can_expand);
   }
 
   private async loadMediaDir(mediaItem?: MediaPlayerItem) {
@@ -213,12 +208,12 @@ export class MediaBrowser extends LitElement {
       : this.mediaBrowseService.getRoot(this.entityId, this.config.mediaBrowserTitlesToIgnore));
   }
 
-  private mediaButtonsStyle(itemsWithImage: boolean, hasFolderItems: boolean) {
+  private mediaButtonsStyle(itemsWithImage: boolean) {
     return stylable('media-buttons', this.config, {
       padding: '0',
       display: 'flex',
       flexWrap: 'wrap',
-      ...(!itemsWithImage && !hasFolderItems && { flexDirection: 'column' }),
+      ...(!itemsWithImage && { flexDirection: 'column' }),
     });
   }
 

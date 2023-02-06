@@ -52,50 +52,38 @@ class Group extends LitElement {
     const speakerList = [this.group.roomName, ...Object.values(this.group.members)].join(' + ');
     this.dispatchEntityIdEvent();
     return html`
-      <div @click="${() => this.handleGroupClicked()}" style="${this.groupStyle()}">
-        <ul style="${this.speakersStyle()}">
-          <span style="${this.speakerStyle()}">${speakerList}</span>
-        </ul>
-        <div style="${this.infoStyle()}">
-          ${currentTrack
-            ? html` <div style="flex: 1"><span style="${this.currentTrackStyle()}">${currentTrack}</span></div>
-                ${when(
-                  isPlaying(this.group.state),
-                  () => html`
-                    <div style="width: 0.55rem; position: relative;">
-                      <div style="${Group.barStyle(1)}"></div>
-                      <div style="${Group.barStyle(2)}"></div>
-                      <div style="${Group.barStyle(3)}"></div>
-                    </div>
-                  `,
-                )}`
-            : ''}
-        </div>
-      </div>
+      <mwc-list-item
+        twoline
+        hasMeta
+        divider
+        ?selected="${this.selected}"
+        ?activated="${this.selected}"
+        @click="${() => this.handleGroupClicked()}"
+        style="${this.groupStyle()}"
+      >
+        <span style="white-space: initial" style="${this.speakersStyle()}">${speakerList}</span>
+        <span slot="secondary">${currentTrack}</span>
+
+        ${when(
+          isPlaying(this.group.state),
+          () => html`
+            <div style="width: 0.55rem; position: relative;" slot="meta">
+              <div style="${Group.barStyle(1)}"></div>
+              <div style="${Group.barStyle(2)}"></div>
+              <div style="${Group.barStyle(3)}"></div>
+            </div>
+          `,
+        )}
+      </mwc-list-item>
     `;
   }
 
   private groupStyle() {
-    const style = {
-      borderRadius: 'var(--sonos-int-border-radius)',
-      margin: '0.5rem 0',
-      padding: '0.8rem',
-      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
-      backgroundColor: 'var(--sonos-int-background-color)',
-      ...(this.selected && {
-        border: 'var(--sonos-int-border-width) solid var(--sonos-int-accent-color)',
-        color: 'var(--sonos-int-accent-color)',
-        fontWeight: 'bold',
-      }),
-    };
-    return stylable('group', this.config, style);
+    return stylable('group', this.config);
   }
 
   private speakersStyle() {
-    return stylable('group-speakers', this.config, {
-      margin: '0',
-      padding: '0',
-    });
+    return stylable('group-speakers', this.config);
   }
 
   private speakerStyle() {
@@ -157,6 +145,11 @@ class Group extends LitElement {
           opacity: 1;
           height: 1rem;
         }
+      }
+      mwc-list-item {
+        height: fit-content;
+        padding-bottom: 1rem;
+        padding-top: 0;
       }
     `;
   }

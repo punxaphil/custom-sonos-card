@@ -134,17 +134,15 @@ export class Grouping extends LitElement {
 
   private getButton(click: () => void, icon: string, name?: string, additionalStyle?: StyleInfo) {
     return html`
-      <div @click="${click}" style="${this.memberStyle(additionalStyle)}" class="hoverable">
+      <mwc-button @click="${click}" style="${this.memberStyle(additionalStyle)}" raised>
         ${name ? html`<span style="${this.nameStyle()}">${name}</span>` : ''}
         <ha-icon .icon=${icon} style="${this.iconStyle()}"></ha-icon>
-      </div>
+      </mwc-button>
     `;
   }
 
   private membersStyle() {
     return stylable('members', this.config, {
-      padding: '0',
-      margin: '0',
       display: 'flex',
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -160,7 +158,6 @@ export class Grouping extends LitElement {
       padding: '0.45rem',
       display: 'flex',
       justifyContent: 'center',
-      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
       backgroundColor: 'var(--sonos-int-background-color)',
       maxWidth: 'calc(100% - 1.4rem)',
       ...additionalStyle,
@@ -187,10 +184,17 @@ export class Grouping extends LitElement {
   static get styles() {
     return [
       css`
+        .hoverable {
+          border: var(--sonos-int-border-width) solid var(--sonos-int-color);
+        }
         .hoverable:hover,
         .hoverable:focus {
           color: var(--sonos-int-accent-color);
-          border: var(--sonos-int-border-width) solid var(--sonos-int-accent-color);
+          border-color: var(--sonos-int-accent-color);
+        }
+        .hoverable:active {
+          color: var(--primary-color);
+          border-color: var(--primary-color);
         }
       `,
       sharedStyle,

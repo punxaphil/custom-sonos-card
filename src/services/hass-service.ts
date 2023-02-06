@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { MediaPlayerItem, TemplateResult } from '../types';
+import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, MediaPlayerItem, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 
 export default class HassService {
@@ -10,7 +10,27 @@ export default class HassService {
   }
 
   async callMediaService(service: string, inOptions: ServiceCallRequest['serviceData']) {
-    await this.hass.callService('media_player', service, inOptions);
+    console.log('callmedia', service);
+
+    window.dispatchEvent(
+      new CustomEvent(CALL_MEDIA_STARTED, {
+        bubbles: true,
+        composed: true,
+      }),
+    );
+
+    try {
+      await this.hass.callService('media_player', service, inOptions);
+    } finally {
+      window.dispatchEvent(
+        new CustomEvent(CALL_MEDIA_DONE, {
+          bubbles: true,
+          composed: true,
+        }),
+      );
+    }
+
+    console.log('callmedia done', service);
   }
 
   async browseMedia(entity_id: string, media_content_type?: string, media_content_id?: string) {

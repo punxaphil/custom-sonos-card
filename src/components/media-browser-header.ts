@@ -74,6 +74,9 @@ class MediaBrowserHeader extends LitElement {
       .hoverable:hover {
         color: var(--sonos-int-accent-color);
       }
+      .hoverable:active {
+        color: var(--primary-color);
+      }
     `;
   }
 }

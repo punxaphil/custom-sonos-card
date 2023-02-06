@@ -84,7 +84,11 @@ class MediaControls extends LitElement {
   }
 
   private clickableIcon(icon: string, click: () => void, hidden = false, style?: DirectiveResult) {
-    return html` <ha-icon @click="${click}" style="${style}" .icon=${icon} ?hidden="${hidden}"></ha-icon> `;
+    return html`
+      <mwc-button class="mdc-button" @click="${click}" style="${style}" ?hidden="${hidden}">
+        <ha-icon .icon=${icon}></ha-icon>
+      </mwc-button>
+    `;
   }
   private getAdditionalSwitches() {
     if (!this.config.skipAdditionalPlayerSwitches) {
@@ -156,15 +160,7 @@ class MediaControls extends LitElement {
   }
 
   static get styles() {
-    return [
-      css`
-        ha-icon:focus,
-        ha-icon:hover {
-          color: var(--sonos-int-accent-color);
-        }
-      `,
-      sharedStyle,
-    ];
+    return sharedStyle;
   }
 
   private mainVolume() {

@@ -13,7 +13,7 @@ export abstract class MediaItem extends LitElement {
     if (!thumbnail) {
       thumbnail = this.config.customThumbnailIfMissing?.[this.mediaItem.title] || '';
       if (this.itemsWithImage && !thumbnail) {
-        thumbnail = this.config.customThumbnailIfMissing?.fallback || DEFAULT_MEDIA_THUMBNAIL;
+        thumbnail = this.config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
       }
     } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
       thumbnail = thumbnail?.replace('logo.png', 'icon.png');
@@ -27,7 +27,6 @@ export abstract class MediaItem extends LitElement {
       '-moz-box-sizing': 'border-box',
       '-webkit-box-sizing': 'border-box',
       overflow: 'hidden',
-      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
       display: 'flex',
       borderRadius: 'var(--sonos-int-border-radius)',
       backgroundColor: 'var(--sonos-int-background-color)',
@@ -42,10 +41,17 @@ export abstract class MediaItem extends LitElement {
 
   static get styles() {
     return css`
+      .hoverable {
+        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
+      }
       .hoverable:focus,
       .hoverable:hover {
         border-color: var(--sonos-int-accent-color);
         color: var(--sonos-int-accent-color);
+      }
+      .hoverable:active {
+        color: var(--primary-color);
+        border-color: var(--primary-color);
       }
     `;
   }
