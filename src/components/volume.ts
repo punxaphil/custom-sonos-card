@@ -32,11 +32,12 @@ class Volume extends LitElement {
         : this.hass.states[this.entityId].attributes.is_volume_muted;
     return html`
       <div style="${this.volumeStyle()}">
-        <ha-icon
-          style="${this.muteStyle()}"
+        <mwc-icon-button
           @click="${async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members)}"
-          .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
-        ></ha-icon>
+          style="${this.muteStyle()}"
+        >
+          <ha-icon .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}></ha-icon>
+        </mwc-icon-button>
         <div style="${this.volumeSliderStyle()}">
           <div style="${this.volumeLevelStyle()}">
             <div style="flex: ${volume}">0%</div>
@@ -114,6 +115,7 @@ class Volume extends LitElement {
   private muteStyle() {
     return stylable('player-mute', this.config, {
       '--mdc-icon-size': '1.25rem',
+      '--mdc-icon-button-size': '2.5rem',
       alignSelf: 'center',
       marginRight: '0.7rem',
     });

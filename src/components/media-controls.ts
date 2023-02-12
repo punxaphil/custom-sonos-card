@@ -45,6 +45,7 @@ class MediaControls extends LitElement {
       allVolumes = getGroupMembers(this.entity).map((entityId: string) => this.groupMemberVolume(entityId));
     }
     const playing = !isPlaying(this.entity.state);
+
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
         <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
@@ -85,9 +86,9 @@ class MediaControls extends LitElement {
 
   private clickableIcon(icon: string, click: () => void, hidden = false, style?: DirectiveResult) {
     return html`
-      <mwc-button class="mdc-button" @click="${click}" style="${style}" ?hidden="${hidden}">
+      <mwc-icon-button @click="${click}" style="${style}" ?hidden="${hidden}">
         <ha-icon .icon=${icon}></ha-icon>
-      </mwc-button>
+      </mwc-icon-button>
     `;
   }
   private getAdditionalSwitches() {
@@ -127,6 +128,7 @@ class MediaControls extends LitElement {
     return stylable('media-controls-icon', this.config, {
       padding: '0.3rem',
       '--mdc-icon-size': 'min(100%, 1.25rem)',
+      '--mdc-icon-button-size': 'min(100%, 2.5rem)',
       ...additionalStyle,
     });
   }
