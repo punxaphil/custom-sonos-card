@@ -1,7 +1,7 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { HomeAssistant } from 'custom-card-helpers';
-import { stylable } from '../utils';
+import { haIconStyle, stylable } from '../utils';
 import { CardConfig, Members } from '../types';
 import MediaControlService from '../services/media-control-service';
 import HassService from '../services/hass-service';
@@ -32,12 +32,15 @@ class Volume extends LitElement {
         : this.hass.states[this.entityId].attributes.is_volume_muted;
     return html`
       <div style="${this.volumeStyle()}">
-        <mwc-icon-button
+        <ha-icon-button
           @click="${async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members)}"
           style="${this.muteStyle()}"
         >
-          <ha-icon .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}></ha-icon>
-        </mwc-icon-button>
+          <ha-icon
+            .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
+            style="${haIconStyle(this.config)}"
+          ></ha-icon>
+        </ha-icon-button>
         <div style="${this.volumeSliderStyle()}">
           <div style="${this.volumeLevelStyle()}">
             <div style="flex: ${volume}">0%</div>
@@ -114,8 +117,8 @@ class Volume extends LitElement {
 
   private muteStyle() {
     return stylable('player-mute', this.config, {
-      '--mdc-icon-size': '1.25rem',
-      '--mdc-icon-button-size': '2.5rem',
+      // '--mdc-icon-size': '1.25rem',
+      // '--mdc-icon-button-size': '2.5rem',
       alignSelf: 'center',
       marginRight: '0.7rem',
     });

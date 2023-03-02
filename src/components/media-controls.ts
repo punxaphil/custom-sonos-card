@@ -5,6 +5,7 @@ import {
   getEntityName,
   getGroupMembers,
   getMediaPlayers,
+  haIconStyle,
   isPlaying,
   sharedStyle,
   stylable,
@@ -46,16 +47,19 @@ class MediaControls extends LitElement {
     }
     const playing = !isPlaying(this.entity.state);
 
+    // ${this.controlIcon('mdi:volume-minus', this.volDown)}
+    // ${this.controlIcon(this.repeatIcon(), this.repeat)} ${until(this.getAdditionalSwitches())}
+    // ${this.controlIcon(this.shuffleIcon(), this.shuffle)}
+    // ${this.controlIcon('mdi:arrow-expand-vertical', this.toggleShowAllVolumes, !this.isGroup)}
+    // ${this.controlIcon('mdi:volume-plus', this.volUp)}
+
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
         <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
         <div style="${this.iconsStyle()}">
-          ${this.controlIcon('mdi:volume-minus', this.volDown)} ${this.controlIcon('mdi:skip-backward', this.prev)}
+          ${this.controlIcon('mdi:skip-backward', this.prev)}
           ${playing ? this.controlIcon('mdi:play', this.play) : this.controlIcon('mdi:stop', this.pause)}
-          ${this.controlIcon('mdi:skip-forward', this.next)} ${this.controlIcon(this.shuffleIcon(), this.shuffle)}
-          ${this.controlIcon(this.repeatIcon(), this.repeat)} ${until(this.getAdditionalSwitches())}
-          ${this.controlIcon('mdi:arrow-expand-vertical', this.toggleShowAllVolumes, !this.isGroup)}
-          ${this.controlIcon('mdi:volume-plus', this.volUp)}
+          ${this.controlIcon('mdi:skip-forward', this.next)}
         </div>
         ${this.mainVolume()}
       </div>
@@ -81,14 +85,14 @@ class MediaControls extends LitElement {
   }
 
   private controlIcon(icon: string, click: () => void, hidden = false, additionalStyle?: StyleInfo) {
-    return this.clickableIcon(icon, click, hidden, this.iconStyle(additionalStyle));
+    return this.clickableIcon(icon, click, hidden, this.iconButtonStyle(additionalStyle));
   }
 
   private clickableIcon(icon: string, click: () => void, hidden = false, style?: DirectiveResult) {
     return html`
-      <mwc-icon-button @click="${click}" style="${style}" ?hidden="${hidden}">
-        <ha-icon .icon=${icon}></ha-icon>
-      </mwc-icon-button>
+      <ha-icon-button @click="${click}" style="${style}" ?hidden="${hidden}">
+        <ha-icon .icon=${icon} style="${haIconStyle(this.config)}"></ha-icon>
+      </ha-icon-button>
     `;
   }
   private getAdditionalSwitches() {
@@ -119,16 +123,16 @@ class MediaControls extends LitElement {
 
   private iconsStyle() {
     return stylable('media-controls-icons', this.config, {
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       display: this.showVolumes ? 'none' : 'flex',
     });
   }
 
-  private iconStyle(additionalStyle?: StyleInfo) {
+  private iconButtonStyle(additionalStyle?: StyleInfo) {
     return stylable('media-controls-icon', this.config, {
       padding: '0.3rem',
-      '--mdc-icon-size': 'min(100%, 1.25rem)',
-      '--mdc-icon-button-size': 'min(100%, 2.5rem)',
+      // '--mdc-icon-size': 'min(100%, 1.25rem)',
+      // '--mdc-icon-button-size': 'min(100%, 2.5rem)',
       ...additionalStyle,
     });
   }

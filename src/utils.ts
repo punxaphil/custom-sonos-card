@@ -176,9 +176,17 @@ export const sharedStyle = css`
       var(--sonos-favorites-multiline, nowrap)
     );
     --sonos-int-button-section-background-color: var(--sonos-button-section-background-color, transparent);
-    --mdc-icon-size: 1rem;
+  }
+
+  .sonos-icon-button {
+    margin-bottom: 0.4rem;
   }
 `;
+
+export const haIconStyle = (config: CardConfig) =>
+  stylable('sonos-ha-icon', config, {
+    marginBottom: '0.4rem',
+  });
 
 export function wrapInHaCardUnlessAllSectionsShown(cardHtml: TemplateResult, config: CardConfig) {
   return config.showAllSections ? cardHtml : html` <ha-card style="${haCardStyle(config)}"> ${cardHtml}</ha-card>`;
