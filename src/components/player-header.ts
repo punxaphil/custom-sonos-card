@@ -1,15 +1,19 @@
-import { html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { getCurrentTrack, sharedStyle, stylable } from '../utils';
+import { html, LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
+import Store from '../store';
 import { CardConfig } from '../types';
+import { getCurrentTrack, sharedStyle, stylable } from '../utils';
 
 class PlayerHeader extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() entity!: HassEntity;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private entity!: HassEntity;
+
   render() {
+    ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     const attributes = this.entity.attributes;
     return attributes.media_title
       ? html`
@@ -17,11 +21,7 @@ class PlayerHeader extends LitElement {
             <div style="${this.entityStyle()}">${attributes.friendly_name}</div>
             <div style="${this.songStyle()}">${getCurrentTrack(this.entity)}</div>
             <div style="${this.artistAlbumStyle()}">${attributes.media_album_name}</div>
-            <sonos-progress
-              .hass=${this.hass}
-              .entityId=${this.entity.entity_id}
-              .config=${this.config}
-            ></sonos-progress>
+            <sonos-progress .store=${this.store}></sonos-progress>
           </div>
         `
       : html` <div style="${this.noMediaTextStyle()}">

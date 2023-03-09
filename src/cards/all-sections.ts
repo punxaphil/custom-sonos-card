@@ -1,52 +1,49 @@
-import { html, LitElement } from 'lit';
-import { StyleInfo } from 'lit-html/directives/style-map.js';
-import { titleStyle } from '../sharedStyle';
-import { CardConfig, Section, Size } from '../types';
-import { getWidth, haCardStyle, isMobile, sharedStyle, stylable, validateConfig } from '../utils';
-import { property } from 'lit/decorators.js';
+import { mdiCheckboxMultipleMarkedOutline, mdiPlayBoxMultiple, mdiPlayPause, mdiSpeakerMultiple } from '@mdi/js';
 import { HomeAssistant } from 'custom-card-helpers';
+import { html, LitElement } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import { choose } from 'lit/directives/choose.js';
+import { titleStyle } from '../sharedStyle';
+import Store from '../store';
+import { CardConfig, Section } from '../types';
+import { haCardStyle, sharedStyle, stylable, validateConfig } from '../utils';
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER } = Section;
 
 export class AllSections extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
+  @state() section = PLAYER;
+  @state() store!: Store;
 
   render() {
-    if (this.config.singleSectionMode) {
-      return this.renderDeprecatedSingleSectionMode();
-    }
+    this.store = new Store(this.hass, this.config);
     return html`
       <ha-card style="${haCardStyle(this.config)}">
         <div style="${this.titleStyle()}">${this.config.name}</div>
-        <div style="${this.contentStyle()}">
-          <div style=${this.groupsStyle()}>
-            <sonos-groups .config=${this.config} .hass=${this.hass}></sonos-groups>
-          </div>
-
-          <div style=${this.playersStyle()}>
-            <sonos-player .config=${this.config} .hass=${this.hass}></sonos-player>
-            <sonos-grouping .config=${this.config} .hass=${this.hass}></sonos-grouping>
-          </div>
-
-          <div style=${this.mediaBrowserStyle()}>
-            <sonos-media-browser .config=${this.config} .hass=${this.hass}></sonos-media-browser>
-          </div>
+        <div style="position:absolute;z-index:1000">
+          ${this.sectionButton(mdiPlayPause, PLAYER)} ${this.sectionButton(mdiSpeakerMultiple, GROUPS)}
+          ${this.sectionButton(mdiCheckboxMultipleMarkedOutline, GROUPING)}
+          ${this.sectionButton(mdiPlayBoxMultiple, MEDIA_BROWSER)}
         </div>
+        ${choose(this.section, [
+          [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
+          [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
+          [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
+          [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
+        ])}
       </ha-card>
     `;
   }
-
-  private renderDeprecatedSingleSectionMode() {
-    switch (this.config.singleSectionMode) {
-      case Section.GROUPING:
-        return html` <sonos-grouping .config=${this.config} .hass=${this.hass}></sonos-grouping> `;
-      case Section.GROUPS:
-        return html` <sonos-groups .config=${this.config} .hass=${this.hass}></sonos-groups> `;
-      case Section.MEDIA_BROWSER:
-        return html` <sonos-media-browser .config=${this.config} .hass=${this.hass}></sonos-media-browser> `;
-      case Section.PLAYER:
-      default:
-        return html` <sonos-player .config=${this.config} .hass=${this.hass}></sonos-player> `;
-    }
+  sectionButton(icon: string, section: Section) {
+    return html`<ha-icon-button
+      @click="${() => (this.section = section)}"
+      .path=${icon}
+      .disabled=${this.section === section}
+      style="${stylable('section-button', this.config, {
+        '--mdc-icon-button-size': '2rem',
+        '--mdc-icon-size': '1.5rem',
+      })}"
+    ></ha-icon-button>`;
   }
 
   setConfig(config: CardConfig) {
@@ -55,60 +52,8 @@ export class AllSections extends LitElement {
     validateConfig(parsed);
     this.config = parsed;
   }
-
   private titleStyle() {
     return stylable('title', this.config, { display: this.config.name ? 'block' : 'none', ...titleStyle });
-  }
-
-  private groupsStyle() {
-    return this.columnStyle(this.config.layout?.groups, '1', '25%', 'groups', {
-      padding: '0 1rem',
-      boxSizing: 'border-box',
-    });
-  }
-
-  private playersStyle() {
-    return this.columnStyle(this.config.layout?.players, '0', '40%', 'players');
-  }
-
-  private mediaBrowserStyle() {
-    return this.columnStyle(this.config.layout?.mediaBrowser, '2', '25%', 'media-browser', {
-      padding: '0 1rem',
-      boxSizing: 'border-box',
-    });
-  }
-
-  private columnStyle(
-    size: Size | undefined,
-    order: string,
-    defaultWidth: string,
-    name: string,
-    additionalStyle?: StyleInfo,
-  ) {
-    const width = getWidth(this.config, defaultWidth, '100%', size);
-    let style: StyleInfo = {
-      width: width,
-      maxWidth: width,
-      ...additionalStyle,
-    };
-    if (isMobile(this.config)) {
-      style = {
-        ...style,
-        order,
-        padding: '0.5rem',
-        margin: '0',
-        boxSizing: 'border-box',
-      };
-    }
-    return stylable(name, this.config, style);
-  }
-
-  private contentStyle() {
-    return stylable('content', this.config, {
-      display: 'flex',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-    });
   }
 
   static get styles() {

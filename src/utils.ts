@@ -1,8 +1,9 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroups, REQUEST_PLAYER_EVENT, Size } from './types';
-import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { css, html, TemplateResult } from 'lit';
+import { css, html } from 'lit';
+import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
+import { DirectiveResult } from 'lit/directive';
+import { ACTIVE_PLAYER_EVENT, CardConfig, REQUEST_PLAYER_EVENT } from './types';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
@@ -22,71 +23,6 @@ export function getGroupMembers(state: HassEntity) {
   return state.attributes.sonos_group || state.attributes.group_members;
 }
 
-export function getMediaPlayers(config: CardConfig, hass: HomeAssistant) {
-  if (config.entities) {
-    return [...new Set(config.entities)].filter((player) => hass.states[player]);
-  } else {
-    return Object.values(hass.states)
-      .filter(getGroupMembers)
-      .map((state) => state.entity_id)
-      .sort();
-  }
-}
-
-export function createPlayerGroups(mediaPlayers: string[], hass: HomeAssistant, config: CardConfig): PlayerGroups {
-  const groupMasters = mediaPlayers.filter((player) => createGroupMasters(hass, player, mediaPlayers));
-  const groupArray = groupMasters.map((groupMaster) => createGroupArray(hass, groupMaster, mediaPlayers, config));
-  return Object.fromEntries(groupArray.map((group) => [group.entity, group]));
-}
-
-function createGroupMasters(hass: HomeAssistant, player: string, mediaPlayers: string[]) {
-  const state = hass.states[player];
-  try {
-    const sonosGroup = getGroupMembers(state).filter((member: string) => mediaPlayers.indexOf(member) > -1);
-    const isGrouped = sonosGroup?.length > 1;
-    const isMasterInGroup = isGrouped && sonosGroup && sonosGroup[0] === player;
-    return !isGrouped || isMasterInGroup;
-  } catch (e) {
-    console.error('Failed to determine group master', JSON.stringify(state), e);
-    return false;
-  }
-}
-
-function createGroupArray(hass: HomeAssistant, groupMaster: string, mediaPlayers: string[], config: CardConfig) {
-  const state = hass.states[groupMaster];
-  try {
-    const membersArray = getGroupMembers(state).filter((member: string) => {
-      return member !== groupMaster && mediaPlayers.indexOf(member) > -1;
-    });
-    return {
-      entity: groupMaster,
-      state: state.state,
-      roomName: getEntityName(hass, config, groupMaster),
-      members: createGroupMembers(membersArray, hass, config),
-    };
-  } catch (e) {
-    console.error('Failed to create group', JSON.stringify(state), e);
-    return {};
-  }
-}
-
-function createGroupMembers(membersArray: string[], hass: HomeAssistant, config: CardConfig) {
-  return Object.fromEntries(
-    membersArray.map((member: string) => {
-      const friendlyName = getEntityName(hass, config, member);
-      return [member, friendlyName];
-    }),
-  );
-}
-
-export function getWidth(config: CardConfig, defaultWidth: string, defaultMobileWidth: string, size?: Size) {
-  return isMobile(config) ? size?.mobileWidth || defaultMobileWidth : size?.width || defaultWidth;
-}
-
-export function isMobile(config: CardConfig) {
-  return innerWidth < (config.layout?.mobileThresholdPx || 650);
-}
-
 export function stylable(configName: string, config: CardConfig, additionalStyle?: StyleInfo) {
   return styleMap({
     ...{
@@ -94,17 +30,6 @@ export function stylable(configName: string, config: CardConfig, additionalStyle
     },
     ...additionalStyle,
     ...config?.styles?.[configName],
-  });
-}
-
-export function buttonSectionStyle(config: CardConfig, additionalStyle?: StyleInfo) {
-  return stylable('button-section', config, {
-    background: 'var(--sonos-int-button-section-background-color)',
-    borderRadius: 'var(--sonos-int-border-radius)',
-    border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
-    marginTop: '1rem',
-    padding: '0 0.5rem',
-    ...additionalStyle,
   });
 }
 
@@ -188,9 +113,26 @@ export const haIconStyle = (config: CardConfig) =>
     marginBottom: '0.4rem',
   });
 
-export function wrapInHaCardUnlessAllSectionsShown(cardHtml: TemplateResult, config: CardConfig) {
-  return config.showAllSections ? cardHtml : html` <ha-card style="${haCardStyle(config)}"> ${cardHtml}</ha-card>`;
-}
+export const controlIcon = (config: CardConfig, icon: string, click: () => void, additionalStyle?: StyleInfo) => {
+  return clickableIcon(config, icon, click, iconButtonStyle(config, additionalStyle));
+};
+
+export const clickableIcon = (config: CardConfig, icon: string, click: () => void, style?: DirectiveResult) => {
+  return html`
+    <ha-icon-button @click="${click}" style="${style}">
+      <ha-icon .icon=${icon} style="${haIconStyle(config)}"></ha-icon>
+    </ha-icon-button>
+  `;
+};
+
+export const iconButtonStyle = (config: CardConfig, additionalStyle?: StyleInfo) => {
+  return stylable('media-controls-icon', config, {
+    // padding: '0.3rem',
+    // '--mdc-icon-size': 'min(100%, 1.25rem)',
+    // '--mdc-icon-button-size': 'min(100%, 2.5rem)',
+    ...additionalStyle,
+  });
+};
 
 export function haCardStyle(config: CardConfig) {
   return stylable('ha-card', config, {

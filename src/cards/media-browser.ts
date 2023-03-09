@@ -1,41 +1,29 @@
-import { html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
-import { CardConfig, MediaPlayerItem } from '../types';
-import {
-  buttonSectionStyle,
-  getMediaPlayers,
-  getWidth,
-  listenForEntityId,
-  noPlayerHtml,
-  sharedStyle,
-  stopListeningForEntityId,
-  stylable,
-  validateConfig,
-  wrapInHaCardUnlessAllSectionsShown,
-} from '../utils';
-import { until } from 'lit-html/directives/until.js';
-import '../components/media-list-item';
-import '../components/media-icon-item';
-import '../components/media-browser-header';
 import { HomeAssistant } from 'custom-card-helpers';
-import HassService from '../services/hass-service';
-import MediaControlService from '../services/media-control-service';
+import { html, LitElement } from 'lit';
+import { until } from 'lit-html/directives/until.js';
+import { property, state } from 'lit/decorators.js';
+import '../components/media-browser-header';
+import '../components/media-icon-item';
+import '../components/media-list-item';
 import MediaBrowseService from '../services/media-browse-service';
+import MediaControlService from '../services/media-control-service';
+import Store from '../store';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { listenForEntityId, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
 
 export class MediaBrowser extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
+  @property() store!: Store;
+  private config!: CardConfig;
+  private entityId!: string;
+  private hass!: HomeAssistant;
   @state() private browse!: boolean;
   @state() private currentDir?: MediaPlayerItem;
-  @state() private mediaItems: MediaPlayerItem[] = [];
-  @state() private entityId!: string;
   private mediaPlayers!: string[];
   private parentDirs: MediaPlayerItem[] = [];
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
-  private hassService!: HassService;
 
   entityIdListener = (event: Event) => {
     this.entityId = (event as CustomEvent).detail.entityId;
@@ -51,87 +39,71 @@ export class MediaBrowser extends LitElement {
     super.disconnectedCallback();
   }
 
-  setConfig(config: CardConfig) {
-    const parsed = JSON.parse(JSON.stringify(config));
-    validateConfig(parsed);
-    this.config = parsed;
-  }
-
   render() {
-    if (!this.entityId && this.config.entityId) {
-      this.entityId = this.config.entityId;
+    ({
+      config: this.config,
+      hass: this.hass,
+      mediaPlayers: this.mediaPlayers,
+      mediaControlService: this.mediaControlService,
+      mediaBrowseService: this.mediaBrowseService,
+      entityId: this.entityId,
+    } = this.store);
+    const currentDirJson = localStorage.getItem(LOCAL_STORAGE_CURRENT_DIR);
+    if (currentDirJson) {
+      this.currentDir = JSON.parse(currentDirJson);
+      this.browse = true;
     }
-    if (this.entityId && this.hass) {
-      this.hassService = new HassService(this.hass);
-      this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
-      this.mediaControlService = new MediaControlService(this.hass, this.hassService);
-      this.mediaPlayers = getMediaPlayers(this.config, this.hass);
-      const currentDirJson = localStorage.getItem(LOCAL_STORAGE_CURRENT_DIR);
-      if (currentDirJson) {
-        this.currentDir = JSON.parse(currentDirJson);
-        this.browse = true;
-      }
-      const cardHtml = html`
-        <div style="${buttonSectionStyle(this.config, { textAlign: 'center' })}">
-          <sonos-media-browser-header
-            .config=${this.config}
-            .hass=${this.hass}
-            .mediaBrowser=${this}
-            .browse=${this.browse}
-            .currentDir=${this.currentDir}
-          ></sonos-media-browser-header>
-          ${this.entityId !== '' &&
-          until(
-            (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
-              const itemsWithImage = MediaBrowser.itemsWithImage(items);
-              const mediaItemWidth = this.getMediaItemWidth(itemsWithImage);
-              return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
-                ${items.map((item) => {
-                  const itemClick = async () => await this.onMediaItemClick(item);
-                  const style = `width: ${mediaItemWidth};max-width: ${mediaItemWidth};`;
-                  if (this.config.mediaBrowserItemsAsList) {
-                    return html`
-                      <sonos-media-list-item
-                        style="${style}"
-                        .itemsWithImage="${itemsWithImage}"
-                        .mediaItem="${item}"
-                        .config="${this.config}"
-                        @click="${itemClick}"
-                      ></sonos-media-list-item>
-                    `;
-                  } else {
-                    return html`
-                      <sonos-media-icon-item
-                        style="${style}"
-                        .itemsWithImage="${itemsWithImage}"
-                        .mediaItem="${item}"
-                        .config="${this.config}"
-                        @click="${itemClick}"
-                      ></sonos-media-icon-item>
-                    `;
-                  }
-                })}
-              </div>`;
-            }),
-          )}
-        </div>
-      `;
-      return wrapInHaCardUnlessAllSectionsShown(cardHtml, this.config);
-    } else {
-      return noPlayerHtml;
-    }
+    return html`
+      <div style="text-align: center">
+        <sonos-media-browser-header
+          .config=${this.config}
+          .mediaBrowser=${this}
+          .browse=${this.browse}
+          .currentDir=${this.currentDir}
+        ></sonos-media-browser-header>
+        ${this.entityId !== '' &&
+        until(
+          (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
+            const itemsWithImage = MediaBrowser.itemsWithImage(items);
+            const mediaItemWidth = this.getMediaItemWidth(itemsWithImage);
+            return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
+              ${items.map((item) => {
+                const itemClick = async () => await this.onMediaItemClick(item);
+                const style = `width: ${mediaItemWidth};max-width: ${mediaItemWidth};`;
+                if (this.config.mediaBrowserItemsAsList) {
+                  return html`
+                    <sonos-media-list-item
+                      style="${style}"
+                      .itemsWithImage="${itemsWithImage}"
+                      .mediaItem="${item}"
+                      .config="${this.config}"
+                      @click="${itemClick}"
+                    ></sonos-media-list-item>
+                  `;
+                } else {
+                  return html`
+                    <sonos-media-icon-item
+                      style="${style}"
+                      .itemsWithImage="${itemsWithImage}"
+                      .mediaItem="${item}"
+                      .config="${this.config}"
+                      @click="${itemClick}"
+                    ></sonos-media-icon-item>
+                  `;
+                }
+              })}
+            </div>`;
+          }),
+        )}
+      </div>
+    `;
   }
 
   private getMediaItemWidth(itemsWithImage: boolean) {
-    if (itemsWithImage) {
-      if (this.config.mediaBrowserItemsAsList) {
-        return getWidth(this.config, '100%', '100%', this.config.layout?.mediaItem);
-      } else {
-        return getWidth(this.config, '33%', '16%', this.config.layout?.mediaItem);
-      }
-    } else {
-      return '100%';
+    if (itemsWithImage && !this.config.mediaBrowserItemsAsList) {
+      return '16%';
     }
+    return '100%';
   }
 
   browseClicked() {

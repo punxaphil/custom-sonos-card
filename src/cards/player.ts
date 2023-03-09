@@ -1,30 +1,22 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import {
-  listenForEntityId,
-  noPlayerHtml,
-  sharedStyle,
-  stopListeningForEntityId,
-  stylable,
-  validateConfig,
-  wrapInHaCardUnlessAllSectionsShown,
-} from '../utils';
-import '../components/progress';
-import '../components/player-header';
-import '../components/volume';
 import '../components/media-controls';
+import '../components/player-header';
+import '../components/progress';
+import '../components/volume';
+import { listenForEntityId, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
 
-import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig } from '../types';
-import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { StyleInfo } from 'lit-html/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
-import { HomeAssistant } from 'custom-card-helpers';
+import Store from '../store';
+import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig } from '../types';
 
 export class Player extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
+  @property() store!: Store;
+  private config!: CardConfig;
+  private entityId!: string;
   private entity!: HassEntity;
-  @state() private entityId!: string;
   @state() showVolumes!: boolean;
   @state() showLoader!: boolean;
   @state() loaderTimestamp!: number;
@@ -70,47 +62,24 @@ export class Player extends LitElement {
     super.disconnectedCallback();
   }
 
-  setConfig(config: CardConfig) {
-    const parsed = JSON.parse(JSON.stringify(config));
-    validateConfig(parsed);
-    this.config = parsed;
-  }
-
   render() {
-    if (!this.entityId && this.config.entityId) {
-      this.entityId = this.config.entityId;
-    }
-    if (this.entityId && this.hass) {
-      this.entity = this.hass.states[this.entityId];
-
-      const cardHtml = html`
-        <div style="${this.containerStyle(this.entity)}">
-          <div style="${this.bodyStyle()}">
-            ${when(
-              !this.showVolumes,
-              () => html`<sonos-player-header
-                .hass=${this.hass}
-                .entity=${this.entity}
-                .config=${this.config}
-              ></sonos-player-header>`,
-            )}
-            <div class="loading" ?hidden="${!this.showLoader}">
-              <ha-circular-progress active="" progress="0"></ha-circular-progress>
-            </div>
-
-            <sonos-media-controls
-              .hass=${this.hass}
-              .entity=${this.entity}
-              .config=${this.config}
-              .showVolumes=${this.showVolumes}
-              @volumesToggled=${(e: Event) => (this.showVolumes = (e as CustomEvent).detail)}
-            ></sonos-media-controls>
+    ({ config: this.config, entity: this.entity, entityId: this.entityId } = this.store);
+    return html`
+      <div style="${this.containerStyle(this.entity)}">
+        <div style="${this.bodyStyle()}">
+          ${when(!this.showVolumes, () => html`<sonos-player-header .store=${this.store}></sonos-player-header>`)}
+          <div class="loading" ?hidden="${!this.showLoader}">
+            <ha-circular-progress active="" progress="0"></ha-circular-progress>
           </div>
+
+          <sonos-media-controls
+            .store=${this.store}
+            .showVolumes=${this.showVolumes}
+            @volumesToggled=${(e: Event) => (this.showVolumes = (e as CustomEvent).detail)}
+          ></sonos-media-controls>
         </div>
-      `;
-      return wrapInHaCardUnlessAllSectionsShown(cardHtml, this.config);
-    }
-    return noPlayerHtml;
+      </div>
+    `;
   }
 
   private containerStyle(entity: HassEntity) {
@@ -141,12 +110,11 @@ export class Player extends LitElement {
       }
     }
     return stylable('player-container', this.config, {
-      marginTop: '1rem',
       position: 'relative',
       background: 'var(--sonos-int-background-color)',
-      borderRadius: 'var(--sonos-int-border-radius)',
       paddingBottom: '100%',
-      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
+      borderRadius: '10px',
+      overflow: 'hidden',
       ...style,
     });
   }

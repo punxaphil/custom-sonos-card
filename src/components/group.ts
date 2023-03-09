@@ -1,5 +1,10 @@
+import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { property } from 'lit/decorators.js';
+import { when } from 'lit/directives/when.js';
+import Store from '../store';
+import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup } from '../types';
 import {
   getCurrentTrack,
   isPlaying,
@@ -9,15 +14,12 @@ import {
   stopListeningForPlayerRequest,
   stylable,
 } from '../utils';
-import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup } from '../types';
-import { styleMap } from 'lit-html/directives/style-map.js';
-import { when } from 'lit/directives/when.js';
-import { HomeAssistant } from 'custom-card-helpers';
 
 class Group extends LitElement {
-  @property() hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() group!: PlayerGroup;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private group!: PlayerGroup;
   @property() selected = false;
 
   connectedCallback() {
@@ -48,6 +50,7 @@ class Group extends LitElement {
   };
 
   render() {
+    ({ config: this.config, hass: this.hass } = this.store);
     const currentTrack = getCurrentTrack(this.hass.states[this.group.entity]);
     const speakerList = [this.group.roomName, ...Object.values(this.group.members)].join(' + ');
     this.dispatchEntityIdEvent();
@@ -130,6 +133,7 @@ class Group extends LitElement {
       this.selected = true;
       const newUrl = window.location.href.replace(/#.*/g, '');
       window.location.replace(`${newUrl}#${this.group.entity}`);
+      this.store.updateEntity(this.group.entity);
       this.dispatchEntityIdEvent();
     }
   }

@@ -1,5 +1,5 @@
-import {AllSections} from './all-sections';
-import {CardConfig} from '../types'; // Deprecated: use AllSections instead
+import { AllSections } from './all-sections';
+import { CardConfig } from '../types'; // Deprecated: use AllSections instead
 
 // Deprecated: use AllSections instead
 export class CustomSonosCard extends AllSections {

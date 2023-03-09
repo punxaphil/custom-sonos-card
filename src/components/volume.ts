@@ -1,22 +1,26 @@
+import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { HomeAssistant } from 'custom-card-helpers';
-import { haIconStyle, stylable } from '../utils';
-import { CardConfig, Members } from '../types';
 import MediaControlService from '../services/media-control-service';
-import HassService from '../services/hass-service';
+import Store from '../store';
+import { CardConfig, Members } from '../types';
+import { haIconStyle, stylable } from '../utils';
 
 class Volume extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private mediaControlService!: MediaControlService;
   @property() entityId!: string;
   @property() members?: Members;
   @property() volumeClicked?: () => void;
-  private mediaControlService!: MediaControlService;
 
   render() {
-    const hassService = new HassService(this.hass);
-    this.mediaControlService = new MediaControlService(this.hass, hassService);
+    ({
+      config: this.config,
+      hass: this.hass,
+      mediaControlService: this.mediaControlService,
+    } = this.store);
     const volume = 100 * this.hass.states[this.entityId].attributes.volume_level;
     let max = 100;
     let inputColor = 'rgb(211, 3, 32)';

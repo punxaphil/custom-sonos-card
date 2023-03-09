@@ -1,28 +1,19 @@
-import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
-import {
-  createPlayerGroups,
-  getEntityName,
-  getGroupMembers,
-  getMediaPlayers,
-  haIconStyle,
-  isPlaying,
-  sharedStyle,
-  stylable,
-} from '../utils';
-import { CardConfig, Members } from '../types';
 import { HomeAssistant } from 'custom-card-helpers';
-import { until } from 'lit-html/directives/until.js';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { StyleInfo } from 'lit-html/directives/style-map';
-import { DirectiveResult } from 'lit/directive';
-import MediaControlService from '../services/media-control-service';
+import { html, LitElement } from 'lit';
+import { property, state } from 'lit/decorators.js';
 import HassService from '../services/hass-service';
+import MediaControlService from '../services/media-control-service';
+import Store from '../store';
+import { CardConfig, Members } from '../types';
+import { clickableIcon, controlIcon, getEntityName, getGroupMembers, isPlaying, sharedStyle, stylable } from '../utils';
 
 class MediaControls extends LitElement {
-  @property() hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() entity!: HassEntity;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  @property()
+  private entity!: HassEntity;
   @property() showVolumes!: boolean;
   @property() volumesToggled?: () => void;
 
@@ -34,12 +25,14 @@ class MediaControls extends LitElement {
   @state() private timerToggleShowAllVolumes!: number;
 
   render() {
-    this.entityId = this.entity.entity_id;
-    this.hassService = new HassService(this.hass);
-    this.mediaControlService = new MediaControlService(this.hass, this.hassService);
-    const mediaPlayers = getMediaPlayers(this.config, this.hass);
-    const groups = createPlayerGroups(mediaPlayers, this.hass, this.config);
-    this.members = groups[this.entityId].members;
+    ({
+      config: this.config,
+      hass: this.hass,
+      entityId: this.entityId,
+      entity: this.entity,
+      mediaControlService: this.mediaControlService,
+    } = this.store);
+    this.members = this.store.groups[this.entityId].members;
     this.isGroup = getGroupMembers(this.entity).length > 1;
     let allVolumes = [];
     if (this.isGroup) {
@@ -47,19 +40,21 @@ class MediaControls extends LitElement {
     }
     const playing = !isPlaying(this.entity.state);
 
-    // ${this.controlIcon('mdi:volume-minus', this.volDown)}
-    // ${this.controlIcon(this.repeatIcon(), this.repeat)} ${until(this.getAdditionalSwitches())}
-    // ${this.controlIcon(this.shuffleIcon(), this.shuffle)}
-    // ${this.controlIcon('mdi:arrow-expand-vertical', this.toggleShowAllVolumes, !this.isGroup)}
-    // ${this.controlIcon('mdi:volume-plus', this.volUp)}
+    // ${controlIcon(this.config,'mdi:volume-minus', this.volDown)}
+    // ${controlIcon(thithis.config,s.repeatIcon(), this.repeat)} ${until(this.getAdditionalSwitches())}
+    // ${controlIcon(thithis.config,s.shuffleIcon(), this.shuffle)}
+    // ${controlIcon(this.config,'mdi:volume-plus', this.volUp)}
 
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
         <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
         <div style="${this.iconsStyle()}">
-          ${this.controlIcon('mdi:skip-backward', this.prev)}
-          ${playing ? this.controlIcon('mdi:play', this.play) : this.controlIcon('mdi:stop', this.pause)}
-          ${this.controlIcon('mdi:skip-forward', this.next)}
+          ${controlIcon(this.config, 'mdi:skip-backward', this.prev)}
+          ${playing
+            ? controlIcon(this.config, 'mdi:play', this.play)
+            : controlIcon(this.config, 'mdi:stop', this.pause)}
+          ${controlIcon(this.config, 'mdi:skip-forward', this.next)}
+          ${!this.isGroup ? html`` : controlIcon(this.config, 'mdi:arrow-expand-vertical', this.toggleShowAllVolumes)}
         </div>
         ${this.mainVolume()}
       </div>
@@ -84,25 +79,14 @@ class MediaControls extends LitElement {
     return repeatState === 'all' ? 'mdi:repeat' : repeatState === 'one' ? 'mdi:repeat-once' : 'mdi:repeat-off';
   }
 
-  private controlIcon(icon: string, click: () => void, hidden = false, additionalStyle?: StyleInfo) {
-    return this.clickableIcon(icon, click, hidden, this.iconButtonStyle(additionalStyle));
-  }
-
-  private clickableIcon(icon: string, click: () => void, hidden = false, style?: DirectiveResult) {
-    return html`
-      <ha-icon-button @click="${click}" style="${style}" ?hidden="${hidden}">
-        <ha-icon .icon=${icon} style="${haIconStyle(this.config)}"></ha-icon>
-      </ha-icon-button>
-    `;
-  }
   private getAdditionalSwitches() {
     if (!this.config.skipAdditionalPlayerSwitches) {
       return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
         return items.map((item: string) => {
-          return this.controlIcon(
+          return controlIcon(
+            this.config,
             this.hass.states[item].attributes.icon || '',
             () => this.hassService.toggle(item),
-            false,
             this.hass.states[item].state === 'on' ? { color: 'var(--sonos-int-accent-color)' } : {},
           );
         });
@@ -125,15 +109,6 @@ class MediaControls extends LitElement {
     return stylable('media-controls-icons', this.config, {
       justifyContent: 'center',
       display: this.showVolumes ? 'none' : 'flex',
-    });
-  }
-
-  private iconButtonStyle(additionalStyle?: StyleInfo) {
-    return stylable('media-controls-icon', this.config, {
-      padding: '0.3rem',
-      // '--mdc-icon-size': 'min(100%, 1.25rem)',
-      // '--mdc-icon-button-size': 'min(100%, 2.5rem)',
-      ...additionalStyle,
     });
   }
 
@@ -182,12 +157,13 @@ class MediaControls extends LitElement {
     return html` <div style="display: flex">
       <div style="${this.volumeNameStyle(!this.showVolumes)}">
         <div style="${this.volumeNameTextStyle()}">${name}</div>
-        ${this.clickableIcon('mdi:arrow-left', () => this.toggleShowAllVolumes(), !members, this.volumeNameIconStyle())}
+        ${members
+          ? clickableIcon(this.config, 'mdi:arrow-left', () => this.toggleShowAllVolumes(), this.volumeNameIconStyle())
+          : html``}
       </div>
       <sonos-volume
-        .hass=${this.hass}
+        .store=${this.store}
         .entityId=${entityId}
-        .config=${this.config}
         .members=${members}
         style="${this.volumeStyle(this.showVolumes, !members)}"
         @volumeClicked=${this.volumeClicked}

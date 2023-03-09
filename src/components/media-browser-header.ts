@@ -1,15 +1,13 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import { CardConfig, MediaPlayerItem } from '../types';
-import { titleStyle } from '../sharedStyle';
-import { HomeAssistant } from 'custom-card-helpers';
-import { stylable } from '../utils';
 import { MediaBrowser } from '../cards/media-browser';
+import { titleStyle } from '../sharedStyle';
+import Store from '../store';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { stylable } from '../utils';
 
 class MediaBrowserHeader extends LitElement {
-  @property() hass!: HomeAssistant;
   @property() config!: CardConfig;
-
   @property() mediaBrowser!: MediaBrowser;
   @property() browse!: boolean;
   @property() currentDir!: MediaPlayerItem;

@@ -1,16 +1,19 @@
-import { html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { isPlaying, stylable } from '../utils';
+import { html, LitElement } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import Store from '../store';
 import { CardConfig } from '../types';
+import { isPlaying, stylable } from '../utils';
 
 class Progress extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() public entityId!: string;
-  @state() private playingProgress!: number;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private entityId!: string;
   private entity!: HassEntity;
+
+  @state() private playingProgress!: number;
   private tracker?: NodeJS.Timer;
 
   disconnectedCallback() {
@@ -22,6 +25,7 @@ class Progress extends LitElement {
   }
 
   render() {
+    ({ config: this.config, hass: this.hass, entity: this.entity, entityId: this.entityId } = this.store);
     this.entity = this.hass.states[this.entityId];
     const mediaDuration = this.entity?.attributes.media_duration || 0;
     const showProgress = mediaDuration > 0;
