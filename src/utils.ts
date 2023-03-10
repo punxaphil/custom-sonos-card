@@ -134,13 +134,6 @@ export const iconButtonStyle = (config: CardConfig, additionalStyle?: StyleInfo)
   });
 };
 
-export function haCardStyle(config: CardConfig) {
-  return stylable('ha-card', config, {
-    color: 'var(--sonos-int-color)',
-    background: 'var(--sonos-int-ha-card-background-color)',
-  });
-}
-
 export function isPlaying(state: string) {
   return state === 'playing';
 }

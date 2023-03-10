@@ -73,6 +73,7 @@ export class Player extends LitElement {
           </div>
 
           <sonos-media-controls
+            style="overflow-y:auto"
             .store=${this.store}
             .showVolumes=${this.showVolumes}
             @volumesToggled=${(e: Event) => (this.showVolumes = (e as CustomEvent).detail)}
