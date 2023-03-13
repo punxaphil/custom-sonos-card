@@ -2,7 +2,6 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { css, html } from 'lit';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
-import { DirectiveResult } from 'lit/directive';
 import { ACTIVE_PLAYER_EVENT, CardConfig, REQUEST_PLAYER_EVENT } from './types';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
@@ -113,25 +112,17 @@ export const haIconStyle = (config: CardConfig) =>
     marginBottom: '0.4rem',
   });
 
-export const controlIcon = (config: CardConfig, icon: string, click: () => void, additionalStyle?: StyleInfo) => {
-  return clickableIcon(config, icon, click, iconButtonStyle(config, additionalStyle));
-};
-
-export const clickableIcon = (config: CardConfig, icon: string, click: () => void, style?: DirectiveResult) => {
+export const controlIcon = (icon: string, click: () => void) => {
   return html`
-    <ha-icon-button @click="${click}" style="${style}">
-      <ha-icon .icon=${icon} style="${haIconStyle(config)}"></ha-icon>
-    </ha-icon-button>
+    <ha-icon-button
+      @click="${click}"
+      style="${{
+        '--mdc-icon-button-size': '2rem',
+        '--mdc-icon-size': '1.5rem',
+      }}"
+      .path=${icon}
+    ></ha-icon-button>
   `;
-};
-
-export const iconButtonStyle = (config: CardConfig, additionalStyle?: StyleInfo) => {
-  return stylable('media-controls-icon', config, {
-    // padding: '0.3rem',
-    // '--mdc-icon-size': 'min(100%, 1.25rem)',
-    // '--mdc-icon-button-size': 'min(100%, 2.5rem)',
-    ...additionalStyle,
-  });
 };
 
 export function isPlaying(state: string) {

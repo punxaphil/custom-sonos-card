@@ -1,13 +1,13 @@
-import { mdiArrowLeft, mdiPlayBoxMultiple, mdiSpeakerMultiple, mdiSquareEditOutline } from '@mdi/js';
+import { mdiArrowLeft, mdiPlayBoxMultiple, mdiSpeakerMultiple, mdiSquareEditOutline, mdiVolumeHigh } from '@mdi/js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { titleStyle } from '../sharedStyle';
 import Store from '../store';
-import { CardConfig, Section } from '../types';
+import { CardConfig, Section, SHOW_SECTION } from '../types';
 import { sharedStyle, stylable, validateConfig } from '../utils';
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 
 export class AllSections extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -17,6 +17,8 @@ export class AllSections extends LitElement {
 
   render() {
     this.store = new Store(this.hass, this.config);
+    console.log('render section', this.section);
+
     return html`
       <ha-card style="${this.haCardStyle()}">
         <div style="${this.titleStyle()}">${this.config.name}</div>
@@ -24,6 +26,7 @@ export class AllSections extends LitElement {
           ${this.section !== PLAYER ? this.sectionButton(mdiArrowLeft, PLAYER) : ''}
           ${this.section === PLAYER ? this.sectionButton(mdiSpeakerMultiple, GROUPS) : ''}
           ${this.section === GROUPS ? this.sectionButton(mdiSquareEditOutline, GROUPING) : ''}
+          ${this.section === PLAYER ? this.sectionButton(mdiVolumeHigh, VOLUMES) : ''}
           ${this.section === PLAYER ? this.sectionButton(mdiPlayBoxMultiple, MEDIA_BROWSER) : ''}
         </div>
         ${choose(this.section, [
@@ -31,10 +34,19 @@ export class AllSections extends LitElement {
           [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
           [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
           [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
+          [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
         ])}
       </ha-card>
     `;
   }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(SHOW_SECTION, (event: Event) => {
+      this.section = (event as CustomEvent).detail;
+    });
+  }
+
   haCardStyle() {
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',

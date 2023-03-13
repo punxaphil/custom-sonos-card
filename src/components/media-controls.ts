@@ -5,8 +5,8 @@ import { property, state } from 'lit/decorators.js';
 import HassService from '../services/hass-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
-import { CardConfig, Members } from '../types';
-import { clickableIcon, controlIcon, getEntityName, getGroupMembers, isPlaying, sharedStyle, stylable } from '../utils';
+import { CardConfig, Members, Section, SHOW_SECTION } from '../types';
+import { controlIcon, getGroupMembers, isPlaying, sharedStyle, stylable } from '../utils';
 
 class MediaControls extends LitElement {
   @property() store!: Store;
@@ -14,8 +14,6 @@ class MediaControls extends LitElement {
   private config!: CardConfig;
   @property()
   private entity!: HassEntity;
-  @property() showVolumes!: boolean;
-  @property() volumesToggled?: () => void;
 
   private isGroup!: boolean;
   private entityId!: string;
@@ -34,29 +32,27 @@ class MediaControls extends LitElement {
     } = this.store);
     this.members = this.store.groups[this.entityId].members;
     this.isGroup = getGroupMembers(this.entity).length > 1;
-    let allVolumes = [];
-    if (this.isGroup) {
-      allVolumes = getGroupMembers(this.entity).map((entityId: string) => this.groupMemberVolume(entityId));
-    }
     const playing = !isPlaying(this.entity.state);
 
-    // ${controlIcon(this.config,'mdi:volume-minus', this.volDown)}
+    // ${controlIcon('mdi:volume-minus', this.volDown)}
     // ${controlIcon(thithis.config,s.repeatIcon(), this.repeat)} ${until(this.getAdditionalSwitches())}
     // ${controlIcon(thithis.config,s.shuffleIcon(), this.shuffle)}
-    // ${controlIcon(this.config,'mdi:volume-plus', this.volUp)}
+    // ${controlIcon('mdi:volume-plus', this.volUp)}
 
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
-        <div ?hidden="${!this.showVolumes}">${allVolumes}</div>
         <div style="${this.iconsStyle()}">
-          ${controlIcon(this.config, 'mdi:skip-backward', this.prev)}
-          ${playing
-            ? controlIcon(this.config, 'mdi:play', this.play)
-            : controlIcon(this.config, 'mdi:stop', this.pause)}
-          ${controlIcon(this.config, 'mdi:skip-forward', this.next)}
-          ${!this.isGroup ? html`` : controlIcon(this.config, 'mdi:arrow-expand-vertical', this.toggleShowAllVolumes)}
+          ${controlIcon('mdi:skip-backward', this.prev)}
+          ${playing ? controlIcon('mdi:play', this.play) : controlIcon('mdi:stop', this.pause)}
+          ${controlIcon('mdi:skip-forward', this.next)}
         </div>
-        ${this.mainVolume()}
+        <sonos-volume
+          .store=${this.store}
+          .entityId=${this.entityId}
+          .members=${this.members}
+          @volumeClicked=${() => this.isGroup && this.dispatchShowVolumes()}
+        ></sonos-volume
+        >;
       </div>
     `;
   }
@@ -108,35 +104,7 @@ class MediaControls extends LitElement {
   private iconsStyle() {
     return stylable('media-controls-icons', this.config, {
       justifyContent: 'center',
-      display: this.showVolumes ? 'none' : 'flex',
-    });
-  }
-
-  private volumeNameStyle(hidden: boolean) {
-    return stylable('player-volume-name', this.config, {
-      marginTop: '1rem',
-      marginLeft: '0.4rem',
-      flex: '1',
-      overflow: 'hidden',
-      flexDirection: 'column',
-      ...(hidden && { display: 'none' }),
-    });
-  }
-
-  private volumeNameTextStyle() {
-    return stylable('player-volume-name-text', this.config, {
-      flex: '1',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-    });
-  }
-
-  private volumeNameIconStyle() {
-    return stylable('player-volume-name-icon', this.config, {
-      flex: '1',
-      '--mdc-icon-size': '1.5rem',
-      marginLeft: '-0.3rem',
+      display: 'flex',
     });
   }
 
@@ -144,73 +112,8 @@ class MediaControls extends LitElement {
     return sharedStyle;
   }
 
-  private mainVolume() {
-    const name = this.config.allVolumesText ? this.config.allVolumesText : 'All';
-    return this.volume(this.entityId, name, this.members);
-  }
-
-  private groupMemberVolume(entityId: string) {
-    const name = getEntityName(this.hass, this.config, entityId);
-    return this.volume(entityId, name);
-  }
-  private volume(entityId: string, name: string, members?: Members) {
-    return html` <div style="display: flex">
-      <div style="${this.volumeNameStyle(!this.showVolumes)}">
-        <div style="${this.volumeNameTextStyle()}">${name}</div>
-        ${members
-          ? clickableIcon(this.config, 'mdi:arrow-left', () => this.toggleShowAllVolumes(), this.volumeNameIconStyle())
-          : html``}
-      </div>
-      <sonos-volume
-        .store=${this.store}
-        .entityId=${entityId}
-        .members=${members}
-        style="${this.volumeStyle(this.showVolumes, !members)}"
-        @volumeClicked=${this.volumeClicked}
-      ></sonos-volume>
-    </div>`;
-  }
-  private volumeClicked = () => {
-    if (this.isGroup) {
-      this.toggleShowAllVolumes();
-    }
-  };
-
-  toggleShowAllVolumes = () => {
-    this.showVolumes = !this.showVolumes;
-    clearTimeout(this.timerToggleShowAllVolumes);
-    if (this.showVolumes) {
-      this.scrollToBottom();
-      this.timerToggleShowAllVolumes = window.setTimeout(() => {
-        this.showVolumes = false;
-        this.dispatchVolumesToggled();
-        window.scrollTo(0, 0);
-      }, 30000);
-    }
-    this.dispatchVolumesToggled();
-  };
-
-  private dispatchVolumesToggled() {
-    this.dispatchEvent(new CustomEvent('volumesToggled', { detail: this.showVolumes }));
-  }
-
-  private scrollToBottom() {
-    setTimeout(() => {
-      const mediaControls = this.renderRoot?.querySelector('#mediaControls');
-      if (mediaControls) {
-        mediaControls.scrollTop = mediaControls.scrollHeight;
-      }
-    });
-  }
-
-  private volumeStyle(showVolumes: boolean, isGroup: boolean) {
-    return stylable('player-volume', this.config, {
-      flex: showVolumes ? '4' : '1',
-      ...(isGroup && {
-        borderBottom: 'dotted var(--sonos-int-color)',
-        marginTop: '0.4rem',
-      }),
-    });
+  private dispatchShowVolumes() {
+    window.dispatchEvent(new CustomEvent(SHOW_SECTION, { detail: Section.VOLUMES }));
   }
 }
 

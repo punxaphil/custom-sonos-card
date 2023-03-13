@@ -3,6 +3,7 @@ import { AllSections } from './cards/all-sections';
 import { Grouping } from './cards/grouping';
 import { Groups } from './cards/groups';
 import { MediaBrowser } from './cards/media-browser';
+import './cards/volumes';
 import { CustomSonosCard } from './cards/custom-sonos-card';
 
 const name = (type?: string) => `Sonos${type ? ` (${type})` : ''}`;

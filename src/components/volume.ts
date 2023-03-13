@@ -16,11 +16,7 @@ class Volume extends LitElement {
   @property() volumeClicked?: () => void;
 
   render() {
-    ({
-      config: this.config,
-      hass: this.hass,
-      mediaControlService: this.mediaControlService,
-    } = this.store);
+    ({ config: this.config, hass: this.hass, mediaControlService: this.mediaControlService } = this.store);
     const volume = 100 * this.hass.states[this.entityId].attributes.volume_level;
     let max = 100;
     let inputColor = 'rgb(211, 3, 32)';
@@ -65,6 +61,15 @@ class Volume extends LitElement {
             style="${this.volumeRangeStyle(inputColor)}"
           >
           </ha-slider>
+          <ha-icon-button
+            @click="${() => {}}"
+            style="${this.muteStyle()}"
+          >
+            <ha-icon
+              .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
+              style="${haIconStyle(this.config)}"
+            ></ha-icon>
+          </ha-icon-button>
         </div>
       </div>
     `;
