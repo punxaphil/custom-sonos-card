@@ -79,22 +79,6 @@ export default class MediaControlService {
     await this.hassService.callMediaService('repeat_set', { entity_id, repeat });
   }
 
-  async volumeDown(entity_id: string, members: Members) {
-    await this.hassService.callMediaService('volume_down', { entity_id });
-
-    for (const entity_id in members) {
-      await this.hassService.callMediaService('volume_down', { entity_id: entity_id });
-    }
-  }
-
-  async volumeUp(entity_id: string, members: Members) {
-    await this.hassService.callMediaService('volume_up', { entity_id });
-
-    for (const entity_id in members) {
-      await this.hassService.callMediaService('volume_up', { entity_id: entity_id });
-    }
-  }
-
   async volumeSet(entity_id: string, volume: number, members?: Members) {
     const volume_level = volume / 100;
 

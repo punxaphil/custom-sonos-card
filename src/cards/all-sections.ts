@@ -1,4 +1,4 @@
-import { mdiArrowLeft, mdiPlayBoxMultiple, mdiSpeakerMultiple, mdiSquareEditOutline, mdiVolumeHigh } from '@mdi/js';
+import { mdiArrowLeft, mdiSpeakerMultiple, mdiSquareEditOutline, mdiStarOutline } from '@mdi/js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
@@ -7,6 +7,7 @@ import { titleStyle } from '../sharedStyle';
 import Store from '../store';
 import { CardConfig, Section, SHOW_SECTION } from '../types';
 import { sharedStyle, stylable, validateConfig } from '../utils';
+
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 
 export class AllSections extends LitElement {
@@ -17,8 +18,6 @@ export class AllSections extends LitElement {
 
   render() {
     this.store = new Store(this.hass, this.config);
-    console.log('render section', this.section);
-
     return html`
       <ha-card style="${this.haCardStyle()}">
         <div style="${this.titleStyle()}">${this.config.name}</div>
@@ -26,15 +25,14 @@ export class AllSections extends LitElement {
           ${this.section !== PLAYER ? this.sectionButton(mdiArrowLeft, PLAYER) : ''}
           ${this.section === PLAYER ? this.sectionButton(mdiSpeakerMultiple, GROUPS) : ''}
           ${this.section === GROUPS ? this.sectionButton(mdiSquareEditOutline, GROUPING) : ''}
-          ${this.section === PLAYER ? this.sectionButton(mdiVolumeHigh, VOLUMES) : ''}
-          ${this.section === PLAYER ? this.sectionButton(mdiPlayBoxMultiple, MEDIA_BROWSER) : ''}
+          ${this.section === PLAYER ? this.sectionButton(mdiStarOutline, MEDIA_BROWSER) : ''}
         </div>
         ${choose(this.section, [
-          [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
-          [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
-          [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
-          [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
-          [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+          [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
+          [GROUPS, () => html` <dev-sonos-groups .store=${this.store}></dev-sonos-groups>`],
+          [GROUPING, () => html`<dev-sonos-grouping .store=${this.store}></dev-sonos-grouping>`],
+          [MEDIA_BROWSER, () => html` <dev-sonos-media-browser .store=${this.store}></dev-sonos-media-browser>`],
+          [VOLUMES, () => html` <dev-sonos-volumes .store=${this.store}></dev-sonos-volumes>`],
         ])}
       </ha-card>
     `;
@@ -50,9 +48,8 @@ export class AllSections extends LitElement {
   haCardStyle() {
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',
-      background: 'var(--sonos-int-ha-card-background-color)',
-      width: '30rem',
-      height: '30rem',
+      // width: '30rem',
+      height: '40rem',
       overflowY: 'auto',
     });
   }
@@ -61,8 +58,9 @@ export class AllSections extends LitElement {
     return stylable('section-buttons', this.config, {
       position: 'absolute',
       'z-index': '1000',
+      padding: '.3rem 2%',
       ...((this.section === PLAYER || this.section === GROUPS) && {
-        width: '100%',
+        width: '96%',
         display: 'flex',
         'justify-content': 'space-between',
       }),

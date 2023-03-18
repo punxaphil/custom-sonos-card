@@ -65,4 +65,4 @@ class MediaIconItem extends MediaItem {
   }
 }
 
-customElements.define('sonos-media-icon-item', MediaIconItem);
+customElements.define('dev-sonos-media-icon-item', MediaIconItem);

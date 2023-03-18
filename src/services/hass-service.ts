@@ -10,8 +10,6 @@ export default class HassService {
   }
 
   async callMediaService(service: string, inOptions: ServiceCallRequest['serviceData']) {
-    console.log('callmedia', service);
-
     window.dispatchEvent(
       new CustomEvent(CALL_MEDIA_STARTED, {
         bubbles: true,
@@ -29,8 +27,6 @@ export default class HassService {
         }),
       );
     }
-
-    console.log('callmedia done', service);
   }
 
   async browseMedia(entity_id: string, media_content_type?: string, media_content_id?: string) {

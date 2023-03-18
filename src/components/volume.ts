@@ -3,8 +3,9 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
-import { CardConfig, Members } from '../types';
-import { haIconStyle, stylable } from '../utils';
+import { CardConfig, Members, Section } from '../types';
+import { dispatchShowSection, stylable } from '../utils';
+import { mdiCastVariant, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 
 class Volume extends LitElement {
   @property() store!: Store;
@@ -34,13 +35,9 @@ class Volume extends LitElement {
       <div style="${this.volumeStyle()}">
         <ha-icon-button
           @click="${async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members)}"
-          style="${this.muteStyle()}"
-        >
-          <ha-icon
-            .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
-            style="${haIconStyle(this.config)}"
-          ></ha-icon>
-        </ha-icon-button>
+          .path=${volumeMuted ? mdiVolumeMute : mdiVolumeHigh}
+          style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;align-self: flex-end"
+        ></ha-icon-button>
         <div style="${this.volumeSliderStyle()}">
           <div style="${this.volumeLevelStyle()}">
             <div style="flex: ${volume}">0%</div>
@@ -61,16 +58,12 @@ class Volume extends LitElement {
             style="${this.volumeRangeStyle(inputColor)}"
           >
           </ha-slider>
-          <ha-icon-button
-            @click="${() => {}}"
-            style="${this.muteStyle()}"
-          >
-            <ha-icon
-              .icon=${volumeMuted ? 'mdi:volume-mute' : 'mdi:volume-high'}
-              style="${haIconStyle(this.config)}"
-            ></ha-icon>
-          </ha-icon-button>
         </div>
+        <ha-icon-button
+          @click="${async () => dispatchShowSection(Section.GROUPING)}"
+          .path=${mdiCastVariant}
+          style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;align-self: flex-end"
+        ></ha-icon-button>
       </div>
     `;
   }
@@ -138,4 +131,4 @@ function numberFromEvent(e: Event) {
   return Number.parseInt((e?.target as HTMLInputElement)?.value);
 }
 
-customElements.define('sonos-volume', Volume);
+customElements.define('dev-sonos-volume', Volume);

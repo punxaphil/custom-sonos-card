@@ -79,4 +79,4 @@ class MediaBrowserHeader extends LitElement {
   }
 }
 
-customElements.define('sonos-media-browser-header', MediaBrowserHeader);
+customElements.define('dev-sonos-media-browser-header', MediaBrowserHeader);

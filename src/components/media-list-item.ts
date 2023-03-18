@@ -67,4 +67,4 @@ class MediaListItem extends MediaItem {
   }
 }
 
-customElements.define('sonos-media-list-item', MediaListItem);
+customElements.define('dev-sonos-media-list-item', MediaListItem);

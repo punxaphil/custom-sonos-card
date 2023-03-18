@@ -4,8 +4,9 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../store';
-import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup } from '../types';
+import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup, Section } from '../types';
 import {
+  dispatchShowSection,
   getCurrentTrack,
   isPlaying,
   listenForEntityId,
@@ -135,6 +136,7 @@ class Group extends LitElement {
       window.location.replace(`${newUrl}#${this.group.entity}`);
       this.store.updateEntity(this.group.entity);
       this.dispatchEntityIdEvent();
+      dispatchShowSection(Section.PLAYER);
     }
   }
 
@@ -159,4 +161,4 @@ class Group extends LitElement {
   }
 }
 
-customElements.define('sonos-group', Group);
+customElements.define('dev-sonos-group', Group);

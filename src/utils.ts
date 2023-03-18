@@ -1,8 +1,8 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { css, html } from 'lit';
+import { css } from 'lit';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
-import { ACTIVE_PLAYER_EVENT, CardConfig, REQUEST_PLAYER_EVENT } from './types';
+import { ACTIVE_PLAYER_EVENT, CardConfig, REQUEST_PLAYER_EVENT, Section, SHOW_SECTION } from './types';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
@@ -31,16 +31,6 @@ export function stylable(configName: string, config: CardConfig, additionalStyle
     ...config?.styles?.[configName],
   });
 }
-
-export const noPlayerHtml = html` <div>
-  No Sonos player selected. Do one of the following:
-  <ul>
-    <li>Add the Sonos Groups card to this dashboard</li>
-    <li>Configure <i>entityId</i> for the card</li>
-    <li>Replace this one with the Sonos card containing all sections.</li>
-  </ul>
-</div>`;
-
 export function listenForEntityId(listener: EventListener) {
   window.addEventListener(ACTIVE_PLAYER_EVENT, listener);
   const event = new CustomEvent(REQUEST_PLAYER_EVENT, { bubbles: true, composed: true });
@@ -57,6 +47,10 @@ export function listenForPlayerRequest(listener: EventListener) {
 
 export function stopListeningForPlayerRequest(listener: EventListener) {
   window.removeEventListener(REQUEST_PLAYER_EVENT, listener);
+}
+
+export function dispatchShowSection(section: Section) {
+  window.dispatchEvent(new CustomEvent(SHOW_SECTION, { detail: section }));
 }
 
 export function validateConfig(config: CardConfig) {
@@ -106,24 +100,6 @@ export const sharedStyle = css`
     margin-bottom: 0.4rem;
   }
 `;
-
-export const haIconStyle = (config: CardConfig) =>
-  stylable('sonos-ha-icon', config, {
-    marginBottom: '0.4rem',
-  });
-
-export const controlIcon = (icon: string, click: () => void) => {
-  return html`
-    <ha-icon-button
-      @click="${click}"
-      style="${{
-        '--mdc-icon-button-size': '2rem',
-        '--mdc-icon-size': '1.5rem',
-      }}"
-      .path=${icon}
-    ></ha-icon-button>
-  `;
-};
 
 export function isPlaying(state: string) {
   return state === 'playing';

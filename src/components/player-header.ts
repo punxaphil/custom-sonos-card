@@ -21,7 +21,7 @@ class PlayerHeader extends LitElement {
             <div style="${this.entityStyle()}">${attributes.friendly_name}</div>
             <div style="${this.songStyle()}">${getCurrentTrack(this.entity)}</div>
             <div style="${this.artistAlbumStyle()}">${attributes.media_album_name}</div>
-            <sonos-progress .store=${this.store}></sonos-progress>
+            <dev-sonos-progress .store=${this.store}></dev-sonos-progress>
           </div>
         `
       : html` <div style="${this.noMediaTextStyle()}">
@@ -35,8 +35,6 @@ class PlayerHeader extends LitElement {
       margin: '0.25rem',
       padding: '0.5rem',
       textAlign: 'center',
-      background: 'var(--sonos-int-player-section-background)',
-      borderRadius: 'var(--sonos-int-border-radius)',
     });
   }
 
@@ -90,4 +88,4 @@ class PlayerHeader extends LitElement {
   }
 }
 
-customElements.define('sonos-player-header', PlayerHeader);
+customElements.define('dev-sonos-player-header', PlayerHeader);

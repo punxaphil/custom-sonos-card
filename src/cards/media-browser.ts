@@ -55,12 +55,12 @@ export class MediaBrowser extends LitElement {
     }
     return html`
       <div style="text-align: center">
-        <sonos-media-browser-header
+        <dev-sonos-media-browser-header
           .config=${this.config}
           .mediaBrowser=${this}
           .browse=${this.browse}
           .currentDir=${this.currentDir}
-        ></sonos-media-browser-header>
+        ></dev-sonos-media-browser-header>
         ${this.entityId !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
@@ -72,23 +72,23 @@ export class MediaBrowser extends LitElement {
                 const style = `width: ${mediaItemWidth};max-width: ${mediaItemWidth};`;
                 if (this.config.mediaBrowserItemsAsList) {
                   return html`
-                    <sonos-media-list-item
+                    <dev-sonos-media-list-item
                       style="${style}"
                       .itemsWithImage="${itemsWithImage}"
                       .mediaItem="${item}"
                       .config="${this.config}"
                       @click="${itemClick}"
-                    ></sonos-media-list-item>
+                    ></dev-sonos-media-list-item>
                   `;
                 } else {
                   return html`
-                    <sonos-media-icon-item
+                    <dev-sonos-media-icon-item
                       style="${style}"
                       .itemsWithImage="${itemsWithImage}"
                       .mediaItem="${item}"
                       .config="${this.config}"
                       @click="${itemClick}"
-                    ></sonos-media-icon-item>
+                    ></dev-sonos-media-icon-item>
                   `;
                 }
               })}

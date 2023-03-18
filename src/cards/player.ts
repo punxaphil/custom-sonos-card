@@ -67,17 +67,20 @@ export class Player extends LitElement {
     return html`
       <div style="${this.containerStyle(this.entity)}">
         <div style="${this.bodyStyle()}">
-          ${when(!this.showVolumes, () => html`<sonos-player-header .store=${this.store}></sonos-player-header>`)}
+          ${when(
+            !this.showVolumes,
+            () => html`<dev-sonos-player-header .store=${this.store}></dev-sonos-player-header>`,
+          )}
           <div class="loading" ?hidden="${!this.showLoader}">
             <ha-circular-progress active="" progress="0"></ha-circular-progress>
           </div>
 
-          <sonos-media-controls
+          <dev-sonos-media-controls
             style="overflow-y:auto"
             .store=${this.store}
             .showVolumes=${this.showVolumes}
             @volumesToggled=${(e: Event) => (this.showVolumes = (e as CustomEvent).detail)}
-          ></sonos-media-controls>
+          ></dev-sonos-media-controls>
         </div>
       </div>
     `;
@@ -91,7 +94,7 @@ export class Player extends LitElement {
     let style: StyleInfo = {
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover',
+      backgroundSize: '50%',
       backgroundImage: entityImage ? `url(${entityImage})` : '',
     };
     const overrides = this.config.mediaArtworkOverrides;

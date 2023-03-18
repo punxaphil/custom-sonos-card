@@ -16,14 +16,18 @@ class Volumes extends LitElement {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
 
     return html`
-      <div>
+      <div style="margin-top: 1rem">
         ${getGroupMembers(this.entity).map(
           (entityId: string) =>
-            html` <div style="display: flex">
+            html` <div style="display: flex;flex-direction: column">
               <div style="${this.volumeNameStyle()}">
                 <div style="${this.volumeNameTextStyle()}">${getEntityName(this.hass, this.config, entityId)}</div>
               </div>
-              <sonos-volume .store=${this.store} .entityId=${entityId} style=${this.volumeStyle()}></sonos-volume>
+              <dev-sonos-volume
+                .store=${this.store}
+                .entityId=${entityId}
+                style=${this.volumeStyle()}
+              ></dev-sonos-volume>
             </div>`,
         )}
       </div>
@@ -62,4 +66,4 @@ class Volumes extends LitElement {
   }
 }
 
-customElements.define('sonos-volumes', Volumes);
+customElements.define('dev-sonos-volumes', Volumes);
