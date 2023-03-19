@@ -19,7 +19,7 @@ import {
   mdiSkipPrevious,
 } from '@mdi/js';
 
-class MediaControls extends LitElement {
+class PlayerControls extends LitElement {
   @property() store!: Store;
   private hass!: HomeAssistant;
   private config!: CardConfig;
@@ -43,7 +43,7 @@ class MediaControls extends LitElement {
     } = this.store);
     this.members = this.store.groups[this.entityId].members;
     this.isGroup = getGroupMembers(this.entity).length > 1;
-    const playing = !isPlaying(this.entity.state);
+    const playing = isPlaying(this.entity.state);
 
     // ${until(this.getAdditionalSwitches())}
 
@@ -142,4 +142,4 @@ class MediaControls extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-media-controls', MediaControls);
+customElements.define('dev-sonos-media-controls', PlayerControls);

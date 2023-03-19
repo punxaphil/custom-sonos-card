@@ -48,8 +48,7 @@ export class AllSections extends LitElement {
   haCardStyle() {
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',
-      // width: '30rem',
-      height: '40rem',
+      height: '43rem',
       overflowY: 'auto',
     });
   }

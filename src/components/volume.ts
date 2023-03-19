@@ -6,6 +6,7 @@ import Store from '../store';
 import { CardConfig, Members, Section } from '../types';
 import { dispatchShowSection, stylable } from '../utils';
 import { mdiCastVariant, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 class Volume extends LitElement {
   @property() store!: Store;
@@ -36,12 +37,16 @@ class Volume extends LitElement {
         <ha-icon-button
           @click="${async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members)}"
           .path=${volumeMuted ? mdiVolumeMute : mdiVolumeHigh}
-          style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;align-self: flex-end"
+          style="${styleMap({
+            '--mdc-icon-button-size': '2.5rem',
+            '--mdc-icon-size': '1.75rem',
+            'align-self': 'flex-end',
+          })}"
         ></ha-icon-button>
         <div style="${this.volumeSliderStyle()}">
           <div style="${this.volumeLevelStyle()}">
             <div style="flex: ${volume}">0%</div>
-            ${volume > 0 && volume < 95
+            ${volume > 5 && volume < 95
               ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
               : ''}
             <div style="flex: ${max - volume};text-align: right">${max}%</div>
@@ -62,7 +67,11 @@ class Volume extends LitElement {
         <ha-icon-button
           @click="${async () => dispatchShowSection(Section.GROUPING)}"
           .path=${mdiCastVariant}
-          style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;align-self: flex-end"
+          style="${styleMap({
+            '--mdc-icon-button-size': '2.5rem',
+            '--mdc-icon-size': '1.75rem',
+            'align-self': 'flex-end',
+          })}"
         ></ha-icon-button>
       </div>
     `;

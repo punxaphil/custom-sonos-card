@@ -1,14 +1,12 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import '../components/media-controls';
+import '../components/player-controls';
 import '../components/player-header';
 import '../components/progress';
 import '../components/volume';
 import { listenForEntityId, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
 
 import { HassEntity } from 'home-assistant-js-websocket';
-import { StyleInfo } from 'lit-html/directives/style-map.js';
-import { when } from 'lit/directives/when.js';
 import Store from '../store';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig } from '../types';
 
@@ -17,7 +15,6 @@ export class Player extends LitElement {
   private config!: CardConfig;
   private entityId!: string;
   private entity!: HassEntity;
-  @state() showVolumes!: boolean;
   @state() showLoader!: boolean;
   @state() loaderTimestamp!: number;
   @state() cancelLoader!: boolean;
@@ -26,7 +23,6 @@ export class Player extends LitElement {
     const newEntityId = (event as CustomEvent).detail.entityId;
     if (newEntityId !== this.entityId) {
       this.entityId = newEntityId;
-      this.showVolumes = false;
     }
   };
 
@@ -65,71 +61,52 @@ export class Player extends LitElement {
   render() {
     ({ config: this.config, entity: this.entity, entityId: this.entityId } = this.store);
     return html`
-      <div style="${this.containerStyle(this.entity)}">
-        <div style="${this.bodyStyle()}">
-          ${when(
-            !this.showVolumes,
-            () => html`<dev-sonos-player-header .store=${this.store}></dev-sonos-player-header>`,
-          )}
-          <div class="loading" ?hidden="${!this.showLoader}">
-            <ha-circular-progress active="" progress="0"></ha-circular-progress>
-          </div>
-
-          <dev-sonos-media-controls
-            style="overflow-y:auto"
-            .store=${this.store}
-            .showVolumes=${this.showVolumes}
-            @volumesToggled=${(e: Event) => (this.showVolumes = (e as CustomEvent).detail)}
-          ></dev-sonos-media-controls>
+      <div style="${this.bodyStyle()}">
+        <dev-sonos-player-header .store=${this.store}></dev-sonos-player-header>
+        <div class="loading" ?hidden="${!this.showLoader}">
+          <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
+        <img src="${this.getArtworkImage()}" style="${this.artworkStyle()}"></img>
+        <dev-sonos-media-controls style="overflow-y:auto" .store=${this.store}></dev-sonos-media-controls>
       </div>
     `;
   }
 
-  private containerStyle(entity: HassEntity) {
+  private artworkStyle() {
+    const size = '75%';
+    return stylable('player-artwork', this.config, {
+      width: size,
+      minWidth: size,
+      height: size,
+      minHeight: size,
+      alignSelf: 'center',
+    });
+  }
+
+  private getArtworkImage() {
     const prefix = this.config.artworkHostname || '';
-    const entityImage = prefix + entity.attributes.entity_picture;
-    const mediaTitle = entity.attributes.media_title;
-    const mediaContentId = entity.attributes.media_content_id;
-    let style: StyleInfo = {
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: '50%',
-      backgroundImage: entityImage ? `url(${entityImage})` : '',
-    };
+    let entityImage = prefix + this.entity.attributes.entity_picture;
     const overrides = this.config.mediaArtworkOverrides;
     if (overrides) {
+      const { media_title, media_content_id } = this.entity.attributes;
       let override = overrides.find(
-        (value) => mediaTitle === value.mediaTitleEquals || mediaContentId === value.mediaContentIdEquals,
+        (value) => media_title === value.mediaTitleEquals || media_content_id === value.mediaContentIdEquals,
       );
       if (!override) {
         override = overrides.find((value) => !entityImage && value.ifMissing);
       }
-      if (override) {
-        style = {
-          ...style,
-          backgroundImage: override.imageUrl ? `url(${override.imageUrl})` : style.backgroundImage,
-          backgroundSize: override.sizePercentage ? `${override.sizePercentage}%` : style.backgroundSize,
-        };
+      if (override?.imageUrl) {
+        entityImage = override.imageUrl;
       }
     }
-    return stylable('player-container', this.config, {
-      position: 'relative',
-      background: 'var(--sonos-int-background-color)',
-      paddingBottom: '100%',
-      borderRadius: '10px',
-      overflow: 'hidden',
-      ...style,
-    });
+    return entityImage;
   }
 
   private bodyStyle() {
     return stylable('player-body', this.config, {
-      position: 'absolute',
-      inset: '0px',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: this.showVolumes ? 'flex-end' : 'space-between',
+      justifyContent: 'space-between',
     });
   }
 
