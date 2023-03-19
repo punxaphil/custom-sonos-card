@@ -72,18 +72,26 @@ export class Player extends LitElement {
     `;
   }
 
+  private bodyStyle() {
+    return stylable('player-body', this.config, {
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      minHeight: '100%',
+    });
+  }
+
   private artworkStyle() {
-    const size = '75%';
     const image = this.getArtworkImage();
     return stylable('player-artwork', this.config, {
-      position: 'relative',
-      width: size,
       alignSelf: 'center',
-      paddingBottom: size,
+      flexGrow: '1',
+      flexShrink: '0',
+      width: '100%',
       ...(image && {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
+        backgroundSize: 'contain',
         backgroundImage: `url(${image})`,
       }),
     });
@@ -106,15 +114,6 @@ export class Player extends LitElement {
       }
     }
     return entityImage;
-  }
-
-  private bodyStyle() {
-    return stylable('player-body', this.config, {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      minHeight: '100%',
-    });
   }
 
   static get styles() {
