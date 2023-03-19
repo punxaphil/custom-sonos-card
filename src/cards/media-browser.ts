@@ -65,45 +65,25 @@ export class MediaBrowser extends LitElement {
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
             const itemsWithImage = MediaBrowser.itemsWithImage(items);
-            const mediaItemWidth = this.getMediaItemWidth(itemsWithImage);
             return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
               ${items.map((item) => {
                 const itemClick = async () => await this.onMediaItemClick(item);
-                const style = `width: ${mediaItemWidth};max-width: ${mediaItemWidth};`;
-                if (this.config.mediaBrowserItemsAsList) {
-                  return html`
-                    <dev-sonos-media-list-item
-                      style="${style}"
-                      .itemsWithImage="${itemsWithImage}"
-                      .mediaItem="${item}"
-                      .config="${this.config}"
-                      @click="${itemClick}"
-                    ></dev-sonos-media-list-item>
-                  `;
-                } else {
-                  return html`
-                    <dev-sonos-media-icon-item
-                      style="${style}"
-                      .itemsWithImage="${itemsWithImage}"
-                      .mediaItem="${item}"
-                      .config="${this.config}"
-                      @click="${itemClick}"
-                    ></dev-sonos-media-icon-item>
-                  `;
-                }
+                const style = `width: 100%;max-width: 100%;`;
+                return html`
+                  <dev-sonos-media-list-item
+                    style="${style}"
+                    .itemsWithImage="${itemsWithImage}"
+                    .mediaItem="${item}"
+                    .config="${this.config}"
+                    @click="${itemClick}"
+                  ></dev-sonos-media-list-item>
+                `;
               })}
             </div>`;
           }),
         )}
       </div>
     `;
-  }
-
-  private getMediaItemWidth(itemsWithImage: boolean) {
-    if (itemsWithImage && !this.config.mediaBrowserItemsAsList) {
-      return '16%';
-    }
-    return '100%';
   }
 
   browseClicked() {

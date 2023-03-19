@@ -15,8 +15,13 @@ export class AllSections extends LitElement {
   @property() config!: CardConfig;
   @state() section = PLAYER;
   @state() store!: Store;
+  @state() height!: number;
 
   render() {
+    const selector = this.renderRoot.querySelector('ha-card');
+    if (selector && !this.height) {
+      this.height = selector.scrollHeight + 2;
+    }
     this.store = new Store(this.hass, this.config);
     return html`
       <ha-card style="${this.haCardStyle()}">
@@ -38,18 +43,21 @@ export class AllSections extends LitElement {
     `;
   }
 
+  getCardSize() {
+    return 3;
+  }
+
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener(SHOW_SECTION, (event: Event) => {
       this.section = (event as CustomEvent).detail;
     });
   }
-
   haCardStyle() {
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',
-      height: '43rem',
       overflowY: 'auto',
+      ...(this.height && { height: `${this.height}px` }),
     });
   }
 

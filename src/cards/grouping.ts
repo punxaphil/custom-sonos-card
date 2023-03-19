@@ -62,7 +62,7 @@ export class Grouping extends LitElement {
     );
     return html`
       <div style="${stylable('title', this.config, titleStyle)}">
-        ${this.config.groupingTitle ? this.config.groupingTitle : 'Grouping'}
+        ${this.config.groupingTitle ? this.config.groupingTitle : html`<ha-icon .icon=${'mdi:cast-variant'}></ha-icon>`}
       </div>
       <div style="${this.membersStyle()}">
         ${this.entityId && this.mediaPlayers.map((entity) => this.renderMediaPlayerGroupButton(entity, joinedPlayers))}
@@ -148,23 +148,17 @@ export class Grouping extends LitElement {
 
   private membersStyle() {
     return stylable('members', this.config, {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-      gap: '0.5rem',
       margin: '0.5rem',
     });
   }
 
   private memberStyle(additionalStyle?: StyleInfo) {
     return stylable('member', this.config, {
-      flexGrow: '1',
       borderRadius: 'var(--sonos-int-border-radius)',
       display: 'flex',
+      margin: '0.5rem',
       justifyContent: 'center',
       backgroundColor: 'var(--sonos-int-background-color)',
-      maxWidth: 'calc(100% - 1.4rem)',
       ...additionalStyle,
     });
   }
@@ -172,7 +166,6 @@ export class Grouping extends LitElement {
   private nameStyle() {
     return stylable('member-name', this.config, {
       alignSelf: 'center',
-      fontSize: '1rem',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
     });
@@ -181,7 +174,7 @@ export class Grouping extends LitElement {
   private iconStyle() {
     return stylable('member-icon', this.config, {
       alignSelf: 'center',
-      fontSize: '0.5rem',
+      '--mdc-icon-size': '20px',
       paddingLeft: '0.1rem',
     });
   }

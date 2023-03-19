@@ -15,19 +15,16 @@ class PlayerHeader extends LitElement {
   render() {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     const attributes = this.entity.attributes;
-    return attributes.media_title
-      ? html`
-          <div style="${this.infoStyle()}">
-            <div style="${this.entityStyle()}">${attributes.friendly_name}</div>
-            <div style="${this.songStyle()}">${getCurrentTrack(this.entity)}</div>
-            <div style="${this.artistAlbumStyle()}">${attributes.media_album_name}</div>
-            <dev-sonos-progress .store=${this.store}></dev-sonos-progress>
-          </div>
-        `
-      : html` <div style="${this.noMediaTextStyle()}">
-          <div style="${this.artistAlbumStyle()}">${attributes.friendly_name}</div>
-          <div>${this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁'}</div>
-        </div>`;
+    let song = this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁';
+    if (attributes.media_title) {
+      song = getCurrentTrack(this.entity);
+    }
+    return html` <div style="${this.infoStyle()}">
+      <div style="${this.entityStyle()}">${attributes.friendly_name}</div>
+      <div style="${this.songStyle()}">${song}</div>
+      <div style="${this.artistAlbumStyle()}">${attributes.media_album_name}</div>
+      <dev-sonos-progress .store=${this.store}></dev-sonos-progress>
+    </div>`;
   }
 
   private infoStyle() {

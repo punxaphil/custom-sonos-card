@@ -142,4 +142,4 @@ class PlayerControls extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-media-controls', PlayerControls);
+customElements.define('dev-sonos-player-controls', PlayerControls);

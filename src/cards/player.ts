@@ -66,20 +66,26 @@ export class Player extends LitElement {
         <div class="loading" ?hidden="${!this.showLoader}">
           <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
-        <img src="${this.getArtworkImage()}" style="${this.artworkStyle()}"></img>
-        <dev-sonos-media-controls style="overflow-y:auto" .store=${this.store}></dev-sonos-media-controls>
+        <div style="${this.artworkStyle()}"></div>
+        <dev-sonos-player-controls style="overflow-y:auto" .store=${this.store}></dev-sonos-player-controls>
       </div>
     `;
   }
 
   private artworkStyle() {
     const size = '75%';
+    const image = this.getArtworkImage();
     return stylable('player-artwork', this.config, {
+      position: 'relative',
       width: size,
-      minWidth: size,
-      height: size,
-      minHeight: size,
       alignSelf: 'center',
+      paddingBottom: size,
+      ...(image && {
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundImage: `url(${image})`,
+      }),
     });
   }
 
@@ -107,6 +113,7 @@ export class Player extends LitElement {
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
+      minHeight: '100%',
     });
   }
 

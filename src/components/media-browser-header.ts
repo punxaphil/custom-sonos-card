@@ -2,7 +2,6 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { MediaBrowser } from '../cards/media-browser';
 import { titleStyle } from '../sharedStyle';
-import Store from '../store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { stylable } from '../utils';
 
@@ -23,7 +22,9 @@ class MediaBrowserHeader extends LitElement {
               ></ha-icon>`
             : ''}
         </div>
-        <div style="${this.titleStyle()}">${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
+        <div style="${this.titleStyle()}">
+          ${this.config.mediaTitle ? this.config.mediaTitle : html`<ha-icon .icon=${'mdi:star-outline'}></ha-icon>`}
+        </div>
         <div style="${this.browseStyle()}" @click="${() => this.mediaBrowser.browseClicked()}">
           <ha-icon .icon=${this.browse ? 'mdi:arrow-left-bold' : 'mdi:play-box-multiple'}></ha-icon>
         </div>

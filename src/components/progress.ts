@@ -31,29 +31,29 @@ class Progress extends LitElement {
     const showProgress = mediaDuration > 0;
     if (showProgress) {
       this.trackProgress();
-      return html`
-        <div style="${this.progressStyle()}">
-          <span style="${this.timeStyle()}">${convertProgress(this.playingProgress)}</span>
-          <div style="${this.barStyle()}">
-            <paper-progress
-              value="${this.playingProgress}"
-              max="${mediaDuration}"
-              style="${this.paperProgressStyle()}"
-            ></paper-progress>
-          </div>
-          <span style="${this.timeStyle()}"> -${convertProgress(mediaDuration - this.playingProgress)}</span>
-        </div>
-      `;
     }
-    return html``;
+    return html`
+      <div style="${this.progressStyle(showProgress)}">
+        <span style="${this.timeStyle()}">${convertProgress(this.playingProgress)}</span>
+        <div style="${this.barStyle()}">
+          <paper-progress
+            value="${this.playingProgress}"
+            max="${mediaDuration}"
+            style="${this.paperProgressStyle()}"
+          ></paper-progress>
+        </div>
+        <span style="${this.timeStyle()}"> -${convertProgress(mediaDuration - this.playingProgress)}</span>
+      </div>
+    `;
   }
 
-  progressStyle() {
+  progressStyle(showProgress: boolean) {
     return stylable('progress', this.config, {
       width: '100%',
       fontSize: 'x-small',
       display: 'flex',
       '--paper-progress-active-color': 'lightgray',
+      visibility: showProgress ? 'visible' : 'hidden',
     });
   }
 

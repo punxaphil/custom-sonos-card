@@ -18,7 +18,7 @@ export class Groups extends LitElement {
     ({ config: this.config, hass: this.hass, groups: this.groups, entityId: this.entityId } = this.store);
     const cardHtml = html`
       <div style="${stylable('title', this.config, titleStyle)}">
-        ${this.config.groupsTitle ? this.config.groupsTitle : 'Groups'}
+        ${this.config.groupsTitle ? this.config.groupsTitle : html`<ha-icon .icon=${'mdi:speaker-multiple'}></ha-icon>`}
       </div>
 
       <mwc-list activatable style="${this.listStyle()}">

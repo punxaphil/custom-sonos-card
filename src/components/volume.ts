@@ -46,7 +46,7 @@ class Volume extends LitElement {
         <div style="${this.volumeSliderStyle()}">
           <div style="${this.volumeLevelStyle()}">
             <div style="flex: ${volume}">0%</div>
-            ${volume > 5 && volume < 95
+            ${volume >= max / 10 && volume <= 100 - max / 10
               ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
               : ''}
             <div style="flex: ${max - volume};text-align: right">${max}%</div>
