@@ -68,10 +68,9 @@ export class MediaBrowser extends LitElement {
             return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
               ${items.map((item) => {
                 const itemClick = async () => await this.onMediaItemClick(item);
-                const style = `width: 100%;max-width: 100%;`;
                 return html`
                   <dev-sonos-media-list-item
-                    style="${style}"
+                    style="width: 100%;max-width: 100%;"
                     .itemsWithImage="${itemsWithImage}"
                     .mediaItem="${item}"
                     .config="${this.config}"

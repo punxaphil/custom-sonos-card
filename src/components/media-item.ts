@@ -28,7 +28,6 @@ export abstract class MediaItem extends LitElement {
       '-webkit-box-sizing': 'border-box',
       overflow: 'hidden',
       display: 'flex',
-      borderRadius: 'var(--sonos-int-border-radius)',
       backgroundColor: 'var(--sonos-int-background-color)',
     };
   }
@@ -41,12 +40,8 @@ export abstract class MediaItem extends LitElement {
 
   static get styles() {
     return css`
-      .hoverable {
-        border: var(--sonos-int-border-width) solid var(--sonos-int-color);
-      }
       .hoverable:focus,
       .hoverable:hover {
-        border-color: var(--sonos-int-accent-color);
         color: var(--sonos-int-accent-color);
       }
       .hoverable:active {
