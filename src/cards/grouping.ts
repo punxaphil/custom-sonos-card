@@ -1,6 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
-import { StyleInfo } from 'lit-html/development/directives/style-map';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
@@ -8,6 +7,7 @@ import { titleStyle } from '../sharedStyle';
 import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
 import { getEntityName, listenForEntityId, listStyle, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
+import { getButton } from '../components/button';
 
 export class Grouping extends LitElement {
   @property() store!: Store;
@@ -69,19 +69,13 @@ export class Grouping extends LitElement {
       </mwc-list>
 
       ${when(notJoinedPlayers.length, () => {
-        return this.getButton(
-          async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers),
-          'mdi:checkbox-multiple-marked-outline',
-          '',
-        );
+        const click = async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers);
+        return getButton(click, 'mdi:checkbox-multiple-marked-outline', '', this.config);
       })}
-      ${when(joinedPlayers.length, () =>
-        this.getButton(
-          async () => await this.mediaControlService.unjoin(joinedPlayers),
-          'mdi:minus-box-multiple-outline',
-          '',
-        ),
-      )}
+      ${when(joinedPlayers.length, () => {
+        const click = async () => await this.mediaControlService.unjoin(joinedPlayers);
+        return getButton(click, 'mdi:minus-box-multiple-outline', '', this.config);
+      })}
       ${when(this.config.predefinedGroups && true, () => this.renderPredefinedGroups())}
     `;
   }
@@ -111,52 +105,11 @@ export class Grouping extends LitElement {
         ${this.config.predefinedGroups
           ?.filter((group) => group.entities.length > 1)
           .map((group) => {
-            return this.getButton(
-              async () => await this.mediaControlService.createGroup(group.entities, this.groups),
-              'mdi:speaker-multiple',
-              group.name,
-              { fontStyle: 'italic' },
-            );
+            const click = async () => await this.mediaControlService.createGroup(group.entities, this.groups);
+            return getButton(click, 'mdi:speaker-multiple', group.name, this.config);
           })}
       </div>
     `;
-  }
-
-  private getButton(click: () => void, icon: string, name: string, additionalStyle?: StyleInfo) {
-    return html`
-      <mwc-button @click="${click}" style="${this.buttonStyle(additionalStyle)}" outlined>
-        ${name ? html`<span style="${this.buttonNameStyle()}">${name}</span>` : ''}
-        <ha-icon .icon=${icon} style="${this.buttonIconStyle()}"></ha-icon>
-      </mwc-button>
-    `;
-  }
-
-  private buttonStyle(additionalStyle?: StyleInfo) {
-    return stylable('member', this.config, {
-      borderRadius: 'var(--sonos-int-border-radius)',
-      margin: '0.5rem',
-      justifyContent: 'center',
-      backgroundColor: 'var(--sonos-int-background-color)',
-      '--mdc-button-outline-width': '2px',
-      '--mdc-button-outline-color': 'var(--mdc-theme-primary)',
-      ...additionalStyle,
-    });
-  }
-
-  private buttonNameStyle() {
-    return stylable('member-name', this.config, {
-      alignSelf: 'center',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    });
-  }
-
-  private buttonIconStyle() {
-    return stylable('member-icon', this.config, {
-      alignSelf: 'center',
-      '--mdc-icon-size': '20px',
-      paddingLeft: '0.1rem',
-    });
   }
 
   static get styles() {
