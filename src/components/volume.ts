@@ -16,6 +16,7 @@ class Volume extends LitElement {
   @property() entityId!: string;
   @property() members?: Members;
   @property() volumeClicked?: () => void;
+  @property() showGrouping = true;
 
   render() {
     ({ config: this.config, hass: this.hass, mediaControlService: this.mediaControlService } = this.store);
@@ -26,7 +27,7 @@ class Volume extends LitElement {
       if (!this.config.disableDynamicVolumeSlider) {
         max = 30;
       }
-      inputColor = 'rgb(72,187,14)';
+      inputColor = 'var(--sonos-int-accent-color)';
     }
     const volumeMuted =
       this.members && Object.keys(this.members).length
@@ -64,15 +65,17 @@ class Volume extends LitElement {
           >
           </ha-slider>
         </div>
-        <ha-icon-button
-          @click="${async () => dispatchShowSection(Section.GROUPING)}"
-          .path=${mdiCastVariant}
-          style="${styleMap({
-            '--mdc-icon-button-size': '2.5rem',
-            '--mdc-icon-size': '1.75rem',
-            'align-self': 'flex-end',
-          })}"
-        ></ha-icon-button>
+        ${this.showGrouping
+          ? html`<ha-icon-button
+              @click="${async () => dispatchShowSection(Section.GROUPING)}"
+              .path=${mdiCastVariant}
+              style="${styleMap({
+                '--mdc-icon-button-size': '2.5rem',
+                '--mdc-icon-size': '1.75rem',
+                'align-self': 'flex-end',
+              })}"
+            ></ha-icon-button>`
+          : html``}
       </div>
     `;
   }
@@ -102,6 +105,7 @@ class Volume extends LitElement {
       marginLeft: '-3%',
       '--paper-progress-active-color': inputColor,
       '--paper-slider-knob-color': inputColor,
+      '--paper-slider-pin-color': inputColor,
       '--paper-slider-height': '0.3rem',
     });
   }
@@ -116,6 +120,7 @@ class Volume extends LitElement {
   private volumeSliderStyle() {
     return stylable('player-volume-slider', this.config, {
       flex: '1',
+      paddingRight: this.showGrouping ? '0' : '0.6rem',
     });
   }
 

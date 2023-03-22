@@ -3,7 +3,7 @@ import { HassEntity } from 'home-assistant-js-websocket';
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../store';
-import { CardConfig } from '../types';
+import { CardConfig, Members } from '../types';
 import { getEntityName, getGroupMembers, sharedStyle, stylable } from '../utils';
 
 class Volumes extends LitElement {
@@ -14,29 +14,47 @@ class Volumes extends LitElement {
 
   render() {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
-
     return html`
-      <div style="margin-top: 1rem">
-        ${getGroupMembers(this.entity).map(
-          (entityId: string) =>
-            html` <div style="display: flex;flex-direction: column">
-              <div style="${this.volumeNameStyle()}">
-                <div style="${this.volumeNameTextStyle()}">${getEntityName(this.hass, this.config, entityId)}</div>
-              </div>
-              <dev-sonos-volume
-                .store=${this.store}
-                .entityId=${entityId}
-                style=${this.volumeStyle()}
-              ></dev-sonos-volume>
-            </div>`,
+      <div style="margin-top: 3rem">
+        ${this.volumeWithName(
+          this.entity.entity_id,
+          this.config.allVolumesText ? this.config.allVolumesText : 'All',
+          this.store.groups[this.entity.entity_id].members,
+        )}
+        ${getGroupMembers(this.entity).map((entityId: string) =>
+          this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId)),
         )}
       </div>
     `;
   }
 
+  private volumeWithName(entityId: string, name: string, members?: Members) {
+    return html` <div style="${this.wrapperStyle()}">
+      <div style="${this.volumeNameStyle()}">
+        <div style="${this.volumeNameTextStyle()}">${name}</div>
+      </div>
+      <dev-sonos-volume
+        .store=${this.store}
+        .entityId=${entityId}
+        style=${this.volumeStyle()}
+        showGrouping=${false}
+        .members=${members}
+      ></dev-sonos-volume>
+    </div>`;
+  }
+
+  private wrapperStyle() {
+    const border = 'solid var(--secondary-background-color)';
+    return stylable('all-volumes-wrapper', this.config, {
+      display: 'flex',
+      flexDirection: 'column',
+      borderTop: border,
+      padding: '1rem',
+    });
+  }
+
   private volumeNameStyle() {
     return stylable('all-volumes-volume-name', this.config, {
-      marginTop: '1rem',
       marginLeft: '0.4rem',
       flex: '1',
       overflow: 'hidden',
@@ -56,7 +74,6 @@ class Volumes extends LitElement {
   private volumeStyle() {
     return stylable('player-volume', this.config, {
       flex: '4',
-      borderBottom: 'dotted var(--sonos-int-color)',
       marginTop: '0.4rem',
     });
   }
