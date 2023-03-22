@@ -109,3 +109,11 @@ export function getCurrentTrack(hassEntity: HassEntity) {
   const attributes = hassEntity.attributes;
   return `${attributes.media_artist || ''} - ${attributes.media_title || ''}`.replace(/^ - /g, '');
 }
+
+export function listStyle(config: CardConfig) {
+  return stylable('groups-list', config, {
+    '--mdc-theme-primary': 'var(--sonos-int-accent-color)',
+    '--mdc-list-vertical-padding': '0px',
+    overflow: 'hidden',
+  });
+}

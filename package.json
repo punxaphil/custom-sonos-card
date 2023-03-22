@@ -8,8 +8,6 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@material/mwc-icon": "^0.27.0",
-    "@material/mwc-list": "^0.27.0",
     "@mdi/js": "^7.1.96",
     "custom-card-helpers": "^1.9.0",
     "lit": "^2.6.1"

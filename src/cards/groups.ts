@@ -5,7 +5,7 @@ import '../components/group';
 import { titleStyle } from '../sharedStyle';
 import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
-import { sharedStyle, stylable } from '../utils';
+import { listStyle, sharedStyle, stylable } from '../utils';
 
 export class Groups extends LitElement {
   @property() store!: Store;
@@ -16,31 +16,20 @@ export class Groups extends LitElement {
 
   render() {
     ({ config: this.config, hass: this.hass, groups: this.groups, entityId: this.entityId } = this.store);
-    const cardHtml = html`
+    return html`
       <div style="${stylable('title', this.config, titleStyle)}">
         ${this.config.groupsTitle ? this.config.groupsTitle : html`<ha-icon .icon=${'mdi:speaker-multiple'}></ha-icon>`}
       </div>
 
-      <mwc-list activatable style="${this.listStyle()}">
+      <mwc-list activatable style="${listStyle(this.config)}">
         ${Object.values(this.groups).map((group) => {
           const selected = this.entityId === group.entity;
-          return html`<dev-sonos-group
-            .store=${this.store}
-            .group=${group}
-            .selected="${selected}"
-          ></dev-sonos-group> `;
+          return html`
+            <dev-sonos-group .store=${this.store} .group=${group} .selected="${selected}"></dev-sonos-group>
+          `;
         })}
       </mwc-list>
     `;
-    return cardHtml;
-  }
-
-  private listStyle() {
-    return stylable('groups-list', this.config, {
-      '--mdc-theme-primary': 'var(--sonos-int-accent-color)',
-      '--mdc-list-vertical-padding': '0px',
-      overflow: 'hidden',
-    });
   }
 
   static get styles() {

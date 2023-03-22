@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { StyleInfo } from 'lit-html/development/directives/style-map';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
@@ -7,14 +7,7 @@ import MediaControlService from '../services/media-control-service';
 import { titleStyle } from '../sharedStyle';
 import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
-import {
-  getEntityName,
-  listenForEntityId,
-  sharedStyle,
-  stopListeningForEntityId,
-  stylable,
-  validateConfig,
-} from '../utils';
+import { getEntityName, listenForEntityId, listStyle, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
 
 export class Grouping extends LitElement {
   @property() store!: Store;
@@ -39,12 +32,6 @@ export class Grouping extends LitElement {
     super.disconnectedCallback();
   }
 
-  setConfig(config: CardConfig) {
-    const parsed = JSON.parse(JSON.stringify(config));
-    validateConfig(parsed);
-    this.config = parsed;
-  }
-
   render() {
     ({
       config: this.config,
@@ -64,106 +51,99 @@ export class Grouping extends LitElement {
       <div style="${stylable('title', this.config, titleStyle)}">
         ${this.config.groupingTitle ? this.config.groupingTitle : html`<ha-icon .icon=${'mdi:cast-variant'}></ha-icon>`}
       </div>
-      <div style="${this.membersStyle()}">
-        ${this.entityId && this.mediaPlayers.map((entity) => this.renderMediaPlayerGroupButton(entity, joinedPlayers))}
-        ${when(notJoinedPlayers.length, () => {
-          return this.getButton(
-            async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers),
-            'mdi:checkbox-multiple-marked-outline',
-            '',
-            false,
-          );
-        })}
-        ${when(joinedPlayers.length, () =>
-          this.getButton(
-            async () => await this.mediaControlService.unjoin(joinedPlayers),
-            'mdi:minus-box-multiple-outline',
-            '',
-            false,
-          ),
-        )}
-        ${when(this.config.predefinedGroups && this.config.predefinedGroupsNoSeparateSection, () =>
-          this.renderPredefinedGroups(),
-        )}
-      </div>
-      ${when(
-        this.config.predefinedGroups && !this.config.predefinedGroupsNoSeparateSection,
-        () =>
-          html`<div style="${stylable('title', this.config, titleStyle)}">
-              ${this.config.predefinedGroupsTitle ? this.config.predefinedGroupsTitle : 'Predefined groups'}
-            </div>
-            <div style="${this.membersStyle()}">${this.renderPredefinedGroups()}</div>`,
+      <mwc-list multi style="${listStyle(this.config)}">
+        ${this.mediaPlayers
+          .map((entity) => this.getGroupingItem(entity))
+          .map((groupingItem) => {
+            return html`<mwc-list-item
+              ?activated="${groupingItem.isMember}"
+              ?disabled="${groupingItem.isMain}"
+              @click="${!groupingItem.isMain && this.itemClickAction(groupingItem)}"
+            >
+              <ha-icon
+                .icon="${groupingItem.isMember ? 'mdi:checkbox-marked-outline' : 'mdi:checkbox-blank-outline'}"
+              ></ha-icon>
+              <span>${groupingItem.name}</span>
+            </mwc-list-item>`;
+          })}
+      </mwc-list>
+
+      ${when(notJoinedPlayers.length, () => {
+        return this.getButton(
+          async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers),
+          'mdi:checkbox-multiple-marked-outline',
+          '',
+        );
+      })}
+      ${when(joinedPlayers.length, () =>
+        this.getButton(
+          async () => await this.mediaControlService.unjoin(joinedPlayers),
+          'mdi:minus-box-multiple-outline',
+          '',
+        ),
       )}
+      ${when(this.config.predefinedGroups && true, () => this.renderPredefinedGroups())}
     `;
   }
 
-  private renderMediaPlayerGroupButton(entity: string, joinedPlayers: string[]) {
-    const name = getEntityName(this.hass, this.config, entity);
-    if (entity === this.entityId) {
-      return this.getButton(async () => await this.mediaControlService.unjoin([entity]), 'mdi:speaker', name, true);
-    } else if (this.groups[this.entityId].members[entity] || (entity === this.entityId && joinedPlayers.length > 0)) {
-      return this.getButton(async () => await this.mediaControlService.unjoin([entity]), 'mdi:minus', name, false, {
-        '--mdc-theme-primary': 'var(--sonos-int-accent-color)',
-      });
+  private getGroupingItem(entity: string): GroupingItem {
+    const isMain = entity === this.entityId;
+    return {
+      isMain,
+      isMember: isMain || !!this.groups[this.entityId].members[entity],
+      name: getEntityName(this.hass, this.config, entity),
+      entity: entity,
+    };
+  }
+  private itemClickAction({ isMain, isMember, entity }: GroupingItem) {
+    if (isMain) {
+      return async () => await this.mediaControlService.unjoin([entity]);
+    } else if (isMember) {
+      return async () => await this.mediaControlService.unjoin([entity]);
     } else {
-      return this.getButton(
-        async () => await this.mediaControlService.join(this.entityId, [entity]),
-        'mdi:plus',
-        name,
-        false,
-      );
+      return async () => await this.mediaControlService.join(this.entityId, [entity]);
     }
   }
 
   private renderPredefinedGroups() {
     return html`
-      ${this.config.predefinedGroups
-        ?.filter((group) => group.entities.length > 1)
-        .map((group) => {
-          return this.getButton(
-            async () => await this.mediaControlService.createGroup(group.entities, this.groups),
-            this.config.predefinedGroupsNoSeparateSection ? 'mdi:speaker-multiple' : '',
-            group.name,
-            false,
-            this.config.predefinedGroupsNoSeparateSection ? { fontStyle: 'italic' } : {},
-          );
-        })}
+      <div>
+        ${this.config.predefinedGroups
+          ?.filter((group) => group.entities.length > 1)
+          .map((group) => {
+            return this.getButton(
+              async () => await this.mediaControlService.createGroup(group.entities, this.groups),
+              'mdi:speaker-multiple',
+              group.name,
+              { fontStyle: 'italic' },
+            );
+          })}
+      </div>
     `;
   }
 
-  private getButton(click: () => void, icon: string, name: string, disabled: boolean, additionalStyle?: StyleInfo) {
+  private getButton(click: () => void, icon: string, name: string, additionalStyle?: StyleInfo) {
     return html`
-      <mwc-button
-        @click="${click}"
-        style="${this.memberStyle(additionalStyle)}"
-        .raised=${icon !== 'mdi:minus'}
-        .unelevated=${icon === 'mdi:minus'}
-        .disabled=${disabled}
-      >
-        ${name ? html`<span style="${this.nameStyle()}">${name}</span>` : ''}
-        <ha-icon .icon=${icon} style="${this.iconStyle()}"></ha-icon>
+      <mwc-button @click="${click}" style="${this.buttonStyle(additionalStyle)}" outlined>
+        ${name ? html`<span style="${this.buttonNameStyle()}">${name}</span>` : ''}
+        <ha-icon .icon=${icon} style="${this.buttonIconStyle()}"></ha-icon>
       </mwc-button>
     `;
   }
 
-  private membersStyle() {
-    return stylable('members', this.config, {
-      margin: '0.5rem',
-    });
-  }
-
-  private memberStyle(additionalStyle?: StyleInfo) {
+  private buttonStyle(additionalStyle?: StyleInfo) {
     return stylable('member', this.config, {
       borderRadius: 'var(--sonos-int-border-radius)',
-      display: 'flex',
       margin: '0.5rem',
       justifyContent: 'center',
       backgroundColor: 'var(--sonos-int-background-color)',
+      '--mdc-button-outline-width': '2px',
+      '--mdc-button-outline-color': 'var(--mdc-theme-primary)',
       ...additionalStyle,
     });
   }
 
-  private nameStyle() {
+  private buttonNameStyle() {
     return stylable('member-name', this.config, {
       alignSelf: 'center',
       overflow: 'hidden',
@@ -171,7 +151,7 @@ export class Grouping extends LitElement {
     });
   }
 
-  private iconStyle() {
+  private buttonIconStyle() {
     return stylable('member-icon', this.config, {
       alignSelf: 'center',
       '--mdc-icon-size': '20px',
@@ -180,22 +160,13 @@ export class Grouping extends LitElement {
   }
 
   static get styles() {
-    return [
-      css`
-        .hoverable {
-          border: var(--sonos-int-border-width) solid var(--sonos-int-color);
-        }
-        .hoverable:hover,
-        .hoverable:focus {
-          color: var(--sonos-int-accent-color);
-          border-color: var(--sonos-int-accent-color);
-        }
-        .hoverable:active {
-          color: var(--primary-color);
-          border-color: var(--primary-color);
-        }
-      `,
-      sharedStyle,
-    ];
+    return sharedStyle;
   }
+}
+
+interface GroupingItem {
+  isMain: boolean;
+  isMember: boolean;
+  name: string;
+  entity: string;
 }

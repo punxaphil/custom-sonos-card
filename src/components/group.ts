@@ -65,7 +65,7 @@ class Group extends LitElement {
         @click="${() => this.handleGroupClicked()}"
         style="${this.groupStyle()}"
       >
-        <span style="white-space: initial" style="${this.speakersStyle()}">${speakerList}</span>
+        <span style="${this.speakersStyle()}">${speakerList}</span>
         <span slot="secondary">${currentTrack}</span>
 
         ${when(
@@ -87,7 +87,7 @@ class Group extends LitElement {
   }
 
   private speakersStyle() {
-    return stylable('group-speakers', this.config);
+    return stylable('group-speakers', this.config, { whiteSpace: 'initial' });
   }
 
   private speakerStyle() {
