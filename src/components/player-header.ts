@@ -4,7 +4,7 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig } from '../types';
-import { getCurrentTrack, sharedStyle, stylable } from '../utils';
+import { getCurrentTrack, getSpeakerList, sharedStyle, stylable } from '../utils';
 
 class PlayerHeader extends LitElement {
   @property() store!: Store;
@@ -15,12 +15,13 @@ class PlayerHeader extends LitElement {
   render() {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     const attributes = this.entity.attributes;
+    const speakerList = getSpeakerList(this.store.groups[this.entity.entity_id]);
     let song = this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁';
     if (attributes.media_title) {
       song = getCurrentTrack(this.entity);
     }
     return html` <div style="${this.infoStyle()}">
-      <div style="${this.entityStyle()}">${attributes.friendly_name}</div>
+      <div style="${this.entityStyle()}">${speakerList}</div>
       <div style="${this.songStyle()}">${song}</div>
       <div style="${this.artistAlbumStyle()}">${attributes.media_album_name}</div>
       <dev-sonos-progress .store=${this.store}></dev-sonos-progress>

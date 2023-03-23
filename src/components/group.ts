@@ -8,6 +8,7 @@ import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup, Section } from '../types'
 import {
   dispatchShowSection,
   getCurrentTrack,
+  getSpeakerList,
   isPlaying,
   listenForEntityId,
   listenForPlayerRequest,
@@ -53,7 +54,7 @@ class Group extends LitElement {
   render() {
     ({ config: this.config, hass: this.hass } = this.store);
     const currentTrack = getCurrentTrack(this.hass.states[this.group.entity]);
-    const speakerList = [this.group.roomName, ...Object.values(this.group.members)].join(' + ');
+    const speakerList = getSpeakerList(this.group);
     this.dispatchEntityIdEvent();
     return html`
       <mwc-list-item

@@ -2,7 +2,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { css } from 'lit';
 import { StyleInfo, styleMap } from 'lit-html/directives/style-map.js';
-import { ACTIVE_PLAYER_EVENT, CardConfig, REQUEST_PLAYER_EVENT, Section, SHOW_SECTION } from './types';
+import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup, REQUEST_PLAYER_EVENT, Section, SHOW_SECTION } from './types';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
@@ -116,4 +116,8 @@ export function listStyle(config: CardConfig) {
     '--mdc-list-vertical-padding': '0px',
     overflow: 'hidden',
   });
+}
+
+export function getSpeakerList(group: PlayerGroup) {
+  return [group.roomName, ...Object.values(group.members)].join(' + ');
 }
