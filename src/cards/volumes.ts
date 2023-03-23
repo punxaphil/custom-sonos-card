@@ -55,10 +55,10 @@ class Volumes extends LitElement {
 
   private volumeNameStyle() {
     return stylable('all-volumes-volume-name', this.config, {
-      marginLeft: '0.4rem',
       flex: '1',
       overflow: 'hidden',
       flexDirection: 'column',
+      textAlign: 'center',
     });
   }
 

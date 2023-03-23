@@ -38,20 +38,9 @@ class Volume extends LitElement {
         <ha-icon-button
           @click="${async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members)}"
           .path=${volumeMuted ? mdiVolumeMute : mdiVolumeHigh}
-          style="${styleMap({
-            '--mdc-icon-button-size': '2.5rem',
-            '--mdc-icon-size': '1.75rem',
-            'align-self': 'flex-end',
-          })}"
+          style="${this.iconStyle()}"
         ></ha-icon-button>
         <div style="${this.volumeSliderStyle()}">
-          <div style="${this.volumeLevelStyle()}">
-            <div style="flex: ${volume}">0%</div>
-            ${volume >= max / 10 && volume <= 100 - max / 10
-              ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
-              : ''}
-            <div style="flex: ${max - volume};text-align: right">${max}%</div>
-          </div>
           <ha-slider
             value="${volume}"
             @change="${this.onChange}"
@@ -60,24 +49,33 @@ class Volume extends LitElement {
             max="${max}"
             step=${this.config.volume_step || 1}
             dir=${'ltr'}
-            pin
             style="${this.volumeRangeStyle(inputColor)}"
           >
           </ha-slider>
+          <div style="${this.volumeLevelStyle()}">
+            <div style="flex: ${volume}">0%</div>
+            ${volume >= max / 10 && volume <= 100 - max / 10
+              ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
+              : ''}
+            <div style="flex: ${max - volume};text-align: right">${max}%</div>
+          </div>
         </div>
         ${this.showGrouping
           ? html`<ha-icon-button
               @click="${async () => dispatchShowSection(Section.GROUPING)}"
               .path=${mdiCastVariant}
-              style="${styleMap({
-                '--mdc-icon-button-size': '2.5rem',
-                '--mdc-icon-size': '1.75rem',
-                'align-self': 'flex-end',
-              })}"
+              style="${this.iconStyle()}"
             ></ha-icon-button>`
           : html``}
       </div>
     `;
+  }
+
+  private iconStyle() {
+    return styleMap({
+      '--mdc-icon-button-size': '2.5rem',
+      '--mdc-icon-size': '1.75rem',
+    });
   }
 
   private async onChange(e: Event) {
@@ -101,12 +99,14 @@ class Volume extends LitElement {
 
   private volumeRangeStyle(inputColor: string) {
     return stylable('player-volume-range', this.config, {
-      width: '105%',
-      marginLeft: '-3%',
+      width: '112%',
+      marginLeft: '-7%',
+      marginTop: '-1rem',
+      marginBottom: '-1rem',
       '--paper-progress-active-color': inputColor,
-      '--paper-slider-knob-color': inputColor,
+      '--paper-slider-knob-color': 'transparent',
       '--paper-slider-pin-color': inputColor,
-      '--paper-slider-height': '0.3rem',
+      '--paper-slider-height': '2.3rem',
     });
   }
 
@@ -128,15 +128,6 @@ class Volume extends LitElement {
     return stylable('player-volume-level', this.config, {
       fontSize: 'x-small',
       display: 'flex',
-    });
-  }
-
-  private muteStyle() {
-    return stylable('player-mute', this.config, {
-      // '--mdc-icon-size': '1.25rem',
-      // '--mdc-icon-button-size': '2.5rem',
-      alignSelf: 'center',
-      marginRight: '0.7rem',
     });
   }
 }
