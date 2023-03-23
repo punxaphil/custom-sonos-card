@@ -1,5 +1,5 @@
 import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property } from 'lit/decorators.js';
 import '../components/player-controls';
 import '../components/player-header';
 import '../components/progress';
@@ -8,16 +8,13 @@ import { listenForEntityId, sharedStyle, stopListeningForEntityId, stylable } fr
 
 import { HassEntity } from 'home-assistant-js-websocket';
 import Store from '../store';
-import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig } from '../types';
+import { CardConfig } from '../types';
 
 export class Player extends LitElement {
   @property() store!: Store;
   private config!: CardConfig;
   private entityId!: string;
   private entity!: HassEntity;
-  @state() showLoader!: boolean;
-  @state() loaderTimestamp!: number;
-  @state() cancelLoader!: boolean;
 
   entityIdListener = (event: Event) => {
     const newEntityId = (event as CustomEvent).detail.entityId;
@@ -29,28 +26,6 @@ export class Player extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     listenForEntityId(this.entityIdListener);
-    window.addEventListener(CALL_MEDIA_STARTED, () => {
-      if (!this.showLoader) {
-        this.cancelLoader = false;
-        setTimeout(() => {
-          if (!this.cancelLoader) {
-            this.showLoader = true;
-            this.loaderTimestamp = Date.now();
-          }
-        }, 300);
-      }
-    });
-    window.addEventListener(CALL_MEDIA_DONE, () => {
-      this.cancelLoader = true;
-      const duration = Date.now() - this.loaderTimestamp;
-      if (this.showLoader) {
-        if (duration < 1000) {
-          setTimeout(() => (this.showLoader = false), 1000 - duration);
-        } else {
-          this.showLoader = false;
-        }
-      }
-    });
   }
 
   disconnectedCallback() {
@@ -63,9 +38,6 @@ export class Player extends LitElement {
     return html`
       <div style="${this.bodyStyle()}">
         <dev-sonos-player-header .store=${this.store}></dev-sonos-player-header>
-        <div class="loading" ?hidden="${!this.showLoader}">
-          <ha-circular-progress active="" progress="0"></ha-circular-progress>
-        </div>
         <div style="${this.artworkStyle()}"></div>
         <dev-sonos-player-controls style="overflow-y:auto" .store=${this.store}></dev-sonos-player-controls>
       </div>
@@ -125,10 +97,6 @@ export class Player extends LitElement {
         }
         .hoverable:active {
           color: var(--primary-color);
-        }
-        .loading {
-          text-align: center;
-          --mdc-theme-primary: var(--sonos-int-accent-color);
         }
       `,
       sharedStyle,

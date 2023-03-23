@@ -1,11 +1,11 @@
 import { mdiArrowLeft, mdiSpeakerMultiple, mdiSquareEditOutline, mdiStarOutline } from '@mdi/js';
 import { HomeAssistant } from 'custom-card-helpers';
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { titleStyle } from '../sharedStyle';
 import Store from '../store';
-import { CardConfig, Section, SHOW_SECTION } from '../types';
+import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig, Section, SHOW_SECTION } from '../types';
 import { sharedStyle, stylable, validateConfig } from '../utils';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
@@ -15,6 +15,9 @@ export class AllSections extends LitElement {
   @property() config!: CardConfig;
   @state() section = PLAYER;
   @state() store!: Store;
+  @state() showLoader!: boolean;
+  @state() loaderTimestamp!: number;
+  @state() cancelLoader!: boolean;
 
   render() {
     this.store = new Store(this.hass, this.config);
@@ -26,6 +29,9 @@ export class AllSections extends LitElement {
           ${this.section === PLAYER ? this.sectionButton(mdiSpeakerMultiple, GROUPS) : ''}
           ${this.section === GROUPS ? this.sectionButton(mdiSquareEditOutline, GROUPING) : ''}
           ${this.section === PLAYER ? this.sectionButton(mdiStarOutline, MEDIA_BROWSER) : ''}
+        </div>
+        <div class="loader" ?hidden="${!this.showLoader}">
+          <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
         ${choose(this.section, [
           [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
@@ -47,6 +53,29 @@ export class AllSections extends LitElement {
     window.addEventListener(SHOW_SECTION, (event: Event) => {
       this.section = (event as CustomEvent).detail;
     });
+
+    window.addEventListener(CALL_MEDIA_STARTED, () => {
+      if (!this.showLoader) {
+        this.cancelLoader = false;
+        setTimeout(() => {
+          if (!this.cancelLoader) {
+            this.showLoader = true;
+            this.loaderTimestamp = Date.now();
+          }
+        }, 300);
+      }
+    });
+    window.addEventListener(CALL_MEDIA_DONE, () => {
+      this.cancelLoader = true;
+      const duration = Date.now() - this.loaderTimestamp;
+      if (this.showLoader) {
+        if (duration < 1000) {
+          setTimeout(() => (this.showLoader = false), 1000 - duration);
+        } else {
+          this.showLoader = false;
+        }
+      }
+    });
   }
   haCardStyle() {
     return stylable('ha-card', this.config, {
@@ -59,7 +88,7 @@ export class AllSections extends LitElement {
   sectionButtonsStyle() {
     return stylable('section-buttons', this.config, {
       position: 'absolute',
-      'z-index': '1000',
+      zIndex: '1000',
       padding: '.3rem 2%',
       ...((this.section === PLAYER || this.section === GROUPS) && {
         width: '96%',
@@ -92,6 +121,19 @@ export class AllSections extends LitElement {
   }
 
   static get styles() {
-    return sharedStyle;
+    return [
+      css`
+        .loader {
+          position: absolute;
+          z-index: 1000;
+          text-align: center;
+          padding-top: 50%;
+          width: 100%;
+          height: 100%;
+          --mdc-theme-primary: var(--sonos-int-accent-color);
+        }
+      `,
+      sharedStyle,
+    ];
   }
 }
