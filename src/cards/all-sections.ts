@@ -82,6 +82,8 @@ export class AllSections extends LitElement {
       color: 'var(--sonos-int-color)',
       overflowY: 'auto',
       height: `40rem`,
+      minWidth: `20rem`,
+      maxWidth: `40rem`,
     });
   }
 

@@ -49,7 +49,7 @@ class Volumes extends LitElement {
       display: 'flex',
       flexDirection: 'column',
       borderTop: border,
-      padding: '1rem',
+      paddingTop: '1rem',
     });
   }
 
@@ -74,7 +74,6 @@ class Volumes extends LitElement {
   private volumeStyle() {
     return stylable('player-volume', this.config, {
       flex: '4',
-      marginTop: '0.4rem',
     });
   }
 

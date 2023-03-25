@@ -31,7 +31,7 @@ class PlayerHeader extends LitElement {
   private infoStyle() {
     return stylable('player-info', this.config, {
       margin: '0.25rem',
-      padding: '0.5rem',
+      padding: '0.5rem 3.5rem',
       textAlign: 'center',
     });
   }

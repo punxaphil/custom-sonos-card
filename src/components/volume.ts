@@ -52,13 +52,6 @@ class Volume extends LitElement {
             style="${this.volumeRangeStyle(inputColor)}"
           >
           </ha-slider>
-          <div style="${this.volumeLevelStyle()}">
-            <div style="flex: ${volume}">0%</div>
-            ${volume >= max / 10 && volume <= 100 - max / 10
-              ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
-              : ''}
-            <div style="flex: ${max - volume};text-align: right">${max}%</div>
-          </div>
         </div>
         ${this.showGrouping
           ? html`<ha-icon-button
@@ -75,6 +68,7 @@ class Volume extends LitElement {
     return styleMap({
       '--mdc-icon-button-size': '2.5rem',
       '--mdc-icon-size': '1.75rem',
+      alignSelf: 'center',
     });
   }
 
@@ -99,10 +93,10 @@ class Volume extends LitElement {
 
   private volumeRangeStyle(inputColor: string) {
     return stylable('player-volume-range', this.config, {
-      width: '112%',
-      marginLeft: '-7%',
-      marginTop: '-1rem',
-      marginBottom: '-1rem',
+      width: '100%',
+      // marginLeft: '-7%',
+      // marginTop: '-1rem',
+      // marginBottom: '-1rem',
       '--paper-progress-active-color': inputColor,
       '--paper-slider-knob-color': 'transparent',
       '--paper-slider-pin-color': inputColor,
@@ -121,13 +115,6 @@ class Volume extends LitElement {
     return stylable('player-volume-slider', this.config, {
       flex: '1',
       paddingRight: this.showGrouping ? '0' : '0.6rem',
-    });
-  }
-
-  private volumeLevelStyle() {
-    return stylable('player-volume-level', this.config, {
-      fontSize: 'x-small',
-      display: 'flex',
     });
   }
 }

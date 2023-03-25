@@ -18,7 +18,8 @@ function buttonStyle(config: CardConfig) {
     justifyContent: 'center',
     backgroundColor: 'var(--sonos-int-background-color)',
     '--mdc-button-outline-width': '2px',
-    '--mdc-button-outline-color': 'var(--mdc-theme-primary)',
+    '--mdc-button-outline-color': 'var(--sonos-int-accent-color)',
+    '--mdc-theme-primary': 'var(--sonos-int-accent-color)',
   });
 }
 
