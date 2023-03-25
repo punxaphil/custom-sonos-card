@@ -41,7 +41,7 @@ class Volume extends LitElement {
           style="${this.iconStyle()}"
         ></ha-icon-button>
         <div style="${this.volumeSliderStyle()}">
-          <ha-slider
+          <paper-slider
             value="${volume}"
             @change="${this.onChange}"
             @click="${(e: Event) => this.onClick(e, volume)}"
@@ -50,8 +50,7 @@ class Volume extends LitElement {
             step=${this.config.volume_step || 1}
             dir=${'ltr'}
             style="${this.volumeRangeStyle(inputColor)}"
-          >
-          </ha-slider>
+          ></paper-slider>
         </div>
         ${this.showGrouping
           ? html`<ha-icon-button
@@ -62,6 +61,14 @@ class Volume extends LitElement {
           : html``}
       </div>
     `;
+  }
+  firstUpdated() {
+    const querySelector = this.renderRoot.querySelector('div > div > paper-slider');
+    const shadowRoot = querySelector?.shadowRoot;
+    const element = shadowRoot?.querySelector('#sliderContainer') as HTMLElement;
+    if (element?.style) {
+      element.style.margin = '0';
+    }
   }
 
   private iconStyle() {
