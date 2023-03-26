@@ -50,6 +50,7 @@ class Volumes extends LitElement {
       flexDirection: 'column',
       borderTop: border,
       paddingTop: '1rem',
+      paddingRight: '1rem',
     });
   }
 

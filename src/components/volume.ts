@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { html, LitElement } from 'lit';
+import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
@@ -22,12 +22,10 @@ class Volume extends LitElement {
     ({ config: this.config, hass: this.hass, mediaControlService: this.mediaControlService } = this.store);
     const volume = 100 * this.hass.states[this.entityId].attributes.volume_level;
     let max = 100;
-    let inputColor = 'rgb(211, 3, 32)';
     if (volume < 20) {
       if (!this.config.disableDynamicVolumeSlider) {
         max = 30;
       }
-      inputColor = 'var(--sonos-int-accent-color)';
     }
     const volumeMuted =
       this.members && Object.keys(this.members).length
@@ -41,19 +39,18 @@ class Volume extends LitElement {
           style="${this.iconStyle()}"
         ></ha-icon-button>
         <div style="${this.volumeSliderStyle()}">
-          <paper-slider
-            value="${volume}"
-            @change="${this.onChange}"
-            @click="${(e: Event) => this.onClick(e, volume)}"
-            min="0"
-            max="${max}"
-            step=${this.config.volume_step || 1}
-            dir=${'ltr'}
-            style="${this.volumeRangeStyle(inputColor)}"
-          ></paper-slider>
+          <input type="range" value="${volume}" min="0" max=${max} @change=${this.onChange} />
+
+          <div style="${this.volumeLevelStyle()}">
+            <div style="flex: ${volume}">0%</div>
+            ${volume >= max / 10 && volume <= 100 - max / 10
+              ? html` <div style="flex: 2; font-weight: bold; font-size: 12px;">${Math.round(volume)}%</div>`
+              : ''}
+            <div style="flex: ${max - volume};text-align: right">${max}%</div>
+          </div>
         </div>
         ${this.showGrouping
-          ? html`<ha-icon-button
+          ? html` <ha-icon-button
               @click="${async () => dispatchShowSection(Section.GROUPING)}"
               .path=${mdiCastVariant}
               style="${this.iconStyle()}"
@@ -62,20 +59,11 @@ class Volume extends LitElement {
       </div>
     `;
   }
-  firstUpdated() {
-    const querySelector = this.renderRoot.querySelector('div > div > paper-slider');
-    const shadowRoot = querySelector?.shadowRoot;
-    const element = shadowRoot?.querySelector('#sliderContainer') as HTMLElement;
-    if (element?.style) {
-      element.style.margin = '0';
-    }
-  }
 
   private iconStyle() {
     return styleMap({
       '--mdc-icon-button-size': '2.5rem',
       '--mdc-icon-size': '1.75rem',
-      alignSelf: 'center',
     });
   }
 
@@ -86,29 +74,6 @@ class Volume extends LitElement {
 
   private async setVolume(volume: number) {
     return await this.mediaControlService.volumeSet(this.entityId, volume, this.members);
-  }
-
-  private async onClick(e: Event, oldVolume: number) {
-    const newVolume = numberFromEvent(e);
-    if (newVolume === oldVolume) {
-      this.dispatchEvent(new CustomEvent('volumeClicked'));
-    } else {
-      await this.setVolume(newVolume);
-    }
-    e.stopPropagation();
-  }
-
-  private volumeRangeStyle(inputColor: string) {
-    return stylable('player-volume-range', this.config, {
-      width: '100%',
-      // marginLeft: '-7%',
-      // marginTop: '-1rem',
-      // marginBottom: '-1rem',
-      '--paper-progress-active-color': inputColor,
-      '--paper-slider-knob-color': 'transparent',
-      '--paper-slider-pin-color': inputColor,
-      '--paper-slider-height': '2.3rem',
-    });
   }
 
   private volumeStyle() {
@@ -124,8 +89,96 @@ class Volume extends LitElement {
       paddingRight: this.showGrouping ? '0' : '0.6rem',
     });
   }
-}
 
+  private volumeLevelStyle() {
+    return stylable('player-volume-level', this.config, {
+      fontSize: 'x-small',
+      display: 'flex',
+    });
+  }
+
+  static get styles() {
+    const color = 'var(--sonos-int-accent-color)';
+    const boxShadow = `-2000px 0 0 2000px ${color}`;
+    const height = '40px';
+    const background = '#ddd';
+    const radius = '10px';
+    const width = '100%';
+    return [
+      css`
+        input[type='range'] {
+          margin: auto;
+          -webkit-appearance: none;
+          position: relative;
+          overflow: hidden;
+          height: ${unsafeCSS(height)};
+          width: ${unsafeCSS(width)};
+          cursor: pointer;
+          border-radius: ${unsafeCSS(radius)}; /* iOS */
+        }
+
+        ::-webkit-slider-runnable-track {
+          background: ${unsafeCSS(background)};
+        }
+
+        /*
+         * 1. Set to 0 width and remove border for a slider without a thumb
+         * 2. Shadow is negative the full width of the input and has a spread 
+         *    of the width of the input.
+         */
+
+        ::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 0; /* 1 */
+          height: ${unsafeCSS(height)};
+          box-shadow: ${unsafeCSS(boxShadow)}; /* 2 */
+        }
+
+        ::-moz-range-track {
+          height: ${unsafeCSS(height)};
+          background: ${unsafeCSS(background)};
+        }
+
+        ::-moz-range-thumb {
+          width: 0;
+          height: ${unsafeCSS(height)};
+          border-radius: 0 !important;
+          box-shadow: ${unsafeCSS(boxShadow)}; /* 2 */
+          box-sizing: border-box;
+        }
+
+        ::-ms-fill-lower {
+          background: ${unsafeCSS(color)};
+        }
+
+        ::-ms-thumb {
+          height: ${unsafeCSS(height)};
+          width: 0;
+          box-sizing: border-box;
+        }
+
+        ::-ms-ticks-after {
+          display: none;
+        }
+
+        ::-ms-ticks-before {
+          display: none;
+        }
+
+        ::-ms-track {
+          background: ${unsafeCSS(background)};
+          color: transparent;
+          height: ${unsafeCSS(height)};
+          border: none;
+        }
+
+        ::-ms-tooltip {
+          display: none;
+        }
+      `,
+    ];
+  }
+}
 function numberFromEvent(e: Event) {
   return Number.parseInt((e?.target as HTMLInputElement)?.value);
 }

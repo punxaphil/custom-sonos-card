@@ -17,6 +17,7 @@ import {
   mdiShuffleVariant,
   mdiSkipNext,
   mdiSkipPrevious,
+  mdiTune,
 } from '@mdi/js';
 
 class PlayerControls extends LitElement {
@@ -50,12 +51,13 @@ class PlayerControls extends LitElement {
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
         <div style="${this.iconsStyle()}">
-          <ha-icon-button
-            @click="${this.shuffle}"
-            .path=${this.shuffleIcon()}
-            style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem"
-          ></ha-icon-button>
-          <div style="display: flex;align-items: center">
+          <div style="flex:1"></div>
+          <div style="display: flex;align-items: center;flex:1">
+            <ha-icon-button
+              @click="${this.shuffle}"
+              .path=${this.shuffleIcon()}
+              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;margin-right:1rem"
+            ></ha-icon-button>
             <ha-icon-button
               @click="${this.prev}"
               .path=${mdiSkipPrevious}
@@ -71,19 +73,22 @@ class PlayerControls extends LitElement {
               .path=${mdiSkipNext}
               style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem"
             ></ha-icon-button>
+            <ha-icon-button
+              @click="${this.repeat}"
+              .path=${this.repeatIcon()}
+              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;margin-left:1rem"
+            ></ha-icon-button>
           </div>
-          <ha-icon-button
-            @click="${this.repeat}"
-            .path=${this.repeatIcon()}
-            style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem"
-          ></ha-icon-button>
+          <div style="flex:1;text-align: end">
+            <ha-icon-button
+              @click="${() => dispatchShowSection(Section.VOLUMES)}"
+              ?hidden=""
+              .path=${mdiTune}
+              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;display:${this.isGroup ? 'block' : 'none'}"
+            ></ha-icon-button>
+          </div>
         </div>
-        <dev-sonos-volume
-          .store=${this.store}
-          .entityId=${this.entityId}
-          .members=${this.members}
-          @volumeClicked=${() => this.isGroup && dispatchShowSection(Section.VOLUMES)}
-        ></dev-sonos-volume>
+        <dev-sonos-volume .store=${this.store} .entityId=${this.entityId} .members=${this.members}></dev-sonos-volume>
       </div>
     `;
   }
