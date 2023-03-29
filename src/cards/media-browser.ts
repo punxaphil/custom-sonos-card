@@ -3,13 +3,12 @@ import { html, LitElement } from 'lit';
 import { until } from 'lit-html/directives/until.js';
 import { property, state } from 'lit/decorators.js';
 import '../components/media-browser-header';
-import '../components/media-icon-item';
 import '../components/media-list-item';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, MediaPlayerItem } from '../types';
-import { listenForEntityId, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
+import { listenForEntityId, listStyle, sharedStyle, stopListeningForEntityId } from '../utils';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
 
@@ -65,20 +64,20 @@ export class MediaBrowser extends LitElement {
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
             const itemsWithImage = MediaBrowser.itemsWithImage(items);
-            return html` <div style="${this.mediaButtonsStyle(itemsWithImage)}">
+            return html` <mwc-list multi style="${listStyle(this.config)}">
               ${items.map((item) => {
                 const itemClick = async () => await this.onMediaItemClick(item);
                 return html`
-                  <dev-sonos-media-list-item
-                    style="width: 100%;max-width: 100%;"
-                    .itemsWithImage="${itemsWithImage}"
-                    .mediaItem="${item}"
-                    .config="${this.config}"
-                    @click="${itemClick}"
-                  ></dev-sonos-media-list-item>
+                  <mwc-list-item @click="${itemClick}">
+                    <dev-sonos-media-list-item
+                      .itemsWithImage="${itemsWithImage}"
+                      .mediaItem="${item}"
+                      .config="${this.config}"
+                    ></dev-sonos-media-list-item>
+                  </mwc-list-item>
                 `;
               })}
-            </div>`;
+            </mwc-list>`;
           }),
         )}
       </div>
@@ -157,15 +156,6 @@ export class MediaBrowser extends LitElement {
     return await (mediaItem
       ? this.mediaBrowseService.getDir(this.entityId, mediaItem, this.config.mediaBrowserTitlesToIgnore)
       : this.mediaBrowseService.getRoot(this.entityId, this.config.mediaBrowserTitlesToIgnore));
-  }
-
-  private mediaButtonsStyle(itemsWithImage: boolean) {
-    return stylable('media-buttons', this.config, {
-      padding: '0',
-      display: 'flex',
-      flexWrap: 'wrap',
-      ...(!itemsWithImage && { flexDirection: 'column' }),
-    });
   }
 
   static get styles() {

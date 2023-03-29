@@ -14,19 +14,23 @@ class MediaBrowserHeader extends LitElement {
   render() {
     return html`
       <div style="${this.headerStyle()}" class="hoverable">
-        <div style="${this.playDirStyle()}" class="hoverable">
+        <div style="flex:1"></div>
+        <div style="${this.titleStyle()}">
+          ${this.config.mediaTitle ? this.config.mediaTitle : html`<ha-icon .icon=${'mdi:star-outline'}></ha-icon>`}
+        </div>
+        <div style="${this.browseStyle()}">
           ${this.currentDir?.can_play
             ? html` <ha-icon
+                style="padding-right: 1rem"
                 .icon=${'mdi:play'}
                 @click="${async () => await this.mediaBrowser.playItem(<MediaPlayerItem>this.currentDir)}"
               ></ha-icon>`
             : ''}
-        </div>
-        <div style="${this.titleStyle()}">
-          ${this.config.mediaTitle ? this.config.mediaTitle : html`<ha-icon .icon=${'mdi:star-outline'}></ha-icon>`}
-        </div>
-        <div style="${this.browseStyle()}" @click="${() => this.mediaBrowser.browseClicked()}">
-          <ha-icon .icon=${this.browse ? 'mdi:arrow-left-bold' : 'mdi:play-box-multiple'}></ha-icon>
+          <ha-icon
+            style="padding-right: 0.4rem"
+            .icon=${this.browse ? 'mdi:arrow-up-left-bold' : 'mdi:play-box-multiple'}
+            @click="${() => this.mediaBrowser.browseClicked()}"
+          ></ha-icon>
         </div>
       </div>
     `;
@@ -47,15 +51,6 @@ class MediaBrowserHeader extends LitElement {
 
   private titleStyle() {
     return stylable('title', this.config, this.headerChildStyle);
-  }
-
-  private playDirStyle() {
-    return stylable('media-browser-play-dir', this.config, {
-      textAlign: 'left',
-      paddingRight: '-0.5rem',
-      marginLeft: '0.5rem',
-      ...this.headerChildStyle,
-    });
   }
 
   private browseStyle() {
