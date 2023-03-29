@@ -62,8 +62,8 @@ class Volume extends LitElement {
 
   private iconStyle() {
     return styleMap({
-      '--mdc-icon-button-size': '2.5rem',
-      '--mdc-icon-size': '1.75rem',
+      '--mdc-icon-button-size': '3rem',
+      '--mdc-icon-size': '2rem',
     });
   }
 

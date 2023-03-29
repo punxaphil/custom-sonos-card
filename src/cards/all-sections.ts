@@ -128,10 +128,9 @@ export class AllSections extends LitElement {
         .loader {
           position: absolute;
           z-index: 1000;
-          text-align: center;
-          padding-top: 50%;
-          width: 100%;
-          height: 100%;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           --mdc-theme-primary: var(--sonos-int-accent-color);
         }
       `,
