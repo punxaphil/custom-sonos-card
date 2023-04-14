@@ -1,6 +1,7 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, MediaPlayerItem, TemplateResult } from '../types';
+import { MediaPlayerItem, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
+import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 
 export default class HassService {
   private hass: HomeAssistant;

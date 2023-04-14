@@ -4,7 +4,8 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig } from '../types';
-import { getCurrentTrack, getSpeakerList, sharedStyle, stylable } from '../utils';
+import { getCurrentTrack, getSpeakerList, stylable } from '../utils';
+import sharedStyle from '../sharedStyle';
 
 class PlayerHeader extends LitElement {
   @property() store!: Store;

@@ -3,10 +3,10 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
-import { titleStyle } from '../sharedStyle';
+import sharedStyle from '../sharedStyle';
 import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
-import { getEntityName, listenForEntityId, listStyle, sharedStyle, stopListeningForEntityId, stylable } from '../utils';
+import { getEntityName, listenForEntityId, listStyle, stopListeningForEntityId } from '../utils';
 import { getButton } from '../components/button';
 
 export class Grouping extends LitElement {
@@ -48,9 +48,6 @@ export class Grouping extends LitElement {
       (player) => player !== this.entityId && !this.groups[this.entityId].members[player],
     );
     return html`
-      <div style="${stylable('title', this.config, titleStyle)}">
-        ${this.config.groupingTitle ? this.config.groupingTitle : html`<ha-icon .icon=${'mdi:cast-variant'}></ha-icon>`}
-      </div>
       <mwc-list multi style="${listStyle(this.config)}">
         ${this.mediaPlayers
           .map((entity) => this.getGroupingItem(entity))

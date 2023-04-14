@@ -4,7 +4,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../store';
-import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup, Section } from '../types';
+import { CardConfig, PlayerGroup, Section } from '../types';
 import {
   dispatchShowSection,
   getCurrentTrack,
@@ -16,6 +16,7 @@ import {
   stopListeningForPlayerRequest,
   stylable,
 } from '../utils';
+import { ACTIVE_PLAYER_EVENT } from '../constants';
 
 class Group extends LitElement {
   @property() store!: Store;

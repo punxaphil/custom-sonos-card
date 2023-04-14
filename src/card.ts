@@ -1,16 +1,17 @@
-import { mdiArrowLeft, mdiSpeakerMultiple, mdiSquareEditOutline, mdiStarOutline } from '@mdi/js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
-import { titleStyle } from '../sharedStyle';
-import Store from '../store';
-import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, CardConfig, Section, SHOW_SECTION } from '../types';
-import { sharedStyle, stylable, validateConfig } from '../utils';
+import Store from './store';
+import { CardConfig, Section } from './types';
+import { stylable, validateConfig } from './utils';
+import './components/header';
+import sharedStyle from './sharedStyle';
+import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, SHOW_SECTION } from './constants';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 
-export class AllSections extends LitElement {
+export class Card extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
   @state() section = PLAYER;
@@ -23,23 +24,20 @@ export class AllSections extends LitElement {
     this.store = new Store(this.hass, this.config);
     return html`
       <ha-card style="${this.haCardStyle()}">
-        <div style="${this.titleStyle()}">${this.config.name}</div>
-        <div style=${this.sectionButtonsStyle()}>
-          ${this.section !== PLAYER ? this.sectionButton(mdiArrowLeft, PLAYER) : ''}
-          ${this.section === PLAYER ? this.sectionButton(mdiSpeakerMultiple, GROUPS) : ''}
-          ${this.section === GROUPS ? this.sectionButton(mdiSquareEditOutline, GROUPING) : ''}
-          ${this.section === PLAYER ? this.sectionButton(mdiStarOutline, MEDIA_BROWSER) : ''}
-        </div>
+        <dev-sonos-header style=${this.headerStyle()} .config="${this.config}" .section="${this.section}">
+        </dev-sonos-header>
         <div class="loader" ?hidden="${!this.showLoader}">
           <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
-        ${choose(this.section, [
-          [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
-          [GROUPS, () => html` <dev-sonos-groups .store=${this.store}></dev-sonos-groups>`],
-          [GROUPING, () => html`<dev-sonos-grouping .store=${this.store}></dev-sonos-grouping>`],
-          [MEDIA_BROWSER, () => html` <dev-sonos-media-browser .store=${this.store}></dev-sonos-media-browser>`],
-          [VOLUMES, () => html` <dev-sonos-volumes .store=${this.store}></dev-sonos-volumes>`],
-        ])}
+        <div style="${this.contentStyle()}">
+          ${choose(this.section, [
+            [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
+            [GROUPS, () => html` <dev-sonos-groups .store=${this.store}></dev-sonos-groups>`],
+            [GROUPING, () => html`<dev-sonos-grouping .store=${this.store}></dev-sonos-grouping>`],
+            [MEDIA_BROWSER, () => html` <dev-sonos-media-browser .store=${this.store}></dev-sonos-media-browser>`],
+            [VOLUMES, () => html` <dev-sonos-volumes .store=${this.store}></dev-sonos-volumes>`],
+          ])}
+        </div>
       </ha-card>
     `;
   }
@@ -80,36 +78,25 @@ export class AllSections extends LitElement {
   haCardStyle() {
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',
-      overflowY: 'auto',
       height: `40rem`,
       minWidth: `20rem`,
       maxWidth: `40rem`,
     });
   }
 
-  sectionButtonsStyle() {
-    return stylable('section-buttons', this.config, {
-      position: 'absolute',
-      zIndex: '1000',
-      padding: '.3rem 2%',
-      ...((this.section === PLAYER || this.section === GROUPS) && {
-        width: '96%',
-        display: 'flex',
-        'justify-content': 'space-between',
-      }),
+  headerStyle() {
+    return stylable('header', this.config, {
+      height: '3rem',
     });
   }
 
-  sectionButton(icon: string, section: Section) {
-    return html`<ha-icon-button
-      @click="${() => (this.section = section)}"
-      .path=${icon}
-      .disabled=${this.section === section}
-      style="${stylable('section-button', this.config, {
-        '--mdc-icon-button-size': '2rem',
-        '--mdc-icon-size': '1.5rem',
-      })}"
-    ></ha-icon-button>`;
+  private contentStyle() {
+    const isPlayer = this.section === Section.PLAYER;
+    return stylable('content', this.config, {
+      overflowY: 'auto',
+      height: isPlayer ? '40rem' : '37rem',
+      marginTop: isPlayer ? '-3rem' : '0',
+    });
   }
 
   setConfig(config: CardConfig) {
@@ -117,9 +104,6 @@ export class AllSections extends LitElement {
     parsed.showAllSections = !parsed.singleSectionMode;
     validateConfig(parsed);
     this.config = parsed;
-  }
-  private titleStyle() {
-    return stylable('title', this.config, { display: this.config.name ? 'block' : 'none', ...titleStyle });
   }
 
   static get styles() {

@@ -2,20 +2,14 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
 import { until } from 'lit-html/directives/until.js';
 import { property, state } from 'lit/decorators.js';
-import '../components/media-browser-header';
 import '../components/media-list-item';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, MediaPlayerItem, Section } from '../types';
-import {
-  dispatchShowSection,
-  listenForEntityId,
-  listStyle,
-  sharedStyle,
-  stopListeningForEntityId,
-  stylable,
-} from '../utils';
+import { dispatchShowSection, listenForEntityId, listStyle, stopListeningForEntityId, stylable } from '../utils';
+import sharedStyle from '../sharedStyle';
+import { BROWSE_CLICKED, BROWSE_STATE, PLAY_DIR } from '../constants';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
 
@@ -38,6 +32,12 @@ export class MediaBrowser extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     listenForEntityId(this.entityIdListener);
+    window.addEventListener(PLAY_DIR, async () => {
+      await this.playItem(<MediaPlayerItem>this.currentDir);
+    });
+    window.addEventListener(BROWSE_CLICKED, async () => {
+      await this.browseClicked();
+    });
   }
 
   disconnectedCallback() {
@@ -56,17 +56,15 @@ export class MediaBrowser extends LitElement {
     } = this.store);
     const currentDirJson = localStorage.getItem(LOCAL_STORAGE_CURRENT_DIR);
     if (currentDirJson) {
-      this.currentDir = JSON.parse(currentDirJson);
-      this.browse = true;
+      const currentDir = JSON.parse(currentDirJson);
+      if (currentDir !== this.currentDir) {
+        this.currentDir = currentDir;
+        this.browse = true;
+        this.dispatchBrowseState();
+      }
     }
     return html`
       <div style="text-align: center">
-        <dev-sonos-media-browser-header
-          .config=${this.config}
-          .mediaBrowser=${this}
-          .browse=${this.browse}
-          .currentDir=${this.currentDir}
-        ></dev-sonos-media-browser-header>
         ${this.entityId !== '' &&
         until(
           (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
@@ -91,17 +89,33 @@ export class MediaBrowser extends LitElement {
     `;
   }
 
+  firstUpdated() {
+    this.dispatchBrowseState();
+  }
+
+  private dispatchBrowseState() {
+    window.dispatchEvent(
+      new CustomEvent(BROWSE_STATE, {
+        detail: {
+          canPlay: this.currentDir?.can_play,
+          browse: this.browse,
+        },
+      }),
+    );
+  }
+
   private mwcListItemStyle() {
     return stylable('list-item', this.config, { height: '40px' });
   }
 
-  browseClicked() {
+  private browseClicked() {
     if (this.parentDirs.length) {
       this.setCurrentDir(this.parentDirs.pop());
     } else if (this.currentDir) {
       this.setCurrentDir(undefined);
     } else {
       this.browse = !this.browse;
+      this.dispatchBrowseState();
     }
   }
 
@@ -112,6 +126,7 @@ export class MediaBrowser extends LitElement {
     } else {
       localStorage.removeItem(LOCAL_STORAGE_CURRENT_DIR);
     }
+    this.dispatchBrowseState();
   }
 
   private async onMediaItemClick(mediaItem: MediaPlayerItem) {
@@ -124,7 +139,7 @@ export class MediaBrowser extends LitElement {
     }
   }
 
-  async playItem(mediaItem: MediaPlayerItem) {
+  private async playItem(mediaItem: MediaPlayerItem) {
     if (mediaItem.media_content_type || mediaItem.media_content_id) {
       await this.mediaControlService.playMedia(this.entityId, mediaItem);
     } else {

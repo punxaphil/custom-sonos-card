@@ -4,7 +4,8 @@ import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig, Members } from '../types';
-import { getEntityName, getGroupMembers, sharedStyle, stylable } from '../utils';
+import { getEntityName, getGroupMembers, stylable } from '../utils';
+import sharedStyle from '../sharedStyle';
 
 class Volumes extends LitElement {
   @property() store!: Store;

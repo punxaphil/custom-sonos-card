@@ -1,7 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { stylable } from '../utils';
 import { property } from 'lit/decorators.js';
-import { CardConfig, DEFAULT_MEDIA_THUMBNAIL, MediaPlayerItem } from '../types';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { DEFAULT_MEDIA_THUMBNAIL } from '../constants';
 
 const THUMB_SIZE = '35px';
 class MediaListItem extends LitElement {

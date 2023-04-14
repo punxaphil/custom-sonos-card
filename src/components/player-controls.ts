@@ -6,7 +6,7 @@ import HassService from '../services/hass-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, Members, Section } from '../types';
-import { dispatchShowSection, getGroupMembers, isPlaying, sharedStyle, stylable } from '../utils';
+import { dispatchShowSection, getGroupMembers, isPlaying, stylable } from '../utils';
 import {
   mdiPauseCircle,
   mdiPlayCircle,
@@ -19,6 +19,7 @@ import {
   mdiSkipPrevious,
   mdiTune,
 } from '@mdi/js';
+import sharedStyle from '../sharedStyle';
 
 class PlayerControls extends LitElement {
   @property() store!: Store;
