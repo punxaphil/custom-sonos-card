@@ -7,8 +7,15 @@ import '../components/media-list-item';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
-import { CardConfig, MediaPlayerItem } from '../types';
-import { listenForEntityId, listStyle, sharedStyle, stopListeningForEntityId } from '../utils';
+import { CardConfig, MediaPlayerItem, Section } from '../types';
+import {
+  dispatchShowSection,
+  listenForEntityId,
+  listStyle,
+  sharedStyle,
+  stopListeningForEntityId,
+  stylable,
+} from '../utils';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
 
@@ -68,7 +75,7 @@ export class MediaBrowser extends LitElement {
               ${items.map((item) => {
                 const itemClick = async () => await this.onMediaItemClick(item);
                 return html`
-                  <mwc-list-item @click="${itemClick}">
+                  <mwc-list-item @click="${itemClick}" style="${this.mwcListItemStyle()}">
                     <dev-sonos-media-list-item
                       .itemsWithImage="${itemsWithImage}"
                       .mediaItem="${item}"
@@ -82,6 +89,10 @@ export class MediaBrowser extends LitElement {
         )}
       </div>
     `;
+  }
+
+  private mwcListItemStyle() {
+    return stylable('list-item', this.config, { height: '40px' });
   }
 
   browseClicked() {
@@ -108,7 +119,8 @@ export class MediaBrowser extends LitElement {
       this.currentDir && this.parentDirs.push(this.currentDir);
       this.setCurrentDir(mediaItem);
     } else if (mediaItem.can_play) {
-      await this.playItem(mediaItem);
+      this.playItem(mediaItem);
+      setTimeout(() => dispatchShowSection(Section.PLAYER), 1000);
     }
   }
 

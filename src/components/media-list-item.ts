@@ -3,7 +3,7 @@ import { stylable } from '../utils';
 import { property } from 'lit/decorators.js';
 import { CardConfig, DEFAULT_MEDIA_THUMBNAIL, MediaPlayerItem } from '../types';
 
-const THUMB_SIZE = '44px';
+const THUMB_SIZE = '35px';
 class MediaListItem extends LitElement {
   @property() mediaItem!: MediaPlayerItem;
   @property() config!: CardConfig;
