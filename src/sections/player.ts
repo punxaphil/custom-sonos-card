@@ -57,7 +57,6 @@ export class Player extends LitElement {
   }
 
   private artworkStyle() {
-    const image = this.getArtworkImage();
     const style = {
       alignSelf: 'center',
       flexGrow: '1',
@@ -66,15 +65,20 @@ export class Player extends LitElement {
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
       backgroundSize: 'contain',
-      backgroundImage: `url(${image})`,
+      backgroundImage: this.getBackgroundImage(),
     };
-    if (!image) {
-      style.backgroundSize = '30%';
-      style.backgroundImage = `url(${
-        this.entity.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE
-      })`;
-    }
     return stylable('player-artwork', this.config, style);
+  }
+
+  private getBackgroundImage() {
+    let backgroundImage = `url(${
+      this.entity.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE
+    })`;
+    const image = this.getArtworkImage();
+    if (image) {
+      backgroundImage = `url(${image}), ${backgroundImage}`;
+    }
+    return backgroundImage;
   }
 
   private getArtworkImage() {
