@@ -12,6 +12,7 @@ import {
   mdiStarOutline,
 } from '@mdi/js';
 import { BROWSE_STATE } from '../constants';
+import { iconButton } from './icon-button';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER } = Section;
 
@@ -19,10 +20,16 @@ class Header extends LitElement {
   @property() config!: CardConfig;
   @property() section!: Section;
   @state() browseCanPlay!: boolean;
-  @state() browseRoot = true;
+  @state() browseMedia = true;
+  @state() mediaBrowserDir!: string;
 
   render() {
     const title = this.config.name;
+    const browseIcon = this.browseMedia
+      ? mdiPlayBoxMultiple
+      : this.mediaBrowserDir
+      ? mdiArrowUpLeftBold
+      : mdiStarOutline;
     return html`
       ${title ? html`<div style="${this.titleStyle()}">${title}</div>` : html``}
       ${this.section !== PLAYER ? this.sectionButton(mdiArrowLeft, PLAYER) : ''}
@@ -30,9 +37,7 @@ class Header extends LitElement {
       ${this.section === GROUPS ? this.sectionButton(mdiSquareEditOutline, GROUPING) : ''}
       ${this.section === PLAYER ? this.sectionButton(mdiStarOutline, MEDIA_BROWSER) : ''}
       ${this.section === MEDIA_BROWSER && this.browseCanPlay ? this.button(mdiPlay, () => dispatchPlayDir()) : ''}
-      ${this.section === MEDIA_BROWSER
-        ? this.button(this.browseRoot ? mdiPlayBoxMultiple : mdiArrowUpLeftBold, () => dispatchBrowseClicked())
-        : ''}
+      ${this.section === MEDIA_BROWSER ? this.button(browseIcon, () => dispatchBrowseClicked()) : ''}
     `;
   }
 
@@ -41,7 +46,8 @@ class Header extends LitElement {
     window.addEventListener(BROWSE_STATE, (event: Event) => {
       const detail = (event as CustomEvent).detail;
       this.browseCanPlay = detail.canPlay;
-      this.browseRoot = !detail.browse;
+      this.browseMedia = !detail.browse;
+      this.mediaBrowserDir = detail.currentDir;
     });
   }
 
@@ -60,15 +66,9 @@ class Header extends LitElement {
   }
 
   private button(icon: string, click: () => void) {
-    return html`<ha-icon-button
-      @click="${click}"
-      .path=${icon}
-      style="${stylable('section-button', this.config, {
-        '--mdc-icon-button-size': '2rem',
-        '--mdc-icon-size': '1.5rem',
-        padding: '0.3rem',
-      })}"
-    ></ha-icon-button>`;
+    return iconButton(icon, click, this.config, {
+      additionalStyle: { padding: '0.5rem' },
+    });
   }
 
   static get styles() {

@@ -97,16 +97,12 @@ export class Grouping extends LitElement {
   }
 
   private renderPredefinedGroups() {
-    return html`
-      <div>
-        ${this.config.predefinedGroups
-          ?.filter((group) => group.entities.length > 1)
-          .map((group) => {
-            const click = async () => await this.mediaControlService.createGroup(group.entities, this.groups);
-            return getButton(click, 'mdi:speaker-multiple', group.name, this.config);
-          })}
-      </div>
-    `;
+    return this.config.predefinedGroups
+      ?.filter((group) => group.entities.length > 1)
+      .map((group) => {
+        const click = async () => await this.mediaControlService.createGroup(group.entities, this.groups);
+        return getButton(click, 'mdi:speaker-multiple', group.name, this.config);
+      });
   }
 
   static get styles() {

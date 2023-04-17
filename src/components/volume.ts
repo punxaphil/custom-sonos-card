@@ -6,7 +6,7 @@ import Store from '../store';
 import { CardConfig, Members, Section } from '../types';
 import { dispatchShowSection, stylable } from '../utils';
 import { mdiCastVariant, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
-import { styleMap } from 'lit-html/directives/style-map.js';
+import { iconButton } from './icon-button';
 
 class Volume extends LitElement {
   @property() store!: Store;
@@ -33,11 +33,11 @@ class Volume extends LitElement {
         : this.hass.states[this.entityId].attributes.is_volume_muted;
     return html`
       <div style="${this.volumeStyle()}">
-        <ha-icon-button
-          @click="${async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members)}"
-          .path=${volumeMuted ? mdiVolumeMute : mdiVolumeHigh}
-          style="${this.iconStyle()}"
-        ></ha-icon-button>
+        ${iconButton(
+          volumeMuted ? mdiVolumeMute : mdiVolumeHigh,
+          async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members),
+          this.config,
+        )}
         <div style="${this.volumeSliderStyle()}">
           <input type="range" value="${volume}" min="0" max=${max} @change=${this.onChange} />
 
@@ -50,21 +50,10 @@ class Volume extends LitElement {
           </div>
         </div>
         ${this.showGrouping
-          ? html` <ha-icon-button
-              @click="${async () => dispatchShowSection(Section.GROUPING)}"
-              .path=${mdiCastVariant}
-              style="${this.iconStyle()}"
-            ></ha-icon-button>`
+          ? iconButton(mdiCastVariant, async () => dispatchShowSection(Section.GROUPING), this.config)
           : html``}
       </div>
     `;
-  }
-
-  private iconStyle() {
-    return styleMap({
-      '--mdc-icon-button-size': '3rem',
-      '--mdc-icon-size': '2rem',
-    });
   }
 
   private async onChange(e: Event) {

@@ -16,16 +16,14 @@ class Volumes extends LitElement {
   render() {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     return html`
-      <div style="margin-top: 3rem">
-        ${this.volumeWithName(
-          this.entity.entity_id,
-          this.config.allVolumesText ? this.config.allVolumesText : 'All',
-          this.store.groups[this.entity.entity_id].members,
-        )}
-        ${getGroupMembers(this.entity).map((entityId: string) =>
-          this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId)),
-        )}
-      </div>
+      ${this.volumeWithName(
+        this.entity.entity_id,
+        this.config.allVolumesText ? this.config.allVolumesText : 'All',
+        this.store.groups[this.entity.entity_id].members,
+      )}
+      ${getGroupMembers(this.entity).map((entityId: string) =>
+        this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId)),
+      )}
     `;
   }
 

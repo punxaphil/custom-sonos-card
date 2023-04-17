@@ -99,6 +99,7 @@ export class MediaBrowser extends LitElement {
         detail: {
           canPlay: this.currentDir?.can_play,
           browse: this.browse,
+          currentDir: this.currentDir,
         },
       }),
     );

@@ -20,6 +20,7 @@ import {
   mdiTune,
 } from '@mdi/js';
 import sharedStyle from '../sharedStyle';
+import { iconButton } from './icon-button';
 
 class PlayerControls extends LitElement {
   @property() store!: Store;
@@ -54,39 +55,18 @@ class PlayerControls extends LitElement {
         <div style="${this.iconsStyle()}">
           <div style="flex:1"></div>
           <div style="display: flex;align-items: center;flex:1">
-            <ha-icon-button
-              @click="${this.shuffle}"
-              .path=${this.shuffleIcon()}
-              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;margin-right:1rem"
-            ></ha-icon-button>
-            <ha-icon-button
-              @click="${this.prev}"
-              .path=${mdiSkipPrevious}
-              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem"
-            ></ha-icon-button>
-            <ha-icon-button
-              @click="${playing ? this.pause : this.play}"
-              .path=${playing ? mdiPauseCircle : mdiPlayCircle}
-              style="--mdc-icon-button-size: 6rem;--mdc-icon-size: 4rem"
-            ></ha-icon-button>
-            <ha-icon-button
-              @click="${this.next}"
-              .path=${mdiSkipNext}
-              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem"
-            ></ha-icon-button>
-            <ha-icon-button
-              @click="${this.repeat}"
-              .path=${this.repeatIcon()}
-              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;margin-left:1rem"
-            ></ha-icon-button>
+            ${iconButton(this.shuffleIcon(), this.shuffle, this.config, { additionalStyle: { marginRight: '1rem' } })}
+            ${iconButton(mdiSkipPrevious, this.prev, this.config)}
+            ${iconButton(playing ? mdiPauseCircle : mdiPlayCircle, playing ? this.pause : this.play, this.config, {
+              big: true,
+            })}
+            ${iconButton(mdiSkipNext, this.next, this.config)}
+            ${iconButton(this.repeatIcon(), this.repeat, this.config, { additionalStyle: { marginLeft: '1rem' } })}
           </div>
           <div style="flex:1;text-align: end">
-            <ha-icon-button
-              @click="${() => dispatchShowSection(Section.VOLUMES)}"
-              ?hidden=""
-              .path=${mdiTune}
-              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem;display:${this.isGroup ? 'block' : 'none'}"
-            ></ha-icon-button>
+            ${iconButton(mdiTune, () => dispatchShowSection(Section.VOLUMES), this.config, {
+              additionalStyle: { display: this.isGroup ? 'block' : 'none' },
+            })}
           </div>
         </div>
         <dev-sonos-volume .store=${this.store} .entityId=${this.entityId} .members=${this.members}></dev-sonos-volume>
@@ -112,17 +92,13 @@ class PlayerControls extends LitElement {
 
   private getAdditionalSwitches() {
     if (!this.config.skipAdditionalPlayerSwitches) {
-      return this.hassService.getRelatedSwitchEntities(this.entityId).then((items: string[]) => {
-        return items.map((item: string) => {
-          return html`
-            <ha-icon-button
-              @click="${() => this.hassService.toggle(item)}"
-              .path=${this.hass.states[item].attributes.icon || ''}
-              style="--mdc-icon-button-size: 2rem;--mdc-icon-size: 1.5rem"
-            ></ha-icon-button>
-          `;
-        });
-      });
+      return this.hassService
+        .getRelatedSwitchEntities(this.entityId)
+        .then((items: string[]) =>
+          items.map((item: string) =>
+            iconButton(this.hass.states[item].attributes.icon || '', () => this.hassService.toggle(item), this.config),
+          ),
+        );
     }
     return '';
   }

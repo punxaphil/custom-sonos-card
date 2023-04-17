@@ -86,7 +86,7 @@ export class Card extends LitElement {
 
   headerStyle() {
     return stylable('header', this.config, {
-      height: '3rem',
+      height: '4rem',
     });
   }
 
@@ -94,8 +94,8 @@ export class Card extends LitElement {
     const isPlayer = this.section === Section.PLAYER;
     return stylable('content', this.config, {
       overflowY: 'auto',
-      height: isPlayer ? '40rem' : '37rem',
-      marginTop: isPlayer ? '-3rem' : '0',
+      height: isPlayer ? '40rem' : '35rem',
+      marginTop: isPlayer ? '-4rem' : '0',
     });
   }
 
