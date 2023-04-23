@@ -3,7 +3,7 @@ import { html } from 'lit';
 import { stylable } from '../utils';
 import { StyleInfo } from 'lit-html/directives/style-map.js';
 
-interface IconButtonOptions {
+export interface IconButtonOptions {
   big?: boolean;
   additionalStyle?: StyleInfo;
 }
@@ -14,7 +14,7 @@ export function iconButton(icon: string, click: () => void, config: CardConfig, 
     .path=${icon}
     style="${stylable('icon-button', config, {
       '--mdc-icon-button-size': options?.big ? '6rem' : '3rem',
-      '--mdc-icon-size': options?.big ? '4rem' : '2rem',
+      '--mdc-icon-size': options?.big ? '6rem' : '2rem',
       ...options?.additionalStyle,
     })}"
   ></ha-icon-button>`;

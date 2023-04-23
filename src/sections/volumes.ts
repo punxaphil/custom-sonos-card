@@ -1,53 +1,82 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig, Members } from '../types';
 import { getEntityName, getGroupMembers, stylable } from '../utils';
 import sharedStyle from '../sharedStyle';
+import { until } from 'lit-html/directives/until.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
+import { when } from 'lit/directives/when.js';
+import { iconButton } from '../components/icon-button';
+import { mdiCog, mdiCogOff } from '@mdi/js';
 
 class Volumes extends LitElement {
   @property() store!: Store;
   private hass!: HomeAssistant;
   private config!: CardConfig;
   private entity!: HassEntity;
+  @state() private showSwitches: { [entity: string]: boolean } = {};
 
   render() {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
+    const members = getGroupMembers(this.entity);
     return html`
-      ${this.volumeWithName(
-        this.entity.entity_id,
-        this.config.allVolumesText ? this.config.allVolumesText : 'All',
-        this.store.groups[this.entity.entity_id].members,
+      ${when(members.length > 1, () =>
+        this.volumeWithName(
+          this.entity.entity_id,
+          this.config.allVolumesText ? this.config.allVolumesText : 'All',
+          true,
+          this.store.groups[this.entity.entity_id].members,
+        ),
       )}
-      ${getGroupMembers(this.entity).map((entityId: string) =>
-        this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId)),
+      ${members.map((entityId: string) =>
+        this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId), members.length === 1),
       )}
     `;
   }
 
-  private volumeWithName(entityId: string, name: string, members?: Members) {
-    return html` <div style="${this.wrapperStyle()}">
+  private volumeWithName(entityId: string, name: string, firstItem = false, members?: Members) {
+    const switchesStyle = styleMap({
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '1rem',
+      marginBottom: '1rem',
+    });
+    return html` <div style="${this.wrapperStyle(firstItem)}">
       <div style="${this.volumeNameStyle()}">
         <div style="${this.volumeNameTextStyle()}">${name}</div>
       </div>
-      <dev-sonos-volume
-        .store=${this.store}
-        .entityId=${entityId}
-        style=${this.volumeStyle()}
-        showGrouping=${false}
-        .members=${members}
-      ></dev-sonos-volume>
+      <div style="display:flex">
+        <dev-sonos-volume
+          .store=${this.store}
+          .entityId=${entityId}
+          style=${this.volumeStyle()}
+          .members=${members}
+        ></dev-sonos-volume>
+        ${when(!firstItem, () =>
+          iconButton(
+            this.showSwitches[entityId] ? mdiCogOff : mdiCog,
+            () => {
+              this.showSwitches[entityId] = !this.showSwitches[entityId];
+              this.requestUpdate();
+            },
+            this.config,
+          ),
+        )}
+      </div>
+      <div style="${switchesStyle}">
+        ${when(!firstItem && this.showSwitches[entityId], () => until(this.getAdditionalSwitches(entityId)))}
+      </div>
     </div>`;
   }
 
-  private wrapperStyle() {
-    const border = 'solid var(--secondary-background-color)';
+  private wrapperStyle(firstItem: boolean) {
     return stylable('all-volumes-wrapper', this.config, {
       display: 'flex',
       flexDirection: 'column',
-      borderTop: border,
+      borderTop: firstItem ? '0' : 'solid var(--secondary-background-color)',
       paddingTop: '1rem',
       paddingRight: '1rem',
     });
@@ -75,6 +104,22 @@ class Volumes extends LitElement {
     return stylable('player-volume', this.config, {
       flex: '4',
     });
+  }
+
+  private getAdditionalSwitches(entityId: string) {
+    const hassService = this.store.hassService;
+    return hassService.getRelatedSwitchEntities(entityId).then((items: string[]) =>
+      items.map((item: string) => {
+        const style = this.hass.states[item].state === 'on' ? styleMap({ color: 'var(--sonos-int-accent-color)' }) : '';
+        return html`
+          <ha-icon
+            @click="${() => hassService.toggle(item)}"
+            style="${style}"
+            .icon=${this.hass.states[item].attributes.icon || ''}
+          ></ha-icon>
+        `;
+      }),
+    );
   }
 
   static get styles() {

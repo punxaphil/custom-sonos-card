@@ -14,7 +14,7 @@ export function getButton(click: () => void, icon: string, name: string, config:
 function buttonStyle(config: CardConfig) {
   return stylable('button', config, {
     borderRadius: 'var(--sonos-int-border-radius)',
-    margin: '0.5rem',
+    margin: '1rem',
     justifyContent: 'center',
     backgroundColor: 'var(--sonos-int-background-color)',
     '--mdc-button-outline-width': '2px',

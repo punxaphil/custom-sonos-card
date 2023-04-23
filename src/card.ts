@@ -4,17 +4,18 @@ import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import Store from './store';
 import { CardConfig, Section } from './types';
-import { stylable, validateConfig } from './utils';
-import './components/header';
+import { listenForEntityId, stopListeningForEntityId, stylable, validateConfig } from './utils';
+import './components/footer';
 import sharedStyle from './sharedStyle';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, SHOW_SECTION } from './constants';
+import { when } from 'lit/directives/when.js';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 
 export class Card extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property() config!: CardConfig;
-  @state() section = PLAYER;
+  @state() section!: Section;
   @state() store!: Store;
   @state() showLoader!: boolean;
   @state() loaderTimestamp!: number;
@@ -22,14 +23,22 @@ export class Card extends LitElement {
 
   render() {
     this.store = new Store(this.hass, this.config);
+    const height = 40;
+    const footerHeight = 5;
+    const contentHeight = !this.config.sections || this.config.sections.length > 1 ? height - footerHeight : height;
+    if (!this.section) {
+      if (this.config.sections) {
+        this.section = this.config.sections[0];
+      } else {
+        this.section = PLAYER;
+      }
+    }
     return html`
-      <ha-card style="${this.haCardStyle()}">
-        <dev-sonos-header style=${this.headerStyle()} .config="${this.config}" .section="${this.section}">
-        </dev-sonos-header>
+      <ha-card style="${this.haCardStyle(height)}">
         <div class="loader" ?hidden="${!this.showLoader}">
           <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
-        <div style="${this.contentStyle()}">
+        <div style="${this.contentStyle(contentHeight)}">
           ${choose(this.section, [
             [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
             [GROUPS, () => html` <dev-sonos-groups .store=${this.store}></dev-sonos-groups>`],
@@ -38,6 +47,16 @@ export class Card extends LitElement {
             [VOLUMES, () => html` <dev-sonos-volumes .store=${this.store}></dev-sonos-volumes>`],
           ])}
         </div>
+        ${when(
+          !this.config.sections || this.config.sections.length > 1,
+          () =>
+            html`<dev-sonos-footer
+              style=${this.headerStyle(footerHeight)}
+              .config="${this.config}"
+              .section="${this.section}"
+            >
+            </dev-sonos-footer>`,
+        )}
       </ha-card>
     `;
   }
@@ -49,11 +68,14 @@ export class Card extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener(SHOW_SECTION, (event: Event) => {
-      this.section = (event as CustomEvent).detail;
+      const section = (event as CustomEvent).detail;
+      if (!this.config.sections || this.config.sections.indexOf(section) > -1) {
+        this.section = section;
+      }
     });
 
-    window.addEventListener(CALL_MEDIA_STARTED, () => {
-      if (!this.showLoader) {
+    window.addEventListener(CALL_MEDIA_STARTED, (event: Event) => {
+      if (!this.showLoader && (!this.config.sections || (event as CustomEvent).detail.section === this.section)) {
         this.cancelLoader = false;
         setTimeout(() => {
           if (!this.cancelLoader) {
@@ -74,28 +96,43 @@ export class Card extends LitElement {
         }
       }
     });
+
+    listenForEntityId(this.entityIdListener);
   }
-  haCardStyle() {
+
+  entityIdListener = (event: Event) => {
+    const newEntityId = (event as CustomEvent).detail.entityId;
+    if (newEntityId !== this.store.entityId) {
+      this.store.updateEntity(newEntityId);
+      this.requestUpdate();
+    }
+  };
+
+  disconnectedCallback() {
+    stopListeningForEntityId(this.entityIdListener);
+    super.disconnectedCallback();
+  }
+
+  haCardStyle(height: number) {
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',
-      height: `40rem`,
+      height: `${height}rem`,
       minWidth: `20rem`,
       maxWidth: `40rem`,
     });
   }
 
-  headerStyle() {
+  headerStyle(height: number) {
     return stylable('header', this.config, {
-      height: '4rem',
+      height: height + 'rem',
+      paddingBottom: '1rem',
     });
   }
 
-  private contentStyle() {
-    const isPlayer = this.section === Section.PLAYER;
+  private contentStyle(height: number) {
     return stylable('content', this.config, {
       overflowY: 'auto',
-      height: isPlayer ? '40rem' : '35rem',
-      marginTop: isPlayer ? '-4rem' : '0',
+      height: `${height}rem`,
     });
   }
 

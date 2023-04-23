@@ -16,7 +16,7 @@ export enum Section {
 
 export interface CardConfig extends LovelaceCardConfig {
   type: string;
-  singleSectionMode?: Section; //deprecated
+  sections?: Section[];
   name?: string;
   shuffleFavorites?: boolean;
   noMediaText?: string;

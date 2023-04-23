@@ -4,7 +4,7 @@ import '../components/player-controls';
 import '../components/player-header';
 import '../components/progress';
 import '../components/volume';
-import { listenForEntityId, stopListeningForEntityId, stylable } from '../utils';
+import { stylable } from '../utils';
 
 import { HassEntity } from 'home-assistant-js-websocket';
 import Store from '../store';
@@ -18,23 +18,6 @@ export class Player extends LitElement {
   private config!: CardConfig;
   private entityId!: string;
   private entity!: HassEntity;
-
-  entityIdListener = (event: Event) => {
-    const newEntityId = (event as CustomEvent).detail.entityId;
-    if (newEntityId !== this.entityId) {
-      this.entityId = newEntityId;
-    }
-  };
-
-  connectedCallback() {
-    super.connectedCallback();
-    listenForEntityId(this.entityIdListener);
-  }
-
-  disconnectedCallback() {
-    stopListeningForEntityId(this.entityIdListener);
-    super.disconnectedCallback();
-  }
 
   render() {
     ({ config: this.config, entity: this.entity, entityId: this.entityId } = this.store);

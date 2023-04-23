@@ -24,7 +24,8 @@ export default class Store {
     this.groups = this.createPlayerGroups(this.mediaPlayers);
     const entityId = this.determineEntityId(this.groups);
     this.updateEntity(entityId);
-    this.hassService = new HassService(this.hass);
+    const section = this.config.sections?.[0];
+    this.hassService = new HassService(this.hass, section);
     this.mediaControlService = new MediaControlService(this.hass, this.hassService);
     this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
   }

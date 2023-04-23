@@ -48,6 +48,15 @@ export class Grouping extends LitElement {
       (player) => player !== this.entityId && !this.groups[this.entityId].members[player],
     );
     return html`
+      ${when(notJoinedPlayers.length, () => {
+        const click = async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers);
+        return getButton(click, 'mdi:checkbox-multiple-marked-outline', '', this.config);
+      })}
+      ${when(joinedPlayers.length, () => {
+        const click = async () => await this.mediaControlService.unjoin(joinedPlayers);
+        return getButton(click, 'mdi:minus-box-multiple-outline', '', this.config);
+      })}
+      ${when(this.config.predefinedGroups && true, () => this.renderPredefinedGroups())}
       <mwc-list multi style="${listStyle(this.config)}">
         ${this.mediaPlayers
           .map((entity) => this.getGroupingItem(entity))
@@ -64,16 +73,6 @@ export class Grouping extends LitElement {
             </mwc-list-item>`;
           })}
       </mwc-list>
-
-      ${when(notJoinedPlayers.length, () => {
-        const click = async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers);
-        return getButton(click, 'mdi:checkbox-multiple-marked-outline', '', this.config);
-      })}
-      ${when(joinedPlayers.length, () => {
-        const click = async () => await this.mediaControlService.unjoin(joinedPlayers);
-        return getButton(click, 'mdi:minus-box-multiple-outline', '', this.config);
-      })}
-      ${when(this.config.predefinedGroups && true, () => this.renderPredefinedGroups())}
     `;
   }
 

@@ -1,13 +1,15 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { MediaPlayerItem, TemplateResult } from '../types';
+import { MediaPlayerItem, Section, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 
 export default class HassService {
   private hass: HomeAssistant;
+  private sectionOnCreate?: Section;
 
-  constructor(hass: HomeAssistant) {
+  constructor(hass: HomeAssistant, section?: Section) {
     this.hass = hass;
+    this.sectionOnCreate = section;
   }
 
   async callMediaService(service: string, inOptions: ServiceCallRequest['serviceData']) {
@@ -15,6 +17,7 @@ export default class HassService {
       new CustomEvent(CALL_MEDIA_STARTED, {
         bubbles: true,
         composed: true,
+        detail: { section: this.sectionOnCreate },
       }),
     );
 

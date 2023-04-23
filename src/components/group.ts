@@ -92,31 +92,6 @@ class Group extends LitElement {
     return stylable('group-speakers', this.config, { whiteSpace: 'initial' });
   }
 
-  private speakerStyle() {
-    return stylable('group-speaker', this.config, {
-      marginRight: '0.3rem',
-      fontSize: '1rem',
-      maxWidth: '100%',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    });
-  }
-
-  private infoStyle() {
-    return stylable('group-info', this.config, {
-      display: 'flex',
-      flexDirection: 'row',
-      clear: 'both',
-    });
-  }
-
-  private currentTrackStyle() {
-    return styleMap({
-      display: this.config.hideGroupCurrentTrack ? 'none' : 'inline',
-      fontSize: '0.8rem',
-    });
-  }
-
   private static barStyle(order: number) {
     return styleMap({
       background: 'var(--sonos-int-color)',
@@ -136,7 +111,6 @@ class Group extends LitElement {
       this.selected = true;
       const newUrl = window.location.href.replace(/#.*/g, '');
       window.location.replace(`${newUrl}#${this.group.entity}`);
-      this.store.updateEntity(this.group.entity);
       this.dispatchEntityIdEvent();
       dispatchShowSection(Section.PLAYER);
     }

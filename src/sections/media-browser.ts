@@ -3,6 +3,7 @@ import { html, LitElement } from 'lit';
 import { until } from 'lit-html/directives/until.js';
 import { property, state } from 'lit/decorators.js';
 import '../components/media-list-item';
+import '../components/media-browser-header';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
@@ -64,28 +65,27 @@ export class MediaBrowser extends LitElement {
       }
     }
     return html`
-      <div style="text-align: center">
-        ${this.entityId !== '' &&
-        until(
-          (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
-            const itemsWithImage = MediaBrowser.itemsWithImage(items);
-            return html` <mwc-list multi style="${listStyle(this.config)}">
-              ${items.map((item) => {
-                const itemClick = async () => await this.onMediaItemClick(item);
-                return html`
-                  <mwc-list-item @click="${itemClick}" style="${this.mwcListItemStyle()}">
-                    <dev-sonos-media-list-item
-                      .itemsWithImage="${itemsWithImage}"
-                      .mediaItem="${item}"
-                      .config="${this.config}"
-                    ></dev-sonos-media-list-item>
-                  </mwc-list-item>
-                `;
-              })}
-            </mwc-list>`;
-          }),
-        )}
-      </div>
+      <dev-sonos-media-browser-header .config=${this.config}></dev-sonos-media-browser-header>
+      ${this.entityId !== '' &&
+      until(
+        (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
+          const itemsWithImage = MediaBrowser.itemsWithImage(items);
+          return html` <mwc-list multi style="${listStyle(this.config)}">
+            ${items.map((item) => {
+              const itemClick = async () => await this.onMediaItemClick(item);
+              return html`
+                <mwc-list-item @click="${itemClick}" style="${this.mwcListItemStyle()}">
+                  <dev-sonos-media-list-item
+                    .itemsWithImage="${itemsWithImage}"
+                    .mediaItem="${item}"
+                    .config="${this.config}"
+                  ></dev-sonos-media-list-item>
+                </mwc-list-item>
+              `;
+            })}
+          </mwc-list>`;
+        }),
+      )}
     `;
   }
 
@@ -94,12 +94,14 @@ export class MediaBrowser extends LitElement {
   }
 
   private dispatchBrowseState() {
+    const title = !this.browse ? 'All Favorites' : this.currentDir ? this.currentDir.title : 'Media Browser';
     window.dispatchEvent(
       new CustomEvent(BROWSE_STATE, {
         detail: {
           canPlay: this.currentDir?.can_play,
           browse: this.browse,
           currentDir: this.currentDir,
+          title,
         },
       }),
     );

@@ -3,9 +3,9 @@ import { css, html, LitElement, unsafeCSS } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
-import { CardConfig, Members, Section } from '../types';
-import { dispatchShowSection, stylable } from '../utils';
-import { mdiCastVariant, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
+import { CardConfig, Members } from '../types';
+import { stylable } from '../utils';
+import { mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { iconButton } from './icon-button';
 
 class Volume extends LitElement {
@@ -16,7 +16,6 @@ class Volume extends LitElement {
   @property() entityId!: string;
   @property() members?: Members;
   @property() volumeClicked?: () => void;
-  @property() showGrouping = true;
 
   render() {
     ({ config: this.config, hass: this.hass, mediaControlService: this.mediaControlService } = this.store);
@@ -49,9 +48,6 @@ class Volume extends LitElement {
             <div style="flex: ${max - volume};text-align: right">${max}%</div>
           </div>
         </div>
-        ${this.showGrouping
-          ? iconButton(mdiCastVariant, async () => dispatchShowSection(Section.GROUPING), this.config)
-          : html``}
       </div>
     `;
   }
@@ -75,7 +71,7 @@ class Volume extends LitElement {
   private volumeSliderStyle() {
     return stylable('player-volume-slider', this.config, {
       flex: '1',
-      paddingRight: this.showGrouping ? '0' : '0.6rem',
+      paddingRight: '0.6rem',
     });
   }
 

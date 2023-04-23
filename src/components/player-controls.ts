@@ -5,8 +5,8 @@ import { property, state } from 'lit/decorators.js';
 import HassService from '../services/hass-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
-import { CardConfig, Members, Section } from '../types';
-import { dispatchShowSection, getGroupMembers, isPlaying, stylable } from '../utils';
+import { CardConfig, Members } from '../types';
+import { getGroupMembers, isPlaying, stylable } from '../utils';
 import {
   mdiPauseCircle,
   mdiPlayCircle,
@@ -17,10 +17,9 @@ import {
   mdiShuffleVariant,
   mdiSkipNext,
   mdiSkipPrevious,
-  mdiTune,
 } from '@mdi/js';
 import sharedStyle from '../sharedStyle';
-import { iconButton } from './icon-button';
+import { iconButton, IconButtonOptions } from './icon-button';
 
 class PlayerControls extends LitElement {
   @property() store!: Store;
@@ -42,6 +41,7 @@ class PlayerControls extends LitElement {
       hass: this.hass,
       entityId: this.entityId,
       entity: this.entity,
+      hassService: this.hassService,
       mediaControlService: this.mediaControlService,
     } = this.store);
     this.members = this.store.groups[this.entityId].members;
@@ -53,25 +53,19 @@ class PlayerControls extends LitElement {
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
         <div style="${this.iconsStyle()}">
-          <div style="flex:1"></div>
-          <div style="display: flex;align-items: center;flex:1">
-            ${iconButton(this.shuffleIcon(), this.shuffle, this.config, { additionalStyle: { marginRight: '1rem' } })}
-            ${iconButton(mdiSkipPrevious, this.prev, this.config)}
-            ${iconButton(playing ? mdiPauseCircle : mdiPlayCircle, playing ? this.pause : this.play, this.config, {
-              big: true,
-            })}
-            ${iconButton(mdiSkipNext, this.next, this.config)}
-            ${iconButton(this.repeatIcon(), this.repeat, this.config, { additionalStyle: { marginLeft: '1rem' } })}
-          </div>
-          <div style="flex:1;text-align: end">
-            ${iconButton(mdiTune, () => dispatchShowSection(Section.VOLUMES), this.config, {
-              additionalStyle: { display: this.isGroup ? 'block' : 'none' },
-            })}
-          </div>
+          ${this.button(this.shuffleIcon(), this.shuffle, { additionalStyle: { marginRight: '1rem' } })}
+          ${this.button(mdiSkipPrevious, this.prev)}
+          ${this.button(playing ? mdiPauseCircle : mdiPlayCircle, playing ? this.pause : this.play, { big: true })}
+          ${this.button(mdiSkipNext, this.next)}
+          ${this.button(this.repeatIcon(), this.repeat, { additionalStyle: { marginLeft: '1rem' } })}
         </div>
         <dev-sonos-volume .store=${this.store} .entityId=${this.entityId} .members=${this.members}></dev-sonos-volume>
       </div>
     `;
+  }
+
+  private button(icon: string, click: () => Promise<void>, options?: IconButtonOptions) {
+    return iconButton(icon, click, this.config, options);
   }
 
   private prev = async () => await this.mediaControlService.prev(this.entityId);
@@ -90,19 +84,6 @@ class PlayerControls extends LitElement {
     return repeatState === 'all' ? mdiRepeat : repeatState === 'one' ? mdiRepeatOnce : mdiRepeatOff;
   }
 
-  private getAdditionalSwitches() {
-    if (!this.config.skipAdditionalPlayerSwitches) {
-      return this.hassService
-        .getRelatedSwitchEntities(this.entityId)
-        .then((items: string[]) =>
-          items.map((item: string) =>
-            iconButton(this.hass.states[item].attributes.icon || '', () => this.hassService.toggle(item), this.config),
-          ),
-        );
-    }
-    return '';
-  }
-
   private mainStyle() {
     return stylable('media-controls', this.config, {
       margin: '0.25rem',
@@ -113,7 +94,7 @@ class PlayerControls extends LitElement {
 
   private iconsStyle() {
     return stylable('media-controls-icons', this.config, {
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       display: 'flex',
       alignItems: 'center',
     });
