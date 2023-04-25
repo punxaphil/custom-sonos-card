@@ -22,7 +22,7 @@ class Volume extends LitElement {
     const volume = 100 * this.hass.states[this.entityId].attributes.volume_level;
     let max = 100;
     if (volume < 20) {
-      if (!this.config.disableDynamicVolumeSlider) {
+      if (this.config.dynamicVolumeSlider) {
         max = 30;
       }
     }

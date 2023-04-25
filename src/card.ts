@@ -4,7 +4,7 @@ import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import Store from './store';
 import { CardConfig, Section } from './types';
-import { listenForEntityId, stopListeningForEntityId, stylable, validateConfig } from './utils';
+import { listenForEntityId, stopListeningForEntityId, stylable } from './utils';
 import './components/footer';
 import './editor';
 import sharedStyle from './sharedStyle';
@@ -29,12 +29,15 @@ export class Card extends LitElement {
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
     const contentHeight = showFooter ? height - footerHeight : height;
+    const title = this.config.name;
+
     return html`
       <ha-card style="${this.haCardStyle(height)}">
         <div class="loader" ?hidden="${!this.showLoader}">
           <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
         <div style="${this.contentStyle(contentHeight)}">
+          ${title ? html`<div style="${this.titleStyle()}">${title}</div>` : html``}
           ${choose(this.section, [
             [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
             [GROUPS, () => html` <dev-sonos-groups .store=${this.store}></dev-sonos-groups>`],
@@ -145,9 +148,18 @@ export class Card extends LitElement {
     });
   }
 
+  private titleStyle() {
+    return stylable('title', this.config, {
+      margin: '0.5rem 0',
+      textAlign: 'center',
+      fontWeight: 'bold',
+      fontSize: 'larger',
+      color: 'var(--sonos-int-title-color)',
+    });
+  }
+
   setConfig(config: CardConfig) {
     const newConfig = JSON.parse(JSON.stringify(config));
-    validateConfig(newConfig);
     if (newConfig.sections?.length === 0) {
       delete newConfig.sections;
     }

@@ -6,13 +6,7 @@ import { ACTIVE_PLAYER_EVENT, BROWSE_CLICKED, PLAY_DIR, REQUEST_PLAYER_EVENT, SH
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
-  if (config.entityNameRegex) {
-    const parts = config.entityNameRegex.split('/').filter((i: string) => i);
-    if (parts.length === 2) {
-      const [pattern, replaceWith] = parts;
-      return name.replace(new RegExp(pattern, 'g'), replaceWith);
-    }
-  } else if (config.entityNameRegexToReplace) {
+  if (config.entityNameRegexToReplace) {
     return name.replace(new RegExp(config.entityNameRegexToReplace, 'g'), config.entityNameReplacement || '');
   }
   return name;
@@ -58,24 +52,6 @@ export function dispatchPlayDir() {
 }
 export function dispatchBrowseClicked() {
   window.dispatchEvent(new CustomEvent(BROWSE_CLICKED));
-}
-
-export function validateConfig(config: CardConfig) {
-  // Handle deprecated configs
-  const deprecatedMessage = (deprecated: string, instead: string) =>
-    console.error('Sonos Card: ' + deprecated + ' configuration is deprecated. Please use ' + instead + ' instead.');
-  if (config.layout && !config.layout?.mediaBrowser && config.layout.favorites) {
-    deprecatedMessage('layout.favorites', 'layout.mediaBrowser');
-    config.layout.mediaBrowser = config.layout.favorites;
-  }
-  if (config.layout && !config.layout?.mediaItem && config.layout.favorite) {
-    deprecatedMessage('layout.favorite', 'layout.mediaItem');
-    config.layout.mediaItem = config.layout.favorite;
-  }
-  if (config.selectedPlayer) {
-    deprecatedMessage('selectedPlayer', 'entityId');
-    config.entityId = config.selectedPlayer;
-  }
 }
 
 export function isPlaying(state: string) {

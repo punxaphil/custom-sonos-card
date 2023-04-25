@@ -15,25 +15,24 @@ export enum Section {
 }
 
 export interface CardConfig extends LovelaceCardConfig {
-  type: string;
   sections?: Section[];
+  predefinedGroups?: PredefinedGroup[];
   name?: string;
+  widthPercentage?: number;
   shuffleFavorites?: boolean;
   noMediaText?: string;
-  allVolumesText?: string;
+  allVolumesText: string;
   entityNameRegexToReplace?: string;
   entityNameReplacement?: string;
-  layout?: Layout;
   entities?: string[];
   mediaArtworkOverrides?: MediaArtworkOverride[];
   entityId?: string;
-  selectedPlayer?: string;
   customSources?: CustomSources;
   hideGroupCurrentTrack: boolean;
   customThumbnailIfMissing?: CustomThumbnail;
-  predefinedGroups?: PredefinedGroup[];
-  mediaBrowserItemsAsList?: boolean;
   artworkHostname?: string;
+  dynamicVolumeSlider: boolean;
+  mediaBrowserTitlesToIgnore?: string[];
 }
 
 export interface Layout {

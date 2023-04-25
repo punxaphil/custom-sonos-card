@@ -54,7 +54,7 @@ class Group extends LitElement {
 
   render() {
     ({ config: this.config, hass: this.hass } = this.store);
-    const currentTrack = getCurrentTrack(this.hass.states[this.group.entity]);
+    const currentTrack = this.config.hideGroupCurrentTrack ? '' : getCurrentTrack(this.hass.states[this.group.entity]);
     const speakerList = getSpeakerList(this.group);
     this.dispatchEntityIdEvent();
     return html`
