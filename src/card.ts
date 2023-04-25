@@ -114,11 +114,20 @@ export class Card extends LitElement {
   }
 
   haCardStyle(height: number) {
+    const confWidth = this.config.widthPercentage;
+    let width = 40;
+    if (confWidth) {
+      if (confWidth < 50 || confWidth > 100) {
+        console.error('widthPercentage must be between 50 and 100');
+      } else {
+        width = (confWidth / 100) * width;
+      }
+    }
     return stylable('ha-card', this.config, {
       color: 'var(--sonos-int-color)',
       height: `${height}rem`,
       minWidth: `20rem`,
-      maxWidth: `40rem`,
+      maxWidth: `${width}rem`,
     });
   }
 

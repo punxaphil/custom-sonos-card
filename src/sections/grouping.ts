@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
@@ -48,15 +48,17 @@ export class Grouping extends LitElement {
       (player) => player !== this.entityId && !this.groups[this.entityId].members[player],
     );
     return html`
-      ${when(notJoinedPlayers.length, () => {
-        const click = async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers);
-        return getButton(click, 'mdi:checkbox-multiple-marked-outline', '', this.config);
-      })}
-      ${when(joinedPlayers.length, () => {
-        const click = async () => await this.mediaControlService.unjoin(joinedPlayers);
-        return getButton(click, 'mdi:minus-box-multiple-outline', '', this.config);
-      })}
-      ${when(this.config.predefinedGroups && true, () => this.renderPredefinedGroups())}
+      <div class="buttons">
+        ${when(notJoinedPlayers.length, () => {
+          const click = async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers);
+          return getButton(click, 'mdi:checkbox-multiple-marked-outline', '', this.config);
+        })}
+        ${when(joinedPlayers.length, () => {
+          const click = async () => await this.mediaControlService.unjoin(joinedPlayers);
+          return getButton(click, 'mdi:minus-box-multiple-outline', '', this.config);
+        })}
+        ${when(this.config.predefinedGroups && true, () => this.renderPredefinedGroups())}
+      </div>
       <mwc-list multi style="${listStyle(this.config)}">
         ${this.mediaPlayers
           .map((entity) => this.getGroupingItem(entity))
@@ -105,7 +107,14 @@ export class Grouping extends LitElement {
   }
 
   static get styles() {
-    return sharedStyle;
+    return [
+      css`
+        .buttons {
+          margin: 0.5rem 0.5rem 1rem;
+        }
+      `,
+      sharedStyle,
+    ];
   }
 }
 

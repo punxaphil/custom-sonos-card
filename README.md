@@ -117,7 +117,6 @@ customSources: # Main usecase is probably to set tv media player to play TV soun
   media_player.tv: # set this to 'all' to show the custom source for all players
     - title: TV
       thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
-skipAdditionalPlayerSwitches: true # default is false, which means additional switches will be shown in player if available (such as crossfade button)
 disableDynamicVolumeSlider: true # default is false. See more in section further down.
 artworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, but depending on your setup your device might not be able to access the artwork on the default host. One example where it could be needed is if you cast the dashboard with Google Cast.
 

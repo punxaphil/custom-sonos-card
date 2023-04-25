@@ -1,6 +1,6 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig, Members } from '../types';
@@ -27,24 +27,23 @@ class Volumes extends LitElement {
         this.volumeWithName(
           this.entity.entity_id,
           this.config.allVolumesText ? this.config.allVolumesText : 'All',
-          true,
           this.store.groups[this.entity.entity_id].members,
         ),
       )}
       ${members.map((entityId: string) =>
-        this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId), members.length === 1),
+        this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId)),
       )}
     `;
   }
 
-  private volumeWithName(entityId: string, name: string, firstItem = false, members?: Members) {
+  private volumeWithName(entityId: string, name: string, members?: Members) {
     const switchesStyle = styleMap({
       display: 'flex',
       justifyContent: 'center',
       gap: '1rem',
       marginBottom: '1rem',
     });
-    return html` <div style="${this.wrapperStyle(firstItem)}">
+    return html` <div class="wrapper">
       <div style="${this.volumeNameStyle()}">
         <div style="${this.volumeNameTextStyle()}">${name}</div>
       </div>
@@ -55,7 +54,7 @@ class Volumes extends LitElement {
           style=${this.volumeStyle()}
           .members=${members}
         ></dev-sonos-volume>
-        ${when(!firstItem, () =>
+        ${when(!members, () =>
           iconButton(
             this.showSwitches[entityId] ? mdiCogOff : mdiCog,
             () => {
@@ -67,19 +66,9 @@ class Volumes extends LitElement {
         )}
       </div>
       <div style="${switchesStyle}">
-        ${when(!firstItem && this.showSwitches[entityId], () => until(this.getAdditionalSwitches(entityId)))}
+        ${when(!members && this.showSwitches[entityId], () => until(this.getAdditionalSwitches(entityId)))}
       </div>
     </div>`;
-  }
-
-  private wrapperStyle(firstItem: boolean) {
-    return stylable('all-volumes-wrapper', this.config, {
-      display: 'flex',
-      flexDirection: 'column',
-      borderTop: firstItem ? '0' : 'solid var(--secondary-background-color)',
-      paddingTop: '1rem',
-      paddingRight: '1rem',
-    });
   }
 
   private volumeNameStyle() {
@@ -123,7 +112,20 @@ class Volumes extends LitElement {
   }
 
   static get styles() {
-    return sharedStyle;
+    return [
+      css`
+        .wrapper {
+          display: flex;
+          flex-direction: column;
+          padding-top: 1rem;
+          padding-right: 1rem;
+        }
+        .wrapper:not(:first-child) {
+          border-top: solid var(--secondary-background-color);
+        }
+      `,
+      sharedStyle,
+    ];
   }
 }
 
