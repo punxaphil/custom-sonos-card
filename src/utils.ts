@@ -72,9 +72,6 @@ export function validateConfig(config: CardConfig) {
     deprecatedMessage('layout.favorite', 'layout.mediaItem');
     config.layout.mediaItem = config.layout.favorite;
   }
-  if (config.sections) {
-    deprecatedMessage('singleSectionMode', 'individual cards');
-  }
   if (config.selectedPlayer) {
     deprecatedMessage('selectedPlayer', 'entityId');
     config.entityId = config.selectedPlayer;

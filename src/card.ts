@@ -6,6 +6,7 @@ import Store from './store';
 import { CardConfig, Section } from './types';
 import { listenForEntityId, stopListeningForEntityId, stylable, validateConfig } from './utils';
 import './components/footer';
+import './editor';
 import sharedStyle from './sharedStyle';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, SHOW_SECTION } from './constants';
 import { when } from 'lit/directives/when.js';
@@ -25,14 +26,9 @@ export class Card extends LitElement {
     this.store = new Store(this.hass, this.config);
     const height = 40;
     const footerHeight = 5;
-    const contentHeight = !this.config.sections || this.config.sections.length > 1 ? height - footerHeight : height;
-    if (!this.section) {
-      if (this.config.sections) {
-        this.section = this.config.sections[0];
-      } else {
-        this.section = PLAYER;
-      }
-    }
+    const sections = this.config.sections;
+    const showFooter = !sections || sections.length > 1;
+    const contentHeight = showFooter ? height - footerHeight : height;
     return html`
       <ha-card style="${this.haCardStyle(height)}">
         <div class="loader" ?hidden="${!this.showLoader}">
@@ -48,7 +44,7 @@ export class Card extends LitElement {
           ])}
         </div>
         ${when(
-          !this.config.sections || this.config.sections.length > 1,
+          showFooter,
           () =>
             html`<dev-sonos-footer
               style=${this.headerStyle(footerHeight)}
@@ -63,6 +59,10 @@ export class Card extends LitElement {
 
   getCardSize() {
     return 3;
+  }
+
+  static getConfigElement() {
+    return document.createElement('dev-sonos-card-editor');
   }
 
   connectedCallback() {
@@ -146,10 +146,18 @@ export class Card extends LitElement {
   }
 
   setConfig(config: CardConfig) {
-    const parsed = JSON.parse(JSON.stringify(config));
-    parsed.showAllSections = !parsed.singleSectionMode;
-    validateConfig(parsed);
-    this.config = parsed;
+    const newConfig = JSON.parse(JSON.stringify(config));
+    validateConfig(newConfig);
+    if (newConfig.sections?.length === 0) {
+      delete newConfig.sections;
+    }
+    const sections = newConfig.sections;
+    if (sections) {
+      this.section = sections[0];
+    } else {
+      this.section = PLAYER;
+    }
+    this.config = newConfig;
   }
 
   static get styles() {
