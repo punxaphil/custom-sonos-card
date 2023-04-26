@@ -160,8 +160,10 @@ export class Card extends LitElement {
 
   setConfig(config: CardConfig) {
     const newConfig = JSON.parse(JSON.stringify(config));
-    if (newConfig.sections?.length === 0) {
-      delete newConfig.sections;
+    for (const [key, value] of Object.entries(newConfig)) {
+      if (Array.isArray(value) && value.length === 0) {
+        delete newConfig[key];
+      }
     }
     const sections = newConfig.sections;
     if (sections) {
