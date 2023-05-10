@@ -3,7 +3,6 @@ import { state } from 'lit/decorators.js';
 import { mdiPen, mdiPlus } from '@mdi/js';
 import { BaseEditor } from './base-editor';
 
-const GENERAL = 'General';
 export const ENTITIES_RENAME_SCHEMA = [
   {
     type: 'string',
@@ -24,7 +23,6 @@ export const ENTITIES_SCHEMA = [
 ];
 
 class EntitiesEditor extends BaseEditor {
-  @state() private configArea = GENERAL;
   @state() editGroup!: number;
 
   protected render(): TemplateResult {

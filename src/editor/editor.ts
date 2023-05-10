@@ -8,9 +8,11 @@ import { choose } from 'lit/directives/choose.js';
 import Store from '../store';
 import './advanced-editor';
 import './custom-source-editor';
-import './entities-editor';
 import './general-editor';
+import './entities-editor';
 import './predefined-group-editor';
+import './artwork-overrides-editor';
+import './artwork-override-editor';
 import './form';
 
 const { GENERAL, ENTITIES, ADVANCED, ARTWORK } = ConfigArea;
@@ -46,6 +48,13 @@ class CardEditor extends BaseEditor {
       [GENERAL, () => html`<dev-sonos-card-general-editor .store=${this.store}></dev-sonos-card-general-editor>`],
       [ENTITIES, () => html`<dev-sonos-card-entities-editor .store=${this.store}></dev-sonos-card-entities-editor>`],
       [ADVANCED, () => html`<dev-sonos-card-advanced-editor .store=${this.store}></dev-sonos-card-advanced-editor>`],
+      [
+        ARTWORK,
+        () =>
+          html`<dev-sonos-card-artwork-overrides-editor
+            .store=${this.store}
+          ></dev-sonos-card-artwork-overrides-editor>`,
+      ],
     ]);
   }
 

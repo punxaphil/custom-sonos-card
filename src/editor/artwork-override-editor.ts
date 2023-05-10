@@ -1,42 +1,42 @@
 import { html, TemplateResult } from 'lit';
-import { PredefinedGroup } from '../types';
 import { property } from 'lit/decorators.js';
 import { mdiCheck, mdiDelete } from '@mdi/js';
 import { BaseEditor } from './base-editor';
 
-class PredefinedGroupEditor extends BaseEditor {
+const newOverride = { ifMissing: false };
+class ArtworkOverrideEditor extends BaseEditor {
   @property() index!: number;
-
   protected render(): TemplateResult {
     ({ config: this.config, hass: this.hass } = this.store);
-    const predefinedGroup: PredefinedGroup = this.config.predefinedGroups?.[this.index || 0] || {
-      name: '',
-      entities: [],
-    };
+    const artworkOverride = this.config.mediaArtworkOverrides?.[this.index || 0];
     const schema = [
+      { name: 'ifMissing', selector: { boolean: {} } },
       {
+        name: 'mediaTitleEquals',
         type: 'string',
-        name: 'name',
-        required: true,
       },
       {
-        name: 'entities',
-        selector: { entity: { multiple: true, filter: { integration: 'sonos', domain: 'media_player' } } },
+        name: 'mediaContentIdEquals',
+        type: 'string',
+      },
+      {
+        name: 'imageUrl',
+        type: 'string',
       },
     ];
     return html`
-      Add/Edit Predefined Group
+      Add/Edit Artwork Override
       <dev-sonos-card-editor-form
-        .data=${predefinedGroup}
+        .data=${artworkOverride || newOverride}
         .schema=${schema}
         .store=${this.store}
-        .changed=${(ev: CustomEvent) => this.groupChanged(ev, this.index)}
+        .changed=${(ev: CustomEvent) => this.changed(ev, this.index)}
       ></dev-sonos-card-editor-form>
       <ha-control-button-group>
         <ha-control-button @click="${this.dispatchClose}">
           OK<ha-svg-icon .path=${mdiCheck} label="OK"></ha-svg-icon>
         </ha-control-button>
-        ${predefinedGroup.name
+        ${artworkOverride
           ? html`<ha-control-button
               @click="${() => {
                 this.config.predefinedGroups = this.config.predefinedGroups?.filter((_, index) => index !== this.index);
@@ -51,20 +51,20 @@ class PredefinedGroupEditor extends BaseEditor {
     `;
   }
 
-  private groupChanged(ev: CustomEvent, index: number): void {
+  private changed(ev: CustomEvent, index: number): void {
     const changed = ev.detail.value;
-    let groups = this.config.predefinedGroups;
-    if (!Array.isArray(groups)) {
-      groups = [];
+    let overrides = this.config.mediaArtworkOverrides;
+    if (!Array.isArray(overrides)) {
+      overrides = [];
     }
-    if (groups[index]) {
-      groups[index] = changed;
+    if (overrides[index]) {
+      overrides[index] = changed;
     } else {
-      groups = [...groups, changed];
+      overrides = [...overrides, changed];
     }
-    this.config.predefinedGroups = groups;
+    this.config.mediaArtworkOverrides = overrides;
     this.configChanged();
   }
 }
 
-customElements.define('dev-sonos-card-predefined-group-editor', PredefinedGroupEditor);
+customElements.define('dev-sonos-card-artwork-override-editor', ArtworkOverrideEditor);

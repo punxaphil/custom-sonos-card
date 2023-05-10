@@ -56,7 +56,6 @@ export interface MediaArtworkOverride {
   ifMissing?: boolean;
   mediaTitleEquals?: string;
   mediaContentIdEquals?: string;
-  sizePercentage?: number;
   imageUrl?: string;
 }
 
