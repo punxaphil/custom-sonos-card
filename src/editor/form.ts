@@ -1,12 +1,14 @@
 import { html, TemplateResult } from 'lit';
 import { BaseEditor } from './base-editor';
-import { property } from 'lit/development/decorators';
+import { property } from 'lit/decorators.js';
 
 class Form extends BaseEditor {
   @property() schema!: unknown;
   @property() data!: unknown;
   @property() changed!: (ev: CustomEvent) => void;
   protected render(): TemplateResult {
+    ({ config: this.config, hass: this.hass } = this.store);
+
     return html`
       <ha-form
         .data=${this.data || this.config}

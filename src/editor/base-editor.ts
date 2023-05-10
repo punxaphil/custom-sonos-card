@@ -10,6 +10,9 @@ export abstract class BaseEditor extends LitElement {
   @property() hass!: HomeAssistant;
   @property() store!: Store;
 
+  setConfig(config: CardConfig) {
+    this.config = config;
+  }
   static get styles() {
     return editorStyle;
   }

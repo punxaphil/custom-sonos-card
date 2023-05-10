@@ -11,6 +11,7 @@ import './custom-source-editor';
 import './entities-editor';
 import './general-editor';
 import './predefined-group-editor';
+import './form';
 
 const { GENERAL, ENTITIES, ADVANCED, ARTWORK } = ConfigArea;
 class CardEditor extends BaseEditor {

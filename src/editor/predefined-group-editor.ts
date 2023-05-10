@@ -8,6 +8,7 @@ class PredefinedGroupEditor extends BaseEditor {
   @property() index!: number;
 
   protected render(): TemplateResult {
+    ({ config: this.config, hass: this.hass } = this.store);
     const predefinedGroup: PredefinedGroup = this.config.predefinedGroups?.[this.index || 0] || {
       name: '',
       entities: [],
@@ -24,15 +25,15 @@ class PredefinedGroupEditor extends BaseEditor {
       },
     ];
     return html`
-      Predefined Group
+      Add/Edit Predefined Group
       <dev-sonos-card-editor-form
         .data=${predefinedGroup}
         .schema=${schema}
         .store=${this.store}
-        .changed=${this.groupChanged}
+        .changed=${(ev: CustomEvent) => this.groupChanged(ev, this.index)}
       ></dev-sonos-card-editor-form>
       <ha-control-button-group>
-        <ha-control-button @click="${() => (this.index = -1)}">
+        <ha-control-button @click="${() => this.dispatchEvent(new CustomEvent('closed'))}">
           OK<ha-svg-icon .path=${mdiCheck} label="OK"></ha-svg-icon>
         </ha-control-button>
         ${predefinedGroup.name
@@ -50,14 +51,14 @@ class PredefinedGroupEditor extends BaseEditor {
     `;
   }
 
-  private groupChanged(ev: CustomEvent): void {
+  private groupChanged(ev: CustomEvent, index: number): void {
     const changed = ev.detail.value;
     let groups = this.config.predefinedGroups;
     if (!Array.isArray(groups)) {
       groups = [];
     }
-    if (groups[this.index]) {
-      groups[this.index] = changed;
+    if (groups[index]) {
+      groups[index] = changed;
     } else {
       groups = [...groups, changed];
     }

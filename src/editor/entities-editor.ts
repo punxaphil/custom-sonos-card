@@ -28,13 +28,14 @@ class EntitiesEditor extends BaseEditor {
   @state() editGroup!: number;
 
   protected render(): TemplateResult {
+    ({ config: this.config, hass: this.hass } = this.store);
     const predefinedGroups = this.config.predefinedGroups;
 
     return this.editGroup > -1
       ? html`<dev-sonos-card-predefined-group-editor
           .index=${this.editGroup}
-          .config=${this.config}
-          .hass=${this.hass}
+          .store=${this.store}
+          @closed=${() => (this.editGroup = -1)}
         ></dev-sonos-card-predefined-group-editor>`
       : html`
           <dev-sonos-card-editor-form .schema=${ENTITIES_SCHEMA} .store=${this.store}></dev-sonos-card-editor-form>

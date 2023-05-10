@@ -1,6 +1,6 @@
 export enum ConfigArea {
-  GENERAL,
-  ENTITIES,
-  ADVANCED,
-  ARTWORK,
+  GENERAL = 'General',
+  ENTITIES = 'Entities',
+  ADVANCED = 'Advanced',
+  ARTWORK = 'Artwork',
 }
