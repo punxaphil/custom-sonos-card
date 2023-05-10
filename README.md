@@ -100,8 +100,8 @@ predefinedGroups: # defaults to empty
       - media_player.hall
 
 # sonos-player specific
-noMediaText: 'No media selected'
-allVolumesText: 'All volumes'
+labelWhenNoMediaIsSelected: 'No media selected'
+labelForTheAllVolumesSlider: 'All volumes'
 mediaArtworkOverrides: # Show your own selected artwork if certain rules match
   - mediaTitleEquals: TV
     imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
@@ -113,7 +113,7 @@ mediaArtworkOverrides: # Show your own selected artwork if certain rules match
       https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
   - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
     imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
-customSources: # Main usecase is probably to set tv media player to play TV sound
+customSources: # Main use case is probably to set tv media player to play TV sound
   media_player.tv: # set this to 'all' to show the custom source for all players
     - title: TV
       thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png

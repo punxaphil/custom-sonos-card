@@ -16,22 +16,22 @@ export enum Section {
 
 export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
+  entities?: string[];
   predefinedGroups?: PredefinedGroup[];
   name?: string;
-  widthPercentage?: number;
-  shuffleFavorites?: boolean;
-  noMediaText?: string;
-  allVolumesText: string;
+  labelWhenNoMediaIsSelected?: string;
+  labelForTheAllVolumesSlider: string;
   entityNameRegexToReplace?: string;
   entityNameReplacement?: string;
-  entities?: string[];
-  mediaArtworkOverrides?: MediaArtworkOverride[];
-  entityId?: string;
-  customSources?: CustomSources;
-  hideGroupCurrentTrack: boolean;
-  customThumbnailIfMissing?: CustomThumbnail;
   artworkHostname?: string;
+  widthPercentage?: number;
+  shuffleFavorites?: boolean;
+  hideGroupCurrentTrack: boolean;
   dynamicVolumeSlider: boolean;
+
+  mediaArtworkOverrides?: MediaArtworkOverride[];
+  customSources?: CustomSources;
+  customThumbnailIfMissing?: CustomThumbnail;
   mediaBrowserTitlesToIgnore?: string[];
 }
 

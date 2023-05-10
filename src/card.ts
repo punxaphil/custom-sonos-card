@@ -6,7 +6,7 @@ import Store from './store';
 import { CardConfig, Section } from './types';
 import { listenForEntityId, stopListeningForEntityId, stylable } from './utils';
 import './components/footer';
-import './editor';
+import './editor/editor';
 import sharedStyle from './sharedStyle';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, SHOW_SECTION } from './constants';
 import { when } from 'lit/directives/when.js';

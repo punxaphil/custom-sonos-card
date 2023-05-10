@@ -26,7 +26,7 @@ class Volumes extends LitElement {
       ${when(members.length > 1, () =>
         this.volumeWithName(
           this.entity.entity_id,
-          this.config.allVolumesText ? this.config.allVolumesText : 'All',
+          this.config.labelForTheAllVolumesSlider ? this.config.labelForTheAllVolumesSlider : 'All',
           this.store.groups[this.entity.entity_id].members,
         ),
       )}

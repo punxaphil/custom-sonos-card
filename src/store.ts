@@ -93,8 +93,7 @@ export default class Store {
   }
 
   determineEntityId(playerGroups: PlayerGroups) {
-    const entityId =
-      this.config.entityId || (window.location.href.indexOf('#') > 0 ? window.location.href.replace(/.*#/g, '') : '');
+    const entityId = window.location.href.indexOf('#') > 0 ? window.location.href.replace(/.*#/g, '') : '';
     let result;
     for (const player in playerGroups) {
       if (player === entityId) {

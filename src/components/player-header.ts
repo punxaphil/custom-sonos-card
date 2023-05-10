@@ -17,7 +17,9 @@ class PlayerHeader extends LitElement {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     const attributes = this.entity.attributes;
     const speakerList = getSpeakerList(this.store.groups[this.entity.entity_id]);
-    let song = this.config.noMediaText ? this.config.noMediaText : '🎺 What do you want to play? 🥁';
+    let song = this.config.labelWhenNoMediaIsSelected
+      ? this.config.labelWhenNoMediaIsSelected
+      : '🎺 What do you want to play? 🥁';
     if (attributes.media_title) {
       song = getCurrentTrack(this.entity);
     }
@@ -70,7 +72,7 @@ class PlayerHeader extends LitElement {
     });
   }
 
-  private noMediaTextStyle() {
+  private labelWhenNoMediaIsSelectedStyle() {
     return stylable('no-media-text', this.config, {
       flexGrow: '1',
       display: 'flex',
