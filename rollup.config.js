@@ -36,6 +36,10 @@ export default [
       format: 'es',
       file: 'dist/custom-sonos-card.js',
     },
+    onwarn(warning, warn) {
+      if (warning.code === 'THIS_IS_UNDEFINED') return;
+      warn(warning);
+    },
     plugins: [...plugins],
   },
 ];
