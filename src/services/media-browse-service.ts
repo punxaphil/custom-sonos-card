@@ -19,12 +19,12 @@ export default class MediaBrowseService {
     this.hassService = hassService;
   }
 
-  async getRoot(mediaPlayer: string, ignoredTitles: string[]): Promise<MediaPlayerItem[]> {
+  async getRoot(mediaPlayer: string, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
     const root = await this.hassService.browseMedia(mediaPlayer);
     return mediaBrowserFilter(ignoredTitles, root.children) || [];
   }
 
-  async getDir(mediaPlayer: string, dir: MediaPlayerItem, ignoredTitles: string[]): Promise<MediaPlayerItem[]> {
+  async getDir(mediaPlayer: string, dir: MediaPlayerItem, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
     try {
       const dirItem = await this.hassService.browseMedia(mediaPlayer, dir.media_content_type, dir.media_content_id);
       return mediaBrowserFilter(ignoredTitles, dirItem.children) || [];
@@ -34,7 +34,7 @@ export default class MediaBrowseService {
     }
   }
 
-  async getAllFavorites(mediaPlayers: string[], ignoredTitles: string[]): Promise<MediaPlayerItem[]> {
+  async getAllFavorites(mediaPlayers: string[], ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
     if (!mediaPlayers.length) {
       return [];
     }
@@ -52,7 +52,7 @@ export default class MediaBrowseService {
     });
   }
 
-  private async getFavoritesForPlayer(player: string, ignoredTitles: string[]) {
+  private async getFavoritesForPlayer(player: string, ignoredTitles?: string[]) {
     const favoritesRoot = await this.hassService.browseMedia(player, 'favorites', '');
     const favoriteTypesPromise = favoritesRoot.children?.map((favoriteItem) =>
       this.hassService.browseMedia(player, favoriteItem.media_content_type, favoriteItem.media_content_id),

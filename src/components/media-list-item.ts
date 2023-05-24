@@ -1,42 +1,48 @@
-import { html } from 'lit';
-import { MediaItem } from './media-item';
-import { stylable } from '../utils';
+import { css, html, LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { DEFAULT_MEDIA_THUMBNAIL } from '../constants';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
-class MediaListItem extends MediaItem {
+const THUMB_SIZE = '35px';
+class MediaListItem extends LitElement {
+  @property() mediaItem!: MediaPlayerItem;
+  @property() config!: CardConfig;
+  @property() itemsWithImage!: boolean;
+
+  getThumbnail() {
+    let thumbnail = this.mediaItem.thumbnail;
+    if (!thumbnail) {
+      thumbnail = this.config.customThumbnailIfMissing?.[this.mediaItem.title] || '';
+      if (this.itemsWithImage && !thumbnail) {
+        thumbnail = this.config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
+      }
+    } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
+      thumbnail = thumbnail?.replace('logo.png', 'icon.png');
+    }
+    return thumbnail;
+  }
+
   private iconStyle = {
     position: 'relative',
     flexShrink: '0',
-    width: '30px',
-    height: '30px',
+    width: THUMB_SIZE,
+    height: THUMB_SIZE,
   };
 
   render() {
     const thumbnail = this.getThumbnail();
     return html`
-      <div style="${this.wrapperStyle()}" class="hoverable">
-        <div style="${this.listItemStyle()}">
-          <div style="${this.thumbnailStyle(thumbnail)}"></div>
-          <ha-icon style="${this.folderStyle(thumbnail)}" .icon=${'mdi:folder-music'}></ha-icon>
-          <div style="${this.titleStyle(thumbnail)}">${this.mediaItem.title}</div>
-        </div>
-      </div>
+      <div style="${this.thumbnailStyle(thumbnail)}"></div>
+      <ha-icon style="${this.folderStyle(thumbnail)}" .icon=${'mdi:folder-music'}></ha-icon>
+      <div style="${this.titleStyle(thumbnail)}">${this.mediaItem.title}</div>
     `;
   }
 
-  private listItemStyle() {
-    return stylable('media-button', this.config, {
-      ...this.mediaButtonStyle(),
-      flexDirection: 'row',
-      justifyContent: 'left',
-      alignItems: 'center',
-      height: '30px',
-    });
-  }
-
   private thumbnailStyle(thumbnail: string) {
-    return stylable('media-button-thumb', this.config, {
+    return styleMap({
       ...this.iconStyle,
-      backgroundSize: '30px',
+      backgroundSize: THUMB_SIZE,
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'left',
       backgroundImage: 'url(' + thumbnail + ')',
@@ -45,7 +51,7 @@ class MediaListItem extends MediaItem {
   }
 
   private folderStyle(thumbnail: string) {
-    return stylable('media-button-folder', this.config, {
+    return styleMap({
       ...this.iconStyle,
       '--mdc-icon-size': '90%',
       ...((!this.mediaItem.can_expand || thumbnail) && { display: 'none' }),
@@ -53,18 +59,29 @@ class MediaListItem extends MediaItem {
   }
 
   private titleStyle(thumbnail: string) {
-    return stylable('media-button-title', this.config, {
-      fontSize: '0.9rem',
+    return styleMap({
+      fontSize: '1.1rem',
+      color: 'var(--secondary-text-color)',
+      fontWeight: 'bold',
       padding: '0px 0.5rem',
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
+      alignSelf: 'center',
       flex: '1',
       ...((thumbnail || this.mediaItem.can_expand) && {
         zIndex: '1',
       }),
     });
   }
+
+  static get styles() {
+    return css`
+      :host {
+        display: flex;
+      }
+    `;
+  }
 }
 
-customElements.define('sonos-media-list-item', MediaListItem);
+customElements.define('dev-sonos-media-list-item', MediaListItem);

@@ -1,16 +1,20 @@
-import { html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { isPlaying, stylable } from '../utils';
+import { html, LitElement } from 'lit';
+import { property, state } from 'lit/decorators.js';
+import Store from '../store';
 import { CardConfig } from '../types';
+import { isPlaying } from '../utils';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 class Progress extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() public entityId!: string;
-  @state() private playingProgress!: number;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private entityId!: string;
   private entity!: HassEntity;
+
+  @state() private playingProgress!: number;
   private tracker?: NodeJS.Timer;
 
   disconnectedCallback() {
@@ -22,6 +26,7 @@ class Progress extends LitElement {
   }
 
   render() {
+    ({ config: this.config, hass: this.hass, entity: this.entity, entityId: this.entityId } = this.store);
     this.entity = this.hass.states[this.entityId];
     const mediaDuration = this.entity?.attributes.media_duration || 0;
     const showProgress = mediaDuration > 0;
@@ -29,7 +34,7 @@ class Progress extends LitElement {
       this.trackProgress();
       return html`
         <div style="${this.progressStyle()}">
-          <span style="${this.timeStyle()}">${convertProgress(this.playingProgress)}</span>
+          <span>${convertProgress(this.playingProgress)}</span>
           <div style="${this.barStyle()}">
             <paper-progress
               value="${this.playingProgress}"
@@ -37,7 +42,7 @@ class Progress extends LitElement {
               style="${this.paperProgressStyle()}"
             ></paper-progress>
           </div>
-          <span style="${this.timeStyle()}"> -${convertProgress(mediaDuration - this.playingProgress)}</span>
+          <span> -${convertProgress(mediaDuration - this.playingProgress)}</span>
         </div>
       `;
     }
@@ -45,7 +50,7 @@ class Progress extends LitElement {
   }
 
   progressStyle() {
-    return stylable('progress', this.config, {
+    return styleMap({
       width: '100%',
       fontSize: 'x-small',
       display: 'flex',
@@ -53,12 +58,8 @@ class Progress extends LitElement {
     });
   }
 
-  timeStyle() {
-    return stylable('progress-time', this.config);
-  }
-
   barStyle() {
-    return stylable('progress-bar', this.config, {
+    return styleMap({
       display: 'flex',
       'flex-grow': '1',
       'align-items': 'center',
@@ -85,9 +86,9 @@ class Progress extends LitElement {
   }
 
   private paperProgressStyle() {
-    return stylable('progress-bar-paper', this.config, {
+    return styleMap({
       flexGrow: '1',
-      '--paper-progress-active-color': 'var(--sonos-int-accent-color)',
+      '--paper-progress-active-color': 'var(--accent-color)',
     });
   }
 }
@@ -97,4 +98,4 @@ const convertProgress = (duration: number) => {
   return date.startsWith('00:') ? date.substring(3) : date;
 };
 
-customElements.define('sonos-progress', Progress);
+customElements.define('dev-sonos-progress', Progress);

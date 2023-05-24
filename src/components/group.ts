@@ -1,23 +1,27 @@
+import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { property } from 'lit/decorators.js';
+import { when } from 'lit/directives/when.js';
+import Store from '../store';
+import { CardConfig, PlayerGroup, Section } from '../types';
 import {
+  dispatchShowSection,
   getCurrentTrack,
+  getSpeakerList,
   isPlaying,
   listenForEntityId,
   listenForPlayerRequest,
   stopListeningForEntityId,
   stopListeningForPlayerRequest,
-  stylable,
 } from '../utils';
-import { ACTIVE_PLAYER_EVENT, CardConfig, PlayerGroup } from '../types';
-import { styleMap } from 'lit-html/directives/style-map.js';
-import { when } from 'lit/directives/when.js';
-import { HomeAssistant } from 'custom-card-helpers';
+import { ACTIVE_PLAYER_EVENT } from '../constants';
 
 class Group extends LitElement {
-  @property() hass!: HomeAssistant;
-  @property() config!: CardConfig;
-  @property() group!: PlayerGroup;
+  @property() store!: Store;
+  private hass!: HomeAssistant;
+  private config!: CardConfig;
+  private group!: PlayerGroup;
   @property() selected = false;
 
   connectedCallback() {
@@ -48,84 +52,43 @@ class Group extends LitElement {
   };
 
   render() {
-    const currentTrack = getCurrentTrack(this.hass.states[this.group.entity]);
-    const speakerList = [this.group.roomName, ...Object.values(this.group.members)].join(' + ');
+    ({ config: this.config, hass: this.hass } = this.store);
+    const currentTrack = this.config.hideGroupCurrentTrack ? '' : getCurrentTrack(this.hass.states[this.group.entity]);
+    const speakerList = getSpeakerList(this.group);
     this.dispatchEntityIdEvent();
     return html`
-      <div @click="${() => this.handleGroupClicked()}" style="${this.groupStyle()}">
-        <ul style="${this.speakersStyle()}">
-          <span style="${this.speakerStyle()}">${speakerList}</span>
-        </ul>
-        <div style="${this.infoStyle()}">
-          ${currentTrack
-            ? html` <div style="flex: 1"><span style="${this.currentTrackStyle()}">${currentTrack}</span></div>
-                ${when(
-                  isPlaying(this.group.state),
-                  () => html`
-                    <div style="width: 0.55rem; position: relative;">
-                      <div style="${Group.barStyle(1)}"></div>
-                      <div style="${Group.barStyle(2)}"></div>
-                      <div style="${Group.barStyle(3)}"></div>
-                    </div>
-                  `,
-                )}`
-            : ''}
-        </div>
-      </div>
+      <mwc-list-item
+        twoline
+        hasMeta
+        divider
+        ?selected="${this.selected}"
+        ?activated="${this.selected}"
+        @click="${() => this.handleGroupClicked()}"
+      >
+        <span style="${this.speakersStyle()}">${speakerList}</span>
+        <span slot="secondary">${currentTrack}</span>
+
+        ${when(
+          isPlaying(this.group.state),
+          () => html`
+            <div style="width: 0.55rem; position: relative;" slot="meta">
+              <div style="${Group.barStyle(1)}"></div>
+              <div style="${Group.barStyle(2)}"></div>
+              <div style="${Group.barStyle(3)}"></div>
+            </div>
+          `,
+        )}
+      </mwc-list-item>
     `;
   }
 
-  private groupStyle() {
-    const style = {
-      borderRadius: 'var(--sonos-int-border-radius)',
-      margin: '0.5rem 0',
-      padding: '0.8rem',
-      border: 'var(--sonos-int-border-width) solid var(--sonos-int-color)',
-      backgroundColor: 'var(--sonos-int-background-color)',
-      ...(this.selected && {
-        border: 'var(--sonos-int-border-width) solid var(--sonos-int-accent-color)',
-        color: 'var(--sonos-int-accent-color)',
-        fontWeight: 'bold',
-      }),
-    };
-    return stylable('group', this.config, style);
-  }
-
   private speakersStyle() {
-    return stylable('group-speakers', this.config, {
-      margin: '0',
-      padding: '0',
-    });
-  }
-
-  private speakerStyle() {
-    return stylable('group-speaker', this.config, {
-      marginRight: '0.3rem',
-      fontSize: '1rem',
-      maxWidth: '100%',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    });
-  }
-
-  private infoStyle() {
-    return stylable('group-info', this.config, {
-      display: 'flex',
-      flexDirection: 'row',
-      clear: 'both',
-    });
-  }
-
-  private currentTrackStyle() {
-    return styleMap({
-      display: this.config.hideGroupCurrentTrack ? 'none' : 'inline',
-      fontSize: '0.8rem',
-    });
+    return styleMap({ whiteSpace: 'initial' });
   }
 
   private static barStyle(order: number) {
     return styleMap({
-      background: 'var(--sonos-int-color)',
+      background: 'var(--secondary-text-color)',
       bottom: '0.05rem',
       height: '0.15rem',
       position: 'absolute',
@@ -143,6 +106,7 @@ class Group extends LitElement {
       const newUrl = window.location.href.replace(/#.*/g, '');
       window.location.replace(`${newUrl}#${this.group.entity}`);
       this.dispatchEntityIdEvent();
+      dispatchShowSection(Section.PLAYER);
     }
   }
 
@@ -158,8 +122,13 @@ class Group extends LitElement {
           height: 1rem;
         }
       }
+      mwc-list-item {
+        height: fit-content;
+        padding-bottom: 1rem;
+        padding-top: 0;
+      }
     `;
   }
 }
 
-customElements.define('sonos-group', Group);
+customElements.define('dev-sonos-group', Group);

@@ -1,9 +1,9 @@
-import { Player } from './cards/player';
-import { AllSections } from './cards/all-sections';
-import { Grouping } from './cards/grouping';
-import { Groups } from './cards/groups';
-import { MediaBrowser } from './cards/media-browser';
-import { CustomSonosCard } from './cards/custom-sonos-card';
+import { Player } from './sections/player';
+import { Card } from './card';
+import { Grouping } from './sections/grouping';
+import { Groups } from './sections/groups';
+import { MediaBrowser } from './sections/media-browser';
+import './sections/volumes';
 
 const name = (type?: string) => `Sonos${type ? ` (${type})` : ''}`;
 const desc = (type?: string) => `Media player for your Sonos speakers${type ? ` (${type})` : ''}`;
@@ -41,9 +41,8 @@ window.customCards.push(
   },
 );
 
-customElements.define('custom-sonos-card', CustomSonosCard);
-customElements.define('sonos-card', AllSections);
-customElements.define('sonos-grouping', Grouping);
-customElements.define('sonos-groups', Groups);
-customElements.define('sonos-media-browser', MediaBrowser);
-customElements.define('sonos-player', Player);
+customElements.define('dev-sonos-card', Card);
+customElements.define('dev-sonos-grouping', Grouping);
+customElements.define('dev-sonos-groups', Groups);
+customElements.define('dev-sonos-media-browser', MediaBrowser);
+customElements.define('dev-sonos-player', Player);

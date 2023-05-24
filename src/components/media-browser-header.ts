@@ -1,81 +1,70 @@
 import { css, html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
-import { CardConfig, MediaPlayerItem } from '../types';
-import { titleStyle } from '../sharedStyle';
-import { HomeAssistant } from 'custom-card-helpers';
-import { stylable } from '../utils';
-import { MediaBrowser } from '../cards/media-browser';
+import { property, state } from 'lit/decorators.js';
+import { CardConfig } from '../types';
+import { dispatchBrowseClicked, dispatchPlayDir } from '../utils';
+import { mdiArrowUpLeftBold, mdiPlay, mdiPlayBoxMultiple, mdiStarOutline } from '@mdi/js';
+import { BROWSE_STATE } from '../constants';
+import { iconButton } from './icon-button';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 class MediaBrowserHeader extends LitElement {
-  @property() hass!: HomeAssistant;
   @property() config!: CardConfig;
-
-  @property() mediaBrowser!: MediaBrowser;
-  @property() browse!: boolean;
-  @property() currentDir!: MediaPlayerItem;
+  @state() browseCanPlay!: boolean;
+  @state() browseMedia = true;
+  @state() mediaBrowserDir!: string;
+  @state() title!: string;
 
   render() {
+    const browseIcon = this.browseMedia
+      ? mdiPlayBoxMultiple
+      : this.mediaBrowserDir
+      ? mdiArrowUpLeftBold
+      : mdiStarOutline;
     return html`
-      <div style="${this.headerStyle()}" class="hoverable">
-        <div style="${this.playDirStyle()}" class="hoverable">
-          ${this.currentDir?.can_play
-            ? html` <ha-icon
-                .icon=${'mdi:play'}
-                @click="${async () => await this.mediaBrowser.playItem(<MediaPlayerItem>this.currentDir)}"
-              ></ha-icon>`
-            : ''}
-        </div>
-        <div style="${this.titleStyle()}">${this.config.mediaTitle ? this.config.mediaTitle : 'Media'}</div>
-        <div style="${this.browseStyle()}" @click="${() => this.mediaBrowser.browseClicked()}">
-          <ha-icon .icon=${this.browse ? 'mdi:arrow-left-bold' : 'mdi:play-box-multiple'}></ha-icon>
-        </div>
+      <div style="${styleMap({ flex: '1' })}">
+        ${this.browseCanPlay
+          ? iconButton(mdiPlay, () => dispatchPlayDir(), {
+              additionalStyle: { padding: '0.5rem' },
+            })
+          : ''}
       </div>
+      <div style="${this.titleStyle()}">${this.title}</div>
+      ${iconButton(browseIcon, () => dispatchBrowseClicked(), {
+        additionalStyle: { padding: '0.5rem', flex: '1', textAlign: 'right' },
+      })}
     `;
   }
 
-  private headerStyle() {
-    return stylable('media-browser-header', this.config, {
-      display: 'flex',
-      justifyContent: 'space-between',
-      ...titleStyle,
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener(BROWSE_STATE, (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      this.browseCanPlay = detail.canPlay;
+      this.browseMedia = !detail.browse;
+      this.mediaBrowserDir = detail.currentDir;
+      this.title = detail.title;
     });
   }
-
-  private headerChildStyle = {
-    flex: '1',
-    '--mdc-icon-size': '1.5rem',
-  };
-
-  private titleStyle() {
-    return stylable('title', this.config, this.headerChildStyle);
-  }
-
-  private playDirStyle() {
-    return stylable('media-browser-play-dir', this.config, {
-      textAlign: 'left',
-      paddingRight: '-0.5rem',
-      marginLeft: '0.5rem',
-      ...this.headerChildStyle,
-    });
-  }
-
-  private browseStyle() {
-    return stylable('media-browse', this.config, {
-      textAlign: 'right',
-      paddingRight: '0.5rem',
-      marginLeft: '-0.5rem',
-      ...this.headerChildStyle,
-    });
-  }
-
   static get styles() {
     return css`
-      .hoverable:focus,
-      .hoverable:hover {
-        color: var(--sonos-int-accent-color);
+      :host {
+        display: flex;
+        justify-content: space-between;
       }
     `;
   }
+
+  private titleStyle() {
+    return styleMap({
+      flex: '6',
+      textAlign: 'center',
+      fontSize: '1.2rem',
+      fontWeight: 'bold',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    });
+  }
 }
 
-customElements.define('sonos-media-browser-header', MediaBrowserHeader);
+customElements.define('dev-sonos-media-browser-header', MediaBrowserHeader);
