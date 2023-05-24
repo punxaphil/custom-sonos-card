@@ -10,11 +10,11 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
       - name: Build Changelog
         id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v2.9.0
+        uses: mikepenz/release-changelog-builder-action@v3
         with:
           failOnError: true
           commitMode: true
@@ -40,7 +40,7 @@ jobs:
           npm run build
 
       - name: Upload to release
-        uses: svenstaro/upload-release-action@v1-release
+        uses: svenstaro/upload-release-action@2
 
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
