@@ -33,6 +33,14 @@ class AdvancedEditor extends BaseEditor {
   protected render(): TemplateResult {
     return html`
       <dev-sonos-card-editor-form .schema=${ADVANCED_SCHEMA} .store=${this.store}></dev-sonos-card-editor-form>
+      <p>
+        The following needs to be configured using code (YAML): 
+        <ul>
+          <li>customSources</li>
+          <li>customThumbnailIfMissing</li>
+          <li>mediaBrowserTitlesToIgnore</li>
+        </ul>
+      </p>
     `;
   }
 }

@@ -27,7 +27,7 @@ class CardEditor extends BaseEditor {
 
     return html`
       <ha-control-button-group>
-        ${[GENERAL, ENTITIES, ADVANCED, ARTWORK].map(
+        ${[GENERAL, ENTITIES, ARTWORK, ADVANCED].map(
           (configArea) => html`
             <ha-control-button
               style=${this.configAreaStyle(configArea)}

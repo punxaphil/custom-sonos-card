@@ -28,8 +28,8 @@ export interface CardConfig extends LovelaceCardConfig {
   shuffleFavorites?: boolean;
   hideGroupCurrentTrack: boolean;
   dynamicVolumeSlider: boolean;
-
   mediaArtworkOverrides?: MediaArtworkOverride[];
+
   customSources?: CustomSources;
   customThumbnailIfMissing?: CustomThumbnail;
   mediaBrowserTitlesToIgnore?: string[];

@@ -18,14 +18,6 @@ export const GENERAL_SCHEMA = [
     name: 'name',
   },
   {
-    type: 'string',
-    name: 'labelWhenNoMediaIsSelected',
-  },
-  {
-    type: 'string',
-    name: 'labelForTheAllVolumesSlider',
-  },
-  {
     type: 'integer',
     name: 'widthPercentage',
     default: 100,
