@@ -42,4 +42,4 @@ class Footer extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-footer', Footer);
+customElements.define('sonos-footer', Footer);

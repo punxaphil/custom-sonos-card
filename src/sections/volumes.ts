@@ -47,12 +47,12 @@ class Volumes extends LitElement {
         <div style="${this.volumeNameTextStyle()}">${name}</div>
       </div>
       <div style="display:flex">
-        <dev-sonos-volume
+        <sonos-volume
           .store=${this.store}
           .entityId=${entityId}
           style=${this.volumeStyle()}
           .members=${members}
-        ></dev-sonos-volume>
+        ></sonos-volume>
         ${when(!members, () =>
           iconButton(this.showSwitches[entityId] ? mdiCogOff : mdiCog, () => {
             this.showSwitches[entityId] = !this.showSwitches[entityId];
@@ -123,4 +123,4 @@ class Volumes extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-volumes', Volumes);
+customElements.define('sonos-volumes', Volumes);

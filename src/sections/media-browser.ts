@@ -65,7 +65,7 @@ export class MediaBrowser extends LitElement {
       }
     }
     return html`
-      <dev-sonos-media-browser-header .config=${this.config}></dev-sonos-media-browser-header>
+      <sonos-media-browser-header .config=${this.config}></sonos-media-browser-header>
       ${this.entityId !== '' &&
       until(
         (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
@@ -75,11 +75,11 @@ export class MediaBrowser extends LitElement {
               const itemClick = async () => await this.onMediaItemClick(item);
               return html`
                 <mwc-list-item @click="${itemClick}" style="${this.mwcListItemStyle()}">
-                  <dev-sonos-media-list-item
+                  <sonos-media-list-item
                     .itemsWithImage="${itemsWithImage}"
                     .mediaItem="${item}"
                     .config="${this.config}"
-                  ></dev-sonos-media-list-item>
+                  ></sonos-media-list-item>
                 </mwc-list-item>
               `;
             })}

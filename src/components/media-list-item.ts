@@ -84,4 +84,4 @@ class MediaListItem extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-media-list-item', MediaListItem);
+customElements.define('sonos-media-list-item', MediaListItem);

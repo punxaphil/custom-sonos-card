@@ -41,8 +41,8 @@ window.customCards.push(
   },
 );
 
-customElements.define('dev-sonos-card', Card);
-customElements.define('dev-sonos-grouping', Grouping);
-customElements.define('dev-sonos-groups', Groups);
-customElements.define('dev-sonos-media-browser', MediaBrowser);
-customElements.define('dev-sonos-player', Player);
+customElements.define('sonos-card', Card);
+customElements.define('sonos-grouping', Grouping);
+customElements.define('sonos-groups', Groups);
+customElements.define('sonos-media-browser', MediaBrowser);
+customElements.define('sonos-player', Player);

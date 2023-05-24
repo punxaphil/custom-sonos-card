@@ -98,4 +98,4 @@ const convertProgress = (duration: number) => {
   return date.startsWith('00:') ? date.substring(3) : date;
 };
 
-customElements.define('dev-sonos-progress', Progress);
+customElements.define('sonos-progress', Progress);

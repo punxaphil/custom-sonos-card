@@ -27,7 +27,7 @@ class PlayerHeader extends LitElement {
       <div style="${this.entityStyle()}">${speakerList}</div>
       <div style="${this.songStyle()}">${song}</div>
       <div style="${this.artistAlbumStyle()}">${attributes.media_album_name}</div>
-      <dev-sonos-progress .store=${this.store}></dev-sonos-progress>
+      <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
   }
 
@@ -73,4 +73,4 @@ class PlayerHeader extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-player-header', PlayerHeader);
+customElements.define('sonos-player-header', PlayerHeader);

@@ -59,7 +59,7 @@ class PlayerControls extends LitElement {
           ${iconButton(mdiSkipNext, this.next, undefined)}
           ${iconButton(this.repeatIcon(), this.repeat, { additionalStyle: { marginLeft: '1rem' } })}
         </div>
-        <dev-sonos-volume .store=${this.store} .entityId=${this.entityId} .members=${this.members}></dev-sonos-volume>
+        <sonos-volume .store=${this.store} .entityId=${this.entityId} .members=${this.members}></sonos-volume>
       </div>
     `;
   }
@@ -96,4 +96,4 @@ class PlayerControls extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-player-controls', PlayerControls);
+customElements.define('sonos-player-controls', PlayerControls);

@@ -35,4 +35,4 @@ export function computeLabel(schema: { name: string; help: string }) {
   return unCamelCased + (schema.help ? ` (${schema.help})` : '');
 }
 
-customElements.define('dev-sonos-card-editor-form', Form);
+customElements.define('sonos-card-editor-form', Form);

@@ -45,15 +45,12 @@ class CardEditor extends BaseEditor {
 
   private subEditor() {
     return choose(this.configArea, [
-      [GENERAL, () => html`<dev-sonos-card-general-editor .store=${this.store}></dev-sonos-card-general-editor>`],
-      [ENTITIES, () => html`<dev-sonos-card-entities-editor .store=${this.store}></dev-sonos-card-entities-editor>`],
-      [ADVANCED, () => html`<dev-sonos-card-advanced-editor .store=${this.store}></dev-sonos-card-advanced-editor>`],
+      [GENERAL, () => html`<sonos-card-general-editor .store=${this.store}></sonos-card-general-editor>`],
+      [ENTITIES, () => html`<sonos-card-entities-editor .store=${this.store}></sonos-card-entities-editor>`],
+      [ADVANCED, () => html`<sonos-card-advanced-editor .store=${this.store}></sonos-card-advanced-editor>`],
       [
         ARTWORK,
-        () =>
-          html`<dev-sonos-card-artwork-overrides-editor
-            .store=${this.store}
-          ></dev-sonos-card-artwork-overrides-editor>`,
+        () => html`<sonos-card-artwork-overrides-editor .store=${this.store}></sonos-card-artwork-overrides-editor>`,
       ],
     ]);
   }
@@ -65,4 +62,4 @@ class CardEditor extends BaseEditor {
   }
 }
 
-customElements.define('dev-sonos-card-editor', CardEditor);
+customElements.define('sonos-card-editor', CardEditor);

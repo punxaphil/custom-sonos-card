@@ -92,4 +92,4 @@ function numberFromEvent(e: Event) {
   return Number.parseInt((e?.target as HTMLInputElement)?.value);
 }
 
-customElements.define('dev-sonos-volume', Volume);
+customElements.define('sonos-volume', Volume);

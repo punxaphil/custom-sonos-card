@@ -32,7 +32,7 @@ export const ADVANCED_SCHEMA = [
 class AdvancedEditor extends BaseEditor {
   protected render(): TemplateResult {
     return html`
-      <dev-sonos-card-editor-form .schema=${ADVANCED_SCHEMA} .store=${this.store}></dev-sonos-card-editor-form>
+      <sonos-card-editor-form .schema=${ADVANCED_SCHEMA} .store=${this.store}></sonos-card-editor-form>
       <p>
         The following needs to be configured using code (YAML): 
         <ul>
@@ -45,4 +45,4 @@ class AdvancedEditor extends BaseEditor {
   }
 }
 
-customElements.define('dev-sonos-card-advanced-editor', AdvancedEditor);
+customElements.define('sonos-card-advanced-editor', AdvancedEditor);

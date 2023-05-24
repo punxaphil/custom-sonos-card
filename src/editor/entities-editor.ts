@@ -30,13 +30,13 @@ class EntitiesEditor extends BaseEditor {
     const predefinedGroups = this.config.predefinedGroups;
 
     return this.editGroup > -1
-      ? html`<dev-sonos-card-predefined-group-editor
+      ? html`<sonos-card-predefined-group-editor
           .index=${this.editGroup}
           .store=${this.store}
           @closed=${() => (this.editGroup = -1)}
-        ></dev-sonos-card-predefined-group-editor>`
+        ></sonos-card-predefined-group-editor>`
       : html`
-          <dev-sonos-card-editor-form .schema=${ENTITIES_SCHEMA} .store=${this.store}></dev-sonos-card-editor-form>
+          <sonos-card-editor-form .schema=${ENTITIES_SCHEMA} .store=${this.store}></sonos-card-editor-form>
           <div>
             Predefined Groups
             <ha-control-button-group>
@@ -55,13 +55,10 @@ class EntitiesEditor extends BaseEditor {
 
           <div>
             Entity Renaming
-            <dev-sonos-card-editor-form
-              .schema=${ENTITIES_RENAME_SCHEMA}
-              .store=${this.store}
-            ></dev-sonos-card-editor-form>
+            <sonos-card-editor-form .schema=${ENTITIES_RENAME_SCHEMA} .store=${this.store}></sonos-card-editor-form>
           </div>
         `;
   }
 }
 
-customElements.define('dev-sonos-card-entities-editor', EntitiesEditor);
+customElements.define('sonos-card-entities-editor', EntitiesEditor);

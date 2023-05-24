@@ -26,12 +26,12 @@ class ArtworkOverrideEditor extends BaseEditor {
     ];
     return html`
       Add/Edit Artwork Override
-      <dev-sonos-card-editor-form
+      <sonos-card-editor-form
         .data=${artworkOverride || newOverride}
         .schema=${schema}
         .store=${this.store}
         .changed=${(ev: CustomEvent) => this.changed(ev, this.index)}
-      ></dev-sonos-card-editor-form>
+      ></sonos-card-editor-form>
       <ha-control-button-group>
         <ha-control-button @click="${this.dispatchClose}">
           OK<ha-svg-icon .path=${mdiCheck} label="OK"></ha-svg-icon>
@@ -70,4 +70,4 @@ class ArtworkOverrideEditor extends BaseEditor {
   }
 }
 
-customElements.define('dev-sonos-card-artwork-override-editor', ArtworkOverrideEditor);
+customElements.define('sonos-card-artwork-override-editor', ArtworkOverrideEditor);

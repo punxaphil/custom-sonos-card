@@ -29,10 +29,8 @@ export const GENERAL_SCHEMA = [
 
 class GeneralEditor extends BaseEditor {
   protected render(): TemplateResult {
-    return html`
-      <dev-sonos-card-editor-form .schema=${GENERAL_SCHEMA} .store=${this.store}></dev-sonos-card-editor-form>
-    `;
+    return html` <sonos-card-editor-form .schema=${GENERAL_SCHEMA} .store=${this.store}></sonos-card-editor-form> `;
   }
 }
 
-customElements.define('dev-sonos-card-general-editor', GeneralEditor);
+customElements.define('sonos-card-general-editor', GeneralEditor);

@@ -10,4 +10,4 @@ class CustomSourceEditor extends BaseEditor {
   }
 }
 
-customElements.define('dev-sonos-card-custom-source-editor', CustomSourceEditor);
+customElements.define('sonos-card-custom-source-editor', CustomSourceEditor);

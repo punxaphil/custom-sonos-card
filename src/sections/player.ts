@@ -22,9 +22,9 @@ export class Player extends LitElement {
     ({ config: this.config, entity: this.entity, entityId: this.entityId } = this.store);
     return html`
       <div style="${this.bodyStyle()}">
-        <dev-sonos-player-header .store=${this.store}></dev-sonos-player-header>
+        <sonos-player-header .store=${this.store}></sonos-player-header>
         <div style="${this.artworkStyle()}"></div>
-        <dev-sonos-player-controls style="overflow-y:auto" .store=${this.store}></dev-sonos-player-controls>
+        <sonos-player-controls style="overflow-y:auto" .store=${this.store}></sonos-player-controls>
       </div>
     `;
   }

@@ -131,4 +131,4 @@ class Group extends LitElement {
   }
 }
 
-customElements.define('dev-sonos-group', Group);
+customElements.define('sonos-group', Group);

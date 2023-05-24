@@ -26,12 +26,12 @@ class PredefinedGroupEditor extends BaseEditor {
     ];
     return html`
       Add/Edit Predefined Group
-      <dev-sonos-card-editor-form
+      <sonos-card-editor-form
         .data=${predefinedGroup}
         .schema=${schema}
         .store=${this.store}
         .changed=${(ev: CustomEvent) => this.groupChanged(ev, this.index)}
-      ></dev-sonos-card-editor-form>
+      ></sonos-card-editor-form>
       <ha-control-button-group>
         <ha-control-button @click="${this.dispatchClose}">
           OK<ha-svg-icon .path=${mdiCheck} label="OK"></ha-svg-icon>
@@ -68,4 +68,4 @@ class PredefinedGroupEditor extends BaseEditor {
   }
 }
 
-customElements.define('dev-sonos-card-predefined-group-editor', PredefinedGroupEditor);
+customElements.define('sonos-card-predefined-group-editor', PredefinedGroupEditor);

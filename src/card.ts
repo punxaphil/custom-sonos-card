@@ -39,22 +39,22 @@ export class Card extends LitElement {
         <div style="${this.contentStyle(contentHeight)}">
           ${title ? html`<div style="${this.titleStyle()}">${title}</div>` : html``}
           ${choose(this.section, [
-            [PLAYER, () => html` <dev-sonos-player .store=${this.store}></dev-sonos-player>`],
-            [GROUPS, () => html` <dev-sonos-groups .store=${this.store}></dev-sonos-groups>`],
-            [GROUPING, () => html`<dev-sonos-grouping .store=${this.store}></dev-sonos-grouping>`],
-            [MEDIA_BROWSER, () => html` <dev-sonos-media-browser .store=${this.store}></dev-sonos-media-browser>`],
-            [VOLUMES, () => html` <dev-sonos-volumes .store=${this.store}></dev-sonos-volumes>`],
+            [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
+            [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
+            [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
+            [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
+            [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
           ])}
         </div>
         ${when(
           showFooter,
           () =>
-            html`<dev-sonos-footer
+            html`<sonos-footer
               style=${this.headerStyle(footerHeight)}
               .config="${this.config}"
               .section="${this.section}"
             >
-            </dev-sonos-footer>`,
+            </sonos-footer>`,
         )}
       </ha-card>
     `;
@@ -65,7 +65,7 @@ export class Card extends LitElement {
   }
 
   static getConfigElement() {
-    return document.createElement('dev-sonos-card-editor');
+    return document.createElement('sonos-card-editor');
   }
 
   connectedCallback() {

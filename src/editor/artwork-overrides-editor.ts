@@ -11,11 +11,11 @@ class ArtworkOverridesEditor extends BaseEditor {
     const items = this.config.mediaArtworkOverrides;
 
     return this.editItem > -1
-      ? html`<dev-sonos-card-artwork-override-editor
+      ? html`<sonos-card-artwork-override-editor
           .index=${this.editItem}
           .store=${this.store}
           @closed=${() => (this.editItem = -1)}
-        ></dev-sonos-card-artwork-override-editor>`
+        ></sonos-card-artwork-override-editor>`
       : html`
           <div>
             Artwork Overrides
@@ -38,4 +38,4 @@ class ArtworkOverridesEditor extends BaseEditor {
   }
 }
 
-customElements.define('dev-sonos-card-artwork-overrides-editor', ArtworkOverridesEditor);
+customElements.define('sonos-card-artwork-overrides-editor', ArtworkOverridesEditor);
