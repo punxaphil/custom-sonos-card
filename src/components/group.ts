@@ -66,7 +66,7 @@ class Group extends LitElement {
         @click="${() => this.handleGroupClicked()}"
       >
         <span style="${this.speakersStyle()}">${speakerList}</span>
-        <span slot="secondary">${currentTrack}</span>
+        <span slot="secondary" style="${this.songTitleStyle()}">${currentTrack}</span>
 
         ${when(
           isPlaying(this.group.state),
@@ -83,7 +83,18 @@ class Group extends LitElement {
   }
 
   private speakersStyle() {
-    return styleMap({ whiteSpace: 'initial' });
+    return styleMap({
+      whiteSpace: 'initial',
+      fontSize: '1.1rem',
+      fontWeight: 'bold',
+      color: 'var(--secondary-text-color)',
+    });
+  }
+  private songTitleStyle() {
+    return styleMap({
+      fontSize: '0.9rem',
+      fontWeight: 'bold',
+    });
   }
 
   private static barStyle(order: number) {

@@ -36,12 +36,6 @@ class Volumes extends LitElement {
   }
 
   private volumeWithName(entityId: string, name: string, members?: Members) {
-    const switchesStyle = styleMap({
-      display: 'flex',
-      justifyContent: 'center',
-      gap: '1rem',
-      marginBottom: '1rem',
-    });
     return html` <div class="wrapper">
       <div style="${this.volumeNameStyle()}">
         <div style="${this.volumeNameTextStyle()}">${name}</div>
@@ -60,10 +54,19 @@ class Volumes extends LitElement {
           }),
         )}
       </div>
-      <div style="${switchesStyle}">
+      <div style="${this.switchesStyle()}">
         ${when(!members && this.showSwitches[entityId], () => until(this.getAdditionalSwitches(entityId)))}
       </div>
     </div>`;
+  }
+
+  private switchesStyle() {
+    return styleMap({
+      display: 'flex',
+      justifyContent: 'center',
+      gap: '1rem',
+      marginBottom: '1rem',
+    });
   }
 
   private volumeNameStyle() {
@@ -81,6 +84,8 @@ class Volumes extends LitElement {
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
+      fontSize: '1.1rem',
+      fontWeight: 'bold',
     });
   }
 
