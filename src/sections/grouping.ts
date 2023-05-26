@@ -7,6 +7,7 @@ import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
 import { getEntityName, listenForEntityId, listStyle, stopListeningForEntityId } from '../utils';
 import { getButton } from '../components/button';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 export class Grouping extends LitElement {
   @property() store!: Store;
@@ -70,7 +71,7 @@ export class Grouping extends LitElement {
               <ha-icon
                 .icon="${groupingItem.isMember ? 'mdi:checkbox-marked-outline' : 'mdi:checkbox-blank-outline'}"
               ></ha-icon>
-              <span>${groupingItem.name}</span>
+              <span style=${itemStyle()}>${groupingItem.name}</span>
             </mwc-list-item>`;
           })}
       </mwc-list>
@@ -106,14 +107,19 @@ export class Grouping extends LitElement {
   }
 
   static get styles() {
-    return [
-      css`
-        .buttons {
-          margin: 0.5rem 0.5rem 1rem;
-        }
-      `,
-    ];
+    return css`
+      .buttons {
+        margin: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+    `;
   }
+}
+
+function itemStyle() {
+  return styleMap({ color: 'var(--secondary-text-color)', fontWeight: 'bold' });
 }
 
 interface GroupingItem {

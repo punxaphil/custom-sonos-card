@@ -3,36 +3,25 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 
 export function getButton(click: () => void, icon: string, name: string) {
   return html`
-    <mwc-button @click="${click}" style="${buttonStyle()}" outlined>
-      ${name ? html`<span style="${buttonNameStyle()}">${name}</span>` : ''}
-      <ha-icon .icon=${icon} style="${buttonIconStyle()}"></ha-icon>
-    </mwc-button>
+    <ha-control-button @click="${click}" style=${buttonStyle()}>
+      <ha-icon .icon=${icon} style=${iconStyle()}></ha-icon>
+      ${name ? html`<span style=${textStyle()}>${name}</span>` : ''}
+    </ha-control-button>
   `;
 }
 
 function buttonStyle() {
   return styleMap({
-    borderRadius: '0.25rem',
-    margin: '0.5rem 0 0 0.5rem',
-    justifyContent: 'center',
-    '--mdc-button-outline-width': '2px',
-    '--mdc-button-outline-color': 'var(--accent-color)',
-    '--mdc-theme-primary': 'var(--accent-color)',
+    width: 'fit-content',
+    '--control-button-background-color': 'var(--accent-color)',
+    '--control-button-icon-color': 'var(--secondary-text-color)',
   });
 }
 
-function buttonNameStyle() {
-  return styleMap({
-    alignSelf: 'center',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  });
+function iconStyle() {
+  return styleMap({ padding: '1rem' });
 }
 
-function buttonIconStyle() {
-  return styleMap({
-    alignSelf: 'center',
-    '--mdc-icon-size': '20px',
-    paddingLeft: '0.1rem',
-  });
+function textStyle() {
+  return styleMap({ paddingRight: '1rem', fontWeight: 'bold' });
 }
