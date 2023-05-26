@@ -40,7 +40,7 @@ jobs:
           npm run build
 
       - name: Upload to release
-        uses: svenstaro/upload-release-action@2
+        uses: svenstaro/upload-release-action@v2
 
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
