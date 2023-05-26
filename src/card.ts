@@ -104,10 +104,12 @@ export class Card extends LitElement {
   }
 
   entityIdListener = (event: Event) => {
-    const newEntityId = (event as CustomEvent).detail.entityId;
-    if (newEntityId !== this.store.entityId) {
-      this.store.updateEntity(newEntityId);
-      this.requestUpdate();
+    if (this.store) {
+      const newEntityId = (event as CustomEvent).detail.entityId;
+      if (newEntityId !== this.store.entityId) {
+        this.store.updateEntity(newEntityId);
+        this.requestUpdate();
+      }
     }
   };
 

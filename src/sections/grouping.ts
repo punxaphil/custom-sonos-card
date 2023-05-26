@@ -20,6 +20,7 @@ export class Grouping extends LitElement {
 
   entityIdListener = (event: Event) => {
     this.entityId = (event as CustomEvent).detail.entityId;
+    this.requestUpdate();
   };
 
   connectedCallback() {
@@ -64,12 +65,12 @@ export class Grouping extends LitElement {
           .map((entity) => this.getGroupingItem(entity))
           .map((groupingItem) => {
             return html`<mwc-list-item
-              ?activated="${groupingItem.isMember}"
-              ?disabled="${groupingItem.isMain}"
-              @click="${!groupingItem.isMain && this.itemClickAction(groupingItem)}"
+              ?activated="${groupingItem.isSelected}"
+              ?disabled="${groupingItem.isSelected && !groupingItem.isGrouped}"
+              @click="${async () => await this.itemClickAction(groupingItem)}"
             >
               <ha-icon
-                .icon="${groupingItem.isMember ? 'mdi:checkbox-marked-outline' : 'mdi:checkbox-blank-outline'}"
+                .icon="${groupingItem.isSelected ? 'mdi:checkbox-marked-outline' : 'mdi:checkbox-blank-outline'}"
               ></ha-icon>
               <span style=${itemStyle()}>${groupingItem.name}</span>
             </mwc-list-item>`;
@@ -80,20 +81,19 @@ export class Grouping extends LitElement {
 
   private getGroupingItem(entity: string): GroupingItem {
     const isMain = entity === this.entityId;
+    const members = this.groups[this.entityId].members;
     return {
-      isMain,
-      isMember: isMain || !!this.groups[this.entityId].members[entity],
+      isSelected: isMain || members[entity] !== undefined,
+      isGrouped: Object.keys(members).length > 0,
       name: getEntityName(this.hass, this.config, entity),
       entity: entity,
     };
   }
-  private itemClickAction({ isMain, isMember, entity }: GroupingItem) {
-    if (isMain) {
-      return async () => await this.mediaControlService.unjoin([entity]);
-    } else if (isMember) {
-      return async () => await this.mediaControlService.unjoin([entity]);
+  private async itemClickAction({ isSelected, entity }: GroupingItem) {
+    if (isSelected) {
+      await this.mediaControlService.unjoin([entity]);
     } else {
-      return async () => await this.mediaControlService.join(this.entityId, [entity]);
+      await this.mediaControlService.join(this.entityId, [entity]);
     }
   }
 
@@ -123,8 +123,8 @@ function itemStyle() {
 }
 
 interface GroupingItem {
-  isMain: boolean;
-  isMember: boolean;
+  isSelected: boolean;
+  isGrouped: boolean;
   name: string;
   entity: string;
 }

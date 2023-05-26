@@ -6,6 +6,7 @@ import { when } from 'lit/directives/when.js';
 import Store from '../store';
 import { CardConfig, PlayerGroup, Section } from '../types';
 import {
+  dispatchActiveEntity,
   dispatchShowSection,
   getCurrentTrack,
   getSpeakerList,
@@ -15,7 +16,6 @@ import {
   stopListeningForEntityId,
   stopListeningForPlayerRequest,
 } from '../utils';
-import { ACTIVE_PLAYER_EVENT } from '../constants';
 
 class Group extends LitElement {
   @property() store!: Store;
@@ -42,12 +42,8 @@ class Group extends LitElement {
 
   dispatchEntityIdEvent = () => {
     if (this.selected) {
-      const event = new CustomEvent(ACTIVE_PLAYER_EVENT, {
-        bubbles: true,
-        composed: true,
-        detail: { entityId: this.group.entity },
-      });
-      window.dispatchEvent(event);
+      const entityId = this.group.entity;
+      dispatchActiveEntity(entityId);
     }
   };
 

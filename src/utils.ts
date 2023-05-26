@@ -65,3 +65,12 @@ export function listStyle() {
 export function getSpeakerList(group: PlayerGroup) {
   return [group.roomName, ...Object.values(group.members)].join(' + ');
 }
+
+export function dispatchActiveEntity(entityId: string) {
+  const event = new CustomEvent(ACTIVE_PLAYER_EVENT, {
+    bubbles: true,
+    composed: true,
+    detail: { entityId },
+  });
+  window.dispatchEvent(event);
+}
