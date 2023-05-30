@@ -25,6 +25,14 @@ export const GENERAL_SCHEMA = [
     valueMin: 50,
     valueMax: 100,
   },
+  {
+    type: 'integer',
+    name: 'heightPercentage',
+    default: 100,
+    required: true,
+    valueMin: 50,
+    valueMax: 100,
+  },
 ];
 
 class GeneralEditor extends BaseEditor {

@@ -25,6 +25,7 @@ export interface CardConfig extends LovelaceCardConfig {
   entityNameReplacement?: string;
   artworkHostname?: string;
   widthPercentage?: number;
+  heightPercentage?: number;
   shuffleFavorites?: boolean;
   hideGroupCurrentTrack: boolean;
   dynamicVolumeSlider: boolean;

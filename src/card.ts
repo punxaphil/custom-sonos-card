@@ -24,7 +24,7 @@ export class Card extends LitElement {
 
   render() {
     this.store = new Store(this.hass, this.config);
-    const height = 40;
+    const height = getWidthOrHeight(this.config.heightPercentage);
     const footerHeight = 5;
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
@@ -119,15 +119,7 @@ export class Card extends LitElement {
   }
 
   haCardStyle(height: number) {
-    const confWidth = this.config.widthPercentage;
-    let width = 40;
-    if (confWidth) {
-      if (confWidth < 50 || confWidth > 100) {
-        console.error('widthPercentage must be between 50 and 100');
-      } else {
-        width = (confWidth / 100) * width;
-      }
-    }
+    const width = getWidthOrHeight(this.config.widthPercentage);
     return styleMap({
       color: 'var(--secondary-text-color)',
       height: `${height}rem`,
@@ -190,4 +182,16 @@ export class Card extends LitElement {
       `,
     ];
   }
+}
+
+function getWidthOrHeight(confValue?: number) {
+  const defaultValue = 40;
+  if (confValue) {
+    if (confValue < 50 || confValue > 100) {
+      console.error('width/height percentage must be between 50 and 100');
+    } else {
+      return (confValue / 100) * defaultValue;
+    }
+  }
+  return defaultValue;
 }
