@@ -52,25 +52,29 @@ class Group extends LitElement {
     const currentTrack = this.config.hideGroupCurrentTrack ? '' : getCurrentTrack(this.hass.states[this.group.entity]);
     const speakerList = getSpeakerList(this.group);
     this.dispatchEntityIdEvent();
+    const icon = this.hass.states[this.group.entity].attributes.icon;
     return html`
       <mwc-list-item
-        twoline
         hasMeta
-        divider
         ?selected="${this.selected}"
         ?activated="${this.selected}"
         @click="${() => this.handleGroupClicked()}"
       >
-        <span style="${this.speakersStyle()}">${speakerList}</span>
-        <span slot="secondary" style="${this.songTitleStyle()}">${currentTrack}</span>
+        <div style=${wrapperStyle()}>
+          <ha-icon .icon=${icon} style=${iconStyle()} ?hidden=${!icon}></ha-icon>
+          <div style=${textStyle()}>
+            <span style="${this.speakersStyle()}">${speakerList}</span>
+            <span style="${this.songTitleStyle()}">${currentTrack}</span>
+          </div>
+        </div>
 
         ${when(
           isPlaying(this.group.state),
           () => html`
-            <div style="width: 0.55rem; position: relative;" slot="meta">
-              <div style="${Group.barStyle(1)}"></div>
-              <div style="${Group.barStyle(2)}"></div>
-              <div style="${Group.barStyle(3)}"></div>
+            <div style=${barsStyle()} slot="meta">
+              <div style="${barStyle(1)}"></div>
+              <div style="${barStyle(2)}"></div>
+              <div style="${barStyle(3)}"></div>
             </div>
           `,
         )}
@@ -90,20 +94,6 @@ class Group extends LitElement {
     return styleMap({
       fontSize: '0.9rem',
       fontWeight: 'bold',
-    });
-  }
-
-  private static barStyle(order: number) {
-    return styleMap({
-      background: 'var(--secondary-text-color)',
-      bottom: '0.05rem',
-      height: '0.15rem',
-      position: 'absolute',
-      width: '0.15rem',
-      animation: 'sound 0ms -800ms linear infinite alternate',
-      display: 'block',
-      left: order == 1 ? '0.05rem' : order == 2 ? '0.25rem' : '0.45rem',
-      animationDuration: order == 1 ? '474ms' : order == 2 ? '433ms' : '407ms',
     });
   }
 
@@ -131,11 +121,41 @@ class Group extends LitElement {
       }
       mwc-list-item {
         height: fit-content;
-        padding-bottom: 1rem;
-        padding-top: 0;
+        margin: 1rem;
+        border-radius: 1rem;
+        background: var(--secondary-background-color);
       }
     `;
   }
+}
+
+function wrapperStyle() {
+  return styleMap({ display: 'flex', margin: '1rem 0' });
+}
+
+function iconStyle() {
+  return styleMap({ '--mdc-icon-size': '3rem', marginRight: '1rem' });
+}
+function textStyle() {
+  return styleMap({ display: 'flex', flexDirection: 'column', justifyContent: 'center' });
+}
+
+function barsStyle() {
+  return styleMap({ width: '0.55rem', position: 'relative', marginLeft: '1rem' });
+}
+
+function barStyle(order: number) {
+  return styleMap({
+    background: 'var(--secondary-text-color)',
+    bottom: '0.05rem',
+    height: '0.15rem',
+    position: 'absolute',
+    width: '0.15rem',
+    animation: 'sound 0ms -800ms linear infinite alternate',
+    display: 'block',
+    left: order == 1 ? '0.05rem' : order == 2 ? '0.25rem' : '0.45rem',
+    animationDuration: order == 1 ? '474ms' : order == 2 ? '433ms' : '407ms',
+  });
 }
 
 customElements.define('sonos-group', Group);
