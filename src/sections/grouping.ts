@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
@@ -49,7 +49,7 @@ export class Grouping extends LitElement {
       (player) => player !== this.entityId && !this.groups[this.entityId].members[player],
     );
     return html`
-      <div class="buttons">
+      <div style=${buttonsStyle()}>
         ${when(notJoinedPlayers.length, () => {
           const click = async () => await this.mediaControlService.join(this.entityId, notJoinedPlayers);
           return getButton(click, 'mdi:checkbox-multiple-marked-outline', '');
@@ -105,17 +105,16 @@ export class Grouping extends LitElement {
         return getButton(click, 'mdi:speaker-multiple', group.name);
       });
   }
+}
 
-  static get styles() {
-    return css`
-      .buttons {
-        margin: 1rem;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-    `;
-  }
+function buttonsStyle() {
+  return styleMap({
+    margin: '1rem',
+    display: ' flex',
+    flexWrap: 'wrap',
+    gap: '1rem',
+    justifyContent: 'center',
+  });
 }
 
 function itemStyle() {
