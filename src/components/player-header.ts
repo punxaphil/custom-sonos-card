@@ -17,9 +17,7 @@ class PlayerHeader extends LitElement {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     const attributes = this.entity.attributes;
     const speakerList = getSpeakerList(this.store.groups[this.entity.entity_id]);
-    let song = this.config.labelWhenNoMediaIsSelected
-      ? this.config.labelWhenNoMediaIsSelected
-      : '🎺 What do you want to play? 🥁';
+    let song = this.config.labelWhenNoMediaIsSelected ? this.config.labelWhenNoMediaIsSelected : 'No media selected';
     if (attributes.media_title) {
       song = getCurrentTrack(this.entity);
     }
@@ -43,21 +41,10 @@ class PlayerHeader extends LitElement {
     return styleMap({
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      fontSize: '0.75rem',
+      fontSize: '1rem',
       fontWeight: '500',
       color: 'var(--secondary-text-color)',
-      whiteSpace: 'wrap',
-    });
-  }
-
-  private artistAlbumStyle() {
-    return styleMap({
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      fontSize: '0.75rem',
-      fontWeight: '300',
-      color: 'var(--secondary-text-color)',
-      whiteSpace: 'wrap',
+      whiteSpace: 'nowrap',
     });
   }
 
@@ -68,6 +55,17 @@ class PlayerHeader extends LitElement {
       fontSize: '1.15rem',
       fontWeight: '400',
       color: 'var(--accent-color)',
+      whiteSpace: 'wrap',
+    });
+  }
+
+  private artistAlbumStyle() {
+    return styleMap({
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      fontSize: '1rem',
+      fontWeight: '300',
+      color: 'var(--secondary-text-color)',
       whiteSpace: 'wrap',
     });
   }
