@@ -62,7 +62,18 @@ export function listStyle() {
   });
 }
 
-export function getSpeakerList(group: PlayerGroup) {
+export function getSpeakerList(group: PlayerGroup, config: CardConfig) {
+  const entities = [group.entity, ...Object.keys(group.members)].sort();
+  console.log(entities.toString());
+  if (config.predefinedGroups?.length) {
+    const found = config.predefinedGroups.find((pg) => {
+      console.log('in find', pg.entities.sort().toString());
+      return pg.entities.sort().toString() === entities.toString();
+    });
+    if (found) {
+      return found.name;
+    }
+  }
   return [group.roomName, ...Object.values(group.members)].join(' + ');
 }
 
