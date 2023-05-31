@@ -16,7 +16,6 @@ class PlayerHeader extends LitElement {
   render() {
     ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
     const attributes = this.entity.attributes;
-    console.log('header');
     const speakerList = getSpeakerList(this.store.groups[this.entity.entity_id], this.config);
     let song = this.config.labelWhenNoMediaIsSelected ? this.config.labelWhenNoMediaIsSelected : 'No media selected';
     if (attributes.media_title) {

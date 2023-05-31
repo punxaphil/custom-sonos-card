@@ -4,10 +4,15 @@ import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import Store from './store';
 import { CardConfig, Section } from './types';
-import { listenForEntityId, stopListeningForEntityId } from './utils';
 import './components/footer';
 import './editor/editor';
-import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED, SHOW_SECTION } from './constants';
+import {
+  ACTIVE_PLAYER_EVENT,
+  CALL_MEDIA_DONE,
+  CALL_MEDIA_STARTED,
+  REQUEST_PLAYER_EVENT,
+  SHOW_SECTION,
+} from './constants';
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
@@ -21,16 +26,15 @@ export class Card extends LitElement {
   @state() showLoader!: boolean;
   @state() loaderTimestamp!: number;
   @state() cancelLoader!: boolean;
-
+  @state() entityId!: string;
   render() {
-    this.store = new Store(this.hass, this.config);
+    this.createStore();
     const height = getWidthOrHeight(this.config.heightPercentage);
     const footerHeight = 5;
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
     const contentHeight = showFooter ? height - footerHeight : height;
     const title = this.config.title;
-
     return html`
       <ha-card style="${this.haCardStyle(height)}">
         <div class="loader" ?hidden="${!this.showLoader}">
@@ -59,7 +63,14 @@ export class Card extends LitElement {
       </ha-card>
     `;
   }
-
+  private createStore() {
+    if (this.entityId) {
+      this.store = new Store(this.hass, this.config, this.entityId);
+    } else {
+      this.store = new Store(this.hass, this.config);
+      this.entityId = this.store.entityId;
+    }
+  }
   getCardSize() {
     return 3;
   }
@@ -70,53 +81,58 @@ export class Card extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener(SHOW_SECTION, (event: Event) => {
-      const section = (event as CustomEvent).detail;
-      if (!this.config.sections || this.config.sections.indexOf(section) > -1) {
-        this.section = section;
-      }
-    });
-
-    window.addEventListener(CALL_MEDIA_STARTED, (event: Event) => {
-      if (!this.showLoader && (!this.config.sections || (event as CustomEvent).detail.section === this.section)) {
-        this.cancelLoader = false;
-        setTimeout(() => {
-          if (!this.cancelLoader) {
-            this.showLoader = true;
-            this.loaderTimestamp = Date.now();
-          }
-        }, 300);
-      }
-    });
-    window.addEventListener(CALL_MEDIA_DONE, () => {
-      this.cancelLoader = true;
-      const duration = Date.now() - this.loaderTimestamp;
-      if (this.showLoader) {
-        if (duration < 1000) {
-          setTimeout(() => (this.showLoader = false), 1000 - duration);
-        } else {
-          this.showLoader = false;
-        }
-      }
-    });
-
+    window.addEventListener(SHOW_SECTION, this.showSectionListener);
+    window.addEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
+    window.addEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
     listenForEntityId(this.entityIdListener);
   }
 
-  entityIdListener = (event: Event) => {
-    if (this.store) {
-      const newEntityId = (event as CustomEvent).detail.entityId;
-      if (newEntityId !== this.store.entityId) {
-        this.store.updateEntity(newEntityId);
-        this.requestUpdate();
+  disconnectedCallback() {
+    window.removeEventListener(SHOW_SECTION, this.showSectionListener);
+    window.removeEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
+    window.removeEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
+    stopListeningForEntityId(this.entityIdListener);
+    super.disconnectedCallback();
+  }
+
+  private showSectionListener = (event: Event) => {
+    const section = (event as CustomEvent).detail;
+    if (!this.config.sections || this.config.sections.indexOf(section) > -1) {
+      this.section = section;
+    }
+  };
+
+  private callMediaStartedListener = (event: Event) => {
+    if (!this.showLoader && (!this.config.sections || (event as CustomEvent).detail.section === this.section)) {
+      this.cancelLoader = false;
+      setTimeout(() => {
+        if (!this.cancelLoader) {
+          this.showLoader = true;
+          this.loaderTimestamp = Date.now();
+        }
+      }, 300);
+    }
+  };
+
+  private callMediaDoneListener = () => {
+    this.cancelLoader = true;
+    const duration = Date.now() - this.loaderTimestamp;
+    if (this.showLoader) {
+      if (duration < 1000) {
+        setTimeout(() => (this.showLoader = false), 1000 - duration);
+      } else {
+        this.showLoader = false;
       }
     }
   };
 
-  disconnectedCallback() {
-    stopListeningForEntityId(this.entityIdListener);
-    super.disconnectedCallback();
-  }
+  entityIdListener = (event: Event) => {
+    const newEntityId = (event as CustomEvent).detail.entityId;
+    if (newEntityId !== this.entityId) {
+      this.entityId = newEntityId;
+      this.requestUpdate();
+    }
+  };
 
   haCardStyle(height: number) {
     const width = getWidthOrHeight(this.config.widthPercentage);
@@ -182,6 +198,16 @@ export class Card extends LitElement {
       `,
     ];
   }
+}
+
+function listenForEntityId(listener: EventListener) {
+  window.addEventListener(ACTIVE_PLAYER_EVENT, listener);
+  const event = new CustomEvent(REQUEST_PLAYER_EVENT, { bubbles: true, composed: true });
+  window.dispatchEvent(event);
+}
+
+function stopListeningForEntityId(listener: EventListener) {
+  window.removeEventListener(ACTIVE_PLAYER_EVENT, listener);
 }
 
 function getWidthOrHeight(confValue?: number) {

@@ -16,16 +16,6 @@ export function getGroupMembers(state: HassEntity) {
   return state.attributes.sonos_group || state.attributes.group_members;
 }
 
-export function listenForEntityId(listener: EventListener) {
-  window.addEventListener(ACTIVE_PLAYER_EVENT, listener);
-  const event = new CustomEvent(REQUEST_PLAYER_EVENT, { bubbles: true, composed: true });
-  window.dispatchEvent(event);
-}
-
-export function stopListeningForEntityId(listener: EventListener) {
-  window.removeEventListener(ACTIVE_PLAYER_EVENT, listener);
-}
-
 export function listenForPlayerRequest(listener: EventListener) {
   window.addEventListener(REQUEST_PLAYER_EVENT, listener);
 }
@@ -64,10 +54,8 @@ export function listStyle() {
 
 export function getSpeakerList(group: PlayerGroup, config: CardConfig) {
   const entities = [group.entity, ...Object.keys(group.members)].sort();
-  console.log(entities.toString());
   if (config.predefinedGroups?.length) {
     const found = config.predefinedGroups.find((pg) => {
-      console.log('in find', pg.entities.sort().toString());
       return pg.entities.sort().toString() === entities.toString();
     });
     if (found) {

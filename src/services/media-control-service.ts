@@ -1,7 +1,7 @@
 import { MediaPlayerItem, Members, PlayerGroup, PlayerGroups } from '../types';
 import HassService from './hass-service';
 import { HomeAssistant } from 'custom-card-helpers';
-import { isPlaying } from '../utils';
+import { dispatchActiveEntity, isPlaying } from '../utils';
 
 export default class MediaControlService {
   private hassService: HassService;
@@ -39,7 +39,9 @@ export default class MediaControlService {
     if (candidateGroup) {
       await this.modifyExistingGroup(candidateGroup, toBeGrouped);
     } else {
-      await this.join(toBeGrouped[0], toBeGrouped);
+      const master = toBeGrouped[0];
+      dispatchActiveEntity(master);
+      await this.join(master, toBeGrouped);
     }
   }
 
@@ -49,6 +51,7 @@ export default class MediaControlService {
     if (membersNotToBeGrouped?.length) {
       await this.unjoin(membersNotToBeGrouped);
     }
+    dispatchActiveEntity(group.entity);
     await this.join(group.entity, toBeGrouped);
   }
 

@@ -17,25 +17,19 @@ export default class Store {
   public mediaPlayers: string[];
   public mediaBrowseService: MediaBrowseService;
 
-  constructor(hass: HomeAssistant, config: CardConfig) {
+  constructor(hass: HomeAssistant, config: CardConfig, entityId?: string) {
     this.hass = hass;
     this.config = config;
     this.mediaPlayers = this.getMediaPlayers();
     this.groups = this.createPlayerGroups(this.mediaPlayers);
-    const entityId = this.determineEntityId(this.groups);
-    this.updateEntity(entityId);
+    this.entityId = entityId || this.determineEntityId(this.groups);
+    this.entity = this.hass.states[this.entityId];
     const section = this.config.sections?.[0];
     this.hassService = new HassService(this.hass, section);
     this.mediaControlService = new MediaControlService(this.hass, this.hassService);
     this.mediaBrowseService = new MediaBrowseService(this.hass, this.hassService);
   }
-
-  public updateEntity(entityId: string) {
-    this.entityId = entityId;
-    this.entity = this.hass.states[this.entityId];
-  }
-
-  getMediaPlayers() {
+  private getMediaPlayers() {
     if (this.config.entities) {
       return [...new Set(this.config.entities)].filter((player) => this.hass.states[player]);
     } else {
@@ -46,13 +40,13 @@ export default class Store {
     }
   }
 
-  createPlayerGroups(mediaPlayers: string[]): PlayerGroups {
+  private createPlayerGroups(mediaPlayers: string[]): PlayerGroups {
     const groupMasters = mediaPlayers.filter((player) => this.createGroupMasters(player, mediaPlayers));
     const groupArray = groupMasters.map((groupMaster) => this.createGroupArray(groupMaster, mediaPlayers));
     return Object.fromEntries(groupArray.map((group) => [group.entity, group]));
   }
 
-  createGroupMasters(player: string, mediaPlayers: string[]) {
+  private createGroupMasters(player: string, mediaPlayers: string[]) {
     const state = this.hass.states[player];
     try {
       const sonosGroup = getGroupMembers(state).filter((member: string) => mediaPlayers.indexOf(member) > -1);
@@ -65,7 +59,7 @@ export default class Store {
     }
   }
 
-  createGroupArray(groupMaster: string, mediaPlayers: string[]) {
+  private createGroupArray(groupMaster: string, mediaPlayers: string[]) {
     const state = this.hass.states[groupMaster];
     try {
       const membersArray = getGroupMembers(state).filter((member: string) => {
@@ -83,7 +77,7 @@ export default class Store {
     }
   }
 
-  createGroupMembers(membersArray: string[]) {
+  private createGroupMembers(membersArray: string[]) {
     return Object.fromEntries(
       membersArray.map((member: string) => {
         const friendlyName = getEntityName(this.hass, this.config, member);
@@ -92,7 +86,7 @@ export default class Store {
     );
   }
 
-  determineEntityId(playerGroups: PlayerGroups) {
+  private determineEntityId(playerGroups: PlayerGroups) {
     const entityId = window.location.href.indexOf('#') > 0 ? window.location.href.replace(/.*#/g, '') : '';
     let result;
     for (const player in playerGroups) {

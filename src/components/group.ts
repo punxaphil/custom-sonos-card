@@ -11,9 +11,7 @@ import {
   getCurrentTrack,
   getSpeakerList,
   isPlaying,
-  listenForEntityId,
   listenForPlayerRequest,
-  stopListeningForEntityId,
   stopListeningForPlayerRequest,
 } from '../utils';
 
@@ -26,19 +24,13 @@ class Group extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    listenForEntityId(this.entityIdListener);
     listenForPlayerRequest(this.dispatchEntityIdEvent);
   }
 
   disconnectedCallback() {
-    stopListeningForEntityId(this.entityIdListener);
     stopListeningForPlayerRequest(this.dispatchEntityIdEvent);
     super.disconnectedCallback();
   }
-
-  entityIdListener = (event: Event) => {
-    this.selected = (event as CustomEvent).detail.entityId === this.group?.entity;
-  };
 
   dispatchEntityIdEvent = () => {
     if (this.selected) {

@@ -5,7 +5,7 @@ import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
-import { getEntityName, listenForEntityId, listStyle, stopListeningForEntityId } from '../utils';
+import { dispatchActiveEntity, getEntityName, listStyle } from '../utils';
 import { getButton } from '../components/button';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
@@ -17,21 +17,6 @@ export class Grouping extends LitElement {
   private mediaControlService!: MediaControlService;
   private groups!: PlayerGroups;
   private mediaPlayers!: string[];
-
-  entityIdListener = (event: Event) => {
-    this.entityId = (event as CustomEvent).detail.entityId;
-    this.requestUpdate();
-  };
-
-  connectedCallback() {
-    super.connectedCallback();
-    listenForEntityId(this.entityIdListener);
-  }
-
-  disconnectedCallback() {
-    stopListeningForEntityId(this.entityIdListener);
-    super.disconnectedCallback();
-  }
 
   render() {
     ({
@@ -83,14 +68,19 @@ export class Grouping extends LitElement {
     const isMain = entity === this.entityId;
     const members = this.groups[this.entityId].members;
     return {
+      isMain,
       isSelected: isMain || members[entity] !== undefined,
       isGrouped: Object.keys(members).length > 0,
       name: getEntityName(this.hass, this.config, entity),
       entity: entity,
     };
   }
-  private async itemClickAction({ isSelected, entity }: GroupingItem) {
+  private async itemClickAction({ isSelected, entity, isMain }: GroupingItem) {
     if (isSelected) {
+      if (isMain) {
+        const firstMemberEntityId = Object.keys(this.groups[this.entityId].members)[0];
+        dispatchActiveEntity(firstMemberEntityId);
+      }
       await this.mediaControlService.unjoin([entity]);
     } else {
       await this.mediaControlService.join(this.entityId, [entity]);
@@ -122,6 +112,7 @@ function itemStyle() {
 }
 
 interface GroupingItem {
+  isMain: boolean;
   isSelected: boolean;
   isGrouped: boolean;
   name: string;

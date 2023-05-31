@@ -8,7 +8,7 @@ import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, MediaPlayerItem, Section } from '../types';
-import { dispatchShowSection, listenForEntityId, listStyle, stopListeningForEntityId } from '../utils';
+import { dispatchShowSection, listStyle } from '../utils';
 import { BROWSE_CLICKED, BROWSE_STATE, PLAY_DIR } from '../constants';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
@@ -26,23 +26,23 @@ export class MediaBrowser extends LitElement {
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
 
-  entityIdListener = (event: Event) => {
-    this.entityId = (event as CustomEvent).detail.entityId;
+  private readonly playDirListener = async () => {
+    await this.playItem(<MediaPlayerItem>this.currentDir);
+  };
+
+  private readonly browseClickedListener = async () => {
+    await this.browseClicked();
   };
 
   connectedCallback() {
     super.connectedCallback();
-    listenForEntityId(this.entityIdListener);
-    window.addEventListener(PLAY_DIR, async () => {
-      await this.playItem(<MediaPlayerItem>this.currentDir);
-    });
-    window.addEventListener(BROWSE_CLICKED, async () => {
-      await this.browseClicked();
-    });
+    window.addEventListener(PLAY_DIR, this.playDirListener);
+    window.addEventListener(BROWSE_CLICKED, this.browseClickedListener);
   }
 
   disconnectedCallback() {
-    stopListeningForEntityId(this.entityIdListener);
+    window.removeEventListener(PLAY_DIR, this.playDirListener);
+    window.removeEventListener(BROWSE_CLICKED, this.browseClickedListener);
     super.disconnectedCallback();
   }
 
