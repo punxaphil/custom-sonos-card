@@ -26,6 +26,7 @@ export default class MediaControlService {
   }
 
   async createGroup(toBeGrouped: string[], currentGroups: PlayerGroups) {
+    toBeGrouped = this.ignoreUnavailableEntities(toBeGrouped);
     let candidateGroup!: PlayerGroup;
     for (const group of Object.values(currentGroups)) {
       if (toBeGrouped.indexOf(group.entity) > -1) {
@@ -43,6 +44,10 @@ export default class MediaControlService {
       dispatchActiveEntity(master);
       await this.join(master, toBeGrouped);
     }
+  }
+
+  private ignoreUnavailableEntities(entities: string[]) {
+    return entities.filter((entityId) => this.hass.states[entityId]?.state !== 'unavailable');
   }
 
   private async modifyExistingGroup(group: PlayerGroup, toBeGrouped: string[]) {
