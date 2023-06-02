@@ -177,7 +177,16 @@ export class Card extends LitElement {
     }
     const sections = newConfig.sections;
     if (sections) {
-      this.section = sections[0];
+      this.section =
+        sections.indexOf(PLAYER) > -1
+          ? PLAYER
+          : sections.indexOf(MEDIA_BROWSER) > -1
+          ? MEDIA_BROWSER
+          : sections.indexOf(GROUPS) > -1
+          ? GROUPS
+          : sections.indexOf(GROUPING) > -1
+          ? GROUPING
+          : VOLUMES;
     } else {
       this.section = PLAYER;
     }
