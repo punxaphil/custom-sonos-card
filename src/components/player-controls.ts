@@ -53,11 +53,9 @@ class PlayerControls extends LitElement {
     return html`
       <div style="${this.mainStyle()}" id="mediaControls">
         <div style="${this.iconsStyle()}">
-          ${iconButton(this.shuffleIcon(), this.shuffle, { additionalStyle: { marginRight: '1rem' } })}
-          ${iconButton(mdiSkipPrevious, this.prev, undefined)}
+          ${iconButton(this.shuffleIcon(), this.shuffle)} ${iconButton(mdiSkipPrevious, this.prev, undefined)}
           ${iconButton(playing ? mdiPauseCircle : mdiPlayCircle, playing ? this.pause : this.play, { big: true })}
-          ${iconButton(mdiSkipNext, this.next, undefined)}
-          ${iconButton(this.repeatIcon(), this.repeat, { additionalStyle: { marginLeft: '1rem' } })}
+          ${iconButton(mdiSkipNext, this.next, undefined)} ${iconButton(this.repeatIcon(), this.repeat)}
         </div>
         <sonos-volume .store=${this.store} .entityId=${this.entityId} .members=${this.members}></sonos-volume>
       </div>
