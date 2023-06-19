@@ -126,7 +126,6 @@ artworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, bu
 
 # media browser specific
 mediaTitle: ''
-shuffleFavorites: false
 customThumbnailIfMissing:
   Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
   Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f

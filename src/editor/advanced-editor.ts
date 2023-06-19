@@ -3,10 +3,6 @@ import { BaseEditor } from './base-editor';
 
 export const ADVANCED_SCHEMA = [
   {
-    name: 'shuffleFavorites',
-    selector: { boolean: {} },
-  },
-  {
     name: 'hideGroupCurrentTrack',
     selector: { boolean: {} },
   },

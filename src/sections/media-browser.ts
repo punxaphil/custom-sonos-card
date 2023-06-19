@@ -155,11 +155,7 @@ export class MediaBrowser extends LitElement {
       this.mediaPlayers,
       this.config.mediaBrowserTitlesToIgnore,
     );
-    if (this.config.shuffleFavorites) {
-      MediaBrowser.shuffleArray(allFavorites);
-    } else {
-      allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
-    }
+    allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
     return [
       ...(this.config.customSources?.[this.entityId]?.map(MediaBrowser.createSource) || []),
       ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
