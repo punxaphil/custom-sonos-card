@@ -65,7 +65,7 @@ export default class MediaBrowseService {
     console.log('Custom Sonos Card: found no favorites with thumbnails, trying with titles only');
     let titles = mediaPlayers
       .map((entity) => this.hass.states[entity])
-      .flatMap((state) => state.attributes.source_list);
+      .flatMap((state) => state.attributes.hasOwnProperty('source_list') ? state.attributes.source_list : []);
     titles = [...new Set(titles)];
     if (!titles.length) {
       console.log('Custom Sonos Card: No favorites found');
