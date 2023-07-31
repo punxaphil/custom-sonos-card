@@ -33,6 +33,7 @@ export interface CardConfig extends LovelaceCardConfig {
   customSources?: CustomSources;
   customThumbnailIfMissing?: CustomThumbnail;
   mediaBrowserTitlesToIgnore?: string[];
+  mediaBrowserItemsAsIcons: boolean;
 }
 
 export interface MediaArtworkOverride {

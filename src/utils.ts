@@ -1,7 +1,15 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { CardConfig, PlayerGroup, Section } from './types';
-import { ACTIVE_PLAYER_EVENT, BROWSE_CLICKED, PLAY_DIR, REQUEST_PLAYER_EVENT, SHOW_SECTION } from './constants';
+import { CardConfig, MediaPlayerItem, PlayerGroup, Section } from './types';
+import {
+  ACTIVE_PLAYER_EVENT,
+  BROWSE_CLICKED,
+  DEFAULT_MEDIA_THUMBNAIL,
+  MEDIA_ITEM_SELECTED,
+  PLAY_DIR,
+  REQUEST_PLAYER_EVENT,
+  SHOW_SECTION,
+} from './constants';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
@@ -63,4 +71,30 @@ export function dispatchActiveEntity(entityId: string) {
     detail: { entityId },
   });
   window.dispatchEvent(event);
+}
+
+export function dispatchMediaItemSelected(mediaItem: MediaPlayerItem) {
+  const event = new CustomEvent(MEDIA_ITEM_SELECTED, {
+    bubbles: true,
+    composed: true,
+    detail: mediaItem,
+  });
+  window.dispatchEvent(event);
+}
+
+export function hasItemsWithImage(items: MediaPlayerItem[]) {
+  return items.some((item) => item.thumbnail);
+}
+
+export function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
+  let thumbnail = mediaItem.thumbnail;
+  if (!thumbnail) {
+    thumbnail = config.customThumbnailIfMissing?.[mediaItem.title] || '';
+    if (itemsWithImage && !thumbnail) {
+      thumbnail = config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
+    }
+  } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
+    thumbnail = thumbnail?.replace('logo.png', 'icon.png');
+  }
+  return thumbnail;
 }

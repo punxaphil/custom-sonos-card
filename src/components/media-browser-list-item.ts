@@ -5,7 +5,7 @@ import { DEFAULT_MEDIA_THUMBNAIL } from '../constants';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 const THUMB_SIZE = '35px';
-class MediaListItem extends LitElement {
+class MediaBrowserListItem extends LitElement {
   @property() mediaItem!: MediaPlayerItem;
   @property() config!: CardConfig;
   @property() itemsWithImage!: boolean;
@@ -84,4 +84,4 @@ class MediaListItem extends LitElement {
   }
 }
 
-customElements.define('sonos-media-list-item', MediaListItem);
+customElements.define('sonos-media-browser-list-item', MediaBrowserListItem);
