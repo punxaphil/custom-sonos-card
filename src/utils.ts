@@ -98,3 +98,19 @@ export function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, ite
   }
   return thumbnail;
 }
+
+const HEIGHT_AND_WIDTH = 40;
+
+function getWidthOrHeight(confValue?: number) {
+  if (confValue) {
+    return (confValue / 100) * HEIGHT_AND_WIDTH;
+  }
+  return HEIGHT_AND_WIDTH;
+}
+
+export function getHeight(config: CardConfig) {
+  return getWidthOrHeight(config.heightPercentage);
+}
+export function getWidth(config: CardConfig) {
+  return getWidthOrHeight(config.widthPercentage);
+}

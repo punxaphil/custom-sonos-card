@@ -15,9 +15,9 @@ import {
 } from './constants';
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { getHeight, getWidth } from './utils';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
-const CARD_HEIGHT = 40;
 const TITLE_HEIGHT = 2;
 const FOOTER_HEIGHT = 5;
 
@@ -32,7 +32,7 @@ export class Card extends LitElement {
   @state() entityId!: string;
   render() {
     this.createStore();
-    let height = getWidthOrHeight(this.config.heightPercentage);
+    let height = getHeight(this.config);
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
     const contentHeight = showFooter ? height - FOOTER_HEIGHT : height;
@@ -134,7 +134,7 @@ export class Card extends LitElement {
   };
 
   haCardStyle(height: number) {
-    const width = getWidthOrHeight(this.config.widthPercentage);
+    const width = getWidth(this.config);
     return styleMap({
       color: 'var(--secondary-text-color)',
       height: `${height}rem`,
@@ -211,11 +211,4 @@ function listenForEntityId(listener: EventListener) {
 
 function stopListeningForEntityId(listener: EventListener) {
   window.removeEventListener(ACTIVE_PLAYER_EVENT, listener);
-}
-
-function getWidthOrHeight(confValue?: number) {
-  if (confValue) {
-    return (confValue / 100) * CARD_HEIGHT;
-  }
-  return CARD_HEIGHT;
 }

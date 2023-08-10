@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import './media-browser-icon';
 import Store from '../store';
 import { MediaPlayerItem } from '../types';
-import { hasItemsWithImage } from '../utils';
+import { getWidth, hasItemsWithImage } from '../utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 export class MediaBrowserIcons extends LitElement {
@@ -32,8 +32,10 @@ export class MediaBrowserIcons extends LitElement {
   }
 
   private groupStyle() {
+    const height = (getWidth(this.store.config) / 4) * 0.95;
+
     return styleMap({
-      // '--control-button-group-thickness': '120px',
+      height: `${height}rem`,
     });
   }
 }

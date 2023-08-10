@@ -2,23 +2,29 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { dispatchMediaItemSelected, getThumbnail } from '../utils';
+import { dispatchMediaItemSelected, getThumbnail, getWidth } from '../utils';
 
-const BUTTON_SIZE = '110px';
-const THUMB_SIZE = '90px';
 class MediaBrowserListIcon extends LitElement {
   @property() mediaItem!: MediaPlayerItem;
   @property() config!: CardConfig;
   @property() itemsWithImage!: boolean;
+  private buttonSize!: number;
+  private thumbSize!: number;
 
-  private iconStyle = {
-    position: 'relative',
-    flexShrink: '0',
-    width: BUTTON_SIZE,
-    height: BUTTON_SIZE,
+  private iconStyle = () => {
+    return {
+      position: 'relative',
+      flexShrink: '0',
+      width: `${this.buttonSize}rem`,
+      height: `${this.buttonSize}rem`,
+    };
   };
 
   render() {
+    if (!this.buttonSize) {
+      this.buttonSize = (getWidth(this.config) / 4) * 0.9;
+      this.thumbSize = this.buttonSize * 0.9;
+    }
     const thumbnail = getThumbnail(this.mediaItem, this.config, this.itemsWithImage);
     const itemClick = () => dispatchMediaItemSelected(this.mediaItem);
 
@@ -32,8 +38,8 @@ class MediaBrowserListIcon extends LitElement {
 
   private thumbnailStyle(thumbnail: string) {
     return styleMap({
-      // ...this.iconStyle,
-      backgroundSize: THUMB_SIZE,
+      ...this.iconStyle(),
+      backgroundSize: `${this.thumbSize}rem`,
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
       backgroundImage: 'url(' + thumbnail + ')',
@@ -43,7 +49,7 @@ class MediaBrowserListIcon extends LitElement {
 
   private folderStyle(thumbnail: string) {
     return styleMap({
-      ...this.iconStyle,
+      ...this.iconStyle(),
       '--mdc-icon-size': '90%',
       ...((!this.mediaItem.can_expand || thumbnail) && { display: 'none' }),
     });
