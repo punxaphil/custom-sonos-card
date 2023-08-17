@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title></title>
+    <style>
+        body {
+            background: lightgray;
+        }
+
+        #content {
+            width:35rem;
+            background: pink;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .icon {
+            --margin: 1%;
+            --items-per-row: 4;
+            --width: calc(100% / var(--items-per-row) - var(--margin) * 2);
+            width: var(--width);
+            margin: var(--margin);
+            background-color: #7f7f7f;
+            padding-bottom: var(--width);
+            background-size: 90%;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-image: url(https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f);
+        }
+
+        .icon:nth-child(2n) {
+            background-image: url(https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c);
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+    <div class="icon"></div>
+</div>
+</body>
+</html>

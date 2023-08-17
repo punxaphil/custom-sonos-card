@@ -89,14 +89,14 @@ export function hasItemsWithImage(items: MediaPlayerItem[]) {
 export function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
   let thumbnail = mediaItem.thumbnail;
   if (!thumbnail) {
-    thumbnail = config.customThumbnailIfMissing?.[mediaItem.title] || '';
+    thumbnail = config.customThumbnailIfMissing?.[mediaItem.title];
     if (itemsWithImage && !thumbnail) {
       thumbnail = config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
     }
   } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
     thumbnail = thumbnail?.replace('logo.png', 'icon.png');
   }
-  return thumbnail;
+  return thumbnail || '';
 }
 
 const HEIGHT_AND_WIDTH = 40;
