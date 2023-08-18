@@ -1,7 +1,7 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
-import { CardConfig, MediaPlayerItem, PlayerGroup, Section } from './types';
-import { ACTIVE_PLAYER_EVENT, MEDIA_ITEM_SELECTED, SHOW_SECTION } from './constants';
+import { CardConfig, MediaPlayerItem, PlayerGroup, Section } from '../types';
+import { ACTIVE_PLAYER_EVENT, MEDIA_ITEM_SELECTED, SHOW_SECTION } from '../constants';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';

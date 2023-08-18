@@ -4,7 +4,7 @@ import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../store';
 import { CardConfig, PlayerGroup, Section } from '../types';
-import { dispatchActiveEntity, dispatchShowSection, getCurrentTrack, getSpeakerList, isPlaying } from '../utils';
+import { dispatchActiveEntity, dispatchShowSection, getCurrentTrack, getSpeakerList, isPlaying } from '../utils/utils';
 import { REQUEST_PLAYER_EVENT } from '../constants';
 
 class Group extends LitElement {

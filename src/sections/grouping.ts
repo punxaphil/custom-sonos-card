@@ -5,7 +5,7 @@ import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, PlayerGroups } from '../types';
-import { dispatchActiveEntity, getEntityName } from '../utils';
+import { dispatchActiveEntity, getEntityName } from '../utils/utils';
 import { getButton } from '../components/button';
 import { listStyle } from '../constants';
 

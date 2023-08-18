@@ -1,7 +1,7 @@
 import { MediaPlayerItem, Members, PlayerGroup, PlayerGroups } from '../types';
 import HassService from './hass-service';
 import { HomeAssistant } from 'custom-card-helpers';
-import { dispatchActiveEntity, isPlaying } from '../utils';
+import { dispatchActiveEntity, isPlaying } from '../utils/utils';
 
 export default class MediaControlService {
   private hassService: HassService;

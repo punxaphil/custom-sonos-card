@@ -4,7 +4,7 @@ import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig } from '../types';
-import { isPlaying } from '../utils';
+import { isPlaying } from '../utils/utils';
 
 class Progress extends LitElement {
   @property() store!: Store;

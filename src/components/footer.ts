@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { CardConfig, Section } from '../types';
-import { dispatchShowSection } from '../utils';
+import { dispatchShowSection } from '../utils/utils';
 import { mdiCastVariant, mdiHome, mdiSpeakerMultiple, mdiStarOutline, mdiTune } from '@mdi/js';
 import { iconButton } from './icon-button';
 

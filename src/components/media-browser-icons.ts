@@ -2,9 +2,13 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig, MediaPlayerItem } from '../types';
-import { dispatchMediaItemSelected } from '../utils';
+import { dispatchMediaItemSelected } from '../utils/utils';
 import { mediaBrowserTitleStyle } from '../constants';
-import { itemsWithFallbacks, mediaItemBackgroundImageStyle, renderMediaBrowserItem } from '../media-browser-utils';
+import {
+  itemsWithFallbacks,
+  mediaItemBackgroundImageStyle,
+  renderMediaBrowserItem,
+} from '../utils/media-browser-utils';
 
 export class MediaBrowserIcons extends LitElement {
   @property() store!: Store;

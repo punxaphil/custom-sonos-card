@@ -4,7 +4,7 @@ import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../store';
 import { CardConfig, Members } from '../types';
-import { getEntityName, getGroupMembers } from '../utils';
+import { getEntityName, getGroupMembers } from '../utils/utils';
 import { until } from 'lit-html/directives/until.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { when } from 'lit/directives/when.js';

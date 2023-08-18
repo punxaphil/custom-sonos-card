@@ -1,4 +1,4 @@
-import { getWidth } from '../src/utils';
+import { getWidth } from '../src/utils/utils';
 
 describe('utils', () => {
   it.each`

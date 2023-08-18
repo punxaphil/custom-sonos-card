@@ -6,7 +6,7 @@ import HassService from '../services/hass-service';
 import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, Members } from '../types';
-import { getGroupMembers, isPlaying } from '../utils';
+import { getGroupMembers, isPlaying } from '../utils/utils';
 import {
   mdiPauseCircle,
   mdiPlayCircle,

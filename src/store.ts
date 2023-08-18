@@ -4,7 +4,7 @@ import HassService from './services/hass-service';
 import MediaBrowseService from './services/media-browse-service';
 import MediaControlService from './services/media-control-service';
 import { CardConfig, PlayerGroups } from './types';
-import { getEntityName, getGroupMembers, isPlaying } from './utils';
+import { getEntityName, getGroupMembers, isPlaying } from './utils/utils';
 
 export default class Store {
   public hass: HomeAssistant;
