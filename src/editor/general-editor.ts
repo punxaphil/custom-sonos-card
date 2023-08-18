@@ -14,6 +14,14 @@ export const GENERAL_SCHEMA = [
     name: 'sections',
   },
   {
+    type: 'integer',
+    name: 'mediaBrowserItemsPerRow',
+    default: 1,
+    required: true,
+    valueMin: 1,
+    valueMax: 30,
+  },
+  {
     type: 'string',
     name: 'title',
   },
