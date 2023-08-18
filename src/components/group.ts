@@ -4,15 +4,8 @@ import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../store';
 import { CardConfig, PlayerGroup, Section } from '../types';
-import {
-  dispatchActiveEntity,
-  dispatchShowSection,
-  getCurrentTrack,
-  getSpeakerList,
-  isPlaying,
-  listenForPlayerRequest,
-  stopListeningForPlayerRequest,
-} from '../utils';
+import { dispatchActiveEntity, dispatchShowSection, getCurrentTrack, getSpeakerList, isPlaying } from '../utils';
+import { REQUEST_PLAYER_EVENT } from '../constants';
 
 class Group extends LitElement {
   @property() store!: Store;
@@ -23,11 +16,11 @@ class Group extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    listenForPlayerRequest(this.dispatchEntityIdEvent);
+    window.addEventListener(REQUEST_PLAYER_EVENT, this.dispatchEntityIdEvent);
   }
 
   disconnectedCallback() {
-    stopListeningForPlayerRequest(this.dispatchEntityIdEvent);
+    window.removeEventListener(REQUEST_PLAYER_EVENT, this.dispatchEntityIdEvent);
     super.disconnectedCallback();
   }
 
@@ -51,7 +44,7 @@ class Group extends LitElement {
         ?activated="${this.selected}"
         @click="${() => this.handleGroupClicked()}"
       >
-        <div class="wrapper">
+        <div class="row">
           <ha-icon .icon=${icon} ?hidden=${!icon}></ha-icon>
           <div class="text">
             <span class="speakers">${speakerList}</span>
@@ -95,40 +88,48 @@ class Group extends LitElement {
           height: 1rem;
         }
       }
+
       mwc-list-item {
         height: fit-content;
         margin: 1rem;
         border-radius: 1rem;
         background: var(--secondary-background-color);
       }
-      .wrapper {
+
+      .row {
         display: flex;
         margin: 1rem 0;
       }
+
       .text {
         display: flex;
         flex-direction: column;
         justify-content: center;
       }
+
       .speakers {
         white-space: initial;
         font-size: 1.1rem;
         font-weight: bold;
         color: var(--secondary-text-color);
       }
+
       .song-title {
         font-size: 0.9rem;
         font-weight: bold;
       }
+
       ha-icon {
         --mdc-icon-size: 3rem;
         margin-right: 1rem;
       }
+
       .bars {
         width: 0.55rem;
         position: relative;
         margin-left: 1rem;
       }
+
       .bars > div {
         background: var(--secondary-text-color);
         bottom: 0.05rem;
@@ -138,14 +139,17 @@ class Group extends LitElement {
         animation: sound 0ms -800ms linear infinite alternate;
         display: block;
       }
+
       .bars > div:first-child {
         left: 0.05rem;
         animation-duration: 474ms;
       }
+
       .bars > div:nth-child(2) {
         left: 0.25rem;
         animation-duration: 433ms;
       }
+
       .bars > div:last-child {
         left: 0.45rem;
         animation-duration: 407ms;

@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { until } from 'lit-html/directives/until.js';
 import { property, state } from 'lit/decorators.js';
 import '../components/media-browser-list';
@@ -10,7 +10,7 @@ import MediaControlService from '../services/media-control-service';
 import Store from '../store';
 import { CardConfig, MediaPlayerItem, Section } from '../types';
 import { dispatchShowSection } from '../utils';
-import { BROWSE_CLICKED, BROWSE_STATE, listStyle, MEDIA_ITEM_SELECTED, PLAY_DIR } from '../constants';
+import { BROWSE_CLICKED, BROWSE_STATE, MEDIA_ITEM_SELECTED, PLAY_DIR } from '../constants';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
 
@@ -31,7 +31,7 @@ export class MediaBrowser extends LitElement {
   };
 
   private readonly browseClickedListener = async () => {
-    await this.browseClicked();
+    this.browseClicked();
   };
 
   connectedCallback() {
@@ -158,16 +158,5 @@ export class MediaBrowser extends LitElement {
     return await (mediaItem
       ? this.mediaBrowseService.getDir(this.entityId, mediaItem, this.config.mediaBrowserTitlesToIgnore)
       : this.mediaBrowseService.getRoot(this.entityId, this.config.mediaBrowserTitlesToIgnore));
-  }
-
-  static get styles() {
-    return [
-      listStyle,
-      css`
-        mwc-list-item {
-          height: 40px;
-        }
-      `,
-    ];
   }
 }

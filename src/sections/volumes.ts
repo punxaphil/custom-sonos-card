@@ -46,7 +46,7 @@ class Volumes extends LitElement {
   private volumeWithName(entityId: string, name: string, members?: Members) {
     const volDown = async () => await this.mediaControlService.volumeDown(entityId);
     const volUp = async () => await this.mediaControlService.volumeUp(entityId);
-    return html` <div class="wrapper">
+    return html` <div class="row">
       <div class="volume-name">
         <div class="volume-name-text">${name}</div>
       </div>
@@ -86,27 +86,31 @@ class Volumes extends LitElement {
 
   static get styles() {
     return css`
-      .wrapper {
+      .row {
         display: flex;
         flex-direction: column;
         padding-top: 1rem;
         padding-right: 1rem;
       }
-      .wrapper:not(:first-child) {
+
+      .row:not(:first-child) {
         border-top: solid var(--secondary-background-color);
       }
+
       .switches {
         display: flex;
         justify-content: center;
         gap: 1rem;
         margin-bottom: 1rem;
       }
+
       .volume-name {
         flex: 1;
         overflow: hidden;
         flex-direction: column;
         text-align: center;
       }
+
       .volume-name-text {
         flex: 1;
         overflow: hidden;
@@ -115,9 +119,11 @@ class Volumes extends LitElement {
         font-size: 1.1rem;
         font-weight: bold;
       }
+
       .slider-row {
         display: flex;
       }
+
       sonos-volume {
         flex: 4;
       }

@@ -20,7 +20,7 @@ export class Player extends LitElement {
   render() {
     ({ config: this.config, entity: this.entity, entityId: this.entityId } = this.store);
     return html`
-      <div class="wrapper">
+      <div class="row">
         <sonos-player-header .store=${this.store}></sonos-player-header>
         <div class="artwork" style="background-image: ${this.getBackgroundImage()}"></div>
         <sonos-player-controls style="overflow-y:auto" .store=${this.store}></sonos-player-controls>
@@ -71,7 +71,7 @@ export class Player extends LitElement {
         color: var(--primary-color);
       }
 
-      .wrapper {
+      .row {
         display: flex;
         flex-direction: column;
         justify-content: space-between;

@@ -1,35 +1,67 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import './media-browser-list-item';
 import Store from '../store';
-import { MediaPlayerItem } from '../types';
-import { dispatchMediaItemSelected, hasItemsWithImage } from '../utils';
-import { listStyle } from '../constants';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { dispatchMediaItemSelected } from '../utils';
+import { listStyle, mediaBrowserTitleStyle } from '../constants';
+import { itemsWithFallbacks, mediaItemBackgroundImageStyle, renderMediaBrowserItem } from '../media-browser-utils';
 
 export class MediaBrowserList extends LitElement {
   @property() store!: Store;
   @property() items!: MediaPlayerItem[];
+  private config!: CardConfig;
 
   render() {
-    const itemsWithImage = hasItemsWithImage(this.items);
+    ({ config: this.config } = this.store);
+
     return html`
       <mwc-list multi class="list">
-        ${this.items.map((item) => {
+        ${itemsWithFallbacks(this.items, this.config).map((item, index) => {
           return html`
-            <mwc-list-item @click="${() => dispatchMediaItemSelected(item)}">
-              <sonos-media-browser-list-item
-                .itemsWithImage="${itemsWithImage}"
-                .mediaItem="${item}"
-                .config="${this.store.config}"
-              ></sonos-media-browser-list-item>
+            ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
+            <mwc-list-item class="button" @click="${() => dispatchMediaItemSelected(item)}">
+              <div class="row">${renderMediaBrowserItem(item)}</div>
             </mwc-list-item>
           `;
         })}
       </mwc-list>
     `;
   }
+
   static get styles() {
-    return listStyle;
+    return [
+      css`
+        .button {
+          --icon-width: 35px;
+          height: 40px;
+        }
+
+        .row {
+          display: flex;
+        }
+
+        .thumbnail {
+          width: var(--icon-width);
+          height: var(--icon-width);
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: left;
+        }
+
+        .folder {
+          width: var(--icon-width);
+          --mdc-icon-size: 100%;
+        }
+
+        .title {
+          font-size: 1.1rem;
+          align-self: center;
+          flex: 1;
+        }
+      `,
+      mediaBrowserTitleStyle,
+      listStyle,
+    ];
   }
 }
 

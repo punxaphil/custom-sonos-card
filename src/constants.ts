@@ -25,3 +25,14 @@ export const listStyle = css`
     overflow: hidden;
   }
 `;
+
+export const mediaBrowserTitleStyle = css`
+  .title {
+    color: var(--secondary-text-color);
+    font-weight: bold;
+    padding: 0 0.5rem;
+    text-overflow-ellipsis: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+`;

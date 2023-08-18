@@ -1,9 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { CardConfig } from '../types';
-import { dispatchBrowseClicked, dispatchPlayDir } from '../utils';
 import { mdiArrowUpLeftBold, mdiPlay, mdiPlayBoxMultiple, mdiStarOutline } from '@mdi/js';
-import { BROWSE_STATE } from '../constants';
+import { BROWSE_CLICKED, BROWSE_STATE, PLAY_DIR } from '../constants';
 import { iconButton } from './icon-button';
 
 class MediaBrowserHeader extends LitElement {
@@ -22,13 +21,13 @@ class MediaBrowserHeader extends LitElement {
     return html`
       <div class="play">
         ${this.browseCanPlay
-          ? iconButton(mdiPlay, () => dispatchPlayDir(), {
+          ? iconButton(mdiPlay, () => window.dispatchEvent(new CustomEvent(PLAY_DIR)), {
               additionalStyle: { padding: '0.5rem' },
             })
           : ''}
       </div>
       <div class="title">${this.title}</div>
-      ${iconButton(browseIcon, () => dispatchBrowseClicked(), {
+      ${iconButton(browseIcon, () => window.dispatchEvent(new CustomEvent(BROWSE_CLICKED)), {
         additionalStyle: { padding: '0.5rem', flex: '1', textAlign: 'right' },
       })}
     `;

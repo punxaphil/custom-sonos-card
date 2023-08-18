@@ -1,15 +1,7 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { CardConfig, MediaPlayerItem, PlayerGroup, Section } from './types';
-import {
-  ACTIVE_PLAYER_EVENT,
-  BROWSE_CLICKED,
-  DEFAULT_MEDIA_THUMBNAIL,
-  MEDIA_ITEM_SELECTED,
-  PLAY_DIR,
-  REQUEST_PLAYER_EVENT,
-  SHOW_SECTION,
-} from './constants';
+import { ACTIVE_PLAYER_EVENT, MEDIA_ITEM_SELECTED, SHOW_SECTION } from './constants';
 
 export function getEntityName(hass: HomeAssistant, config: CardConfig, entity: string) {
   const name = hass.states[entity].attributes.friendly_name || '';
@@ -23,23 +15,8 @@ export function getGroupMembers(state: HassEntity) {
   return state.attributes.sonos_group || state.attributes.group_members;
 }
 
-export function listenForPlayerRequest(listener: EventListener) {
-  window.addEventListener(REQUEST_PLAYER_EVENT, listener);
-}
-
-export function stopListeningForPlayerRequest(listener: EventListener) {
-  window.removeEventListener(REQUEST_PLAYER_EVENT, listener);
-}
-
 export function dispatchShowSection(section: Section) {
   window.dispatchEvent(new CustomEvent(SHOW_SECTION, { detail: section }));
-}
-
-export function dispatchPlayDir() {
-  window.dispatchEvent(new CustomEvent(PLAY_DIR));
-}
-export function dispatchBrowseClicked() {
-  window.dispatchEvent(new CustomEvent(BROWSE_CLICKED));
 }
 
 export function isPlaying(state: string) {
@@ -82,23 +59,6 @@ export function dispatchMediaItemSelected(mediaItem: MediaPlayerItem) {
   window.dispatchEvent(event);
 }
 
-export function hasItemsWithImage(items: MediaPlayerItem[]) {
-  return items.some((item) => item.thumbnail);
-}
-
-export function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
-  let thumbnail = mediaItem.thumbnail;
-  if (!thumbnail) {
-    thumbnail = config.customThumbnailIfMissing?.[mediaItem.title];
-    if (itemsWithImage && !thumbnail) {
-      thumbnail = config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
-    }
-  } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
-    thumbnail = thumbnail?.replace('logo.png', 'icon.png');
-  }
-  return thumbnail || '';
-}
-
 const HEIGHT_AND_WIDTH = 40;
 
 function getWidthOrHeight(confValue?: number) {
@@ -111,6 +71,7 @@ function getWidthOrHeight(confValue?: number) {
 export function getHeight(config: CardConfig) {
   return getWidthOrHeight(config.heightPercentage);
 }
+
 export function getWidth(config: CardConfig) {
   return getWidthOrHeight(config.widthPercentage);
 }
