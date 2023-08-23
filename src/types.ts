@@ -34,6 +34,7 @@ export interface CardConfig extends LovelaceCardConfig {
   customThumbnailIfMissing?: CustomThumbnail;
   mediaBrowserTitlesToIgnore?: string[];
   mediaBrowserItemsPerRow: number;
+  mediaBrowserShowTitleForThumbnailIcons?: boolean;
 }
 
 export interface MediaArtworkOverride {

@@ -30,7 +30,7 @@ export class MediaBrowserIcons extends LitElement {
             html`
               ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
               <ha-control-button class="button" @click="${() => dispatchMediaItemSelected(item)}">
-                ${renderMediaBrowserItem(item, !item.thumbnail)}
+                ${renderMediaBrowserItem(item, !item.thumbnail || !!this.config.mediaBrowserShowTitleForThumbnailIcons)}
               </ha-control-button>
             `,
         )}

@@ -127,6 +127,7 @@ artworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, bu
 
 # media browser specific
 mediaBrowserItemsPerRow: 4 # default is 1. Use this to show items as icons.
+mediaBrowserShowTitleForThumbnailIcons: true # default is false. Only makes a difference if mediaBrowserItemsPerRow > 1. Will show title for thumbnail artworks.
 customThumbnailIfMissing:
   Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
   Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f

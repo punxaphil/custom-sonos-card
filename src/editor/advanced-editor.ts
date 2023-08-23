@@ -23,6 +23,10 @@ export const ADVANCED_SCHEMA = [
     type: 'string',
     name: 'artworkHostname',
   },
+  {
+    name: 'mediaBrowserShowTitleForThumbnailIcons',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {
