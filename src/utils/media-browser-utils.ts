@@ -14,7 +14,7 @@ function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithI
     if (itemsWithImage && !thumbnail) {
       thumbnail = config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
     }
-  } else if (thumbnail?.match(/https:\/\/brands.home-assistant.io\/.+\/logo.png/)) {
+  } else if (thumbnail?.match(/https:\/\/brands\.home-assistant\.io\/.+\/logo.png/)) {
     thumbnail = thumbnail?.replace('logo.png', 'icon.png');
   }
   return thumbnail || '';
