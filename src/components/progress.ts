@@ -1,17 +1,11 @@
-import { HomeAssistant } from 'custom-card-helpers';
-import { HassEntity } from 'home-assistant-js-websocket';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import Store from '../store';
-import { CardConfig } from '../types';
-import { isPlaying } from '../utils/utils';
+import Store from '../model/store';
+import { MediaPlayer } from '../model/media-player';
 
 class Progress extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
-  private config!: CardConfig;
-  private entityId!: string;
-  private entity!: HassEntity;
+  private activePlayer!: MediaPlayer;
 
   @state() private playingProgress!: number;
   private tracker?: NodeJS.Timer;
@@ -25,9 +19,8 @@ class Progress extends LitElement {
   }
 
   render() {
-    ({ config: this.config, hass: this.hass, entity: this.entity, entityId: this.entityId } = this.store);
-    this.entity = this.hass.states[this.entityId];
-    const mediaDuration = this.entity?.attributes.media_duration || 0;
+    this.activePlayer = this.store.activePlayer;
+    const mediaDuration = this.activePlayer?.attributes.media_duration || 0;
     const showProgress = mediaDuration > 0;
     if (showProgress) {
       this.trackProgress();
@@ -45,9 +38,9 @@ class Progress extends LitElement {
   }
 
   trackProgress() {
-    const position = this.entity?.attributes.media_position || 0;
-    const playing = isPlaying(this.entity?.state);
-    const updatedAt = this.entity?.attributes.media_position_updated_at || 0;
+    const position = this.activePlayer?.attributes.media_position || 0;
+    const playing = this.activePlayer?.isPlaying();
+    const updatedAt = this.activePlayer?.attributes.media_position_updated_at || 0;
     if (playing) {
       this.playingProgress = position + (Date.now() - new Date(updatedAt).getTime()) / 1000.0;
     } else {

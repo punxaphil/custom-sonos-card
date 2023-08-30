@@ -2,10 +2,11 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { MediaPlayerItem, Section, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
+import { MediaPlayer } from '../model/media-player';
 
 export default class HassService {
-  private hass: HomeAssistant;
-  private sectionOnCreate?: Section;
+  private readonly hass: HomeAssistant;
+  private readonly sectionOnCreate?: Section;
 
   constructor(hass: HomeAssistant, section?: Section) {
     this.hass = hass;
@@ -33,20 +34,20 @@ export default class HassService {
     }
   }
 
-  async browseMedia(entity_id: string, media_content_type?: string, media_content_id?: string) {
+  async browseMedia(mediaPlayer: MediaPlayer, media_content_type?: string, media_content_id?: string) {
     return await this.hass.callWS<MediaPlayerItem>({
       type: 'media_player/browse_media',
-      entity_id,
+      entity_id: mediaPlayer.id,
       media_content_id,
       media_content_type,
     });
   }
 
-  async getRelatedSwitchEntities(entityId: string) {
+  async getRelatedSwitchEntities(player: MediaPlayer) {
     return new Promise<string[]>(async (resolve, reject) => {
       const subscribeMessage = {
         type: 'render_template',
-        template: "{{ device_entities(device_id('" + entityId + "')) }}",
+        template: "{{ device_entities(device_id('" + player.id + "')) }}",
       };
       try {
         const unsubscribe = await this.hass.connection.subscribeMessage<TemplateResult>((response) => {

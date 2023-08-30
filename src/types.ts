@@ -1,6 +1,7 @@
 import { LovelaceCardConfig } from 'custom-card-helpers';
 
 declare global {
+  // noinspection JSUnusedGlobalSymbols
   interface Window {
     customCards: Array<{ type: string; name: string; description: string; preview: boolean }>;
   }
@@ -53,23 +54,8 @@ export interface CustomSource {
   thumbnail?: string;
 }
 
-export interface PlayerGroups {
-  [name: string]: PlayerGroup;
-}
-
-export interface Members {
-  [name: string]: string;
-}
-
 export interface CustomThumbnail {
   [title: string]: string;
-}
-
-export interface PlayerGroup {
-  entity: string;
-  state: string;
-  roomName: string;
-  members: Members;
 }
 
 export interface MediaPlayerItem {

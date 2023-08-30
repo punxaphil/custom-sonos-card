@@ -2,7 +2,7 @@ import { css, LitElement } from 'lit';
 import { fireEvent, HomeAssistant } from 'custom-card-helpers';
 import { property } from 'lit/decorators.js';
 import { CardConfig } from '../types';
-import Store from '../store';
+import Store from '../model/store';
 
 export abstract class BaseEditor extends LitElement {
   @property() config!: CardConfig;

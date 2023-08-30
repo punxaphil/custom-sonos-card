@@ -1,29 +1,26 @@
-import { HomeAssistant } from 'custom-card-helpers';
-import { HassEntity } from 'home-assistant-js-websocket';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import Store from '../store';
+import Store from '../model/store';
 import { CardConfig } from '../types';
-import { getCurrentTrack, getSpeakerList } from '../utils/utils';
+import { getSpeakerList } from '../utils/utils';
+import { MediaPlayer } from '../model/media-player';
 
 class PlayerHeader extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
   private config!: CardConfig;
-  private entity!: HassEntity;
+  private activePlayer!: MediaPlayer;
 
   render() {
-    ({ config: this.config, hass: this.hass, entity: this.entity } = this.store);
-    const attributes = this.entity.attributes;
-    const speakerList = getSpeakerList(this.store.groups[this.entity.entity_id], this.config);
+    ({ config: this.config, activePlayer: this.activePlayer } = this.store);
+    const speakerList = getSpeakerList(this.activePlayer, this.config);
     let song = this.config.labelWhenNoMediaIsSelected ? this.config.labelWhenNoMediaIsSelected : 'No media selected';
-    if (attributes.media_title) {
-      song = getCurrentTrack(this.entity);
+    if (this.activePlayer.attributes.media_title) {
+      song = this.activePlayer.getCurrentTrack();
     }
     return html` <div class="info">
       <div class="entity">${speakerList}</div>
       <div class="song">${song}</div>
-      <div class="artist-album">${attributes.media_album_name}</div>
+      <div class="artist-album">${this.activePlayer.attributes.media_album_name}</div>
       <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
   }

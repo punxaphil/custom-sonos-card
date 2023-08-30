@@ -2,7 +2,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
-import Store from './store';
+import Store from './model/store';
 import { CardConfig, Section } from './types';
 import './components/footer';
 import './editor/editor';
@@ -29,7 +29,7 @@ export class Card extends LitElement {
   @state() showLoader!: boolean;
   @state() loaderTimestamp!: number;
   @state() cancelLoader!: boolean;
-  @state() entityId!: string;
+  @state() activePlayerId!: string;
   render() {
     this.createStore();
     let height = getHeight(this.config);
@@ -63,11 +63,11 @@ export class Card extends LitElement {
     `;
   }
   private createStore() {
-    if (this.entityId) {
-      this.store = new Store(this.hass, this.config, this.entityId);
+    if (this.activePlayerId) {
+      this.store = new Store(this.hass, this.config, this.activePlayerId);
     } else {
       this.store = new Store(this.hass, this.config);
-      this.entityId = this.store.entityId;
+      this.activePlayerId = this.store.activePlayer.id;
     }
   }
   getCardSize() {
@@ -83,14 +83,14 @@ export class Card extends LitElement {
     window.addEventListener(SHOW_SECTION, this.showSectionListener);
     window.addEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
     window.addEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
-    listenForEntityId(this.entityIdListener);
+    listenForActivePlayer(this.activePlayerListener);
   }
 
   disconnectedCallback() {
     window.removeEventListener(SHOW_SECTION, this.showSectionListener);
     window.removeEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
     window.removeEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
-    stopListeningForEntityId(this.entityIdListener);
+    stopListeningForActivePlayer(this.activePlayerListener);
     super.disconnectedCallback();
   }
 
@@ -125,10 +125,10 @@ export class Card extends LitElement {
     }
   };
 
-  entityIdListener = (event: Event) => {
+  activePlayerListener = (event: Event) => {
     const newEntityId = (event as CustomEvent).detail.entityId;
-    if (newEntityId !== this.entityId) {
-      this.entityId = newEntityId;
+    if (newEntityId !== this.activePlayerId) {
+      this.activePlayerId = newEntityId;
       this.requestUpdate();
     }
   };
@@ -203,12 +203,12 @@ export class Card extends LitElement {
   }
 }
 
-function listenForEntityId(listener: EventListener) {
+function listenForActivePlayer(listener: EventListener) {
   window.addEventListener(ACTIVE_PLAYER_EVENT, listener);
   const event = new CustomEvent(REQUEST_PLAYER_EVENT, { bubbles: true, composed: true });
   window.dispatchEvent(event);
 }
 
-function stopListeningForEntityId(listener: EventListener) {
+function stopListeningForActivePlayer(listener: EventListener) {
   window.removeEventListener(ACTIVE_PLAYER_EVENT, listener);
 }

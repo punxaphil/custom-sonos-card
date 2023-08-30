@@ -1,4 +1,3 @@
-import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
 import { until } from 'lit-html/directives/until.js';
 import { property, state } from 'lit/decorators.js';
@@ -7,21 +6,21 @@ import '../components/media-browser-icons';
 import '../components/media-browser-header';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
-import Store from '../store';
+import Store from '../model/store';
 import { CardConfig, MediaPlayerItem, Section } from '../types';
 import { dispatchShowSection } from '../utils/utils';
 import { BROWSE_CLICKED, BROWSE_STATE, MEDIA_ITEM_SELECTED, PLAY_DIR } from '../constants';
+import { MediaPlayer } from '../model/media-player';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
 
 export class MediaBrowser extends LitElement {
   @property() store!: Store;
   private config!: CardConfig;
-  private entityId!: string;
-  private hass!: HomeAssistant;
+  private activePlayer!: MediaPlayer;
   @state() private browse!: boolean;
   @state() private currentDir?: MediaPlayerItem;
-  private mediaPlayers!: string[];
+  private mediaPlayers!: MediaPlayer[];
   private parentDirs: MediaPlayerItem[] = [];
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
@@ -51,11 +50,10 @@ export class MediaBrowser extends LitElement {
   render() {
     ({
       config: this.config,
-      hass: this.hass,
-      mediaPlayers: this.mediaPlayers,
+      allMediaPlayers: this.mediaPlayers,
       mediaControlService: this.mediaControlService,
       mediaBrowseService: this.mediaBrowseService,
-      entityId: this.entityId,
+      activePlayer: this.activePlayer,
     } = this.store);
     const currentDirJson = localStorage.getItem(LOCAL_STORAGE_CURRENT_DIR);
     if (currentDirJson) {
@@ -68,7 +66,7 @@ export class MediaBrowser extends LitElement {
     }
     return html`
       <sonos-media-browser-header .config=${this.config}></sonos-media-browser-header>
-      ${this.entityId !== '' &&
+      ${this.activePlayer &&
       until(
         (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
           return this.config.mediaBrowserItemsPerRow > 1
@@ -131,9 +129,9 @@ export class MediaBrowser extends LitElement {
 
   private async playItem(mediaItem: MediaPlayerItem) {
     if (mediaItem.media_content_type || mediaItem.media_content_id) {
-      await this.mediaControlService.playMedia(this.entityId, mediaItem);
+      await this.mediaControlService.playMedia(this.activePlayer, mediaItem);
     } else {
-      await this.mediaControlService.setSource(this.entityId, mediaItem.title);
+      await this.mediaControlService.setSource(this.activePlayer, mediaItem.title);
     }
   }
 
@@ -144,7 +142,7 @@ export class MediaBrowser extends LitElement {
     );
     allFavorites = allFavorites.sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
     return [
-      ...(this.config.customSources?.[this.entityId]?.map(MediaBrowser.createSource) || []),
+      ...(this.config.customSources?.[this.activePlayer.id]?.map(MediaBrowser.createSource) || []),
       ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
       ...allFavorites,
     ];
@@ -156,7 +154,7 @@ export class MediaBrowser extends LitElement {
 
   private async loadMediaDir(mediaItem?: MediaPlayerItem) {
     return await (mediaItem
-      ? this.mediaBrowseService.getDir(this.entityId, mediaItem, this.config.mediaBrowserTitlesToIgnore)
-      : this.mediaBrowseService.getRoot(this.entityId, this.config.mediaBrowserTitlesToIgnore));
+      ? this.mediaBrowseService.getDir(this.activePlayer, mediaItem, this.config.mediaBrowserTitlesToIgnore)
+      : this.mediaBrowseService.getRoot(this.activePlayer, this.config.mediaBrowserTitlesToIgnore));
   }
 }

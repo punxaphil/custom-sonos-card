@@ -1,7 +1,8 @@
-import { MediaPlayerItem, Members, PlayerGroup, PlayerGroups } from '../types';
+import { MediaPlayerItem } from '../types';
 import HassService from './hass-service';
 import { HomeAssistant } from 'custom-card-helpers';
-import { dispatchActiveEntity, isPlaying } from '../utils/utils';
+import { dispatchActivePlayerId } from '../utils/utils';
+import { MediaPlayer } from '../model/media-player';
 
 export default class MediaControlService {
   private hassService: HassService;
@@ -12,25 +13,25 @@ export default class MediaControlService {
     this.hass = hass;
   }
 
-  async join(master: string, entities: string[]) {
+  async join(main: string, memberIds: string[]) {
     await this.hassService.callMediaService('join', {
-      entity_id: master,
-      group_members: entities,
+      entity_id: main,
+      group_members: memberIds,
     });
   }
 
-  async unjoin(entities: string[]) {
+  async unJoin(playerIds: string[]) {
     await this.hassService.callMediaService('unjoin', {
-      entity_id: entities,
+      entity_id: playerIds,
     });
   }
 
-  async createGroup(toBeGrouped: string[], currentGroups: PlayerGroups) {
+  async createGroup(toBeGrouped: string[], currentGroups: MediaPlayer[]) {
     toBeGrouped = this.ignoreUnavailableEntities(toBeGrouped);
-    let candidateGroup!: PlayerGroup;
-    for (const group of Object.values(currentGroups)) {
-      if (toBeGrouped.indexOf(group.entity) > -1) {
-        if (isPlaying(group.state)) {
+    let candidateGroup!: MediaPlayer;
+    for (const group of currentGroups) {
+      if (toBeGrouped.indexOf(group.id) > -1) {
+        if (group.isPlaying()) {
           await this.modifyExistingGroup(group, toBeGrouped);
           return;
         }
@@ -40,9 +41,9 @@ export default class MediaControlService {
     if (candidateGroup) {
       await this.modifyExistingGroup(candidateGroup, toBeGrouped);
     } else {
-      const master = toBeGrouped[0];
-      dispatchActiveEntity(master);
-      await this.join(master, toBeGrouped);
+      const main = toBeGrouped[0];
+      dispatchActivePlayerId(main);
+      await this.join(main, toBeGrouped);
     }
   }
 
@@ -50,83 +51,88 @@ export default class MediaControlService {
     return entities.filter((entityId) => this.hass.states[entityId]?.state !== 'unavailable');
   }
 
-  private async modifyExistingGroup(group: PlayerGroup, toBeGrouped: string[]) {
-    const members = Object.keys(group.members);
-    const membersNotToBeGrouped = members.filter((member) => toBeGrouped.indexOf(member) === -1);
+  private async modifyExistingGroup(group: MediaPlayer, toBeGrouped: string[]) {
+    const members = group.members;
+    const membersNotToBeGrouped = members.filter((member) => toBeGrouped.indexOf(member.id) === -1);
     if (membersNotToBeGrouped?.length) {
-      await this.unjoin(membersNotToBeGrouped);
+      await this.unJoin(membersNotToBeGrouped.map((member) => member.id));
     }
-    dispatchActiveEntity(group.entity);
-    await this.join(group.entity, toBeGrouped);
+    dispatchActivePlayerId(group.id);
+    await this.join(group.id, toBeGrouped);
   }
 
-  async pause(entity_id: string) {
-    await this.hassService.callMediaService('media_pause', { entity_id });
+  async pause(mediaPlayer: MediaPlayer) {
+    await this.hassService.callMediaService('media_pause', { entity_id: mediaPlayer.id });
   }
 
-  async prev(entity_id: string) {
+  async prev(mediaPlayer: MediaPlayer) {
     await this.hassService.callMediaService('media_previous_track', {
-      entity_id,
+      entity_id: mediaPlayer.id,
     });
   }
 
-  async next(entity_id: string) {
-    await this.hassService.callMediaService('media_next_track', { entity_id });
+  async next(mediaPlayer: MediaPlayer) {
+    await this.hassService.callMediaService('media_next_track', { entity_id: mediaPlayer.id });
   }
 
-  async play(entity_id: string) {
-    await this.hassService.callMediaService('media_play', { entity_id });
+  async play(mediaPlayer: MediaPlayer) {
+    await this.hassService.callMediaService('media_play', { entity_id: mediaPlayer.id });
   }
 
-  async shuffle(entity_id: string, state: boolean) {
-    await this.hassService.callMediaService('shuffle_set', { entity_id, shuffle: state });
+  async shuffle(mediaPlayer: MediaPlayer) {
+    await this.hassService.callMediaService('shuffle_set', {
+      entity_id: mediaPlayer.id,
+      shuffle: !mediaPlayer.attributes.shuffle,
+    });
   }
 
-  async repeat(entity_id: string, currentState: string) {
+  async repeat(mediaPlayer: MediaPlayer) {
+    const currentState = mediaPlayer.attributes.repeat;
     const repeat = currentState === 'all' ? 'one' : currentState === 'one' ? 'off' : 'all';
-    await this.hassService.callMediaService('repeat_set', { entity_id, repeat });
+    await this.hassService.callMediaService('repeat_set', { entity_id: mediaPlayer.id, repeat });
   }
 
-  async volumeDown(entity_id: string, members: Members = {}) {
-    await this.hassService.callMediaService('volume_down', { entity_id });
+  async volumeDown(mediaPlayer: MediaPlayer) {
+    await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
 
-    for (const entity_id in members) {
-      await this.hassService.callMediaService('volume_down', { entity_id: entity_id });
+    for (const member of mediaPlayer.members) {
+      await this.hassService.callMediaService('volume_down', { entity_id: member.id });
     }
   }
 
-  async volumeUp(entity_id: string, members: Members = {}) {
-    await this.hassService.callMediaService('volume_up', { entity_id });
+  async volumeUp(mediaPlayer: MediaPlayer) {
+    await this.hassService.callMediaService('volume_up', { entity_id: mediaPlayer.id });
 
-    for (const entity_id in members) {
-      await this.hassService.callMediaService('volume_up', { entity_id: entity_id });
+    for (const member of mediaPlayer.members) {
+      await this.hassService.callMediaService('volume_up', { entity_id: member.id });
     }
   }
-  async volumeSet(entity_id: string, volume: number, members?: Members) {
+  async volumeSet(mediaPlayer: MediaPlayer, volume: number) {
     const volume_level = volume / 100;
 
-    await this.hassService.callMediaService('volume_set', { entity_id, volume_level: volume_level });
+    await this.hassService.callMediaService('volume_set', { entity_id: mediaPlayer.id, volume_level: volume_level });
 
-    for (const entity_id in members) {
-      await this.hassService.callMediaService('volume_set', { entity_id, volume_level });
+    for (const member of mediaPlayer.members) {
+      await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
     }
   }
 
-  async volumeMute(entity_id: string, is_volume_muted: boolean, members?: Members) {
-    await this.hassService.callMediaService('volume_mute', { entity_id, is_volume_muted });
+  async volumeMute(mediaPlayer: MediaPlayer) {
+    const muteVolume = !mediaPlayer.isMuted();
+    await this.hassService.callMediaService('volume_mute', { entity_id: mediaPlayer.id, is_volume_muted: muteVolume });
 
-    for (const entity_id in members) {
-      await this.hassService.callMediaService('volume_mute', { entity_id, is_volume_muted });
+    for (const member of mediaPlayer.members) {
+      await this.hassService.callMediaService('volume_mute', { entity_id: member.id, is_volume_muted: muteVolume });
     }
   }
 
-  async setSource(entity_id: string, source: string) {
-    await this.hassService.callMediaService('select_source', { source: source, entity_id });
+  async setSource(mediaPlayer: MediaPlayer, source: string) {
+    await this.hassService.callMediaService('select_source', { source: source, entity_id: mediaPlayer.id });
   }
 
-  async playMedia(entity_id: string, item: MediaPlayerItem) {
+  async playMedia(mediaPlayer: MediaPlayer, item: MediaPlayerItem) {
     await this.hassService.callMediaService('play_media', {
-      entity_id,
+      entity_id: mediaPlayer.id,
       media_content_id: item.media_content_id,
       media_content_type: item.media_content_type,
     });

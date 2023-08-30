@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import Store from '../store';
+import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { dispatchMediaItemSelected } from '../utils/utils';
 import { listStyle, mediaBrowserTitleStyle } from '../constants';

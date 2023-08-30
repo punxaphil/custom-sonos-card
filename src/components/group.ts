@@ -1,17 +1,16 @@
-import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
-import Store from '../store';
-import { CardConfig, PlayerGroup, Section } from '../types';
-import { dispatchActiveEntity, dispatchShowSection, getCurrentTrack, getSpeakerList, isPlaying } from '../utils/utils';
+import Store from '../model/store';
+import { CardConfig, Section } from '../types';
+import { dispatchActivePlayerId, dispatchShowSection, getSpeakerList } from '../utils/utils';
 import { REQUEST_PLAYER_EVENT } from '../constants';
+import { MediaPlayer } from '../model/media-player';
 
 class Group extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
   private config!: CardConfig;
-  private group!: PlayerGroup;
+  @property() player!: MediaPlayer;
   @property() selected = false;
 
   connectedCallback() {
@@ -26,17 +25,17 @@ class Group extends LitElement {
 
   dispatchEntityIdEvent = () => {
     if (this.selected) {
-      const entityId = this.group.entity;
-      dispatchActiveEntity(entityId);
+      const entityId = this.player.id;
+      dispatchActivePlayerId(entityId);
     }
   };
 
   render() {
-    ({ config: this.config, hass: this.hass } = this.store);
-    const currentTrack = this.config.hideGroupCurrentTrack ? '' : getCurrentTrack(this.hass.states[this.group.entity]);
-    const speakerList = getSpeakerList(this.group, this.config);
+    this.config = this.store.config;
+    const currentTrack = this.config.hideGroupCurrentTrack ? '' : this.player.getCurrentTrack();
+    const speakerList = getSpeakerList(this.player, this.config);
     this.dispatchEntityIdEvent();
-    const icon = this.hass.states[this.group.entity].attributes.icon;
+    const icon = this.player.attributes.icon;
     return html`
       <mwc-list-item
         hasMeta
@@ -53,7 +52,7 @@ class Group extends LitElement {
         </div>
 
         ${when(
-          isPlaying(this.group.state),
+          this.player.isPlaying(),
           () => html`
             <div class="bars" slot="meta">
               <div></div>
@@ -70,7 +69,7 @@ class Group extends LitElement {
     if (!this.selected) {
       this.selected = true;
       const newUrl = window.location.href.replace(/#.*/g, '');
-      window.location.replace(`${newUrl}#${this.group.entity}`);
+      window.location.replace(`${newUrl}#${this.player.id}`);
       this.dispatchEntityIdEvent();
       dispatchShowSection(Section.PLAYER);
     }
