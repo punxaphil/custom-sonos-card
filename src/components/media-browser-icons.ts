@@ -16,7 +16,7 @@ export class MediaBrowserIcons extends LitElement {
   private config!: CardConfig;
 
   render() {
-    ({ config: this.config } = this.store);
+    this.config = this.store.config;
 
     return html`
       <style>

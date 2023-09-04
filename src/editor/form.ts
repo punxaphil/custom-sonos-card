@@ -7,7 +7,8 @@ class Form extends BaseEditor {
   @property() data!: unknown;
   @property() changed!: (ev: CustomEvent) => void;
   protected render(): TemplateResult {
-    ({ config: this.config, hass: this.hass } = this.store);
+    this.config = this.store.config;
+    this.hass = this.store.hass;
 
     return html`
       <ha-form

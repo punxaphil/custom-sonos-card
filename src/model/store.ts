@@ -2,7 +2,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import HassService from '../services/hass-service';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
-import { CardConfig } from '../types';
+import { CardConfig, PlayerVolume, PredefinedGroup } from '../types';
 import { getGroupPlayerIds } from '../utils/utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
@@ -16,6 +16,7 @@ export default class Store {
   public mediaControlService: MediaControlService;
   public mediaBrowseService: MediaBrowseService;
   public allMediaPlayers: MediaPlayer[];
+  public predefinedGroups?: PredefinedGroup[];
 
   constructor(hass: HomeAssistant, config: CardConfig, activePlayerId?: string) {
     this.hass = hass;
@@ -28,7 +29,7 @@ export default class Store {
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     const section = this.config.sections?.[0];
     this.hassService = new HassService(this.hass, section);
-    this.mediaControlService = new MediaControlService(this.hass, this.hassService);
+    this.mediaControlService = new MediaControlService(this.hassService, this.allGroups);
     this.mediaBrowseService = new MediaBrowseService(this.hassService);
   }
   private getMediaPlayerHassEntities() {
@@ -46,7 +47,7 @@ export default class Store {
   private createPlayerGroups(mediaPlayerHassEntities: HassEntity[]) {
     return mediaPlayerHassEntities
       .filter((hassEntity) => this.isMainPlayer(hassEntity, mediaPlayerHassEntities))
-      .map((hassEntity) => this.createGroup(hassEntity, mediaPlayerHassEntities))
+      .map((hassEntity) => this.createPlayerGroup(hassEntity, mediaPlayerHassEntities))
       .filter((grp) => grp !== undefined) as MediaPlayer[];
   }
 
@@ -64,7 +65,7 @@ export default class Store {
     }
   }
 
-  private createGroup(hassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]): MediaPlayer | undefined {
+  private createPlayerGroup(hassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]): MediaPlayer | undefined {
     try {
       return new MediaPlayer(hassEntity, this.config, mediaPlayerHassEntities);
     } catch (e) {

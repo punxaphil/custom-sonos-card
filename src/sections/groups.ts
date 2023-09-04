@@ -11,7 +11,9 @@ export class Groups extends LitElement {
   private activePlayer!: MediaPlayer;
 
   render() {
-    ({ allGroups: this.groups, activePlayer: this.activePlayer } = this.store);
+    this.activePlayer = this.store.activePlayer;
+    this.groups = this.store.allGroups;
+
     return html`
       <mwc-list activatable class="list">
         ${this.groups.map((group) => {

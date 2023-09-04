@@ -17,7 +17,9 @@ export class Player extends LitElement {
   private activePlayer!: MediaPlayer;
 
   render() {
-    ({ config: this.config, activePlayer: this.activePlayer } = this.store);
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+
     return html`
       <div class="row">
         <sonos-player-header .store=${this.store}></sonos-player-header>

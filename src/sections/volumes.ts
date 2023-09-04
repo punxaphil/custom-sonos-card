@@ -1,4 +1,3 @@
-import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../model/store';
@@ -10,23 +9,23 @@ import { iconButton } from '../components/icon-button';
 import { mdiCog, mdiCogOff, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
 import MediaControlService from '../services/media-control-service';
 import { MediaPlayer } from '../model/media-player';
+import { HassEntity } from 'home-assistant-js-websocket';
+import HassService from '../services/hass-service';
 
 class Volumes extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   @state() private showSwitches: { [entity: string]: boolean } = {};
+  private hassService!: HassService;
 
   render() {
-    ({
-      config: this.config,
-      hass: this.hass,
-      mediaControlService: this.mediaControlService,
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+    this.hassService = this.store.hassService;
+    this.mediaControlService = this.store.mediaControlService;
 
-      activePlayer: this.activePlayer,
-    } = this.store);
     const members = this.activePlayer.members;
     return html`
       ${when(members.length > 1, () =>
@@ -65,15 +64,14 @@ class Volumes extends LitElement {
   }
 
   private async getAdditionalSwitches(player: MediaPlayer) {
-    const hassService = this.store.hassService;
-    const items = await hassService.getRelatedSwitchEntities(player);
-    return items.map((item: string) => {
-      const style = this.hass.states[item].state === 'on' ? styleMap({ color: 'var(--accent-color)' }) : '';
+    const switches = await this.hassService.getRelatedSwitchEntities(player);
+    return switches.map((switchEntity: HassEntity) => {
+      const style = switchEntity.state === 'on' ? styleMap({ color: 'var(--accent-color)' }) : '';
       return html`
         <ha-icon
-          @click="${() => hassService.toggle(item)}"
+          @click="${() => this.hassService.toggle(switchEntity)}"
           style="${style}"
-          .icon=${this.hass.states[item].attributes.icon || ''}
+          .icon=${switchEntity.attributes.icon || ''}
         ></ha-icon>
       `;
     });

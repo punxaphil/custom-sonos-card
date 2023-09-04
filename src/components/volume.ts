@@ -15,7 +15,9 @@ class Volume extends LitElement {
   @property() volumeClicked?: () => void;
 
   render() {
-    ({ config: this.config, mediaControlService: this.mediaControlService } = this.store);
+    this.config = this.store.config;
+    this.mediaControlService = this.store.mediaControlService;
+
     const volume = 100 * this.activePlayer.attributes.volume_level;
     let max = 100;
     if (volume < 20) {

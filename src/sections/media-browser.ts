@@ -48,13 +48,12 @@ export class MediaBrowser extends LitElement {
   }
 
   render() {
-    ({
-      config: this.config,
-      allMediaPlayers: this.mediaPlayers,
-      mediaControlService: this.mediaControlService,
-      mediaBrowseService: this.mediaBrowseService,
-      activePlayer: this.activePlayer,
-    } = this.store);
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+    this.mediaBrowseService = this.store.mediaBrowseService;
+    this.mediaPlayers = this.store.allMediaPlayers;
+    this.mediaControlService = this.store.mediaControlService;
+
     const currentDirJson = localStorage.getItem(LOCAL_STORAGE_CURRENT_DIR);
     if (currentDirJson) {
       const currentDir = JSON.parse(currentDirJson);

@@ -3,6 +3,7 @@ import { MediaPlayerItem, Section, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 import { MediaPlayer } from '../model/media-player';
+import { HassEntity } from 'home-assistant-js-websocket';
 
 export default class HassService {
   private readonly hass: HomeAssistant;
@@ -44,7 +45,7 @@ export default class HassService {
   }
 
   async getRelatedSwitchEntities(player: MediaPlayer) {
-    return new Promise<string[]>(async (resolve, reject) => {
+    return new Promise<HassEntity[]>(async (resolve, reject) => {
       const subscribeMessage = {
         type: 'render_template',
         template: "{{ device_entities(device_id('" + player.id + "')) }}",
@@ -52,7 +53,9 @@ export default class HassService {
       try {
         const unsubscribe = await this.hass.connection.subscribeMessage<TemplateResult>((response) => {
           unsubscribe();
-          resolve(response.result.filter((item: string) => item.indexOf('switch') > -1));
+          resolve(
+            response.result.filter((item: string) => item.indexOf('switch') > -1).map((item) => this.hass.states[item]),
+          );
         }, subscribeMessage);
       } catch (e) {
         reject(e);
@@ -60,9 +63,9 @@ export default class HassService {
     });
   }
 
-  async toggle(entity_id: string) {
+  async toggle(entity: HassEntity) {
     await this.hass.callService('homeassistant', 'toggle', {
-      entity_id,
+      entity_id: entity.entity_id,
     });
   }
 }

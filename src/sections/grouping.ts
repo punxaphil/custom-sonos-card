@@ -18,12 +18,11 @@ export class Grouping extends LitElement {
   private mediaPlayerIds!: string[];
 
   render() {
-    ({
-      config: this.config,
-      allGroups: this.allGroups,
-      activePlayer: this.activePlayer,
-      mediaControlService: this.mediaControlService,
-    } = this.store);
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+    this.allGroups = this.store.allGroups;
+    this.mediaControlService = this.store.mediaControlService;
+
     return html`
       <div class="buttons">
         ${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}

@@ -26,11 +26,9 @@ class PlayerControls extends LitElement {
   private mediaControlService!: MediaControlService;
 
   render() {
-    ({
-      config: this.config,
-      activePlayer: this.activePlayer,
-      mediaControlService: this.mediaControlService,
-    } = this.store);
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+    this.mediaControlService = this.store.mediaControlService;
 
     const playing = this.activePlayer.isPlaying();
     return html`

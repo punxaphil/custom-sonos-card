@@ -16,7 +16,7 @@ export class MediaBrowserList extends LitElement {
   private config!: CardConfig;
 
   render() {
-    ({ config: this.config } = this.store);
+    this.config = this.store.config;
 
     return html`
       <mwc-list multi class="list">

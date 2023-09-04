@@ -16,6 +16,7 @@
     "noImplicitAny": true,
     "skipLibCheck": false,
     "resolveJsonModule": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "noUnusedLocals": true,
   }
 }
