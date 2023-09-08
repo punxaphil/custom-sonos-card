@@ -14,7 +14,7 @@ class PlayerHeader extends LitElement {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
 
-    const speakerList = getSpeakerList(this.activePlayer, this.config);
+    const speakerList = getSpeakerList(this.activePlayer, this.store.predefinedGroups);
     let song = this.config.labelWhenNoMediaIsSelected ? this.config.labelWhenNoMediaIsSelected : 'No media selected';
     if (this.activePlayer.attributes.media_title) {
       song = this.activePlayer.getCurrentTrack();

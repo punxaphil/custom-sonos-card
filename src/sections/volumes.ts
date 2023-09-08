@@ -28,19 +28,19 @@ class Volumes extends LitElement {
 
     const members = this.activePlayer.members;
     return html`
-      ${when(members.length > 1, () =>
-        this.volumeWithName(
-          this.activePlayer,
-          this.config.labelForTheAllVolumesSlider ? this.config.labelForTheAllVolumesSlider : 'All',
-        ),
-      )}
-      ${members.map((member) => this.volumeWithName(member))}
+      ${when(members.length, () => this.volumeWithName(this.activePlayer))}
+      ${[this.activePlayer, ...members].map((member) => this.volumeWithName(member, false))}
     `;
   }
 
-  private volumeWithName(player: MediaPlayer, name: string = player.name) {
-    const volDown = async () => await this.mediaControlService.volumeDown(player);
-    const volUp = async () => await this.mediaControlService.volumeUp(player);
+  private volumeWithName(player: MediaPlayer, updateMembers = true) {
+    const name = updateMembers
+      ? this.config.labelForTheAllVolumesSlider
+        ? this.config.labelForTheAllVolumesSlider
+        : 'All'
+      : player.name;
+    const volDown = async () => await this.mediaControlService.volumeDown(player, updateMembers);
+    const volUp = async () => await this.mediaControlService.volumeUp(player, updateMembers);
     return html` <div class="row">
       <div class="volume-name">
         <div class="volume-name-text">${name}</div>
@@ -48,9 +48,9 @@ class Volumes extends LitElement {
       <div class="slider-row">
         ${this.config.showVolumeUpAndDownButtons ? iconButton(mdiVolumeMinus, volDown) : ''}
 
-        <sonos-volume .store=${this.store} .player=${player}></sonos-volume>
+        <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
         ${this.config.showVolumeUpAndDownButtons ? iconButton(mdiVolumePlus, volUp) : ''}
-        ${when(player.members.length, () =>
+        ${when(!updateMembers, () =>
           iconButton(this.showSwitches[player.id] ? mdiCogOff : mdiCog, () => {
             this.showSwitches[player.id] = !this.showSwitches[player.id];
             this.requestUpdate();

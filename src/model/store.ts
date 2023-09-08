@@ -2,7 +2,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import HassService from '../services/hass-service';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
-import { CardConfig, PlayerVolume, PredefinedGroup } from '../types';
+import { CardConfig, PredefinedGroup } from '../types';
 import { getGroupPlayerIds } from '../utils/utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
@@ -23,15 +23,35 @@ export default class Store {
     this.config = config;
     const mediaPlayerHassEntities = this.getMediaPlayerHassEntities();
     this.allGroups = this.createPlayerGroups(mediaPlayerHassEntities);
-    this.allMediaPlayers = this.allGroups.reduce((previousValue: MediaPlayer[], currentValue) => {
-      return [...previousValue, currentValue, ...currentValue.members];
-    }, []);
+    this.allMediaPlayers = this.allGroups
+      .reduce(
+        (previousValue: MediaPlayer[], currentValue) => [...previousValue, currentValue, ...currentValue.members],
+        [],
+      )
+      .sort((a, b) => a.name.localeCompare(b.name));
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     const section = this.config.sections?.[0];
     this.hassService = new HassService(this.hass, section);
-    this.mediaControlService = new MediaControlService(this.hassService, this.allGroups);
+    this.mediaControlService = new MediaControlService(this.hassService, this.allGroups, this.config);
     this.mediaBrowseService = new MediaBrowseService(this.hassService);
+    this.predefinedGroups = this.createPredefinedGroups();
   }
+
+  private createPredefinedGroups() {
+    if (this.config.predefinedGroups) {
+      const predefinedGroups: PredefinedGroup[] = this.config.predefinedGroups;
+      predefinedGroups?.forEach((pg) => this.filterUnavailablePlayers(pg));
+      return predefinedGroups?.filter((group) => group.entities.length > 1);
+    }
+    return [];
+  }
+
+  private filterUnavailablePlayers(pg: PredefinedGroup) {
+    pg.entities = pg.entities.filter((item) => {
+      return this.hass.states[item]?.state !== 'unavailable';
+    });
+  }
+
   private getMediaPlayerHassEntities() {
     if (this.config.entities) {
       return [...new Set(this.config.entities)]
@@ -77,7 +97,7 @@ export default class Store {
   private determineActivePlayer(activePlayerId?: string): MediaPlayer {
     const playerId = activePlayerId || this.config.entityId || this.getActivePlayerFromUrl();
     return (
-      this.allGroups.find((group) => group.isInGroup(playerId)) ||
+      this.allGroups.find((group) => group.getPlayer(playerId) !== undefined) ||
       this.allGroups.find((group) => group.isPlaying()) ||
       this.allGroups[0]
     );

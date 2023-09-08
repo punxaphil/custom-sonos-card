@@ -1,5 +1,5 @@
 import { HassEntity } from 'home-assistant-js-websocket';
-import { CardConfig, MediaPlayerItem, Section } from '../types';
+import { CardConfig, MediaPlayerItem, PredefinedGroup, Section } from '../types';
 import { ACTIVE_PLAYER_EVENT, MEDIA_ITEM_SELECTED, SHOW_SECTION } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
@@ -7,10 +7,10 @@ export function dispatchShowSection(section: Section) {
   window.dispatchEvent(new CustomEvent(SHOW_SECTION, { detail: section }));
 }
 
-export function getSpeakerList(mainPlayer: MediaPlayer, config: CardConfig) {
+export function getSpeakerList(mainPlayer: MediaPlayer, predefinedGroups: PredefinedGroup[] = []) {
   const playerIds = [mainPlayer.id, ...mainPlayer.members.map((member) => member.id)].sort();
-  if (config.predefinedGroups?.length) {
-    const found = config.predefinedGroups.find((pg) => pg.entities.sort().toString() === playerIds.toString());
+  if (predefinedGroups?.length) {
+    const found = predefinedGroups.find((pg) => pg.entities.sort().toString() === playerIds.toString());
     if (found) {
       return found.name;
     }

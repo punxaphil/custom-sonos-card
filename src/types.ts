@@ -36,6 +36,7 @@ export interface CardConfig extends LovelaceCardConfig {
   mediaBrowserTitlesToIgnore?: string[];
   mediaBrowserItemsPerRow: number;
   mediaBrowserShowTitleForThumbnailIcons?: boolean;
+  volumeRatios?: VolumeRatio[];
 }
 
 export interface MediaArtworkOverride {
@@ -73,6 +74,12 @@ export interface MediaPlayerItem {
 export interface PredefinedGroup {
   name: string;
   entities: string[];
+}
+
+export interface VolumeRatio {
+  basePlayer: string;
+  adjustedPlayer: string;
+  ratio: number;
 }
 
 export interface TemplateResult {

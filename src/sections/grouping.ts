@@ -3,7 +3,6 @@ import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
-import { CardConfig } from '../types';
 import { dispatchActivePlayerId } from '../utils/utils';
 import { getButton } from '../components/button';
 import { listStyle } from '../constants';
@@ -11,22 +10,21 @@ import { MediaPlayer } from '../model/media-player';
 
 export class Grouping extends LitElement {
   @property() store!: Store;
-  private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private allGroups!: MediaPlayer[];
   private mediaPlayerIds!: string[];
 
   render() {
-    this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
     this.allGroups = this.store.allGroups;
     this.mediaControlService = this.store.mediaControlService;
+    this.mediaPlayerIds = this.store.allMediaPlayers.map((player) => player.id);
 
     return html`
       <div class="buttons">
         ${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}
-        ${when(this.config.predefinedGroups, () => this.renderPredefinedGroups())}
+        ${when(this.store.predefinedGroups, () => this.renderPredefinedGroups())}
       </div>
       <mwc-list multi class="list">
         ${this.store.allMediaPlayers
@@ -35,7 +33,7 @@ export class Grouping extends LitElement {
             return html`
               <mwc-list-item
                 ?activated="${groupingItem.isSelected}"
-                ?disabled="${groupingItem.isSelected && !groupingItem.player.isGrouped()}"
+                ?disabled="${groupingItem.isSelected && !groupingItem.isGrouped}"
                 @click="${async () => await this.itemClickAction(groupingItem)}"
               >
                 <ha-icon
@@ -82,6 +80,7 @@ export class Grouping extends LitElement {
     return {
       isMain,
       isSelected: isMain || this.activePlayer.hasMember(player.id),
+      isGrouped: this.activePlayer.isGrouped(),
       player: player,
     };
   }
@@ -97,7 +96,7 @@ export class Grouping extends LitElement {
   }
 
   private renderPredefinedGroups() {
-    return this.config.predefinedGroups
+    return this.store.predefinedGroups
       ?.filter((group) => group.entities.length > 1)
       .map((group) => {
         const click = async () => await this.mediaControlService.createGroup(group.entities, this.allGroups);
@@ -128,5 +127,6 @@ export class Grouping extends LitElement {
 interface GroupingItem {
   isMain: boolean;
   isSelected: boolean;
+  isGrouped: boolean;
   player: MediaPlayer;
 }

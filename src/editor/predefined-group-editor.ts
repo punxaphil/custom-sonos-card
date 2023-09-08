@@ -8,7 +8,9 @@ class PredefinedGroupEditor extends BaseEditor {
   @property() index!: number;
 
   protected render(): TemplateResult {
-    ({ config: this.config, hass: this.hass } = this.store);
+    this.config = this.store.config;
+    this.hass = this.store.hass;
+
     const predefinedGroup: PredefinedGroup = this.config.predefinedGroups?.[this.index || 0] || {
       name: '',
       entities: [],

@@ -40,7 +40,7 @@ class PlayerControls extends LitElement {
           ${iconButton(mdiSkipNext, this.next)} ${iconButton(this.repeatIcon(), this.repeat)}
           ${this.config.showVolumeUpAndDownButtons ? iconButton(mdiVolumePlus, this.volUp) : ''}
         </div>
-        <sonos-volume .store=${this.store} .activePlayer=${this.activePlayer}></sonos-volume>
+        <sonos-volume .store=${this.store} .player=${this.activePlayer}></sonos-volume>
       </div>
     `;
   }

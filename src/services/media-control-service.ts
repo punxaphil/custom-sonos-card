@@ -1,16 +1,17 @@
-import { MediaPlayerItem } from '../types';
+import { CardConfig, MediaPlayerItem } from '../types';
 import HassService from './hass-service';
-import { HomeAssistant } from 'custom-card-helpers';
 import { dispatchActivePlayerId } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 
 export default class MediaControlService {
   private hassService: HassService;
-  private hass: HomeAssistant;
+  private allGroups: MediaPlayer[];
+  private config: CardConfig;
 
-  constructor(hass: HomeAssistant, hassService: HassService) {
+  constructor(hassService: HassService, allGroups: MediaPlayer[], config: CardConfig) {
     this.hassService = hassService;
-    this.hass = hass;
+    this.allGroups = allGroups;
+    this.config = config;
   }
 
   async join(main: string, memberIds: string[]) {
@@ -18,6 +19,7 @@ export default class MediaControlService {
       entity_id: main,
       group_members: memberIds,
     });
+    this.applyVolumeRatios();
   }
 
   async unJoin(playerIds: string[]) {
@@ -27,7 +29,6 @@ export default class MediaControlService {
   }
 
   async createGroup(toBeGrouped: string[], currentGroups: MediaPlayer[]) {
-    toBeGrouped = this.ignoreUnavailableEntities(toBeGrouped);
     let candidateGroup!: MediaPlayer;
     for (const group of currentGroups) {
       if (toBeGrouped.indexOf(group.id) > -1) {
@@ -45,10 +46,6 @@ export default class MediaControlService {
       dispatchActivePlayerId(main);
       await this.join(main, toBeGrouped);
     }
-  }
-
-  private ignoreUnavailableEntities(entities: string[]) {
-    return entities.filter((entityId) => this.hass.states[entityId]?.state !== 'unavailable');
   }
 
   private async modifyExistingGroup(group: MediaPlayer, toBeGrouped: string[]) {
@@ -92,37 +89,44 @@ export default class MediaControlService {
     await this.hassService.callMediaService('repeat_set', { entity_id: mediaPlayer.id, repeat });
   }
 
-  async volumeDown(mediaPlayer: MediaPlayer) {
+  async volumeDown(mediaPlayer: MediaPlayer, updateMembers = true) {
     await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
-
-    for (const member of mediaPlayer.members) {
-      await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+    if (updateMembers) {
+      for (const member of mediaPlayer.members) {
+        await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+      }
+      this.applyVolumeRatios();
     }
   }
 
-  async volumeUp(mediaPlayer: MediaPlayer) {
+  async volumeUp(mediaPlayer: MediaPlayer, updateMembers = true) {
     await this.hassService.callMediaService('volume_up', { entity_id: mediaPlayer.id });
-
-    for (const member of mediaPlayer.members) {
-      await this.hassService.callMediaService('volume_up', { entity_id: member.id });
+    if (updateMembers) {
+      for (const member of mediaPlayer.members) {
+        await this.hassService.callMediaService('volume_up', { entity_id: member.id });
+      }
+      this.applyVolumeRatios();
     }
   }
-  async volumeSet(mediaPlayer: MediaPlayer, volume: number) {
+  async volumeSet(mediaPlayer: MediaPlayer, volume: number, updateMembers = true) {
     const volume_level = volume / 100;
 
     await this.hassService.callMediaService('volume_set', { entity_id: mediaPlayer.id, volume_level: volume_level });
-
-    for (const member of mediaPlayer.members) {
-      await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
+    if (updateMembers) {
+      for (const member of mediaPlayer.members) {
+        await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
+      }
+      this.applyVolumeRatios();
     }
   }
 
-  async volumeMute(mediaPlayer: MediaPlayer) {
+  async volumeMute(mediaPlayer: MediaPlayer, updateMembers = true) {
     const muteVolume = !mediaPlayer.isMuted();
     await this.hassService.callMediaService('volume_mute', { entity_id: mediaPlayer.id, is_volume_muted: muteVolume });
-
-    for (const member of mediaPlayer.members) {
-      await this.hassService.callMediaService('volume_mute', { entity_id: member.id, is_volume_muted: muteVolume });
+    if (updateMembers) {
+      for (const member of mediaPlayer.members) {
+        await this.hassService.callMediaService('volume_mute', { entity_id: member.id, is_volume_muted: muteVolume });
+      }
     }
   }
 
@@ -135,6 +139,21 @@ export default class MediaControlService {
       entity_id: mediaPlayer.id,
       media_content_id: item.media_content_id,
       media_content_type: item.media_content_type,
+    });
+  }
+
+  private applyVolumeRatios() {
+    this.config.volumeRatios?.forEach((volumeRatio) => {
+      this.allGroups
+        .filter((group) => group.hasPlayer(volumeRatio.basePlayer) && group.hasPlayer(volumeRatio.adjustedPlayer))
+        .forEach(async (group) => {
+          const base = group.getPlayer(volumeRatio.basePlayer);
+          const adjusted = group.getPlayer(volumeRatio.adjustedPlayer);
+          if (adjusted) {
+            const volume = base?.attributes.volume_level * volumeRatio.ratio * 100;
+            await this.volumeSet(adjusted, volume, false);
+          }
+        });
     });
   }
 }

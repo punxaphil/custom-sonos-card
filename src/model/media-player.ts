@@ -21,11 +21,19 @@ export class MediaPlayer {
     this.members = mediaPlayerHassEntities ? this.createGroupMembers(hassEntity, mediaPlayerHassEntities) : [];
   }
 
-  isInGroup(playerId: string) {
-    return this.id === playerId || this.hasMember(playerId);
+  hasPlayer(playerId: string) {
+    return this.getPlayer(playerId) !== undefined;
   }
+  getPlayer(playerId: string) {
+    return this.id === playerId ? this : this.getMember(playerId);
+  }
+
+  private getMember(playerId: string) {
+    return this.members.find((member) => member.id === playerId);
+  }
+
   hasMember(playerId: string) {
-    return this.members.some((member) => member.id === playerId);
+    return this.getMember(playerId) !== undefined;
   }
 
   isPlaying() {

@@ -11,14 +11,15 @@ class Volume extends LitElement {
   @property() store!: Store;
   private config!: CardConfig;
   private mediaControlService!: MediaControlService;
-  @property() activePlayer!: MediaPlayer;
+  @property() player!: MediaPlayer;
+  @property() updateMembers = true;
   @property() volumeClicked?: () => void;
 
   render() {
     this.config = this.store.config;
     this.mediaControlService = this.store.mediaControlService;
 
-    const volume = 100 * this.activePlayer.attributes.volume_level;
+    const volume = 100 * this.player.attributes.volume_level;
     let max = 100;
     if (volume < 20) {
       if (this.config.dynamicVolumeSlider) {
@@ -29,8 +30,8 @@ class Volume extends LitElement {
     return html`
       <div class="volume">
         ${iconButton(
-          this.activePlayer.isMuted() ? mdiVolumeMute : mdiVolumeHigh,
-          async () => await this.mediaControlService.volumeMute(this.activePlayer),
+          this.player.isMuted() ? mdiVolumeMute : mdiVolumeHigh,
+          async () => await this.mediaControlService.volumeMute(this.player, this.updateMembers),
         )}
         <div class="volume-slider">
           <ha-control-slider .value="${volume}" max=${max} @value-changed=${this.volumeChanged}> </ha-control-slider>
@@ -52,7 +53,7 @@ class Volume extends LitElement {
   }
 
   private async setVolume(volume: number) {
-    return await this.mediaControlService.volumeSet(this.activePlayer, volume);
+    return await this.mediaControlService.volumeSet(this.player, volume, this.updateMembers);
   }
 
   static get styles() {

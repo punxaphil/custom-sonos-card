@@ -33,7 +33,7 @@ class Group extends LitElement {
   render() {
     this.config = this.store.config;
     const currentTrack = this.config.hideGroupCurrentTrack ? '' : this.player.getCurrentTrack();
-    const speakerList = getSpeakerList(this.player, this.config);
+    const speakerList = getSpeakerList(this.player, this.store.predefinedGroups);
     this.dispatchEntityIdEvent();
     const icon = this.player.attributes.icon;
     return html`
