@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import Store from './model/store';
@@ -76,6 +76,26 @@ export class Card extends LitElement {
 
   static getConfigElement() {
     return document.createElement('sonos-card-editor');
+  }
+
+  updated(changedProperties: PropertyValues) {
+    changedProperties.forEach((oldValue, propName) => {
+      if (propName === 'hass' && oldValue?.hasOwnProperty('states')) {
+        this.applyVolumeRatiosIfVolumeChanged(oldValue as HomeAssistant);
+      }
+    });
+  }
+
+  private applyVolumeRatiosIfVolumeChanged(oldHass: HomeAssistant) {
+    const newVolumes = new Map();
+    this.store.allMediaPlayers.forEach((p) => {
+      newVolumes.set(p.id, p.attributes.volume_level);
+    });
+    this.store.getMediaPlayerHassEntities(oldHass).forEach((p) => {
+      if (p.attributes.volume_level !== newVolumes.get(p.entity_id)) {
+        this.store.mediaControlService.applyVolumeRatios(p.entity_id);
+      }
+    });
   }
 
   connectedCallback() {

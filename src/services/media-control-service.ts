@@ -19,7 +19,6 @@ export default class MediaControlService {
       entity_id: main,
       group_members: memberIds,
     });
-    this.applyVolumeRatios();
   }
 
   async unJoin(playerIds: string[]) {
@@ -93,9 +92,10 @@ export default class MediaControlService {
     await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
     if (updateMembers) {
       for (const member of mediaPlayer.members) {
-        await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+        if (!this.isInVolumeRatios(member, mediaPlayer)) {
+          await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+        }
       }
-      this.applyVolumeRatios();
     }
   }
 
@@ -103,9 +103,10 @@ export default class MediaControlService {
     await this.hassService.callMediaService('volume_up', { entity_id: mediaPlayer.id });
     if (updateMembers) {
       for (const member of mediaPlayer.members) {
-        await this.hassService.callMediaService('volume_up', { entity_id: member.id });
+        if (!this.isInVolumeRatios(member, mediaPlayer)) {
+          await this.hassService.callMediaService('volume_up', { entity_id: member.id });
+        }
       }
-      this.applyVolumeRatios();
     }
   }
   async volumeSet(mediaPlayer: MediaPlayer, volume: number, updateMembers = true) {
@@ -114,9 +115,10 @@ export default class MediaControlService {
     await this.hassService.callMediaService('volume_set', { entity_id: mediaPlayer.id, volume_level: volume_level });
     if (updateMembers) {
       for (const member of mediaPlayer.members) {
-        await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
+        if (!this.isInVolumeRatios(member, mediaPlayer)) {
+          await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
+        }
       }
-      this.applyVolumeRatios();
     }
   }
 
@@ -142,18 +144,32 @@ export default class MediaControlService {
     });
   }
 
-  private applyVolumeRatios() {
-    this.config.volumeRatios?.forEach((volumeRatio) => {
-      this.allGroups
-        .filter((group) => group.hasPlayer(volumeRatio.basePlayer) && group.hasPlayer(volumeRatio.adjustedPlayer))
-        .forEach(async (group) => {
-          const base = group.getPlayer(volumeRatio.basePlayer);
-          const adjusted = group.getPlayer(volumeRatio.adjustedPlayer);
-          if (adjusted) {
-            const volume = base?.attributes.volume_level * volumeRatio.ratio * 100;
-            await this.volumeSet(adjusted, volume, false);
-          }
-        });
+  isInVolumeRatios(member: MediaPlayer, group: MediaPlayer) {
+    return this.config.volumeRatios?.some(
+      (volumeRatio) =>
+        group.hasPlayer(volumeRatio.basePlayer) &&
+        group.hasPlayer(volumeRatio.adjustedPlayer) &&
+        volumeRatio.adjustedPlayer === member.id,
+    );
+  }
+
+  applyVolumeRatios(playerId: string) {
+    this.config.volumeRatios?.forEach(async (volumeRatio) => {
+      const group = this.allGroups.find(
+        (group) =>
+          group.hasPlayer(volumeRatio.basePlayer) &&
+          group.hasPlayer(volumeRatio.adjustedPlayer) &&
+          volumeRatio.basePlayer === playerId,
+      );
+      if (group) {
+        const base = group.getPlayer(volumeRatio.basePlayer);
+        const adjusted = group.getPlayer(volumeRatio.adjustedPlayer);
+        if (adjusted) {
+          const volume = base?.attributes.volume_level * volumeRatio.ratio * 100;
+          await this.volumeSet(adjusted, volume, false);
+          return;
+        }
+      }
     });
   }
 }

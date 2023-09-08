@@ -21,7 +21,7 @@ export default class Store {
   constructor(hass: HomeAssistant, config: CardConfig, activePlayerId?: string) {
     this.hass = hass;
     this.config = config;
-    const mediaPlayerHassEntities = this.getMediaPlayerHassEntities();
+    const mediaPlayerHassEntities = this.getMediaPlayerHassEntities(this.hass);
     this.allGroups = this.createPlayerGroups(mediaPlayerHassEntities);
     this.allMediaPlayers = this.allGroups
       .reduce(
@@ -52,13 +52,13 @@ export default class Store {
     });
   }
 
-  private getMediaPlayerHassEntities() {
+  public getMediaPlayerHassEntities(hass: HomeAssistant) {
     if (this.config.entities) {
       return [...new Set(this.config.entities)]
-        .map((player) => this.hass.states[player])
+        .map((player) => hass.states[player])
         .filter((hassEntity) => hassEntity !== undefined);
     } else {
-      return Object.values(this.hass.states)
+      return Object.values(hass.states)
         .filter(getGroupPlayerIds)
         .sort((a, b) => a.entity_id.localeCompare(b.entity_id));
     }
