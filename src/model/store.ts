@@ -66,7 +66,7 @@ export default class Store {
       }
     }
     if (entities.length) {
-      result = { name: configItem.name, entities };
+      result = { name: configItem.name, entities, media: configItem.media };
     }
     return result;
   }

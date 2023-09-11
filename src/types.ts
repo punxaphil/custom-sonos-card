@@ -75,6 +75,7 @@ export interface MediaPlayerItem {
 export interface ConfigPredefinedGroup {
   name: string;
   entities: (string | ConfigPredefinedGroupPlayer)[];
+  media?: string;
 }
 
 export interface ConfigPredefinedGroupPlayer {
@@ -85,6 +86,7 @@ export interface ConfigPredefinedGroupPlayer {
 export interface PredefinedGroup {
   name: string;
   entities: PredefinedGroupPlayer[];
+  media?: string;
 }
 
 export interface PredefinedGroupPlayer {

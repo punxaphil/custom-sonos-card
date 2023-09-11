@@ -52,20 +52,21 @@ export default class MediaControlService {
     }
   }
 
-  private async modifyExistingGroup(group: MediaPlayer, toBeGrouped: PredefinedGroup) {
+  private async modifyExistingGroup(group: MediaPlayer, pg: PredefinedGroup) {
     const members = group.members;
-    const membersNotToBeGrouped = members.filter(
-      (member) => !toBeGrouped.entities.some((item) => item.player.id === member.id),
-    );
+    const membersNotToBeGrouped = members.filter((member) => !pg.entities.some((item) => item.player.id === member.id));
     if (membersNotToBeGrouped?.length) {
       await this.unJoin(membersNotToBeGrouped.map((member) => member.id));
     }
     dispatchActivePlayerId(group.id);
-    await this.joinPredefinedGroup(group, toBeGrouped);
-    for (const pgp of toBeGrouped.entities) {
+    await this.joinPredefinedGroup(group, pg);
+    for (const pgp of pg.entities) {
       if (pgp.volume != null) {
-        this.volumeSet(pgp.player, pgp.volume, false);
+        await this.volumeSet(pgp.player, pgp.volume, false);
       }
+    }
+    if (pg.media) {
+      await this.setSource(pg.entities[0].player, pg.media);
     }
   }
 
