@@ -1,4 +1,4 @@
-import { CardConfig, MediaPlayerItem } from '../types';
+import { CardConfig, MediaPlayerItem, PredefinedGroup } from '../types';
 import HassService from './hass-service';
 import { dispatchActivePlayerId } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
@@ -21,40 +21,52 @@ export default class MediaControlService {
     });
   }
 
+  private async joinPredefinedGroup(player: MediaPlayer, pg: PredefinedGroup) {
+    const ids = pg.entities.map(({ player }) => player.id);
+    await this.join(player.id, ids);
+  }
+
   async unJoin(playerIds: string[]) {
     await this.hassService.callMediaService('unjoin', {
       entity_id: playerIds,
     });
   }
 
-  async createGroup(toBeGrouped: string[], currentGroups: MediaPlayer[]) {
+  async createGroup(predefinedGroup: PredefinedGroup, currentGroups: MediaPlayer[]) {
     let candidateGroup!: MediaPlayer;
     for (const group of currentGroups) {
-      if (toBeGrouped.indexOf(group.id) > -1) {
+      if (predefinedGroup.entities.some((item) => item.player.id === group.id)) {
         if (group.isPlaying()) {
-          await this.modifyExistingGroup(group, toBeGrouped);
+          await this.modifyExistingGroup(group, predefinedGroup);
           return;
         }
         candidateGroup = candidateGroup || group;
       }
     }
     if (candidateGroup) {
-      await this.modifyExistingGroup(candidateGroup, toBeGrouped);
+      await this.modifyExistingGroup(candidateGroup, predefinedGroup);
     } else {
-      const main = toBeGrouped[0];
-      dispatchActivePlayerId(main);
-      await this.join(main, toBeGrouped);
+      const { player } = predefinedGroup.entities[0];
+      dispatchActivePlayerId(player.id);
+      await this.joinPredefinedGroup(player, predefinedGroup);
     }
   }
 
-  private async modifyExistingGroup(group: MediaPlayer, toBeGrouped: string[]) {
+  private async modifyExistingGroup(group: MediaPlayer, toBeGrouped: PredefinedGroup) {
     const members = group.members;
-    const membersNotToBeGrouped = members.filter((member) => toBeGrouped.indexOf(member.id) === -1);
+    const membersNotToBeGrouped = members.filter(
+      (member) => !toBeGrouped.entities.some((item) => item.player.id === member.id),
+    );
     if (membersNotToBeGrouped?.length) {
       await this.unJoin(membersNotToBeGrouped.map((member) => member.id));
     }
     dispatchActivePlayerId(group.id);
-    await this.join(group.id, toBeGrouped);
+    await this.joinPredefinedGroup(group, toBeGrouped);
+    for (const pgp of toBeGrouped.entities) {
+      if (pgp.volume != null) {
+        this.volumeSet(pgp.player, pgp.volume, false);
+      }
+    }
   }
 
   async pause(mediaPlayer: MediaPlayer) {

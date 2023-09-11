@@ -1,5 +1,5 @@
 import { html, TemplateResult } from 'lit';
-import { PredefinedGroup } from '../types';
+import { ConfigPredefinedGroup } from '../types';
 import { property } from 'lit/decorators.js';
 import { mdiCheck, mdiDelete } from '@mdi/js';
 import { BaseEditor } from './base-editor';
@@ -11,7 +11,7 @@ class PredefinedGroupEditor extends BaseEditor {
     this.config = this.store.config;
     this.hass = this.store.hass;
 
-    const predefinedGroup: PredefinedGroup = this.config.predefinedGroups?.[this.index || 0] || {
+    const predefinedGroup: ConfigPredefinedGroup = this.config.predefinedGroups?.[this.index || 0] || {
       name: '',
       entities: [],
     };

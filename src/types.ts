@@ -1,4 +1,5 @@
 import { LovelaceCardConfig } from 'custom-card-helpers';
+import { MediaPlayer } from './model/media-player';
 
 declare global {
   // noinspection JSUnusedGlobalSymbols
@@ -19,7 +20,7 @@ export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
   showVolumeUpAndDownButtons: boolean;
   entities?: string[];
-  predefinedGroups?: PredefinedGroup[];
+  predefinedGroups?: ConfigPredefinedGroup[];
   title?: string;
   labelWhenNoMediaIsSelected?: string;
   labelForTheAllVolumesSlider: string;
@@ -71,11 +72,25 @@ export interface MediaPlayerItem {
   showFolderIcon?: boolean;
 }
 
-export interface PredefinedGroup {
+export interface ConfigPredefinedGroup {
   name: string;
-  entities: string[];
+  entities: (string | ConfigPredefinedGroupPlayer)[];
 }
 
+export interface ConfigPredefinedGroupPlayer {
+  id: string;
+  volume?: number;
+}
+
+export interface PredefinedGroup {
+  name: string;
+  entities: PredefinedGroupPlayer[];
+}
+
+export interface PredefinedGroupPlayer {
+  player: MediaPlayer;
+  volume?: number;
+}
 export interface VolumeRatio {
   basePlayer: string;
   adjustedPlayer: string;

@@ -2,7 +2,13 @@ import { HomeAssistant } from 'custom-card-helpers';
 import HassService from '../services/hass-service';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
-import { CardConfig, PredefinedGroup } from '../types';
+import {
+  CardConfig,
+  ConfigPredefinedGroup,
+  ConfigPredefinedGroupPlayer,
+  PredefinedGroup,
+  PredefinedGroupPlayer,
+} from '../types';
 import { getGroupPlayerIds } from '../utils/utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
@@ -16,7 +22,7 @@ export default class Store {
   public mediaControlService: MediaControlService;
   public mediaBrowseService: MediaBrowseService;
   public allMediaPlayers: MediaPlayer[];
-  public predefinedGroups?: PredefinedGroup[];
+  public predefinedGroups: PredefinedGroup[];
 
   constructor(hass: HomeAssistant, config: CardConfig, activePlayerId?: string) {
     this.hass = hass;
@@ -38,18 +44,50 @@ export default class Store {
   }
 
   private createPredefinedGroups() {
+    const result: PredefinedGroup[] = [];
     if (this.config.predefinedGroups) {
-      const predefinedGroups: PredefinedGroup[] = this.config.predefinedGroups;
-      predefinedGroups?.forEach((pg) => this.filterUnavailablePlayers(pg));
-      return predefinedGroups?.filter((group) => group.entities.length > 1);
+      for (const cpg of this.config.predefinedGroups) {
+        const pg = this.createPredefinedGroup(cpg);
+        if (pg) {
+          result.push(pg);
+        }
+      }
     }
-    return [];
+    return result;
   }
 
-  private filterUnavailablePlayers(pg: PredefinedGroup) {
-    pg.entities = pg.entities.filter((item) => {
-      return this.hass.states[item]?.state !== 'unavailable';
-    });
+  private createPredefinedGroup(configItem: ConfigPredefinedGroup) {
+    let result = undefined;
+    const entities: PredefinedGroupPlayer[] = [];
+    for (const item of configItem.entities) {
+      const predefinedGroupPlayer = this.createPredefinedGroupPlayer(item);
+      if (predefinedGroupPlayer) {
+        entities.push(predefinedGroupPlayer);
+      }
+    }
+    if (entities.length) {
+      result = { name: configItem.name, entities };
+    }
+    return result;
+  }
+
+  private createPredefinedGroupPlayer(configItem: string | ConfigPredefinedGroupPlayer) {
+    let pgEntityId: string;
+    let volume;
+    if (typeof configItem === 'string') {
+      pgEntityId = configItem;
+    } else {
+      volume = configItem.volume;
+      pgEntityId = configItem.id;
+    }
+    let result = undefined;
+    if (this.hass.states[pgEntityId]?.state !== 'unavailable') {
+      const player = this.allMediaPlayers.find((p) => p.id === pgEntityId);
+      if (player) {
+        result = { player, volume };
+      }
+    }
+    return result;
   }
 
   public getMediaPlayerHassEntities(hass: HomeAssistant) {
