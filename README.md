@@ -89,7 +89,10 @@ entities: # Entities are automatically discovered if you don't supply this setti
   - media_player.sonos_hallway
   - media_player.sonos_bedroom
   - media_player.sonos_livingroom
-
+volumeRatios: # If you want some speaker's volume to always be a certain percentage of another speaker's volume
+  - basePlayer: media_player.sonos_bedroom
+    adjustedPlayer: media_player.sonos_livingroom
+    ratio: 0.5
 
 # groups specific
 groupsTitle: ''
@@ -102,6 +105,13 @@ predefinedGroups: # defaults to empty
     entities:
       - media_player.matrum
       - media_player.hall
+  - name: Kök&Hall
+    media: Legendary # If you want to start playing a specific favorite when grouping 
+    entities: # Use below format if you want to set the volume of the speakers when grouping
+      - player: media_player.kok
+        volume: 10
+      - player: media_player.hall
+        volume: 5
 
 # player specific
 showVolumeUpAndDownButtons: true # default is false, shows buttons for increasing and decreasing volume

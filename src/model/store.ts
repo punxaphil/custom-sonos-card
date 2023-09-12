@@ -78,7 +78,7 @@ export default class Store {
       pgEntityId = configItem;
     } else {
       volume = configItem.volume;
-      pgEntityId = configItem.id;
+      pgEntityId = configItem.player;
     }
     let result = undefined;
     if (this.hass.states[pgEntityId]?.state !== 'unavailable') {

@@ -3,11 +3,11 @@ import { CardConfig } from '../types';
 import { getGroupPlayerIds } from '../utils/utils';
 
 export class MediaPlayer {
-  id!: string;
-  name!: string;
-  state!: string;
+  id: string;
+  name: string;
+  state: string;
   members: MediaPlayer[];
-  attributes!: {
+  attributes: {
     [key: string]: any;
   };
   private readonly config: CardConfig;
@@ -44,8 +44,7 @@ export class MediaPlayer {
     return (this.attributes.is_volume_muted as boolean) || this.members.some((member) => member.isMuted());
   }
   getCurrentTrack() {
-    const attributes = this.attributes;
-    return `${attributes.media_artist || ''} - ${attributes.media_title || ''}`.replace(/^ - /g, '');
+    return `${this.attributes.media_artist || ''} - ${this.attributes.media_title || ''}`.replace(/^ - /g, '');
   }
 
   private getEntityName(hassEntity: HassEntity, config: CardConfig) {

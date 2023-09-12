@@ -16,6 +16,8 @@ export enum Section {
   VOLUMES = 'volumes',
 }
 
+export type ConfigPredefinedGroupPlayer = PredefinedGroupPlayer<string>;
+export type ConfigPredefinedGroup = PredefinedGroup<string | ConfigPredefinedGroupPlayer>;
 export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
   showVolumeUpAndDownButtons: boolean;
@@ -72,25 +74,14 @@ export interface MediaPlayerItem {
   showFolderIcon?: boolean;
 }
 
-export interface ConfigPredefinedGroup {
+export interface PredefinedGroup<T = PredefinedGroupPlayer> {
   name: string;
-  entities: (string | ConfigPredefinedGroupPlayer)[];
+  entities: T[];
   media?: string;
 }
 
-export interface ConfigPredefinedGroupPlayer {
-  id: string;
-  volume?: number;
-}
-
-export interface PredefinedGroup {
-  name: string;
-  entities: PredefinedGroupPlayer[];
-  media?: string;
-}
-
-export interface PredefinedGroupPlayer {
-  player: MediaPlayer;
+export interface PredefinedGroupPlayer<T = MediaPlayer> {
+  player: T;
   volume?: number;
 }
 export interface VolumeRatio {
