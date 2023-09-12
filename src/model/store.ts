@@ -38,7 +38,7 @@ export default class Store {
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     const section = this.config.sections?.[0];
     this.hassService = new HassService(this.hass, section);
-    this.mediaControlService = new MediaControlService(this.hassService, this.allGroups, this.config);
+    this.mediaControlService = new MediaControlService(this.hassService);
     this.mediaBrowseService = new MediaBrowseService(this.hassService);
     this.predefinedGroups = this.createPredefinedGroups();
   }
