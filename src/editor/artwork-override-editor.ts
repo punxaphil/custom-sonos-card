@@ -7,7 +7,9 @@ const newOverride = { ifMissing: false };
 class ArtworkOverrideEditor extends BaseEditor {
   @property() index!: number;
   protected render(): TemplateResult {
-    ({ config: this.config, hass: this.hass } = this.store);
+    this.config = this.store.config;
+    this.hass = this.store.hass;
+
     const artworkOverride = this.config.mediaArtworkOverrides?.[this.index || 0];
     const schema = [
       { name: 'ifMissing', selector: { boolean: {} } },

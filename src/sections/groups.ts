@@ -1,25 +1,24 @@
-import { HomeAssistant } from 'custom-card-helpers';
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import '../components/group';
-import Store from '../store';
-import { CardConfig, PlayerGroups } from '../types';
+import Store from '../model/store';
 import { listStyle } from '../constants';
+import { MediaPlayer } from '../model/media-player';
 
 export class Groups extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
-  private config!: CardConfig;
-  private groups!: PlayerGroups;
-  private entityId!: string;
+  private groups!: MediaPlayer[];
+  private activePlayer!: MediaPlayer;
 
   render() {
-    ({ config: this.config, hass: this.hass, groups: this.groups, entityId: this.entityId } = this.store);
+    this.activePlayer = this.store.activePlayer;
+    this.groups = this.store.allGroups;
+
     return html`
       <mwc-list activatable class="list">
-        ${Object.values(this.groups).map((group) => {
-          const selected = this.entityId === group.entity;
-          return html` <sonos-group .store=${this.store} .group=${group} .selected="${selected}"></sonos-group> `;
+        ${this.groups.map((group) => {
+          const selected = this.activePlayer.id === group.id;
+          return html` <sonos-group .store=${this.store} .player=${group} .selected="${selected}"></sonos-group> `;
         })}
       </mwc-list>
     `;

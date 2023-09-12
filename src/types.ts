@@ -1,6 +1,8 @@
 import { LovelaceCardConfig } from 'custom-card-helpers';
+import { MediaPlayer } from './model/media-player';
 
 declare global {
+  // noinspection JSUnusedGlobalSymbols
   interface Window {
     customCards: Array<{ type: string; name: string; description: string; preview: boolean }>;
   }
@@ -14,11 +16,13 @@ export enum Section {
   VOLUMES = 'volumes',
 }
 
+export type ConfigPredefinedGroupPlayer = PredefinedGroupPlayer<string>;
+export type ConfigPredefinedGroup = PredefinedGroup<string | ConfigPredefinedGroupPlayer>;
 export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
   showVolumeUpAndDownButtons: boolean;
   entities?: string[];
-  predefinedGroups?: PredefinedGroup[];
+  predefinedGroups?: ConfigPredefinedGroup[];
   title?: string;
   labelWhenNoMediaIsSelected?: string;
   labelForTheAllVolumesSlider: string;
@@ -53,23 +57,8 @@ export interface CustomSource {
   thumbnail?: string;
 }
 
-export interface PlayerGroups {
-  [name: string]: PlayerGroup;
-}
-
-export interface Members {
-  [name: string]: string;
-}
-
 export interface CustomThumbnail {
   [title: string]: string;
-}
-
-export interface PlayerGroup {
-  entity: string;
-  state: string;
-  roomName: string;
-  members: Members;
 }
 
 export interface MediaPlayerItem {
@@ -84,11 +73,16 @@ export interface MediaPlayerItem {
   showFolderIcon?: boolean;
 }
 
-export interface PredefinedGroup {
+export interface PredefinedGroup<T = PredefinedGroupPlayer> {
   name: string;
-  entities: string[];
+  entities: T[];
+  media?: string;
 }
 
+export interface PredefinedGroupPlayer<T = MediaPlayer> {
+  player: T;
+  volume?: number;
+}
 export interface TemplateResult {
   result: string[];
 }

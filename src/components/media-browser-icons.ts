@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import Store from '../store';
+import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { dispatchMediaItemSelected } from '../utils/utils';
 import { mediaBrowserTitleStyle } from '../constants';
@@ -16,7 +16,7 @@ export class MediaBrowserIcons extends LitElement {
   private config!: CardConfig;
 
   render() {
-    ({ config: this.config } = this.store);
+    this.config = this.store.config;
 
     return html`
       <style>

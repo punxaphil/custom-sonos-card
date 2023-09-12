@@ -5,20 +5,21 @@ import '../components/player-header';
 import '../components/progress';
 import '../components/volume';
 
-import { HassEntity } from 'home-assistant-js-websocket';
-import Store from '../store';
+import Store from '../model/store';
 import { CardConfig } from '../types';
 
 import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../constants';
+import { MediaPlayer } from '../model/media-player';
 
 export class Player extends LitElement {
   @property() store!: Store;
   private config!: CardConfig;
-  private entityId!: string;
-  private entity!: HassEntity;
+  private activePlayer!: MediaPlayer;
 
   render() {
-    ({ config: this.config, entity: this.entity, entityId: this.entityId } = this.store);
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+
     return html`
       <div class="row">
         <sonos-player-header .store=${this.store}></sonos-player-header>
@@ -30,7 +31,7 @@ export class Player extends LitElement {
 
   private getBackgroundImage() {
     let backgroundImage = `url(${
-      this.entity.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE
+      this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE
     })`;
     const image = this.getArtworkImage();
     if (image) {
@@ -41,7 +42,7 @@ export class Player extends LitElement {
 
   private getArtworkImage() {
     const prefix = this.config.artworkHostname || '';
-    const { media_title, media_content_id, entity_picture } = this.entity.attributes;
+    const { media_title, media_content_id, entity_picture } = this.activePlayer.attributes;
     let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
     const overrides = this.config.mediaArtworkOverrides;
     if (overrides) {

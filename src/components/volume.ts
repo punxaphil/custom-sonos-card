@@ -1,39 +1,37 @@
-import { HomeAssistant } from 'custom-card-helpers';
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
-import Store from '../store';
-import { CardConfig, Members } from '../types';
+import Store from '../model/store';
+import { CardConfig } from '../types';
 import { mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { iconButton } from './icon-button';
+import { MediaPlayer } from '../model/media-player';
 
 class Volume extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
   private config!: CardConfig;
   private mediaControlService!: MediaControlService;
-  @property() entityId!: string;
-  @property() members?: Members;
+  @property() player!: MediaPlayer;
+  @property() updateMembers = true;
   @property() volumeClicked?: () => void;
 
   render() {
-    ({ config: this.config, hass: this.hass, mediaControlService: this.mediaControlService } = this.store);
-    const volume = 100 * this.hass.states[this.entityId].attributes.volume_level;
+    this.config = this.store.config;
+    this.mediaControlService = this.store.mediaControlService;
+
+    const volume = 100 * this.player.attributes.volume_level;
     let max = 100;
     if (volume < 20) {
       if (this.config.dynamicVolumeSlider) {
         max = 30;
       }
     }
-    const volumeMuted =
-      this.members && Object.keys(this.members).length
-        ? !Object.keys(this.members).some((member) => !this.hass.states[member].attributes.is_volume_muted)
-        : this.hass.states[this.entityId].attributes.is_volume_muted;
+
     return html`
       <div class="volume">
         ${iconButton(
-          volumeMuted ? mdiVolumeMute : mdiVolumeHigh,
-          async () => await this.mediaControlService.volumeMute(this.entityId, !volumeMuted, this.members),
+          this.player.isMuted() ? mdiVolumeMute : mdiVolumeHigh,
+          async () => await this.mediaControlService.volumeMute(this.player, this.updateMembers),
         )}
         <div class="volume-slider">
           <ha-control-slider .value="${volume}" max=${max} @value-changed=${this.volumeChanged}> </ha-control-slider>
@@ -55,7 +53,7 @@ class Volume extends LitElement {
   }
 
   private async setVolume(volume: number) {
-    return await this.mediaControlService.volumeSet(this.entityId, volume, this.members);
+    return await this.mediaControlService.volumeSet(this.player, volume, this.updateMembers);
   }
 
   static get styles() {

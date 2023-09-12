@@ -7,7 +7,8 @@ class Form extends BaseEditor {
   @property() data!: unknown;
   @property() changed!: (ev: CustomEvent) => void;
   protected render(): TemplateResult {
-    ({ config: this.config, hass: this.hass } = this.store);
+    this.config = this.store.config;
+    this.hass = this.store.hass;
 
     return html`
       <ha-form
@@ -29,10 +30,13 @@ class Form extends BaseEditor {
   }
 }
 
-export function computeLabel(schema: { name: string; help: string }) {
-  let unCamelCased = schema.name.replace(/([A-Z])/g, ' $1');
+export function computeLabel({ help, label, name }: { name: string; help: string; label: string }) {
+  if (label) {
+    return label;
+  }
+  let unCamelCased = name.replace(/([A-Z])/g, ' $1');
   unCamelCased = unCamelCased.charAt(0).toUpperCase() + unCamelCased.slice(1);
-  return unCamelCased + (schema.help ? ` (${schema.help})` : '');
+  return unCamelCased + (help ? ` (${help})` : '');
 }
 
 customElements.define('sonos-card-editor-form', Form);

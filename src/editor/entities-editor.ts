@@ -31,7 +31,9 @@ class EntitiesEditor extends BaseEditor {
   @state() editGroup!: number;
 
   protected render(): TemplateResult {
-    ({ config: this.config, hass: this.hass } = this.store);
+    this.config = this.store.config;
+    this.hass = this.store.hass;
+
     const predefinedGroups = this.config.predefinedGroups;
 
     return this.editGroup > -1

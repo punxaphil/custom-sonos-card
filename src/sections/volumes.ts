@@ -1,51 +1,46 @@
-import { HomeAssistant } from 'custom-card-helpers';
-import { HassEntity } from 'home-assistant-js-websocket';
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import Store from '../store';
-import { CardConfig, Members } from '../types';
-import { getEntityName, getGroupMembers } from '../utils/utils';
+import Store from '../model/store';
+import { CardConfig } from '../types';
 import { until } from 'lit-html/directives/until.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
 import { iconButton } from '../components/icon-button';
 import { mdiCog, mdiCogOff, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
 import MediaControlService from '../services/media-control-service';
+import { MediaPlayer } from '../model/media-player';
+import { HassEntity } from 'home-assistant-js-websocket';
+import HassService from '../services/hass-service';
 
 class Volumes extends LitElement {
   @property() store!: Store;
-  private hass!: HomeAssistant;
   private config!: CardConfig;
-  private entity!: HassEntity;
+  private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   @state() private showSwitches: { [entity: string]: boolean } = {};
+  private hassService!: HassService;
 
   render() {
-    ({
-      config: this.config,
-      hass: this.hass,
-      mediaControlService: this.mediaControlService,
+    this.config = this.store.config;
+    this.activePlayer = this.store.activePlayer;
+    this.hassService = this.store.hassService;
+    this.mediaControlService = this.store.mediaControlService;
 
-      entity: this.entity,
-    } = this.store);
-    const members = getGroupMembers(this.entity);
+    const members = this.activePlayer.members;
     return html`
-      ${when(members.length > 1, () =>
-        this.volumeWithName(
-          this.entity.entity_id,
-          this.config.labelForTheAllVolumesSlider ? this.config.labelForTheAllVolumesSlider : 'All',
-          this.store.groups[this.entity.entity_id].members,
-        ),
-      )}
-      ${members.map((entityId: string) =>
-        this.volumeWithName(entityId, getEntityName(this.hass, this.config, entityId)),
-      )}
+      ${when(members.length, () => this.volumeWithName(this.activePlayer))}
+      ${[this.activePlayer, ...members].map((member) => this.volumeWithName(member, false))}
     `;
   }
 
-  private volumeWithName(entityId: string, name: string, members?: Members) {
-    const volDown = async () => await this.mediaControlService.volumeDown(entityId);
-    const volUp = async () => await this.mediaControlService.volumeUp(entityId);
+  private volumeWithName(player: MediaPlayer, updateMembers = true) {
+    const name = updateMembers
+      ? this.config.labelForTheAllVolumesSlider
+        ? this.config.labelForTheAllVolumesSlider
+        : 'All'
+      : player.name;
+    const volDown = async () => await this.mediaControlService.volumeDown(player, updateMembers);
+    const volUp = async () => await this.mediaControlService.volumeUp(player, updateMembers);
     return html` <div class="row">
       <div class="volume-name">
         <div class="volume-name-text">${name}</div>
@@ -53,35 +48,33 @@ class Volumes extends LitElement {
       <div class="slider-row">
         ${this.config.showVolumeUpAndDownButtons ? iconButton(mdiVolumeMinus, volDown) : ''}
 
-        <sonos-volume .store=${this.store} .entityId=${entityId} .members=${members}></sonos-volume>
+        <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
         ${this.config.showVolumeUpAndDownButtons ? iconButton(mdiVolumePlus, volUp) : ''}
-        ${when(!members, () =>
-          iconButton(this.showSwitches[entityId] ? mdiCogOff : mdiCog, () => {
-            this.showSwitches[entityId] = !this.showSwitches[entityId];
+        ${when(!updateMembers, () =>
+          iconButton(this.showSwitches[player.id] ? mdiCogOff : mdiCog, () => {
+            this.showSwitches[player.id] = !this.showSwitches[player.id];
             this.requestUpdate();
           }),
         )}
       </div>
       <div class="switches">
-        ${when(!members && this.showSwitches[entityId], () => until(this.getAdditionalSwitches(entityId)))}
+        ${when(!player.members.length && this.showSwitches[player.id], () => until(this.getAdditionalSwitches(player)))}
       </div>
     </div>`;
   }
 
-  private getAdditionalSwitches(entityId: string) {
-    const hassService = this.store.hassService;
-    return hassService.getRelatedSwitchEntities(entityId).then((items: string[]) =>
-      items.map((item: string) => {
-        const style = this.hass.states[item].state === 'on' ? styleMap({ color: 'var(--accent-color)' }) : '';
-        return html`
-          <ha-icon
-            @click="${() => hassService.toggle(item)}"
-            style="${style}"
-            .icon=${this.hass.states[item].attributes.icon || ''}
-          ></ha-icon>
-        `;
-      }),
-    );
+  private async getAdditionalSwitches(player: MediaPlayer) {
+    const switches = await this.hassService.getRelatedSwitchEntities(player);
+    return switches.map((switchEntity: HassEntity) => {
+      const style = switchEntity.state === 'on' ? styleMap({ color: 'var(--accent-color)' }) : '';
+      return html`
+        <ha-icon
+          @click="${() => this.hassService.toggle(switchEntity)}"
+          style="${style}"
+          .icon=${switchEntity.attributes.icon || ''}
+        ></ha-icon>
+      `;
+    });
   }
 
   static get styles() {

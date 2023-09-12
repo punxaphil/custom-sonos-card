@@ -1,6 +1,6 @@
-import { HomeAssistant } from 'custom-card-helpers';
 import { MediaPlayerItem } from '../types';
 import HassService from './hass-service';
+import { MediaPlayer } from '../model/media-player';
 
 function mediaBrowserFilter(ignoredTitles: string[] = [], items?: MediaPlayerItem[]) {
   return items?.filter(
@@ -11,20 +11,18 @@ function mediaBrowserFilter(ignoredTitles: string[] = [], items?: MediaPlayerIte
 }
 
 export default class MediaBrowseService {
-  private hass: HomeAssistant;
   private hassService: HassService;
 
-  constructor(hass: HomeAssistant, hassService: HassService) {
-    this.hass = hass;
+  constructor(hassService: HassService) {
     this.hassService = hassService;
   }
 
-  async getRoot(mediaPlayer: string, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
+  async getRoot(mediaPlayer: MediaPlayer, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
     const root = await this.hassService.browseMedia(mediaPlayer);
     return mediaBrowserFilter(ignoredTitles, root.children) || [];
   }
 
-  async getDir(mediaPlayer: string, dir: MediaPlayerItem, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
+  async getDir(mediaPlayer: MediaPlayer, dir: MediaPlayerItem, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
     try {
       const dirItem = await this.hassService.browseMedia(mediaPlayer, dir.media_content_type, dir.media_content_id);
       return mediaBrowserFilter(ignoredTitles, dirItem.children) || [];
@@ -34,7 +32,7 @@ export default class MediaBrowseService {
     }
   }
 
-  async getAllFavorites(mediaPlayers: string[], ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
+  async getAllFavorites(mediaPlayers: MediaPlayer[], ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
     if (!mediaPlayers.length) {
       return [];
     }
@@ -52,7 +50,7 @@ export default class MediaBrowseService {
     });
   }
 
-  private async getFavoritesForPlayer(player: string, ignoredTitles?: string[]) {
+  private async getFavoritesForPlayer(player: MediaPlayer, ignoredTitles?: string[]) {
     const favoritesRoot = await this.hassService.browseMedia(player, 'favorites', '');
     const favoriteTypesPromise = favoritesRoot.children?.map((favoriteItem) =>
       this.hassService.browseMedia(player, favoriteItem.media_content_type, favoriteItem.media_content_id),
@@ -61,11 +59,11 @@ export default class MediaBrowseService {
     return favoriteTypes.flatMap((item) => mediaBrowserFilter(ignoredTitles, item.children) || []);
   }
 
-  private getFavoritesFromStates(mediaPlayers: string[]) {
+  private getFavoritesFromStates(mediaPlayers: MediaPlayer[]) {
     console.log('Custom Sonos Card: found no favorites with thumbnails, trying with titles only');
     let titles = mediaPlayers
-      .map((entity) => this.hass.states[entity])
-      .flatMap((state) => state.attributes.hasOwnProperty('source_list') ? state.attributes.source_list : []);
+      .map((player) => player.attributes)
+      .flatMap((attributes) => (attributes.hasOwnProperty('source_list') ? attributes.source_list : []));
     titles = [...new Set(titles)];
     if (!titles.length) {
       console.log('Custom Sonos Card: No favorites found');

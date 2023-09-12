@@ -7,7 +7,9 @@ class ArtworkOverridesEditor extends BaseEditor {
   @state() editItem!: number;
 
   protected render(): TemplateResult {
-    ({ config: this.config, hass: this.hass } = this.store);
+    this.config = this.store.config;
+    this.hass = this.store.hass;
+
     const items = this.config.mediaArtworkOverrides;
 
     return this.editItem > -1
