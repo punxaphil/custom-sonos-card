@@ -34,6 +34,7 @@ export default [
     input: 'src/main.ts',
     output: {
       format: 'es',
+      sourcemap: true,
       file: 'dist/custom-sonos-card.js',
     },
     onwarn(warning, warn) {
