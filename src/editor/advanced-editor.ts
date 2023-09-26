@@ -27,12 +27,18 @@ export const ADVANCED_SCHEMA = [
     name: 'mediaBrowserShowTitleForThumbnailIcons',
     selector: { boolean: {} },
   },
+  {
+    type: 'string',
+    name: 'topFavorites',
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {
   protected render(): TemplateResult {
+    const topFavorites = this.store.config.topFavorites ?? [];
+    const data = { ...this.store.config, topFavorites: topFavorites.join(', ') };
     return html`
-      <sonos-card-editor-form .schema=${ADVANCED_SCHEMA} .store=${this.store}></sonos-card-editor-form>
+      <sonos-card-editor-form .schema=${ADVANCED_SCHEMA} .store=${this.store} .data=${data} .changed=${this.changed}></sonos-card-editor-form>
       <p>
         The following needs to be configured using code (YAML): 
         <ul>
@@ -42,6 +48,15 @@ class AdvancedEditor extends BaseEditor {
         </ul>
       </p>
     `;
+  }
+  protected changed(ev: CustomEvent): void {
+    const changed = ev.detail.value;
+    this.config = {
+      ...this.config,
+      ...changed,
+      topFavorites: changed.topFavorites.split(/ *, */),
+    };
+    this.configChanged();
   }
 }
 

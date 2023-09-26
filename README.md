@@ -141,6 +141,10 @@ customThumbnailIfMissing:
 mediaBrowserTitlesToIgnore:
   - Local Media
   - My Bad Playlist
+topFavorites: # Show these favorites at the top of the list
+  - Legendary
+  - Country Rocks
+  - Kacey Musgraves Radio
 ```
 
 ## Using individual section cards
