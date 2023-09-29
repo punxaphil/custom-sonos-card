@@ -16,6 +16,8 @@ import {
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { getHeight, getWidth } from './utils/utils';
+import HassService from './services/hass-service';
+import { until } from 'lit-html/directives/until.js';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 const TITLE_HEIGHT = 2;
@@ -31,24 +33,30 @@ export class Card extends LitElement {
   @state() cancelLoader!: boolean;
   @state() activePlayerId!: string;
   render() {
-    this.createStore();
     let height = getHeight(this.config);
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
     const contentHeight = showFooter ? height - FOOTER_HEIGHT : height;
     const title = this.config.title;
     height = title ? height + TITLE_HEIGHT : height;
+    return html` ${until(
+      this.createStore().then(() => this.renderWithStore(height, title, contentHeight, showFooter)),
+      html``,
+    )}`;
+  }
+
+  private renderWithStore(height: number, title: string | undefined, contentHeight: number, showFooter: boolean) {
     return html`
       <ha-card style="${this.haCardStyle(height)}">
         <div class="loader" ?hidden="${!this.showLoader}">
           <ha-circular-progress active="" progress="0"></ha-circular-progress>
         </div>
-        ${title ? html`<div class="title">${title}</div>` : html``}
+        ${title ? html` <div class="title">${title}</div>` : html``}
         <div class="content" style="${this.contentStyle(contentHeight)}">
           ${choose(this.section, [
             [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
             [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
-            [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
+            [GROUPING, () => html` <sonos-grouping .store=${this.store}></sonos-grouping>`],
             [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
             [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
           ])}
@@ -56,20 +64,28 @@ export class Card extends LitElement {
         ${when(
           showFooter,
           () =>
-            html`<sonos-footer style=${this.footerStyle()} .config="${this.config}" .section="${this.section}">
+            html` <sonos-footer style=${this.footerStyle()} .config="${this.config}" .section="${this.section}">
             </sonos-footer>`,
         )}
       </ha-card>
     `;
   }
-  private createStore() {
+
+  private async createStore() {
+    let entityId = this.config.entityId;
+    const hassService = new HassService(this.hass, this.section);
+    if (entityId && entityId.indexOf('{{') > -1) {
+      entityId = await hassService.renderTemplate<string>(entityId);
+    }
+    this.config = { ...this.config, entityId };
     if (this.activePlayerId) {
-      this.store = new Store(this.hass, this.config, this.activePlayerId);
+      this.store = new Store(this.hass, this.config, hassService, this.activePlayerId);
     } else {
-      this.store = new Store(this.hass, this.config);
+      this.store = new Store(this.hass, this.config, hassService);
       this.activePlayerId = this.store.activePlayer.id;
     }
   }
+
   getCardSize() {
     return 3;
   }

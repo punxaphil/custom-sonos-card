@@ -24,7 +24,7 @@ export default class Store {
   public allMediaPlayers: MediaPlayer[];
   public predefinedGroups: PredefinedGroup[];
 
-  constructor(hass: HomeAssistant, config: CardConfig, activePlayerId?: string) {
+  constructor(hass: HomeAssistant, config: CardConfig, hassService?: HassService, activePlayerId?: string) {
     this.hass = hass;
     this.config = config;
     const mediaPlayerHassEntities = this.getMediaPlayerHassEntities(this.hass);
@@ -37,7 +37,7 @@ export default class Store {
       .sort((a, b) => a.name.localeCompare(b.name));
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     const section = this.config.sections?.[0];
-    this.hassService = new HassService(this.hass, section);
+    this.hassService = hassService ?? new HassService(this.hass, section);
     this.mediaControlService = new MediaControlService(this.hassService);
     this.mediaBrowseService = new MediaBrowseService(this.hassService);
     this.predefinedGroups = this.createPredefinedGroups();
