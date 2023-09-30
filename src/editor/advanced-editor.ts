@@ -31,6 +31,11 @@ export const ADVANCED_SCHEMA = [
     type: 'string',
     name: 'topFavorites',
   },
+  {
+    type: 'integer',
+    name: 'numberOfFavoritesToShow',
+    valueMin: 1,
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

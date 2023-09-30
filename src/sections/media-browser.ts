@@ -140,25 +140,31 @@ export class MediaBrowser extends LitElement {
       this.mediaPlayers,
       this.config.mediaBrowserTitlesToIgnore,
     );
-    allFavorites = allFavorites.sort((a, b) => {
-      const topFavorites = this.config.topFavorites ?? [];
-      const aIndex = indexOfWithoutSpecialChars(topFavorites, a.title);
-      const bIndex = indexOfWithoutSpecialChars(topFavorites, b.title);
-      if (aIndex > -1 && bIndex > -1) {
-        return aIndex - bIndex;
-      } else {
-        let result = bIndex - aIndex;
-        if (result === 0) {
-          result = a.title.localeCompare(b.title, 'en', { sensitivity: 'base' });
-        }
-        return result;
-      }
-    });
-    return [
+    allFavorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
+    allFavorites = [
       ...(this.config.customSources?.[this.activePlayer.id]?.map(MediaBrowser.createSource) || []),
       ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
       ...allFavorites,
     ];
+    allFavorites = this.config.numberOfFavoritesToShow
+      ? allFavorites.slice(0, this.config.numberOfFavoritesToShow)
+      : allFavorites;
+    return allFavorites;
+  }
+
+  private sortOnTopFavoritesThenAlphabetically(a: string, b: string) {
+    const topFavorites = this.config.topFavorites ?? [];
+    const aIndex = indexOfWithoutSpecialChars(topFavorites, a);
+    const bIndex = indexOfWithoutSpecialChars(topFavorites, b);
+    if (aIndex > -1 && bIndex > -1) {
+      return aIndex - bIndex;
+    } else {
+      let result = bIndex - aIndex;
+      if (result === 0) {
+        result = a.localeCompare(b, 'en', { sensitivity: 'base' });
+      }
+      return result;
+    }
   }
 
   private static createSource(source: MediaPlayerItem) {
