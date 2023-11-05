@@ -69,7 +69,7 @@ export class MediaBrowser extends LitElement {
       ${this.activePlayer &&
       until(
         (this.browse ? this.loadMediaDir(this.currentDir) : this.getAllFavorites()).then((items) => {
-          return this.config.mediaBrowserItemsPerRow > 1
+          return this.config.mediaBrowserItemsPerRow > 1 && this.currentDir?.children_media_class !== 'track'
             ? html`<sonos-media-browser-icons .items=${items} .store=${this.store}></sonos-media-browser-icons>`
             : html` <sonos-media-browser-list .items=${items} .store=${this.store}></sonos-media-browser-list>`;
         }),

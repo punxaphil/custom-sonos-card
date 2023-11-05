@@ -70,6 +70,7 @@ export interface MediaPlayerItem {
   title: string;
   thumbnail?: string;
   children?: MediaPlayerItem[];
+  children_media_class?: string;
   media_class?: string;
   can_expand?: boolean;
   can_play?: boolean;
