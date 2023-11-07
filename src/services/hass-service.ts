@@ -44,7 +44,7 @@ export default class HassService {
     });
   }
 
-  async getRelatedSwitchEntities(player: MediaPlayer) {
+  async getRelatedEntities(player: MediaPlayer) {
     return new Promise<HassEntity[]>(async (resolve, reject) => {
       const subscribeMessage = {
         type: 'render_template',
@@ -54,18 +54,14 @@ export default class HassService {
         const unsubscribe = await this.hass.connection.subscribeMessage<TemplateResult>((response) => {
           unsubscribe();
           resolve(
-            response.result.filter((item: string) => item.indexOf('switch') > -1).map((item) => this.hass.states[item]),
+            response.result
+              .filter((item: string) => item.indexOf('switch') > -1 || item.indexOf('number') > -1)
+              .map((item) => this.hass.states[item]),
           );
         }, subscribeMessage);
       } catch (e) {
         reject(e);
       }
-    });
-  }
-
-  async toggle(entity: HassEntity) {
-    await this.hass.callService('homeassistant', 'toggle', {
-      entity_id: entity.entity_id,
     });
   }
 }

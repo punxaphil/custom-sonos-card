@@ -3,14 +3,13 @@ import { property, state } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig } from '../types';
 import { until } from 'lit-html/directives/until.js';
-import { styleMap } from 'lit-html/directives/style-map.js';
 import { when } from 'lit/directives/when.js';
 import { iconButton } from '../components/icon-button';
-import { mdiCog, mdiCogOff, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
+import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
 import MediaControlService from '../services/media-control-service';
 import { MediaPlayer } from '../model/media-player';
-import { HassEntity } from 'home-assistant-js-websocket';
 import HassService from '../services/hass-service';
+import { HassEntity } from 'home-assistant-js-websocket';
 
 class Volumes extends LitElement {
   @property() store!: Store;
@@ -51,28 +50,31 @@ class Volumes extends LitElement {
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
         ${this.config.showVolumeUpAndDownButtons ? iconButton(mdiVolumePlus, volUp) : ''}
         ${when(!updateMembers, () =>
-          iconButton(this.showSwitches[player.id] ? mdiCogOff : mdiCog, () => {
-            this.showSwitches[player.id] = !this.showSwitches[player.id];
-            this.requestUpdate();
-          }),
+          iconButton(
+            mdiCog,
+            () => {
+              this.showSwitches[player.id] = !this.showSwitches[player.id];
+              this.requestUpdate();
+            },
+            { additionalStyle: this.showSwitches[player.id] ? { color: 'var(--accent-color)' } : {} },
+          ),
         )}
       </div>
       <div class="switches">
-        ${when(!player.members.length && this.showSwitches[player.id], () => until(this.getAdditionalSwitches(player)))}
+        ${when(!player.members.length && this.showSwitches[player.id], () => until(this.getAdditionalControls(player)))}
       </div>
     </div>`;
   }
 
-  private async getAdditionalSwitches(player: MediaPlayer) {
-    const switches = await this.hassService.getRelatedSwitchEntities(player);
-    return switches.map((switchEntity: HassEntity) => {
-      const style = switchEntity.state === 'on' ? styleMap({ color: 'var(--accent-color)' }) : '';
+  private async getAdditionalControls(player: MediaPlayer) {
+    const relatedEntities = await this.hassService.getRelatedEntities(player);
+    return relatedEntities.map((relatedEntity: HassEntity) => {
+      relatedEntity.attributes.friendly_name =
+        relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
       return html`
-        <ha-icon
-          @click="${() => this.hassService.toggle(switchEntity)}"
-          style="${style}"
-          .icon=${switchEntity.attributes.icon || ''}
-        ></ha-icon>
+        <div>
+          <state-card-content .stateObj=${relatedEntity} .hass=${this.store.hass}></state-card-content>
+        </div>
       `;
     });
   }
@@ -82,7 +84,7 @@ class Volumes extends LitElement {
       .row {
         display: flex;
         flex-direction: column;
-        padding-top: 1rem;
+        padding-top: 0.5rem;
         padding-right: 1rem;
       }
 
@@ -93,8 +95,8 @@ class Volumes extends LitElement {
       .switches {
         display: flex;
         justify-content: center;
+        flex-direction: column;
         gap: 1rem;
-        margin-bottom: 1rem;
       }
 
       .volume-name {
