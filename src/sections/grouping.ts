@@ -51,7 +51,7 @@ export class Grouping extends LitElement {
     const notJoinedPlayers = this.getNotJoinedPlayers();
     return when(notJoinedPlayers.length, () => {
       const click = async () => await this.mediaControlService.join(this.activePlayer.id, notJoinedPlayers);
-      return getButton(click, 'mdi:checkbox-multiple-marked-outline', '');
+      return getButton(click, 'mdi:checkbox-multiple-marked-outline');
     });
   }
 
@@ -65,7 +65,7 @@ export class Grouping extends LitElement {
     const joinedPlayers = this.getJoinedPlayers();
     return when(joinedPlayers.length, () => {
       const click = async () => await this.mediaControlService.unJoin(joinedPlayers);
-      return getButton(click, 'mdi:minus-box-multiple-outline', '');
+      return getButton(click, 'mdi:minus-box-multiple-outline');
     });
   }
 

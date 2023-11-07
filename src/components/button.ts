@@ -1,10 +1,10 @@
 import { html } from 'lit';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
-export function getButton(click: () => void, icon: string, name: string) {
+export function getButton(click: () => void, icon: string | null, name = '') {
   return html`
     <ha-control-button @click="${click}" style=${buttonStyle()}>
-      <ha-icon .icon=${icon} style=${iconStyle()}></ha-icon>
+      ${icon ? html`<ha-icon .icon=${icon} style=${iconStyle()}></ha-icon>` : ''}
       ${name ? html`<span style=${textStyle()}>${name}</span>` : ''}
     </ha-control-button>
   `;
@@ -19,9 +19,9 @@ function buttonStyle() {
 }
 
 function iconStyle() {
-  return styleMap({ padding: '1rem' });
+  return styleMap({ paddingRight: '1rem' });
 }
 
 function textStyle() {
-  return styleMap({ paddingRight: '1rem', fontWeight: 'bold' });
+  return styleMap({ paddingRight: '1rem', paddingLeft: '1rem', fontWeight: 'bold' });
 }
