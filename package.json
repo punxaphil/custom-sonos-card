@@ -16,7 +16,7 @@
     "@babel/core": "^7.21.0",
     "@rollup/plugin-babel": "^5.3.1",
     "@rollup/plugin-commonjs": "^21.1.0",
-    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-json": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@types/jest": "27.4.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
