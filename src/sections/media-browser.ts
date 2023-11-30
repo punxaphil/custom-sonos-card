@@ -14,6 +14,7 @@ import { MediaPlayer } from '../model/media-player';
 import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
 
 const LOCAL_STORAGE_CURRENT_DIR = 'custom-sonos-card_currentDir';
+const LOCAL_STORAGE_BROWSE = 'custom-sonos-card_browse';
 
 export class MediaBrowser extends LitElement {
   @property() store!: Store;
@@ -63,6 +64,8 @@ export class MediaBrowser extends LitElement {
         this.browse = true;
         this.dispatchBrowseState();
       }
+    } else {
+      this.browse = !!localStorage.getItem(LOCAL_STORAGE_BROWSE);
     }
     return html`
       <sonos-media-browser-header .config=${this.config}></sonos-media-browser-header>
@@ -102,6 +105,12 @@ export class MediaBrowser extends LitElement {
       this.setCurrentDir(undefined);
     } else {
       this.browse = !this.browse;
+
+      if (this.browse) {
+        localStorage.setItem(LOCAL_STORAGE_BROWSE, 'true');
+      } else {
+        localStorage.removeItem(LOCAL_STORAGE_BROWSE);
+      }
       this.dispatchBrowseState();
     }
   }
