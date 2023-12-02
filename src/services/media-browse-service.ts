@@ -6,7 +6,7 @@ import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
 function mediaBrowserFilter(ignoredTitles: string[] = [], items?: MediaPlayerItem[]) {
   return items?.filter(
     (item) =>
-      ['media-source://tts', 'media-source://camera'].indexOf(item.media_content_id || '') === -1 &&
+      !['media-source://tts', 'media-source://camera'].includes(item.media_content_id || '') &&
       indexOfWithoutSpecialChars(ignoredTitles, item.title) === -1,
   );
 }

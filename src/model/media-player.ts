@@ -63,7 +63,7 @@ export class MediaPlayer {
     return mediaPlayerHassEntities
       .filter(
         (hassEntity) =>
-          groupPlayerIds.indexOf(hassEntity.entity_id) > -1 && mainHassEntity.entity_id !== hassEntity.entity_id,
+          groupPlayerIds.includes(hassEntity.entity_id) && mainHassEntity.entity_id !== hassEntity.entity_id,
       )
       .map((hassEntity) => new MediaPlayer(hassEntity, this.config));
   }

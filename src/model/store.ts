@@ -113,12 +113,8 @@ export default class Store {
     return Object.values(hass.states)
       .filter(getGroupPlayerIds)
       .filter((hassEntity) => {
-        const indexOfEntity = configEntities.indexOf(hassEntity.entity_id);
-        return configEntities.length
-          ? this.config.excludeItemsInEntitiesList
-            ? indexOfEntity === -1
-            : indexOfEntity > -1
-          : true;
+        const includesEntity = configEntities.includes(hassEntity.entity_id);
+        return !configEntities.length || this.config.excludeItemsInEntitiesList !== includesEntity;
       })
       .sort((a, b) => a.entity_id.localeCompare(b.entity_id));
   }
@@ -163,6 +159,6 @@ export default class Store {
   }
 
   private getActivePlayerFromUrl() {
-    return window.location.href.indexOf('#') > 0 ? window.location.href.replace(/.*#/g, '') : '';
+    return window.location.href.includes('#') ? window.location.href.replace(/.*#/g, '') : '';
   }
 }

@@ -55,7 +55,7 @@ export default class HassService {
           unsubscribe();
           resolve(
             response.result
-              .filter((item: string) => item.indexOf('switch') > -1 || item.indexOf('number') > -1)
+              .filter((item: string) => item.includes('switch') || item.includes('number'))
               .map((item) => this.hass.states[item]),
           );
         }, subscribeMessage);
