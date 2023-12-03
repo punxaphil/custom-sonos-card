@@ -7,9 +7,7 @@ export class MediaPlayer {
   name: string;
   state: string;
   members: MediaPlayer[];
-  attributes: {
-    [key: string]: any;
-  };
+  attributes: HassEntity['attributes'];
   private readonly config: CardConfig;
 
   constructor(hassEntity: HassEntity, config: CardConfig, mediaPlayerHassEntities?: HassEntity[]) {
@@ -21,9 +19,6 @@ export class MediaPlayer {
     this.members = mediaPlayerHassEntities ? this.createGroupMembers(hassEntity, mediaPlayerHassEntities) : [];
   }
 
-  hasPlayer(playerId: string) {
-    return this.getPlayer(playerId) !== undefined;
-  }
   getPlayer(playerId: string) {
     return this.id === playerId ? this : this.getMember(playerId);
   }

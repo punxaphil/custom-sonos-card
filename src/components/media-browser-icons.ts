@@ -26,13 +26,12 @@ export class MediaBrowserIcons extends LitElement {
       </style>
       <div class="icons">
         ${itemsWithFallbacks(this.items, this.config).map(
-          (item, index) =>
-            html`
-              ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
-              <ha-control-button class="button" @click="${() => dispatchMediaItemSelected(item)}">
-                ${renderMediaBrowserItem(item, !item.thumbnail || !!this.config.mediaBrowserShowTitleForThumbnailIcons)}
-              </ha-control-button>
-            `,
+          (item, index) => html`
+            ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
+            <ha-control-button class="button" @click="${() => dispatchMediaItemSelected(item)}">
+              ${renderMediaBrowserItem(item, !item.thumbnail || !!this.config.mediaBrowserShowTitleForThumbnailIcons)}
+            </ha-control-button>
+          `,
         )}
       </div>
     `;
@@ -61,11 +60,6 @@ export class MediaBrowserIcons extends LitElement {
           background-size: 100%;
           background-repeat: no-repeat;
           background-position: center;
-        }
-
-        .folder {
-          margin: 5% 15% 25% 15%;
-          --mdc-icon-size: 100%;
         }
 
         .title {

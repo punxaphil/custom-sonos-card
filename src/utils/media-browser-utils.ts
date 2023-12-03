@@ -1,4 +1,4 @@
-import { CardConfig, MediaPlayerItem } from '../types';
+import { CardConfig, CustomThumbnails, MediaPlayerItem } from '../types';
 import { html } from 'lit';
 
 const DEFAULT_MEDIA_THUMBNAIL =
@@ -8,10 +8,10 @@ function hasItemsWithImage(items: MediaPlayerItem[]) {
   return items.some((item) => item.thumbnail);
 }
 
-function getValueFromKeyIgnoreSpecialChars(array: { [title: string]: string } | undefined, str: string) {
-  for (const key in array) {
-    if (removeSpecialChars(key) === removeSpecialChars(str)) {
-      return array[key];
+function getValueFromKeyIgnoreSpecialChars(customThumbnails: CustomThumbnails | undefined, currentTitle: string) {
+  for (const title in customThumbnails) {
+    if (removeSpecialChars(title) === removeSpecialChars(currentTitle)) {
+      return customThumbnails[title];
     }
   }
   return undefined;
@@ -51,7 +51,6 @@ export function itemsWithFallbacks(mediaPlayerItems: MediaPlayerItem[], config: 
     return {
       ...item,
       thumbnail,
-      showFolderIcon: item.can_expand && !thumbnail,
     };
   });
 }
@@ -69,7 +68,6 @@ export function mediaItemBackgroundImageStyle(thumbnail: string, index: number) 
 export function renderMediaBrowserItem(item: MediaPlayerItem, showTitle = true) {
   return html`
     <div class="thumbnail" ?hidden="${!item.thumbnail}"></div>
-    <ha-icon class="folder" .icon=${'mdi:folder-music'} ?hidden="${!item.showFolderIcon}"></ha-icon>
     <div class="title" ?hidden="${!showTitle}">${item.title}</div>
   `;
 }

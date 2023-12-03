@@ -1,59 +1,36 @@
 import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
-import { CardConfig } from '../types';
-import { mdiArrowUpLeftBold, mdiPlay, mdiPlayBoxMultiple, mdiStarOutline } from '@mdi/js';
-import { BROWSE_CLICKED, BROWSE_STATE, PLAY_DIR } from '../constants';
-import { iconButton } from './icon-button';
+import { property } from 'lit/decorators.js';
+import { MediaPlayerEntityFeature } from '../types';
+import Store from '../model/store';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 class MediaBrowserHeader extends LitElement {
-  @property() config!: CardConfig;
-  @state() browseCanPlay!: boolean;
-  @state() browseMedia = true;
-  @state() mediaBrowserDir!: string;
-  @state() title!: string;
+  @property() store!: Store;
 
   render() {
-    const browseIcon = this.browseMedia
-      ? mdiPlayBoxMultiple
-      : this.mediaBrowserDir
-      ? mdiArrowUpLeftBold
-      : mdiStarOutline;
+    const state = this.store.hass.states[this.store.activePlayer.id];
+    const playerState = {
+      ...state,
+      attributes: { ...state.attributes, supported_features: MediaPlayerEntityFeature.BROWSE_MEDIA },
+    };
     return html`
-      <div class="play">
-        ${this.browseCanPlay
-          ? iconButton(mdiPlay, () => window.dispatchEvent(new CustomEvent(PLAY_DIR)), {
-              additionalStyle: { padding: '0.5rem' },
-            })
-          : ''}
-      </div>
-      <div class="title">${this.title}</div>
-      ${iconButton(browseIcon, () => window.dispatchEvent(new CustomEvent(BROWSE_CLICKED)), {
-        additionalStyle: { padding: '0.5rem', flex: '1', textAlign: 'right' },
-      })}
+      <div class="title">All Favorites</div>
+      <more-info-content
+        .stateObj=${playerState}
+        .hass=${this.store.hass}
+        style=${styleMap({ padding: '0.5rem', flex: '1', textAlign: 'right' })}
+      ></more-info-content>
     `;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener(BROWSE_STATE, (event: Event) => {
-      const detail = (event as CustomEvent).detail;
-      this.browseCanPlay = detail.canPlay;
-      this.browseMedia = !detail.browse;
-      this.mediaBrowserDir = detail.currentDir;
-      this.title = detail.title;
-    });
-  }
   static get styles() {
     return css`
       :host {
         display: flex;
         justify-content: space-between;
       }
-      .play {
-        flex: 1;
-      }
       .title {
-        flex: 6;
+        flex: 1;
         text-align: center;
         font-size: 1.2rem;
         font-weight: bold;
