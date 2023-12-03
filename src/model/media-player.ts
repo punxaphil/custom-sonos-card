@@ -42,7 +42,7 @@ export class MediaPlayer {
     );
   }
   getCurrentTrack() {
-    return `${this.attributes.media_artist || ''} - ${this.attributes.media_title || ''}`.replace(/^ - /g, '');
+    return `${this.attributes.media_artist || ''} - ${this.attributes.media_title || ''}`.replace(/^ - | - $/g, '');
   }
 
   private getEntityName(hassEntity: HassEntity, config: CardConfig) {
