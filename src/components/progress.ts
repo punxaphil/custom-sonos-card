@@ -1,5 +1,5 @@
 import { css, html, LitElement } from 'lit';
-import { property, state } from 'lit/decorators.js';
+import { property, query, state } from 'lit/decorators.js';
 import Store from '../model/store';
 import { MediaPlayer } from '../model/media-player';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -10,6 +10,9 @@ class Progress extends LitElement {
 
   @state() private playingProgress!: number;
   private tracker?: NodeJS.Timeout;
+  @query('.bar')
+  private progressBar?: HTMLElement;
+  private mediaDuration = 0;
 
   disconnectedCallback() {
     if (this.tracker) {
@@ -21,21 +24,28 @@ class Progress extends LitElement {
 
   render() {
     this.activePlayer = this.store.activePlayer;
-    const mediaDuration = this.activePlayer?.attributes.media_duration || 0;
-    const showProgress = mediaDuration > 0;
+    this.mediaDuration = this.activePlayer?.attributes.media_duration || 0;
+    const showProgress = this.mediaDuration > 0;
     if (showProgress) {
       this.trackProgress();
       return html`
         <div class="progress">
           <span>${convertProgress(this.playingProgress)}</span>
-          <div class="bar">
-            <div class="progress-bar" style=${this.progressBarStyle(mediaDuration)}></div>
+          <div class="bar" @click=${this.handleSeek}>
+            <div class="progress-bar" style=${this.progressBarStyle(this.mediaDuration)}></div>
           </div>
-          <span> -${convertProgress(mediaDuration - this.playingProgress)}</span>
+          <span> -${convertProgress(this.mediaDuration - this.playingProgress)}</span>
         </div>
       `;
     }
     return html``;
+  }
+
+  private async handleSeek(e: MouseEvent) {
+    const progressWidth = this.progressBar!.offsetWidth;
+    const percent = e.offsetX / progressWidth;
+    const position = this.mediaDuration * percent;
+    await this.store.mediaControlService.seek(this.activePlayer, position);
   }
 
   private progressBarStyle(mediaDuration: number) {
@@ -73,11 +83,13 @@ class Progress extends LitElement {
         flex-grow: 1;
         align-items: center;
         padding: 5px;
+        cursor: pointer;
       }
 
       .progress-bar {
         background-color: var(--accent-color);
         height: 50%;
+        transition: width 0.1s linear;
       }
     `;
   }

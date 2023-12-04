@@ -6,9 +6,6 @@ export const REQUEST_PLAYER_EVENT = dispatchPrefix + 'request-player';
 export const SHOW_SECTION = dispatchPrefix + 'show-section';
 export const CALL_MEDIA_STARTED = dispatchPrefix + 'call-media-started';
 export const CALL_MEDIA_DONE = dispatchPrefix + 'call-media-done';
-export const PLAY_DIR = dispatchPrefix + 'play-dir';
-export const BROWSE_CLICKED = dispatchPrefix + 'browse-up';
-export const BROWSE_STATE = dispatchPrefix + 'browse-state';
 export const MEDIA_ITEM_SELECTED = dispatchPrefix + 'media-item-selected';
 
 export const TV_BASE64_IMAGE =

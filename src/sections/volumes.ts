@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../model/store';
-import { CardConfig } from '../types';
+import { CardConfig, MediaPlayerEntityFeature } from '../types';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
 import { iconButton } from '../components/icon-button';
@@ -10,6 +10,7 @@ import MediaControlService from '../services/media-control-service';
 import { MediaPlayer } from '../model/media-player';
 import HassService from '../services/hass-service';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { haPlayer } from '../components/ha-player';
 
 class Volumes extends LitElement {
   @property() store!: Store;
@@ -61,7 +62,13 @@ class Volumes extends LitElement {
         )}
       </div>
       <div class="switches">
-        ${when(!updateMembers && this.showSwitches[player.id], () => until(this.getAdditionalControls(player)))}
+        ${when(
+          !updateMembers && this.showSwitches[player.id],
+          () => html`
+            ${haPlayer(this.store, [MediaPlayerEntityFeature.SELECT_SOURCE])}
+            ${until(this.getAdditionalControls(player))}
+          `,
+        )}
       </div>
     </div>`;
   }

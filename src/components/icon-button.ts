@@ -11,9 +11,15 @@ export function iconButton(icon: string, click: () => void, options?: IconButton
     @click="${click}"
     .path=${icon}
     style="${styleMap({
-      '--mdc-icon-button-size': options?.big ? '6rem' : '3rem',
-      '--mdc-icon-size': options?.big ? '6rem' : '2rem',
+      ...iconStyle(options?.big),
       ...options?.additionalStyle,
     })}"
   ></ha-icon-button>`;
+}
+
+export function iconStyle(big = false) {
+  return {
+    '--mdc-icon-button-size': big ? '5rem' : '3rem',
+    '--mdc-icon-size': big ? '5rem' : '2rem',
+  };
 }

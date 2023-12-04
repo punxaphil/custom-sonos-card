@@ -70,37 +70,6 @@ export default class MediaControlService {
     }
   }
 
-  async pause(mediaPlayer: MediaPlayer) {
-    await this.hassService.callMediaService('media_pause', { entity_id: mediaPlayer.id });
-  }
-
-  async prev(mediaPlayer: MediaPlayer) {
-    await this.hassService.callMediaService('media_previous_track', {
-      entity_id: mediaPlayer.id,
-    });
-  }
-
-  async next(mediaPlayer: MediaPlayer) {
-    await this.hassService.callMediaService('media_next_track', { entity_id: mediaPlayer.id });
-  }
-
-  async play(mediaPlayer: MediaPlayer) {
-    await this.hassService.callMediaService('media_play', { entity_id: mediaPlayer.id });
-  }
-
-  async shuffle(mediaPlayer: MediaPlayer) {
-    await this.hassService.callMediaService('shuffle_set', {
-      entity_id: mediaPlayer.id,
-      shuffle: !mediaPlayer.attributes.shuffle,
-    });
-  }
-
-  async repeat(mediaPlayer: MediaPlayer) {
-    const currentState = mediaPlayer.attributes.repeat;
-    const repeat = currentState === 'all' ? 'one' : currentState === 'one' ? 'off' : 'all';
-    await this.hassService.callMediaService('repeat_set', { entity_id: mediaPlayer.id, repeat });
-  }
-
   async volumeDown(mediaPlayer: MediaPlayer, updateMembers = true) {
     await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
     if (updateMembers) {
@@ -153,6 +122,13 @@ export default class MediaControlService {
       entity_id: mediaPlayer.id,
       media_content_id: item.media_content_id,
       media_content_type: item.media_content_type,
+    });
+  }
+
+  async seek(mediaPlayer: MediaPlayer, position: number) {
+    await this.hassService.callMediaService('media_seek', {
+      entity_id: mediaPlayer.id,
+      seek_position: position,
     });
   }
 }

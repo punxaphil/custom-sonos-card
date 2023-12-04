@@ -7,9 +7,7 @@ export class MediaPlayer {
   name: string;
   state: string;
   members: MediaPlayer[];
-  attributes: {
-    [key: string]: any;
-  };
+  attributes: HassEntity['attributes'];
   private readonly config: CardConfig;
 
   constructor(hassEntity: HassEntity, config: CardConfig, mediaPlayerHassEntities?: HassEntity[]) {
@@ -21,9 +19,6 @@ export class MediaPlayer {
     this.members = mediaPlayerHassEntities ? this.createGroupMembers(hassEntity, mediaPlayerHassEntities) : [];
   }
 
-  hasPlayer(playerId: string) {
-    return this.getPlayer(playerId) !== undefined;
-  }
   getPlayer(playerId: string) {
     return this.id === playerId ? this : this.getMember(playerId);
   }
@@ -47,7 +42,7 @@ export class MediaPlayer {
     );
   }
   getCurrentTrack() {
-    return `${this.attributes.media_artist || ''} - ${this.attributes.media_title || ''}`.replace(/^ - /g, '');
+    return `${this.attributes.media_artist || ''} - ${this.attributes.media_title || ''}`.replace(/^ - | - $/g, '');
   }
 
   private getEntityName(hassEntity: HassEntity, config: CardConfig) {
@@ -63,7 +58,7 @@ export class MediaPlayer {
     return mediaPlayerHassEntities
       .filter(
         (hassEntity) =>
-          groupPlayerIds.indexOf(hassEntity.entity_id) > -1 && mainHassEntity.entity_id !== hassEntity.entity_id,
+          groupPlayerIds.includes(hassEntity.entity_id) && mainHassEntity.entity_id !== hassEntity.entity_id,
       )
       .map((hassEntity) => new MediaPlayer(hassEntity, this.config));
   }

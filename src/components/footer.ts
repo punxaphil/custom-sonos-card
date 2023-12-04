@@ -20,7 +20,7 @@ class Footer extends LitElement {
   }
 
   sectionButton(icon: string, section: Section) {
-    if (!this.config.sections || this.config.sections?.indexOf(section) > -1) {
+    if (!this.config.sections || this.config.sections?.includes(section)) {
       return iconButton(icon, () => dispatchShowSection(section), {
         additionalStyle: {
           padding: '1rem',

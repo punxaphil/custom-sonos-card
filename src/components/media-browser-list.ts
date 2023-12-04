@@ -52,11 +52,6 @@ export class MediaBrowserList extends LitElement {
           background-position: left;
         }
 
-        .folder {
-          width: var(--icon-width);
-          --mdc-icon-size: 100%;
-        }
-
         .title {
           font-size: 1.1rem;
           align-self: center;
