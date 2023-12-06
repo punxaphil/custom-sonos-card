@@ -21,10 +21,10 @@ export class Player extends LitElement {
     this.activePlayer = this.store.activePlayer;
 
     return html`
-      <div class="row">
-        <sonos-player-header .store=${this.store}></sonos-player-header>
+      <div class="container">
+        <sonos-player-header class="header" .store=${this.store}></sonos-player-header>
         <div class="artwork" style="${this.getBackgroundImage()}"></div>
-        <sonos-player-controls style="overflow-y:auto" .store=${this.store}></sonos-player-controls>
+        <sonos-player-controls class="controls" .store=${this.store}></sonos-player-controls>
       </div>
     `;
   }
@@ -77,18 +77,32 @@ export class Player extends LitElement {
         color: var(--primary-color);
       }
 
-      .row {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+      .container {
+        display: grid;
+        grid-template-rows: min-content auto min-content;
+        grid-template-areas:
+          'header'
+          'artwork'
+          'controls';
         min-height: 100%;
       }
 
+      .header {
+        grid-area: header;
+      }
+
+      .controls {
+        grid-area: controls;
+        overflow-y: auto;
+      }
+
       .artwork {
+        grid-area: artwork;
         align-self: center;
         flex-grow: 1;
         flex-shrink: 0;
         width: 100%;
+        height: 100%;
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
