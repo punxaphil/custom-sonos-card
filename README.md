@@ -7,7 +7,7 @@ Media player card for Sonos speakers!
 * Group/Ungroup speakers
 * Control multiple speaker
 * Play favorites from list
-* Media browser
+* Media browser *(native)*
 * Control individual volumes in a group
 * Artwork background
 * Possibility to override artwork
@@ -139,17 +139,6 @@ dynamicVolumeSlider: true # default is false. See more in section further down.
 artworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, but depending on your setup your device might not be able to access the artwork on the default host. One example where it could be needed is if you cast the dashboard with Google Cast.
 
 # media browser specific
-mediaBrowserItemsPerRow: 4 # default is 1. Use this to show items as icons.
-mediaBrowserShowTitleForThumbnailIcons: true # default is false. Only makes a difference if mediaBrowserItemsPerRow > 1. Will show title for thumbnail artworks.
-customThumbnail:
-  Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-customThumbnailIfMissing:
-  Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
-  Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-  fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to black music notes with white background.  
-mediaBrowserTitlesToIgnore:
-  - Local Media
-  - My Bad Playlist
 topFavorites: # Show these favorites at the top of the list
   - Legendary
   - Country Rocks
