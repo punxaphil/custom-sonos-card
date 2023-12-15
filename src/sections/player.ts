@@ -12,7 +12,7 @@ import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
 export class Player extends LitElement {
-  @property() store!: Store;
+  @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
 

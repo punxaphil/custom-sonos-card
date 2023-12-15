@@ -4,7 +4,7 @@ import { MediaPlayerEntityFeature } from '../types';
 import Store from '../model/store';
 
 class MediaBrowserHeader extends LitElement {
-  @property() store!: Store;
+  @property({attribute: false}) store!: Store;
 
   render() {
     return html`

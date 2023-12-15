@@ -9,7 +9,7 @@ import { MediaPlayer } from '../model/media-player';
 import '../components/grouping-button';
 
 export class Grouping extends LitElement {
-  @property() store!: Store;
+  @property({attribute: false}) store!: Store;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private allGroups!: MediaPlayer[];

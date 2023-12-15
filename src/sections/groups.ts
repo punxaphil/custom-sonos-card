@@ -6,7 +6,7 @@ import { listStyle } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
 export class Groups extends LitElement {
-  @property() store!: Store;
+  @property({ attribute: false }) store!: Store;
   private groups!: MediaPlayer[];
   private activePlayer!: MediaPlayer;
 

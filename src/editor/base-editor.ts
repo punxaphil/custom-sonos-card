@@ -5,9 +5,9 @@ import { CardConfig } from '../types';
 import Store from '../model/store';
 
 export abstract class BaseEditor extends LitElement {
-  @property() config!: CardConfig;
-  @property() hass!: HomeAssistant;
-  @property() store!: Store;
+  @property({attribute: false}) config!: CardConfig;
+  @property({attribute: false}) hass!: HomeAssistant;
+  @property({attribute: false}) store!: Store;
 
   setConfig(config: CardConfig) {
     this.config = JSON.parse(JSON.stringify(config));

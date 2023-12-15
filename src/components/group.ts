@@ -8,10 +8,10 @@ import { REQUEST_PLAYER_EVENT } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
 class Group extends LitElement {
-  @property() store!: Store;
+  @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
-  @property() player!: MediaPlayer;
-  @property() selected = false;
+  @property({ attribute: false }) player!: MediaPlayer;
+  @property({ type: Boolean }) selected = false;
 
   connectedCallback() {
     super.connectedCallback();

@@ -5,7 +5,7 @@ import { BaseEditor } from './base-editor';
 import { ConfigPredefinedGroupPlayer, PredefinedGroup } from '../types';
 
 class PredefinedGroupEditor extends BaseEditor {
-  @property() index!: number;
+  @property({ type: Number }) index!: number;
   @state() predefinedGroup!: PredefinedGroup<ConfigPredefinedGroupPlayer>;
 
   private schema = [

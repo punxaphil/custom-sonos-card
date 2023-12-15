@@ -11,8 +11,8 @@ import {
 } from '../utils/media-browser-utils';
 
 export class MediaBrowserIcons extends LitElement {
-  @property() store!: Store;
-  @property() items!: MediaPlayerItem[];
+  @property({ attribute: false }) store!: Store;
+  @property({ attribute: false }) items!: MediaPlayerItem[];
   private config!: CardConfig;
 
   render() {

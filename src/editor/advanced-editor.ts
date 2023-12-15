@@ -43,16 +43,21 @@ class AdvancedEditor extends BaseEditor {
     const topFavorites = this.store.config.topFavorites ?? [];
     const data = { ...this.store.config, topFavorites: topFavorites.join(', ') };
     return html`
-      <sonos-card-editor-form .schema=${ADVANCED_SCHEMA} .store=${this.store} .data=${data} .changed=${this.changed}></sonos-card-editor-form>
-      <p>
-        The following needs to be configured using code (YAML): 
+      <sonos-card-editor-form
+        .schema=${ADVANCED_SCHEMA}
+        .store=${this.store}
+        .data=${data}
+        .changed=${this.changed}
+      ></sonos-card-editor-form>
+      <div>
+        The following needs to be configured using code (YAML):
         <ul>
           <li>customSources</li>
           <li>customThumbnail</li>
           <li>customThumbnailIfMissing</li>
           <li>mediaBrowserTitlesToIgnore</li>
         </ul>
-      </p>
+      </div>
     `;
   }
   protected changed(ev: CustomEvent): void {

@@ -7,11 +7,11 @@ import { mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
 
 class Volume extends LitElement {
-  @property() store!: Store;
+  @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private mediaControlService!: MediaControlService;
-  @property() player!: MediaPlayer;
-  @property() updateMembers = true;
+  @property({ attribute: false }) player!: MediaPlayer;
+  @property({ type: Boolean }) updateMembers = true;
   @property() volumeClicked?: () => void;
 
   render() {

@@ -5,7 +5,7 @@ import { BaseEditor } from './base-editor';
 
 const newOverride = { ifMissing: false };
 class ArtworkOverrideEditor extends BaseEditor {
-  @property() index!: number;
+  @property({ type: Number }) index!: number;
   protected render(): TemplateResult {
     this.config = this.store.config;
     this.hass = this.store.hass;

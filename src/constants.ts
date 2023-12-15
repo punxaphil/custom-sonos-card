@@ -26,7 +26,7 @@ export const mediaBrowserTitleStyle = css`
     color: var(--secondary-text-color);
     font-weight: bold;
     padding: 0 0.5rem;
-    text-overflow-ellipsis: ellipsis;
+    text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
   }

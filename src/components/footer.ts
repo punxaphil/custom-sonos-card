@@ -8,37 +8,37 @@ import { mdiCastVariant, mdiHome, mdiSpeakerMultiple, mdiStarOutline, mdiTune } 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 
 class Footer extends LitElement {
-  @property() config!: CardConfig;
+  @property({ attribute: false }) config!: CardConfig;
   @property() section!: Section;
 
   render() {
     return html`
       <ha-icon-button
-        hidden=${this.hide(PLAYER)}
+        hide=${this.hide(PLAYER)}
         .path=${mdiHome}
         @click="${() => dispatchShowSection(PLAYER)}"
         selected="${this.selected(PLAYER)}"
       ></ha-icon-button>
       <ha-icon-button
-        hidden=${this.hide(MEDIA_BROWSER)}
+        hide=${this.hide(MEDIA_BROWSER)}
         .path=${mdiStarOutline}
         @click="${() => dispatchShowSection(MEDIA_BROWSER)}"
         selected="${this.selected(MEDIA_BROWSER)}"
       ></ha-icon-button>
       <ha-icon-button
-        hidden=${this.hide(GROUPS)}
+        hide=${this.hide(GROUPS)}
         .path=${mdiSpeakerMultiple}
         @click="${() => dispatchShowSection(GROUPS)}"
         selected="${this.selected(GROUPS)}"
       ></ha-icon-button>
       <ha-icon-button
-        hidden=${this.hide(GROUPING)}
+        hide=${this.hide(GROUPING)}
         .path=${mdiCastVariant}
         @click="${() => dispatchShowSection(GROUPING)}"
         selected="${this.selected(GROUPING)}"
       ></ha-icon-button>
       <ha-icon-button
-        hidden=${this.hide(VOLUMES)}
+        hide=${this.hide(VOLUMES)}
         .path=${mdiTune}
         @click="${() => dispatchShowSection(VOLUMES)}"
         selected="${this.selected(VOLUMES)}"
@@ -66,7 +66,7 @@ class Footer extends LitElement {
       :host > *[selected] {
         color: var(--accent-color);
       }
-      :host > *[hidden] {
+      :host > *[hide] {
         display: none;
       }
     `;

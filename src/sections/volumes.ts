@@ -13,7 +13,7 @@ import { HassEntity } from 'home-assistant-js-websocket';
 const { SELECT_SOURCE } = MediaPlayerEntityFeature;
 
 class Volumes extends LitElement {
-  @property() store!: Store;
+  @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
@@ -48,18 +48,18 @@ class Volumes extends LitElement {
         <div class="volume-name-text">${name}</div>
       </div>
       <div class="slider-row">
-        <ha-icon-button hidden=${noUpDown} @click="${volDown}" .path=${mdiVolumeMinus}></ha-icon-button>
+        <ha-icon-button hide=${noUpDown} @click="${volDown}" .path=${mdiVolumeMinus}></ha-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <ha-icon-button hidden=${noUpDown} @click="${volUp}" .path=${mdiVolumePlus}></ha-icon-button>
+        <ha-icon-button hide=${noUpDown} @click="${volUp}" .path=${mdiVolumePlus}></ha-icon-button>
         <ha-icon-button
-          hidden=${updateMembers || nothing}
+          hide=${updateMembers || nothing}
           @click="${() => this.toggleShowSwitches(player)}"
           .path=${mdiCog}
           show-switches="${this.showSwitches[player.id] || nothing}"
         ></ha-icon-button>
       </div>
       <div class="switches">
-        <sonos-ha-player hidden=${hideSwitches || nothing} .store=${this.store} .features=${[SELECT_SOURCE]}>
+        <sonos-ha-player hide=${hideSwitches || nothing} .store=${this.store} .features=${[SELECT_SOURCE]}>
         </sonos-ha-player>
         ${until(this.getAdditionalControls(hideSwitches, player))}
       </div>
@@ -134,7 +134,7 @@ class Volumes extends LitElement {
         color: var(--accent-color);
       }
 
-      *[hidden] {
+      *[hide] {
         display: none;
       }
     `;

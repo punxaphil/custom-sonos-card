@@ -3,8 +3,8 @@ import { BaseEditor } from './base-editor';
 import { property } from 'lit/decorators.js';
 
 class Form extends BaseEditor {
-  @property() schema!: unknown;
-  @property() data!: unknown;
+  @property({attribute: false}) schema!: unknown;
+  @property({attribute: false}) data!: unknown;
   @property() changed!: (ev: CustomEvent) => void;
   protected render(): TemplateResult {
     this.config = this.store.config;

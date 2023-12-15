@@ -23,7 +23,7 @@ const FOOTER_HEIGHT = 5;
 
 export class Card extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-  @property() config!: CardConfig;
+  @property({attribute: false}) config!: CardConfig;
   @state() section!: Section;
   @state() store!: Store;
   @state() showLoader!: boolean;

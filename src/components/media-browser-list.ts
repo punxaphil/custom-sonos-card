@@ -11,8 +11,8 @@ import {
 } from '../utils/media-browser-utils';
 
 export class MediaBrowserList extends LitElement {
-  @property() store!: Store;
-  @property() items!: MediaPlayerItem[];
+  @property({ attribute: false }) store!: Store;
+  @property({ type: Array }) items!: MediaPlayerItem[];
   private config!: CardConfig;
 
   render() {

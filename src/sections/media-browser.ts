@@ -14,7 +14,7 @@ import MediaBrowseService from '../services/media-browse-service';
 import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
 
 export class MediaBrowser extends LitElement {
-  @property() store!: Store;
+  @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaPlayers!: MediaPlayer[];

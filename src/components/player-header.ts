@@ -6,7 +6,7 @@ import { getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 
 class PlayerHeader extends LitElement {
-  @property() store!: Store;
+  @property({attribute: false}) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
 

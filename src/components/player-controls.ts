@@ -10,7 +10,7 @@ import { when } from 'lit/directives/when.js';
 const { SHUFFLE_SET, REPEAT_SET, PLAY, PAUSE, NEXT_TRACK, PREVIOUS_TRACK } = MediaPlayerEntityFeature;
 
 class PlayerControls extends LitElement {
-  @property() store!: Store;
+  @property({attribute: false}) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
@@ -27,11 +27,11 @@ class PlayerControls extends LitElement {
           this.activePlayer.state !== 'idle',
           () => html`
             <div class="icons">
-              <ha-icon-button hidden=${noUpDown} @click="${this.volDown}" .path=${mdiVolumeMinus}></ha-icon-button>
+              <ha-icon-button hide=${noUpDown} @click="${this.volDown}" .path=${mdiVolumeMinus}></ha-icon-button>
               <sonos-ha-player .store=${this.store} .features=${[SHUFFLE_SET, PREVIOUS_TRACK]}></sonos-ha-player>
               <sonos-ha-player .store=${this.store} .features=${[PLAY, PAUSE]} class="big-icon"></sonos-ha-player>
               <sonos-ha-player .store=${this.store} .features=${[NEXT_TRACK, REPEAT_SET]}></sonos-ha-player>
-              <ha-icon-button hidden=${noUpDown} @click="${this.volUp}" .path=${mdiVolumePlus}></ha-icon-button>
+              <ha-icon-button hide=${noUpDown} @click="${this.volUp}" .path=${mdiVolumePlus}></ha-icon-button>
             </div>
           `,
         )}
@@ -54,7 +54,7 @@ class PlayerControls extends LitElement {
         display: flex;
         align-items: center;
       }
-      .icons > *[hidden] {
+      .icons > *[hide] {
         display: none;
       }
       .big-icon {
