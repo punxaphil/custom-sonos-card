@@ -129,7 +129,12 @@ export class Card extends LitElement {
     const newEntityId = (event as CustomEvent).detail.entityId;
     if (newEntityId !== this.activePlayerId) {
       this.activePlayerId = newEntityId;
-      this.requestUpdate();
+      try {
+        this.requestUpdate();
+      } catch (e) {
+        console.error('Error updating card. newEntityId:',newEntityId);
+        console.error(e);
+      }
     }
   };
 

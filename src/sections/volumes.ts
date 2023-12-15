@@ -67,7 +67,12 @@ class Volumes extends LitElement {
   }
   private toggleShowSwitches(player: MediaPlayer) {
     this.showSwitches[player.id] = !this.showSwitches[player.id];
-    this.requestUpdate();
+    try {
+      this.requestUpdate();
+    } catch (e) {
+      console.error('Error updating volumes');
+      console.error(e);
+    }
   }
 
   private async getAdditionalControls(hide: boolean, player: MediaPlayer) {

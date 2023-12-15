@@ -11,14 +11,21 @@ export default class MediaBrowseService {
   }
 
   async getAllFavorites(mediaPlayers: MediaPlayer[], ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
+    console.log('Custom Sonos Card: getting all favorites', mediaPlayers, ignoredTitles);
     if (!mediaPlayers.length) {
       return [];
     }
     const favoritesForAllPlayers = await Promise.all(mediaPlayers.map((player) => this.getFavoritesForPlayer(player)));
+    console.log('Custom Sonos Card: favoritesForAllPlayers', favoritesForAllPlayers);
     let favorites = favoritesForAllPlayers.flatMap((f) => f);
+    console.log('Custom Sonos Card: favorites', favorites);
     favorites = this.removeDuplicates(favorites);
+    console.log('Custom Sonos Card: favorites after removing duplicates', favorites);
     favorites = favorites.length ? favorites : this.getFavoritesFromStates(mediaPlayers);
-    return favorites.filter((item) => indexOfWithoutSpecialChars(ignoredTitles ?? [], item.title) === -1);
+    console.log('Custom Sonos Card: favorites after getting from states', favorites);
+    const filtered = favorites.filter((item) => indexOfWithoutSpecialChars(ignoredTitles ?? [], item.title) === -1);
+    console.log('Custom Sonos Card: favorites after filtering', filtered);
+    return filtered;
   }
 
   private removeDuplicates(items: MediaPlayerItem[]) {

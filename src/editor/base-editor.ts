@@ -31,7 +31,12 @@ export abstract class BaseEditor extends LitElement {
 
   protected configChanged() {
     fireEvent(this, 'config-changed', { config: this.config });
-    this.requestUpdate();
+    try {
+      this.requestUpdate();
+    } catch (e) {
+      console.error('config changed');
+      console.error(e);
+    }
   }
   protected dispatchClose() {
     return this.dispatchEvent(new CustomEvent('closed'));

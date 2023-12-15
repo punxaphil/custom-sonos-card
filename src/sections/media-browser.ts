@@ -77,9 +77,11 @@ export class MediaBrowser extends LitElement {
       ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
       ...allFavorites,
     ];
+    console.log('Custom Sonos Card: allFavorites', allFavorites);
     allFavorites = this.config.numberOfFavoritesToShow
       ? allFavorites.slice(0, this.config.numberOfFavoritesToShow)
       : allFavorites;
+    console.log('Custom Sonos Card: allFavorites after slicing', allFavorites);
     return allFavorites;
   }
 
