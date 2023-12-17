@@ -15,6 +15,7 @@ export default class MediaBrowseService {
     if (!mediaPlayers.length) {
       return [];
     }
+    console.log('Custom Sonos Card: getting favorites for all players');
     const favoritesForAllPlayers = await Promise.all(mediaPlayers.map((player) => this.getFavoritesForPlayer(player)));
     console.log('Custom Sonos Card: favoritesForAllPlayers', favoritesForAllPlayers);
     let favorites = favoritesForAllPlayers.flatMap((f) => f);
@@ -35,12 +36,17 @@ export default class MediaBrowseService {
   }
 
   private async getFavoritesForPlayer(player: MediaPlayer) {
+    console.log('Custom Sonos Card: getting favorites for player', player.id);
     const favoritesRoot = await this.hassService.browseMedia(player, 'favorites', '');
+    console.log('Custom Sonos Card: favoritesRoot', favoritesRoot.media_content_id);
     const favoriteTypesPromise = favoritesRoot.children?.map((favoriteItem) =>
       this.hassService.browseMedia(player, favoriteItem.media_content_type, favoriteItem.media_content_id),
     );
     const favoriteTypes = favoriteTypesPromise ? await Promise.all(favoriteTypesPromise) : [];
-    return favoriteTypes.flatMap((item) => item.children ?? []);
+    console.log('Custom Sonos Card: favoriteTypes', favoriteTypes.length);
+    const mediaPlayerItems = favoriteTypes.flatMap((item) => item.children ?? []);
+    console.log('Custom Sonos Card: mediaPlayerItems', mediaPlayerItems.length);
+    return mediaPlayerItems;
   }
 
   private getFavoritesFromStates(mediaPlayers: MediaPlayer[]) {
