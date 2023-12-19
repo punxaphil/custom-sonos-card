@@ -9,7 +9,7 @@ import { MediaPlayer } from '../model/media-player';
 import '../components/grouping-button';
 
 export class Grouping extends LitElement {
-  @property({attribute: false}) store!: Store;
+  @property({ attribute: false }) store!: Store;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private allGroups!: MediaPlayer[];
@@ -31,7 +31,7 @@ export class Grouping extends LitElement {
             <mwc-list-item
               ?activated="${isSelected}"
               ?disabled="${isDisabled}"
-              @click="${() => this.itemClick(isSelected, isMain, player)}"
+              @click="${async () => await this.itemClick(isSelected, isMain, player)}"
             >
               <ha-icon .icon="mdi:checkbox-${icon}-outline"></ha-icon>
               <span class="item">${name}</span>

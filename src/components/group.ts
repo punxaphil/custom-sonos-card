@@ -3,8 +3,8 @@ import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../model/store';
 import { CardConfig, Section } from '../types';
-import { dispatchActivePlayerId, dispatchShowSection, getSpeakerList } from '../utils/utils';
-import { REQUEST_PLAYER_EVENT } from '../constants';
+import { dispatch, dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
+import { REQUEST_PLAYER_EVENT, SHOW_SECTION } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
 class Group extends LitElement {
@@ -71,7 +71,7 @@ class Group extends LitElement {
       const newUrl = window.location.href.replace(/#.*/g, '');
       window.location.replace(`${newUrl}#${this.player.id}`);
       this.dispatchEntityIdEvent();
-      dispatchShowSection(Section.PLAYER);
+      dispatch(SHOW_SECTION, Section.PLAYER);
     }
   }
 

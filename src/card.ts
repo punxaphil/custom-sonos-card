@@ -15,7 +15,7 @@ import {
 } from './constants';
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { getHeight, getWidth } from './utils/utils';
+import { dispatch, getHeight, getWidth } from './utils/utils';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 const TITLE_HEIGHT = 2;
@@ -23,7 +23,7 @@ const FOOTER_HEIGHT = 5;
 
 export class Card extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
-  @property({attribute: false}) config!: CardConfig;
+  @property({ attribute: false }) config!: CardConfig;
   @state() section!: Section;
   @state() store!: Store;
   @state() showLoader!: boolean;
@@ -41,7 +41,8 @@ export class Card extends LitElement {
     return html`
       <ha-card style="${this.haCardStyle(height)}">
         <div class="loader" ?hidden="${!this.showLoader}">
-          <ha-circular-progress active="" progress="0"></ha-circular-progress>
+          <ha-circular-progress indeterminate></ha-circular-progress></div
+        >
         </div>
         ${title ? html`<div class="title">${title}</div>` : html``}
         <div class="content" style="${this.contentStyle(contentHeight)}">
@@ -64,9 +65,9 @@ export class Card extends LitElement {
   }
   private createStore() {
     if (this.activePlayerId) {
-      this.store = new Store(this.hass, this.config, this.activePlayerId);
+      this.store = new Store(this.hass, this.config, this.section, this.activePlayerId);
     } else {
-      this.store = new Store(this.hass, this.config);
+      this.store = new Store(this.hass, this.config, this.section);
       this.activePlayerId = this.store.activePlayer.id;
     }
   }
@@ -187,6 +188,9 @@ export class Card extends LitElement {
         --mdc-icon-button-size: 3rem;
         --mdc-icon-size: 2rem;
       }
+      ha-circular-progress {
+        --md-sys-color-primary: var(--accent-color);
+      }
       .loader {
         position: absolute;
         z-index: 1000;
@@ -208,8 +212,7 @@ export class Card extends LitElement {
 
 function listenForActivePlayer(listener: EventListener) {
   window.addEventListener(ACTIVE_PLAYER_EVENT, listener);
-  const event = new CustomEvent(REQUEST_PLAYER_EVENT, { bubbles: true, composed: true });
-  window.dispatchEvent(event);
+  dispatch(REQUEST_PLAYER_EVENT);
 }
 
 function stopListeningForActivePlayer(listener: EventListener) {

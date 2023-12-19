@@ -2,8 +2,8 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
-import { dispatchMediaItemSelected } from '../utils/utils';
-import { mediaBrowserTitleStyle } from '../constants';
+import { dispatch } from '../utils/utils';
+import { MEDIA_ITEM_SELECTED, mediaBrowserTitleStyle } from '../constants';
 import {
   itemsWithFallbacks,
   mediaItemBackgroundImageStyle,
@@ -28,7 +28,7 @@ export class MediaBrowserIcons extends LitElement {
         ${itemsWithFallbacks(this.items, this.config).map(
           (item, index) => html`
             ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
-            <ha-control-button class="button" @click="${() => dispatchMediaItemSelected(item)}">
+            <ha-control-button class="button" @click="${() => dispatch(MEDIA_ITEM_SELECTED, item)}">
               ${renderMediaBrowserItem(item, !item.thumbnail || !!this.config.mediaBrowserShowTitleForThumbnailIcons)}
             </ha-control-button>
           `,

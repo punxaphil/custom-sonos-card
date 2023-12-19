@@ -19,10 +19,10 @@ class CardEditor extends BaseEditor {
   @state() private configArea = GENERAL;
 
   protected render(): TemplateResult {
-    this.store = new Store(this.hass, this.config);
     if (!this.config.sections || this.config.sections.length === 0) {
       this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.MEDIA_BROWSER];
     }
+    this.store = new Store(this.hass, this.config, this.config.sections[0]);
 
     return html`
       <ha-control-button-group>

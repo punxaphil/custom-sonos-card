@@ -4,34 +4,23 @@ import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { dispatch } from '../utils/utils';
 
 export default class HassService {
   private readonly hass: HomeAssistant;
-  private readonly sectionOnCreate?: Section;
+  private readonly currentSection: Section;
 
-  constructor(hass: HomeAssistant, section?: Section) {
+  constructor(hass: HomeAssistant, section: Section) {
     this.hass = hass;
-    this.sectionOnCreate = section;
+    this.currentSection = section;
   }
 
   async callMediaService(service: string, inOptions: ServiceCallRequest['serviceData']) {
-    window.dispatchEvent(
-      new CustomEvent(CALL_MEDIA_STARTED, {
-        bubbles: true,
-        composed: true,
-        detail: { section: this.sectionOnCreate },
-      }),
-    );
-
+    dispatch(CALL_MEDIA_STARTED, { section: this.currentSection });
     try {
       await this.hass.callService('media_player', service, inOptions);
     } finally {
-      window.dispatchEvent(
-        new CustomEvent(CALL_MEDIA_DONE, {
-          bubbles: true,
-          composed: true,
-        }),
-      );
+      dispatch(CALL_MEDIA_DONE);
     }
   }
 

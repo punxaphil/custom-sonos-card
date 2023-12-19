@@ -6,8 +6,8 @@ import '../components/media-browser-header';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem, Section } from '../types';
-import { dispatchShowSection } from '../utils/utils';
-import { MEDIA_ITEM_SELECTED } from '../constants';
+import { dispatch } from '../utils/utils';
+import { MEDIA_ITEM_SELECTED, SHOW_SECTION } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import MediaBrowseService from '../services/media-browse-service';
@@ -55,7 +55,7 @@ export class MediaBrowser extends LitElement {
   private onMediaItemSelected = (event: Event) => {
     const mediaItem = (event as CustomEvent).detail;
     this.playItem(mediaItem);
-    setTimeout(() => dispatchShowSection(Section.PLAYER), 1000);
+    setTimeout(() => dispatch(SHOW_SECTION, Section.PLAYER), 1000);
   };
 
   private async playItem(mediaItem: MediaPlayerItem) {

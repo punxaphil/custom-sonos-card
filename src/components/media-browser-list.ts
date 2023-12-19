@@ -2,8 +2,8 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
-import { dispatchMediaItemSelected } from '../utils/utils';
-import { listStyle, mediaBrowserTitleStyle } from '../constants';
+import { dispatch } from '../utils/utils';
+import { listStyle, MEDIA_ITEM_SELECTED, mediaBrowserTitleStyle } from '../constants';
 import {
   itemsWithFallbacks,
   mediaItemBackgroundImageStyle,
@@ -23,7 +23,7 @@ export class MediaBrowserList extends LitElement {
         ${itemsWithFallbacks(this.items, this.config).map((item, index) => {
           return html`
             ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
-            <mwc-list-item class="button" @click="${() => dispatchMediaItemSelected(item)}">
+            <mwc-list-item class="button" @click="${() => dispatch(MEDIA_ITEM_SELECTED, item)}">
               <div class="row">${renderMediaBrowserItem(item)}</div>
             </mwc-list-item>
           `;
