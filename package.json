@@ -39,7 +39,7 @@
     "build": "npm run lint && npm run rollup",
     "local-deploy": "npm run build && cp dist/custom-sonos-card.js ~/homeassistant/www/community/custom-sonos-card/custom-sonos-card.js",
     "lint": "eslint src/*.ts",
-    "rollup": "rollup -c",
+    "rollup": "rollup -c --bundleConfigAsCjs",
     "test": "jest --verbose --silent --colors -c jest.config.js"
   }
 }
