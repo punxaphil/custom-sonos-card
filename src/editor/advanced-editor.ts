@@ -40,6 +40,10 @@ export const ADVANCED_SCHEMA = [
     name: 'numberOfFavoritesToShow',
     valueMin: 1,
   },
+  {
+    name: 'showAudioInputFormat',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

@@ -37,7 +37,7 @@ export default class HassService {
     return mediaPlayerItem;
   }
 
-  async getRelatedEntities(player: MediaPlayer) {
+  async getRelatedEntities(player: MediaPlayer, ...entityTypes: string[]) {
     return new Promise<HassEntity[]>(async (resolve, reject) => {
       const subscribeMessage = {
         type: 'render_template',
@@ -48,7 +48,7 @@ export default class HassService {
           unsubscribe();
           resolve(
             response.result
-              .filter((item: string) => item.includes('switch') || item.includes('number'))
+              .filter((item: string) => entityTypes.some((type) => item.includes(type)))
               .map((item) => this.hass.states[item]),
           );
         }, subscribeMessage);
