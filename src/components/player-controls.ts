@@ -35,7 +35,7 @@ class PlayerControls extends LitElement {
               <sonos-ha-player .store=${this.store} .features=${[NEXT_TRACK, REPEAT_SET]}></sonos-ha-player>
               <ha-icon-button hide=${noUpDown} @click="${this.volUp}" .path=${mdiVolumePlus}></ha-icon-button>
               <div class="audio-input-format">
-                <div show="${this.config.showAudioInputFormat || nothing}">${until(this.getAudioInputFormat())}</div>
+                ${this.config.showAudioInputFormat && until(this.getAudioInputFormat())}
               </div>
             </div>
           `,
@@ -51,7 +51,7 @@ class PlayerControls extends LitElement {
     const sensors = await this.store.hassService.getRelatedEntities(this.activePlayer, 'sensor');
     const audioInputFormat = sensors.find((sensor) => sensor.entity_id.includes('audio_input_format'));
     return audioInputFormat && audioInputFormat.state && audioInputFormat.state !== 'No audio'
-      ? audioInputFormat.state
+      ? html`<div>${audioInputFormat.state}</div>`
       : '';
   }
   static get styles() {
@@ -81,10 +81,6 @@ class PlayerControls extends LitElement {
         position: relative;
       }
       .audio-input-format > div {
-        display: none;
-      }
-      .audio-input-format > div[show] {
-        display: block;
         color: var(--card-background-color);
         background: var(--disabled-text-color);
         text-overflow: ellipsis;
