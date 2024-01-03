@@ -44,6 +44,7 @@ export interface CardConfig extends LovelaceCardConfig {
   topFavorites?: string[];
   numberOfFavoritesToShow?: number;
   hideBrowseMediaButton?: boolean;
+  showAudioInputFormat?: boolean;
 }
 
 export interface MediaArtworkOverride {

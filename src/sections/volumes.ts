@@ -74,7 +74,7 @@ class Volumes extends LitElement {
     if (hide) {
       return;
     }
-    const relatedEntities = await this.hassService.getRelatedEntities(player);
+    const relatedEntities = await this.hassService.getRelatedEntities(player, 'switch', 'number', 'sensor');
     return relatedEntities.map((relatedEntity: HassEntity) => {
       relatedEntity.attributes.friendly_name =
         relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
