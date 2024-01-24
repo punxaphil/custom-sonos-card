@@ -40,24 +40,112 @@ export class Grouping extends LitElement {
         <div class="list">
           ${this.groupingItems.map((item) => {
             return html`
-              <div
-                class="item"
-                update-pending="${item.isModified() || nothing}"
-                disabled="${item.isDisabled || nothing}"
-                @click="${() => this.itemClick(item)}"
-              >
-                <ha-icon class="icon" selected="${item.isSelected || nothing}" .icon="mdi:${item.icon}"></ha-icon>
-                <span>${item.name}</span>
+              <div class="item" modified="${item.isModified() || nothing}" disabled="${item.isDisabled || nothing}">
+                <ha-icon
+                  class="icon"
+                  selected="${item.isSelected || nothing}"
+                  .icon="mdi:${item.icon}"
+                  @click="${() => this.itemClick(item)}"
+                ></ha-icon>
+                <div class="name-and-volume">
+                  <span class="name">${item.name}</span>
+                  <sonos-volume
+                    class="volume"
+                    .store=${this.store}
+                    .player=${item.player}
+                    .updateMembers=${false}
+                    .slim=${true}
+                  ></sonos-volume>
+                </div>
               </div>
             `;
           })}
         </div>
         <ha-control-button-group class="buttons" hide=${this.isGroupingModified() || nothing}>
-          <ha-control-button selected @click="${this.applyGrouping}"> Apply </ha-control-button>
+          <ha-control-button class="apply" @click="${this.applyGrouping}"> Apply </ha-control-button>
           <ha-control-button @click="${this.cancelGrouping}"> Cancel </ha-control-button>
         </ha-control-button-group>
       </div>
     `;
+  }
+
+  static get styles() {
+    return [
+      listStyle,
+      css`
+        :host {
+          --mdc-icon-size: 24px;
+        }
+        .wrapper {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+        }
+
+        .predefined-groups {
+          margin: 1rem;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .item {
+          color: var(--secondary-text-color);
+          padding: 0.5rem;
+          display: flex;
+          align-items: center;
+        }
+
+        .icon {
+          padding-right: 0.5rem;
+          flex-shrink: 0;
+        }
+
+        .icon[selected] {
+          color: var(--accent-color);
+        }
+
+        .item[modified] .name {
+          font-weight: bold;
+          font-style: italic;
+        }
+
+        .item[disabled] .icon {
+          color: var(--disabled-text-color);
+        }
+
+        .list {
+          flex: 1;
+          overflow: auto;
+        }
+
+        .buttons {
+          flex-shrink: 0;
+          margin: 0 1rem;
+          padding-top: 0.5rem;
+        }
+
+        .apply {
+          --control-button-background-color: var(--accent-color);
+        }
+
+        *[hide] {
+          display: none;
+        }
+
+        .name-and-volume {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+
+        .volume {
+          --accent-color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 
   async itemClick(item: GroupingItem) {
@@ -151,70 +239,6 @@ export class Grouping extends LitElement {
         ></sonos-grouping-button>
       `;
     });
-  }
-  static get styles() {
-    return [
-      listStyle,
-      css`
-        :host {
-          --mdc-icon-size: 24px;
-        }
-        .wrapper {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-        }
-
-        .predefined-groups {
-          margin: 1rem;
-          display: flex;
-          flex-wrap: wrap;
-          gap: 1rem;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .icon {
-          padding-inline-end: 0.25rem;
-        }
-
-        .icon[selected] {
-          color: var(--accent-color);
-        }
-
-        .item {
-          color: var(--secondary-text-color);
-          font-weight: bold;
-          padding: 0.5rem;
-        }
-
-        .item[update-pending] {
-          font-style: italic;
-        }
-
-        .item[disabled] > * {
-          color: var(--disabled-text-color);
-        }
-
-        .list {
-          flex: 1;
-          overflow: auto;
-        }
-
-        .buttons {
-          flex-shrink: 0;
-          margin: 0 1rem;
-        }
-
-        .buttons > *[selected] {
-          --control-button-background-color: var(--accent-color);
-        }
-
-        *[hide] {
-          display: none;
-        }
-      `,
-    ];
   }
 }
 

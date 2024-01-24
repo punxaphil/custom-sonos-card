@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
@@ -13,6 +13,7 @@ class Volume extends LitElement {
   @property({ attribute: false }) player!: MediaPlayer;
   @property({ type: Boolean }) updateMembers = true;
   @property() volumeClicked?: () => void;
+  @property() slim: boolean = false;
 
   render() {
     this.config = this.store.config;
@@ -23,7 +24,7 @@ class Volume extends LitElement {
 
     const muteIcon = this.player.isMuted(this.updateMembers) ? mdiVolumeMute : mdiVolumeHigh;
     return html`
-      <div class="volume">
+      <div class="volume" slim=${this.slim || nothing}>
         <ha-icon-button @click="${this.mute}" .path=${muteIcon}> </ha-icon-button>
         <div class="volume-slider">
           <ha-control-slider .value="${volume}" max=${max} @value-changed=${this.volumeChanged}></ha-control-slider>
@@ -58,6 +59,16 @@ class Volume extends LitElement {
         --control-slider-color: var(--accent-color);
       }
 
+      *[slim] * {
+        --control-slider-thickness: 10px;
+        --mdc-icon-button-size: 30px;
+        --mdc-icon-size: 20px;
+      }
+
+      *[slim] .volume-level {
+        display: none;
+      }
+
       .volume {
         display: flex;
         flex: 1;
@@ -66,6 +77,11 @@ class Volume extends LitElement {
       .volume-slider {
         flex: 1;
         padding-right: 0.6rem;
+      }
+
+      *[slim] .volume-slider {
+        display: flex;
+        align-items: center;
       }
 
       .volume-level {
