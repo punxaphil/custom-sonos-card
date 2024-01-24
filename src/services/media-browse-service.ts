@@ -10,14 +10,14 @@ export default class MediaBrowseService {
     this.hassService = hassService;
   }
 
-  async getAllFavorites(mediaPlayers: MediaPlayer[], ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
-    if (!mediaPlayers.length) {
+  async getFavorites(player: MediaPlayer, ignoredTitles?: string[]): Promise<MediaPlayerItem[]> {
+    if (!player) {
       return [];
     }
-    const favoritesForAllPlayers = await Promise.all(mediaPlayers.map((player) => this.getFavoritesForPlayer(player)));
-    let favorites = favoritesForAllPlayers.flatMap((f) => f);
+    let favorites = await this.getFavoritesForPlayer(player);
+    favorites = favorites.flatMap((f) => f);
     favorites = this.removeDuplicates(favorites);
-    favorites = favorites.length ? favorites : this.getFavoritesFromStates(mediaPlayers);
+    favorites = favorites.length ? favorites : this.getFavoritesFromStates(player);
     return favorites.filter((item) => indexOfWithoutSpecialChars(ignoredTitles ?? [], item.title) === -1);
   }
 
@@ -41,15 +41,8 @@ export default class MediaBrowseService {
     }
   }
 
-  private getFavoritesFromStates(mediaPlayers: MediaPlayer[]) {
-    console.log('Custom Sonos Card: found no favorites with thumbnails, trying with titles only');
-    let titles = mediaPlayers
-      .map((player) => player.attributes)
-      .flatMap((attributes) => (attributes.hasOwnProperty('source_list') ? attributes.source_list : []));
-    titles = [...new Set(titles)];
-    if (!titles.length) {
-      console.log('Custom Sonos Card: No favorites found');
-    }
-    return titles.map((title) => ({ title }));
+  private getFavoritesFromStates(mediaPlayer: MediaPlayer) {
+    const titles = mediaPlayer.attributes.hasOwnProperty('source_list') ? mediaPlayer.attributes.source_list : [];
+    return titles.map((title: string) => ({ title }));
   }
 }
