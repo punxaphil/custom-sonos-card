@@ -111,7 +111,7 @@ export default class Store {
   public getMediaPlayerHassEntities(hass: HomeAssistant) {
     const configEntities = [...new Set(this.config.entities)];
     return Object.values(hass.states)
-      .filter(getGroupPlayerIds)
+      .filter((value) => value.entity_id.includes('media_player'))
       .filter((hassEntity) => {
         const includesEntity = configEntities.includes(hassEntity.entity_id);
         return !configEntities.length || !!this.config.excludeItemsInEntitiesList !== includesEntity;
@@ -128,12 +128,12 @@ export default class Store {
 
   private isMainPlayer(hassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]) {
     try {
-      const sonosGroup = getGroupPlayerIds(hassEntity).filter((playerId: string) =>
+      const groupIds = getGroupPlayerIds(hassEntity).filter((playerId: string) =>
         mediaPlayerHassEntities.some((value) => value.entity_id === playerId),
       );
-      const isGrouped = sonosGroup?.length > 1;
-      const isMainInGroup = isGrouped && sonosGroup && sonosGroup[0] === hassEntity.entity_id;
-      return !isGrouped || isMainInGroup;
+      const isGrouped = groupIds?.length > 1;
+      const isMainInGroup = isGrouped && groupIds && groupIds[0] === hassEntity.entity_id;
+      return (!isGrouped || isMainInGroup) && this.hass.states[hassEntity.entity_id]?.state !== 'unavailable';
     } catch (e) {
       console.error('Failed to determine main player', JSON.stringify(hassEntity), e);
       return false;
