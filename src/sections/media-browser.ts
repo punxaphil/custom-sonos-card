@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import '../components/media-browser-list';
 import '../components/media-browser-icons';
@@ -17,7 +17,6 @@ export class MediaBrowser extends LitElement {
   @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
-  private mediaPlayers!: MediaPlayer[];
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
 
@@ -35,7 +34,6 @@ export class MediaBrowser extends LitElement {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
     this.mediaBrowseService = this.store.mediaBrowseService;
-    this.mediaPlayers = this.store.allMediaPlayers;
     this.mediaControlService = this.store.mediaControlService;
 
     return html`
@@ -43,10 +41,14 @@ export class MediaBrowser extends LitElement {
 
       ${this.activePlayer &&
       until(
-        this.getAllFavorites().then((items) => {
-          return (this.config.mediaBrowserItemsPerRow ?? 0) > 1
-            ? html`<sonos-media-browser-icons .items=${items} .store=${this.store}></sonos-media-browser-icons>`
-            : html` <sonos-media-browser-list .items=${items} .store=${this.store}></sonos-media-browser-list>`;
+        this.getFavorites(this.activePlayer).then((items) => {
+          if (items?.length) {
+            return (this.config.mediaBrowserItemsPerRow ?? 0) > 1
+              ? html` <sonos-media-browser-icons .items=${items} .store=${this.store}></sonos-media-browser-icons>`
+              : html` <sonos-media-browser-list .items=${items} .store=${this.store}></sonos-media-browser-list>`;
+          } else {
+            return html`<div class="no-items">No favorites found</div>`;
+          }
         }),
       )}
     `;
@@ -66,20 +68,15 @@ export class MediaBrowser extends LitElement {
     }
   }
 
-  private async getAllFavorites() {
-    let allFavorites = await this.mediaBrowseService.getAllFavorites(
-      this.mediaPlayers,
-      this.config.mediaBrowserTitlesToIgnore,
-    );
-    allFavorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
-    allFavorites = [
+  private async getFavorites(player: MediaPlayer) {
+    let favorites = await this.mediaBrowseService.getFavorites(player, this.config.mediaBrowserTitlesToIgnore);
+    favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
+    favorites = [
       ...(this.config.customSources?.[this.activePlayer.id]?.map(MediaBrowser.createSource) || []),
       ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
-      ...allFavorites,
+      ...favorites,
     ];
-    return this.config.numberOfFavoritesToShow
-      ? allFavorites.slice(0, this.config.numberOfFavoritesToShow)
-      : allFavorites;
+    return this.config.numberOfFavoritesToShow ? favorites.slice(0, this.config.numberOfFavoritesToShow) : favorites;
   }
 
   private sortOnTopFavoritesThenAlphabetically(a: string, b: string) {
@@ -99,5 +96,14 @@ export class MediaBrowser extends LitElement {
 
   private static createSource(source: MediaPlayerItem) {
     return { ...source, can_play: true };
+  }
+
+  static get styles() {
+    return css`
+      .no-items {
+        text-align: center;
+        margin-top: 50%;
+      }
+    `;
   }
 }
