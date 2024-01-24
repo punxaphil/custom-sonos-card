@@ -30,6 +30,7 @@ export class Card extends LitElement {
   @state() loaderTimestamp!: number;
   @state() cancelLoader!: boolean;
   @state() activePlayerId!: string;
+
   render() {
     this.createStore();
     let height = getHeight(this.config);
@@ -46,13 +47,17 @@ export class Card extends LitElement {
         </div>
         ${title ? html`<div class="title">${title}</div>` : html``}
         <div class="content" style="${this.contentStyle(contentHeight)}">
-          ${choose(this.section, [
-            [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
-            [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
-            [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
-            [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
-            [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
-          ])}
+          ${
+            this.activePlayerId
+              ? choose(this.section, [
+                  [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
+                  [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
+                  [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
+                  [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
+                  [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+                ])
+              : html`<div class="no-players">No supported players found</div>`
+          }
         </div>
         ${when(
           showFooter,
@@ -68,7 +73,7 @@ export class Card extends LitElement {
       this.store = new Store(this.hass, this.config, this.section, this.activePlayerId);
     } else {
       this.store = new Store(this.hass, this.config, this.section);
-      this.activePlayerId = this.store.activePlayer.id;
+      this.activePlayerId = this.store.activePlayer?.id;
     }
   }
   getCardSize() {
@@ -205,6 +210,10 @@ export class Card extends LitElement {
         font-weight: bold;
         font-size: 1.2rem;
         color: var(--secondary-text-color);
+      }
+      .no-players {
+        text-align: center;
+        margin-top: 50%;
       }
     `;
   }
