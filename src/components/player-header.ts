@@ -6,7 +6,7 @@ import { getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 
 class PlayerHeader extends LitElement {
-  @property({attribute: false}) store!: Store;
+  @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
 
@@ -15,10 +15,8 @@ class PlayerHeader extends LitElement {
     this.activePlayer = this.store.activePlayer;
 
     const speakerList = getSpeakerList(this.activePlayer, this.store.predefinedGroups);
-    let song = this.config.labelWhenNoMediaIsSelected ? this.config.labelWhenNoMediaIsSelected : 'No media selected';
-    if (this.activePlayer.state !== 'idle') {
-      song = this.activePlayer.getCurrentTrack();
-    }
+    let song = this.activePlayer.getCurrentTrack();
+    song = song || this.config.labelWhenNoMediaIsSelected || 'No media selected';
     return html` <div class="info">
       <div class="entity">${speakerList}</div>
       <div class="song">${song}</div>
