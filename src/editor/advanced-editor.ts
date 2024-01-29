@@ -49,6 +49,11 @@ export const ADVANCED_SCHEMA = [
     help: 'Override default fallback artwork image if artwork is missing for the currently selected media',
     name: 'fallbackArtwork',
   },
+  {
+    name: 'entitiesToIgnoreVolumeLevelFor',
+    help: 'If you want to ignore volume level for certain players in the player section',
+    selector: { entity: { multiple: true, filter: { domain: 'media_player' } } },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

@@ -19,7 +19,7 @@ class Volume extends LitElement {
     this.config = this.store.config;
     this.mediaControlService = this.store.mediaControlService;
 
-    const volume = 100 * this.player.attributes.volume_level;
+    const volume = 100 * this.getVolumeLevelPlayer().attributes.volume_level;
     const max = volume < 20 && this.config.dynamicVolumeSlider ? 30 : 100;
 
     const muteIcon = this.player.isMuted(this.updateMembers) ? mdiVolumeMute : mdiVolumeHigh;
@@ -38,6 +38,18 @@ class Volume extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private getVolumeLevelPlayer() {
+    let volumeLevelPlayer = this.player;
+    if (this.updateMembers && this.player.members.length && this.config.entitiesToIgnoreVolumeLevelFor) {
+      const players = [volumeLevelPlayer, ...volumeLevelPlayer.members];
+      volumeLevelPlayer =
+        players.find((p) => {
+          return !this.config.entitiesToIgnoreVolumeLevelFor?.includes(p.id);
+        }) ?? volumeLevelPlayer;
+    }
+    return volumeLevelPlayer;
   }
 
   private async volumeChanged(e: Event) {
