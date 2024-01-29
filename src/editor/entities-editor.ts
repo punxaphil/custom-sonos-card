@@ -26,12 +26,12 @@ export const ENTITIES_SCHEMA = [
   {
     name: 'entityId',
     help: 'Not needed, but forces this player to be the selected one on loading the card (overrides url param etc)',
-    selector: { entity: { multiple: false, filter: { integration: 'sonos', domain: 'media_player' } } },
+    selector: { entity: { multiple: false, filter: { domain: 'media_player' } } },
   },
   {
     name: 'entities',
     help: "Not needed, unless you don't want to include all of them",
-    selector: { entity: { multiple: true, filter: { integration: 'sonos', domain: 'media_player' } } },
+    selector: { entity: { multiple: true, filter: { domain: 'media_player' } } },
   },
 ];
 

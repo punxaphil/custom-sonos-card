@@ -14,7 +14,7 @@ class PredefinedGroupEditor extends BaseEditor {
     { type: 'boolean', name: 'excludeItemsInEntitiesList' },
     {
       name: 'entities',
-      selector: { entity: { multiple: true, filter: { integration: 'sonos', domain: 'media_player' } } },
+      selector: { entity: { multiple: true, filter: { domain: 'media_player' } } },
     },
   ];
 
