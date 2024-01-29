@@ -25,7 +25,7 @@ class PlayerControls extends LitElement {
     return html`
       <div class="main" id="mediaControls">
         ${when(
-          this.activePlayer.state !== 'idle',
+          ['paused', 'playing'].includes(this.activePlayer.state),
           () => html`
             <div class="icons">
               <div class="flex-1"></div>
@@ -38,9 +38,9 @@ class PlayerControls extends LitElement {
                 ${this.config.showAudioInputFormat && until(this.getAudioInputFormat())}
               </div>
             </div>
+            <sonos-volume .store=${this.store} .player=${this.activePlayer}></sonos-volume>
           `,
         )}
-        <sonos-volume .store=${this.store} .player=${this.activePlayer}></sonos-volume>
       </div>
     `;
   }
