@@ -20,6 +20,10 @@ export const ENTITIES_RENAME_SCHEMA = [
 
 export const ENTITIES_SCHEMA = [
   {
+    name: 'onlyShowSonosPlayers',
+    selector: { boolean: {} },
+  },
+  {
     name: 'entityId',
     help: 'Not needed, but forces this player to be the selected one on loading the card (overrides url param etc)',
     selector: { entity: { multiple: false, filter: { integration: 'sonos', domain: 'media_player' } } },

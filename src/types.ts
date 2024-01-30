@@ -1,4 +1,4 @@
-import { LovelaceCardConfig } from 'custom-card-helpers';
+import { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
 import { MediaPlayer } from './model/media-player';
 
 declare global {
@@ -45,6 +45,7 @@ export interface CardConfig extends LovelaceCardConfig {
   numberOfFavoritesToShow?: number;
   hideBrowseMediaButton?: boolean;
   showAudioInputFormat?: boolean;
+  onlyShowSonosPlayers?: boolean;
 }
 
 export interface MediaArtworkOverride {
@@ -116,4 +117,14 @@ export enum MediaPlayerEntityFeature {
   BROWSE_MEDIA = 131072,
   REPEAT_SET = 262144,
   GROUPING = 524288,
+}
+
+interface HassEntityExtended {
+  platform: string;
+}
+
+export interface HomeAssistantWithEntities extends HomeAssistant {
+  entities: {
+    [entity_id: string]: HassEntityExtended;
+  };
 }

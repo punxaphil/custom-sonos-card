@@ -6,6 +6,7 @@ import {
   CardConfig,
   ConfigPredefinedGroup,
   ConfigPredefinedGroupPlayer,
+  HomeAssistantWithEntities,
   PredefinedGroup,
   PredefinedGroupPlayer,
   Section,
@@ -115,12 +116,19 @@ export default class Store {
   }
 
   public getMediaPlayerHassEntities(hass: HomeAssistant) {
+    const hassWithEntities = hass as HomeAssistantWithEntities;
     const configEntities = [...new Set(this.config.entities)];
     return Object.values(hass.states)
-      .filter((value) => value.entity_id.includes('media_player'))
       .filter((hassEntity) => {
+        const isPlayer = hassEntity.entity_id.includes('media_player');
+
+        const platform = hassWithEntities.entities?.[hassEntity.entity_id]?.platform;
+        const isCorrectPlatform = !platform || !this.config.onlyShowSonosPlayers || platform === 'sonos';
+
         const includesEntity = configEntities.includes(hassEntity.entity_id);
-        return !configEntities.length || !!this.config.excludeItemsInEntitiesList !== includesEntity;
+        const isInConfig = !configEntities.length || !!this.config.excludeItemsInEntitiesList !== includesEntity;
+
+        return isPlayer && isCorrectPlatform && isInConfig;
       })
       .sort((a, b) => a.entity_id.localeCompare(b.entity_id));
   }
