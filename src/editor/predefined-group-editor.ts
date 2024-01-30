@@ -19,8 +19,6 @@ class PredefinedGroupEditor extends BaseEditor {
   ];
 
   protected render(): TemplateResult {
-    this.config = this.store.config;
-    this.hass = this.store.hass;
     if (!this.predefinedGroup) {
       this.initPredefinedGroup();
     }
@@ -29,7 +27,8 @@ class PredefinedGroupEditor extends BaseEditor {
       <sonos-card-editor-form
         .data=${this.getPredefinedGroupWithoutVolumes()}
         .schema=${this.schema}
-        .store=${this.store}
+        .config=${this.config}
+        .hass=${this.hass}
         .changed=${(ev: CustomEvent) => this.groupChanged(ev)}
       ></sonos-card-editor-form>
       <div>
@@ -48,17 +47,18 @@ class PredefinedGroupEditor extends BaseEditor {
             <sonos-card-editor-form
               .data=${{ volume }}
               .schema=${schema}
-              .store=${this.store}
+              .config=${this.config}
+              .hass=${this.hass}
               .changed=${(ev: CustomEvent) => this.volumeChanged(ev, player)}
             ></sonos-card-editor-form>
           `;
         })}
       </div>
       <ha-control-button-group>
-        <ha-control-button @click="${this.savePredefinedGroup}">
+        <ha-control-button @click=${this.savePredefinedGroup}>
           OK<ha-svg-icon .path=${mdiCheck} label="OK"></ha-svg-icon>
         </ha-control-button>
-        <ha-control-button @click="${this.deletePredefinedGroup}">
+        <ha-control-button @click=${this.deletePredefinedGroup}>
           Delete<ha-svg-icon .path=${mdiDelete} label="Delete"></ha-svg-icon>
         </ha-control-button>
       </ha-control-button-group>

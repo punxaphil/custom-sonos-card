@@ -2,9 +2,8 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../model/store';
-import { CardConfig, Section } from '../types';
-import { dispatch, dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
-import { REQUEST_PLAYER_EVENT, SHOW_SECTION } from '../constants';
+import { CardConfig } from '../types';
+import { dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 
 class Group extends LitElement {
@@ -13,20 +12,10 @@ class Group extends LitElement {
   @property({ attribute: false }) player!: MediaPlayer;
   @property({ type: Boolean }) selected = false;
 
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener(REQUEST_PLAYER_EVENT, this.dispatchEntityIdEvent);
-  }
-
-  disconnectedCallback() {
-    window.removeEventListener(REQUEST_PLAYER_EVENT, this.dispatchEntityIdEvent);
-    super.disconnectedCallback();
-  }
-
   dispatchEntityIdEvent = () => {
     if (this.selected) {
       const entityId = this.player.id;
-      dispatchActivePlayerId(entityId);
+      dispatchActivePlayerId(entityId, this.config, this);
     }
   };
 
@@ -39,9 +28,9 @@ class Group extends LitElement {
     return html`
       <mwc-list-item
         hasMeta
-        ?selected="${this.selected}"
-        ?activated="${this.selected}"
-        @click="${() => this.handleGroupClicked()}"
+        ?selected=${this.selected}
+        ?activated=${this.selected}
+        @click=${() => this.handleGroupClicked()}
       >
         <div class="row">
           <ha-icon .icon=${icon} ?hidden=${!icon}></ha-icon>
@@ -71,7 +60,6 @@ class Group extends LitElement {
       const newUrl = window.location.href.replace(/#.*/g, '');
       window.location.replace(`${newUrl}#${this.player.id}`);
       this.dispatchEntityIdEvent();
-      dispatch(SHOW_SECTION, Section.PLAYER);
     }
   }
 

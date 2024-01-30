@@ -4,7 +4,6 @@ import { state } from 'lit/decorators.js';
 import { BaseEditor } from './base-editor';
 import { ConfigArea } from './config-area';
 import { choose } from 'lit/directives/choose.js';
-import Store from '../model/store';
 import './advanced-editor';
 import './custom-source-editor';
 import './general-editor';
@@ -22,7 +21,6 @@ class CardEditor extends BaseEditor {
     if (!this.config.sections || this.config.sections.length === 0) {
       this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.MEDIA_BROWSER];
     }
-    this.store = new Store(this.hass, this.config, this.config.sections[0]);
 
     return html`
       <ha-control-button-group>
@@ -30,7 +28,7 @@ class CardEditor extends BaseEditor {
           (configArea) => html`
             <ha-control-button
               selected=${this.configArea === configArea || nothing}
-              @click="${() => (this.configArea = configArea)}"
+              @click=${() => (this.configArea = configArea)}
             >
               ${configArea}
             </ha-control-button>
@@ -44,12 +42,25 @@ class CardEditor extends BaseEditor {
 
   private subEditor() {
     return choose(this.configArea, [
-      [GENERAL, () => html`<sonos-card-general-editor .store=${this.store}></sonos-card-general-editor>`],
-      [ENTITIES, () => html`<sonos-card-entities-editor .store=${this.store}></sonos-card-entities-editor>`],
-      [ADVANCED, () => html`<sonos-card-advanced-editor .store=${this.store}></sonos-card-advanced-editor>`],
+      [
+        GENERAL,
+        () => html`<sonos-card-general-editor .config=${this.config} .hass=${this.hass}></sonos-card-general-editor>`,
+      ],
+      [
+        ENTITIES,
+        () => html`<sonos-card-entities-editor .config=${this.config} .hass=${this.hass}></sonos-card-entities-editor>`,
+      ],
+      [
+        ADVANCED,
+        () => html`<sonos-card-advanced-editor .config=${this.config} .hass=${this.hass}></sonos-card-advanced-editor>`,
+      ],
       [
         ARTWORK,
-        () => html`<sonos-card-artwork-overrides-editor .store=${this.store}></sonos-card-artwork-overrides-editor>`,
+        () =>
+          html`<sonos-card-artwork-overrides-editor
+            .config=${this.config}
+            .hass=${this.hass}
+          ></sonos-card-artwork-overrides-editor>`,
       ],
     ]);
   }

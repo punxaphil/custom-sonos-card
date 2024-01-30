@@ -48,12 +48,13 @@ export const ADVANCED_SCHEMA = [
 
 class AdvancedEditor extends BaseEditor {
   protected render(): TemplateResult {
-    const topFavorites = this.store.config.topFavorites ?? [];
-    const data = { ...this.store.config, topFavorites: topFavorites.join(', ') };
+    const topFavorites = this.config.topFavorites ?? [];
+    const data = { ...this.config, topFavorites: topFavorites.join(', ') };
     return html`
       <sonos-card-editor-form
         .schema=${ADVANCED_SCHEMA}
-        .store=${this.store}
+        .config=${this.config}
+        .hass=${this.hass}
         .data=${data}
         .changed=${this.changed}
       ></sonos-card-editor-form>

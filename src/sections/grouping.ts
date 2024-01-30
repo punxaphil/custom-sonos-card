@@ -20,7 +20,7 @@ export class Grouping extends LitElement {
   private joinedPlayers!: string[];
 
   render() {
-    if (!this.groupingItems) {
+    if (!this.groupingItems?.length) {
       this.activePlayer = this.store.activePlayer;
       this.allGroups = this.store.allGroups;
       this.mediaControlService = this.store.mediaControlService;
@@ -40,12 +40,12 @@ export class Grouping extends LitElement {
         <div class="list">
           ${this.groupingItems.map((item) => {
             return html`
-              <div class="item" modified="${item.isModified() || nothing}" disabled="${item.isDisabled || nothing}">
+              <div class="item" modified=${item.isModified() || nothing} disabled=${item.isDisabled || nothing}>
                 <ha-icon
                   class="icon"
-                  selected="${item.isSelected || nothing}"
+                  selected=${item.isSelected || nothing}
                   .icon="mdi:${item.icon}"
-                  @click="${() => this.itemClick(item)}"
+                  @click=${() => this.itemClick(item)}
                 ></ha-icon>
                 <div class="name-and-volume">
                   <span class="name">${item.name}</span>
@@ -62,8 +62,8 @@ export class Grouping extends LitElement {
           })}
         </div>
         <ha-control-button-group class="buttons" hide=${this.isGroupingModified() || nothing}>
-          <ha-control-button class="apply" @click="${this.applyGrouping}"> Apply </ha-control-button>
-          <ha-control-button @click="${this.cancelGrouping}"> Cancel </ha-control-button>
+          <ha-control-button class="apply" @click=${this.applyGrouping}> Apply </ha-control-button>
+          <ha-control-button @click=${this.cancelGrouping}> Cancel </ha-control-button>
         </ha-control-button-group>
       </div>
     `;
@@ -174,17 +174,20 @@ export class Grouping extends LitElement {
     const join = this.groupingItems
       .filter((item) => item.isSelected && !this.joinedPlayers.includes(item.player.id))
       .map((item) => item.player.id);
+
     let main = this.activePlayer.id;
-    if (unjoin.includes(main)) {
+    if (unjoin.includes(this.activePlayer.id)) {
       main = isSelected[0].player.id;
-      dispatchActivePlayerId(main);
+      dispatchActivePlayerId(main, this.store.config, this);
     }
-    if (unjoin.length) {
+
+    if (unjoin.length > 0) {
       await this.mediaControlService.unJoin(unjoin);
     }
-    if (join.length) {
+    if (join.length > 0) {
       await this.mediaControlService.join(main, join);
     }
+    this.groupingItems = this.originalGroupingItems = [];
   }
 
   private cancelGrouping() {
@@ -233,7 +236,10 @@ export class Grouping extends LitElement {
     return this.store.predefinedGroups.map((predefinedGroup) => {
       return html`
         <sonos-grouping-button
-          @click=${async () => await this.mediaControlService.createGroup(predefinedGroup, this.allGroups)}
+          @click=${async () => {
+            this.groupingItems = this.originalGroupingItems = [];
+            await this.mediaControlService.createGroup(predefinedGroup, this.allGroups, this.store.config, this);
+          }}
           .icon=${'mdi:speaker-multiple'}
           .name=${predefinedGroup.name}
         ></sonos-grouping-button>

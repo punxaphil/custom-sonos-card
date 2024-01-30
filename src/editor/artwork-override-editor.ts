@@ -7,9 +7,6 @@ const newOverride = { ifMissing: false };
 class ArtworkOverrideEditor extends BaseEditor {
   @property({ type: Number }) index!: number;
   protected render(): TemplateResult {
-    this.config = this.store.config;
-    this.hass = this.store.hass;
-
     const artworkOverride = this.config.mediaArtworkOverrides?.[this.index || 0];
     const schema = [
       { name: 'ifMissing', selector: { boolean: {} } },
@@ -39,11 +36,12 @@ class ArtworkOverrideEditor extends BaseEditor {
       <sonos-card-editor-form
         .data=${artworkOverride || newOverride}
         .schema=${schema}
-        .store=${this.store}
+        .config=${this.config}
+        .hass=${this.hass}
         .changed=${(ev: CustomEvent) => this.changed(ev, this.index)}
       ></sonos-card-editor-form>
       <ha-control-button-group>
-        <ha-control-button @click="${this.dispatchClose}">
+        <ha-control-button @click=${this.dispatchClose}>
           OK<ha-svg-icon .path=${mdiCheck} label="OK"></ha-svg-icon>
         </ha-control-button>
         ${artworkOverride

@@ -5,13 +5,13 @@ import '../components/media-browser-icons';
 import '../components/media-browser-header';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
-import { CardConfig, MediaPlayerItem, Section } from '../types';
-import { dispatch } from '../utils/utils';
-import { MEDIA_ITEM_SELECTED, SHOW_SECTION } from '../constants';
+import { CardConfig, MediaPlayerItem } from '../types';
+import { customEvent } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import MediaBrowseService from '../services/media-browse-service';
 import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
+import { MEDIA_ITEM_SELECTED } from '../constants';
 
 export class MediaBrowser extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -19,16 +19,6 @@ export class MediaBrowser extends LitElement {
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
-
-  connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener(MEDIA_ITEM_SELECTED, this.onMediaItemSelected);
-  }
-
-  disconnectedCallback() {
-    window.removeEventListener(MEDIA_ITEM_SELECTED, this.onMediaItemSelected);
-    super.disconnectedCallback();
-  }
 
   render() {
     this.config = this.store.config;
@@ -44,8 +34,20 @@ export class MediaBrowser extends LitElement {
         this.getFavorites(this.activePlayer).then((items) => {
           if (items?.length) {
             return (this.config.mediaBrowserItemsPerRow ?? 0) > 1
-              ? html` <sonos-media-browser-icons .items=${items} .store=${this.store}></sonos-media-browser-icons>`
-              : html` <sonos-media-browser-list .items=${items} .store=${this.store}></sonos-media-browser-list>`;
+              ? html`
+                  <sonos-media-browser-icons
+                    .items=${items}
+                    .store=${this.store}
+                    @item-selected=${this.onMediaItemSelected}
+                  ></sonos-media-browser-icons>
+                `
+              : html`
+                  <sonos-media-browser-list
+                    .items=${items}
+                    .store=${this.store}
+                    @item-selected=${this.onMediaItemSelected}
+                  ></sonos-media-browser-list>
+                `;
           } else {
             return html`<div class="no-items">No favorites found</div>`;
           }
@@ -57,7 +59,7 @@ export class MediaBrowser extends LitElement {
   private onMediaItemSelected = (event: Event) => {
     const mediaItem = (event as CustomEvent).detail;
     this.playItem(mediaItem);
-    setTimeout(() => dispatch(SHOW_SECTION, Section.PLAYER), 1000);
+    this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, mediaItem));
   };
 
   private async playItem(mediaItem: MediaPlayerItem) {

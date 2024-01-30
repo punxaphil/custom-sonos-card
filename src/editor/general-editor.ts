@@ -45,7 +45,13 @@ export const GENERAL_SCHEMA = [
 
 class GeneralEditor extends BaseEditor {
   protected render(): TemplateResult {
-    return html` <sonos-card-editor-form .schema=${GENERAL_SCHEMA} .store=${this.store}></sonos-card-editor-form> `;
+    return html`
+      <sonos-card-editor-form
+        .schema=${GENERAL_SCHEMA}
+        .config=${this.config}
+        .hass=${this.hass}
+      ></sonos-card-editor-form>
+    `;
   }
 }
 

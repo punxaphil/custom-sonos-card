@@ -1,4 +1,4 @@
-import { MediaPlayerItem, PredefinedGroup } from '../types';
+import { CardConfig, MediaPlayerItem, PredefinedGroup } from '../types';
 import HassService from './hass-service';
 import { dispatchActivePlayerId } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
@@ -28,33 +28,38 @@ export default class MediaControlService {
     });
   }
 
-  async createGroup(predefinedGroup: PredefinedGroup, currentGroups: MediaPlayer[]) {
+  async createGroup(
+    predefinedGroup: PredefinedGroup,
+    currentGroups: MediaPlayer[],
+    config: CardConfig,
+    element: Element,
+  ) {
     let candidateGroup!: MediaPlayer;
     for (const group of currentGroups) {
       if (predefinedGroup.entities.some((item) => item.player.id === group.id)) {
         if (group.isPlaying()) {
-          await this.modifyExistingGroup(group, predefinedGroup);
+          await this.modifyExistingGroup(group, predefinedGroup, config, element);
           return;
         }
         candidateGroup = candidateGroup || group;
       }
     }
     if (candidateGroup) {
-      await this.modifyExistingGroup(candidateGroup, predefinedGroup);
+      await this.modifyExistingGroup(candidateGroup, predefinedGroup, config, element);
     } else {
       const { player } = predefinedGroup.entities[0];
-      dispatchActivePlayerId(player.id);
+      dispatchActivePlayerId(player.id, config, element);
       await this.joinPredefinedGroup(player, predefinedGroup);
     }
   }
 
-  private async modifyExistingGroup(group: MediaPlayer, pg: PredefinedGroup) {
+  private async modifyExistingGroup(group: MediaPlayer, pg: PredefinedGroup, config: CardConfig, element: Element) {
     const members = group.members;
     const membersNotToBeGrouped = members.filter((member) => !pg.entities.some((item) => item.player.id === member.id));
     if (membersNotToBeGrouped?.length) {
       await this.unJoin(membersNotToBeGrouped.map((member) => member.id));
     }
-    dispatchActivePlayerId(group.id);
+    dispatchActivePlayerId(group.id, config, element);
     await this.joinPredefinedGroup(group, pg);
     for (const pgp of pg.entities) {
       const volume = pgp.volume ?? pg.volume;

@@ -2,13 +2,11 @@ import { css, LitElement } from 'lit';
 import { fireEvent, HomeAssistant } from 'custom-card-helpers';
 import { property } from 'lit/decorators.js';
 import { CardConfig } from '../types';
-import Store from '../model/store';
 import { dispatch } from '../utils/utils';
 
 export abstract class BaseEditor extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
   @property({ attribute: false }) hass!: HomeAssistant;
-  @property({ attribute: false }) store!: Store;
 
   setConfig(config: CardConfig) {
     this.config = JSON.parse(JSON.stringify(config));

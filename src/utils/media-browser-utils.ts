@@ -67,7 +67,7 @@ export function mediaItemBackgroundImageStyle(thumbnail: string, index: number) 
 
 export function renderMediaBrowserItem(item: MediaPlayerItem, showTitle = true) {
   return html`
-    <div class="thumbnail" ?hidden="${!item.thumbnail}"></div>
-    <div class="title" ?hidden="${!showTitle}">${item.title}</div>
+    <div class="thumbnail" ?hidden=${!item.thumbnail}></div>
+    <div class="title" ?hidden=${!showTitle}>${item.title}</div>
   `;
 }

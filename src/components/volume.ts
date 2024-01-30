@@ -25,9 +25,9 @@ class Volume extends LitElement {
     const muteIcon = this.player.isMuted(this.updateMembers) ? mdiVolumeMute : mdiVolumeHigh;
     return html`
       <div class="volume" slim=${this.slim || nothing}>
-        <ha-icon-button @click="${this.mute}" .path=${muteIcon}> </ha-icon-button>
+        <ha-icon-button @click=${this.mute} .path=${muteIcon}> </ha-icon-button>
         <div class="volume-slider">
-          <ha-control-slider .value="${volume}" max=${max} @value-changed=${this.volumeChanged}></ha-control-slider>
+          <ha-control-slider .value=${volume} max=${max} @value-changed=${this.volumeChanged}></ha-control-slider>
           <div class="volume-level">
             <div style="flex: ${volume}">0%</div>
             ${volume >= max / 10 && volume <= 100 - max / 10

@@ -7,15 +7,13 @@ class ArtworkOverridesEditor extends BaseEditor {
   @state() editItem!: number;
 
   protected render(): TemplateResult {
-    this.config = this.store.config;
-    this.hass = this.store.hass;
-
     const items = this.config.mediaArtworkOverrides;
 
     return this.editItem > -1
       ? html`<sonos-card-artwork-override-editor
           .index=${this.editItem}
-          .store=${this.store}
+          .config=${this.config}
+          .hass=${this.hass}
           @closed=${() => (this.editItem = -1)}
         ></sonos-card-artwork-override-editor>`
       : html`
@@ -26,12 +24,12 @@ class ArtworkOverridesEditor extends BaseEditor {
                 const itemName =
                   pg.mediaTitleEquals || pg.mediaContentIdEquals || (pg.ifMissing && 'if missing') || index;
                 return html`
-                  <ha-control-button @click="${() => (this.editItem = index)}">
+                  <ha-control-button @click=${() => (this.editItem = index)}>
                     ${itemName}<ha-svg-icon .path=${mdiPen} label="Edit"></ha-svg-icon>
                   </ha-control-button>
                 `;
               })}
-              <ha-control-button @click="${() => (this.editItem = items ? items.length : 0)}">
+              <ha-control-button @click=${() => (this.editItem = items ? items.length : 0)}>
                 Add<ha-svg-icon .path=${mdiPlus} label="Add"></ha-svg-icon>
               </ha-control-button>
             </ha-control-button-group>

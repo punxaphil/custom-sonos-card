@@ -6,16 +6,10 @@ import Store from './model/store';
 import { CardConfig, Section } from './types';
 import './components/footer';
 import './editor/editor';
-import {
-  ACTIVE_PLAYER_EVENT,
-  CALL_MEDIA_DONE,
-  CALL_MEDIA_STARTED,
-  REQUEST_PLAYER_EVENT,
-  SHOW_SECTION,
-} from './constants';
+import { ACTIVE_PLAYER_EVENT, CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from './constants';
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import { dispatch, getHeight, getWidth } from './utils/utils';
+import { cardDoesNotContainAllSections, getHeight, getWidth } from './utils/utils';
 
 const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
 const TITLE_HEIGHT = 2;
@@ -33,6 +27,11 @@ export class Card extends LitElement {
 
   render() {
     this.createStore();
+
+    if (cardDoesNotContainAllSections(this.config)) {
+      window.addEventListener(ACTIVE_PLAYER_EVENT, this.activePlayerListener);
+    }
+
     let height = getHeight(this.config);
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
@@ -40,20 +39,42 @@ export class Card extends LitElement {
     const title = this.config.title;
     height = title ? height + TITLE_HEIGHT : height;
     return html`
-      <ha-card style="${this.haCardStyle(height)}">
-        <div class="loader" ?hidden="${!this.showLoader}">
+      <ha-card style=${this.haCardStyle(height)}>
+        <div class="loader" ?hidden=${!this.showLoader}>
           <ha-circular-progress indeterminate></ha-circular-progress></div
         >
         </div>
         ${title ? html`<div class="title">${title}</div>` : html``}
-        <div class="content" style="${this.contentStyle(contentHeight)}">
+        <div class="content" style=${this.contentStyle(contentHeight)}>
           ${
             this.activePlayerId
               ? choose(this.section, [
                   [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
-                  [GROUPS, () => html` <sonos-groups .store=${this.store}></sonos-groups>`],
-                  [GROUPING, () => html`<sonos-grouping .store=${this.store}></sonos-grouping>`],
-                  [MEDIA_BROWSER, () => html` <sonos-media-browser .store=${this.store}></sonos-media-browser>`],
+                  [
+                    GROUPS,
+                    () =>
+                      html` <sonos-groups
+                        .store=${this.store}
+                        @active-player=${this.activePlayerListener}
+                      ></sonos-groups>`,
+                  ],
+                  [
+                    GROUPING,
+                    () =>
+                      html`<sonos-grouping
+                        .store=${this.store}
+                        @active-player=${this.activePlayerListener}
+                      ></sonos-grouping>`,
+                  ],
+                  [
+                    MEDIA_BROWSER,
+                    () => html`
+                      <sonos-media-browser
+                        .store=${this.store}
+                        @item-selected=${this.onMediaItemSelected}
+                      ></sonos-media-browser>
+                    `,
+                  ],
                   [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
                 ])
               : html`<div class="no-players">No supported players found</div>`
@@ -62,7 +83,12 @@ export class Card extends LitElement {
         ${when(
           showFooter,
           () =>
-            html`<sonos-footer style=${this.footerStyle()} .config="${this.config}" .section="${this.section}">
+            html`<sonos-footer
+              style=${this.footerStyle()}
+              .config=${this.config}
+              .section=${this.section}
+              @show-section=${this.showSectionListener}
+            >
             </sonos-footer>`,
         )}
       </ha-card>
@@ -70,9 +96,9 @@ export class Card extends LitElement {
   }
   private createStore() {
     if (this.activePlayerId) {
-      this.store = new Store(this.hass, this.config, this.section, this.activePlayerId);
+      this.store = new Store(this.hass, this.config, this.section, this, this.activePlayerId);
     } else {
-      this.store = new Store(this.hass, this.config, this.section);
+      this.store = new Store(this.hass, this.config, this.section, this);
       this.activePlayerId = this.store.activePlayer?.id;
     }
   }
@@ -86,17 +112,12 @@ export class Card extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener(SHOW_SECTION, this.showSectionListener);
     window.addEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
     window.addEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
-    listenForActivePlayer(this.activePlayerListener);
   }
 
   disconnectedCallback() {
-    window.removeEventListener(SHOW_SECTION, this.showSectionListener);
-    window.removeEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
-    window.removeEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
-    stopListeningForActivePlayer(this.activePlayerListener);
+    window.removeEventListener(ACTIVE_PLAYER_EVENT, this.activePlayerListener);
     super.disconnectedCallback();
   }
 
@@ -135,7 +156,16 @@ export class Card extends LitElement {
     const newEntityId = (event as CustomEvent).detail.entityId;
     if (newEntityId !== this.activePlayerId) {
       this.activePlayerId = newEntityId;
+      if (this.config.sections?.includes(PLAYER)) {
+        this.section = PLAYER;
+      }
       this.requestUpdate();
+    }
+  };
+
+  private onMediaItemSelected = () => {
+    if (this.config.sections?.includes(PLAYER)) {
+      setTimeout(() => (this.section = PLAYER), 1000);
     }
   };
 
@@ -217,13 +247,4 @@ export class Card extends LitElement {
       }
     `;
   }
-}
-
-function listenForActivePlayer(listener: EventListener) {
-  window.addEventListener(ACTIVE_PLAYER_EVENT, listener);
-  dispatch(REQUEST_PLAYER_EVENT);
-}
-
-function stopListeningForActivePlayer(listener: EventListener) {
-  window.removeEventListener(ACTIVE_PLAYER_EVENT, listener);
 }

@@ -35,30 +35,32 @@ class EntitiesEditor extends BaseEditor {
   @state() editGroup!: number;
 
   protected render(): TemplateResult {
-    this.config = this.store.config;
-    this.hass = this.store.hass;
-
     const predefinedGroups = this.config.predefinedGroups;
 
     return this.editGroup > -1
       ? html`<sonos-card-predefined-group-editor
           .index=${this.editGroup}
-          .store=${this.store}
+          .config=${this.config}
+          .hass=${this.hass}
           @closed=${() => (this.editGroup = -1)}
         ></sonos-card-predefined-group-editor>`
       : html`
-          <sonos-card-editor-form .schema=${ENTITIES_SCHEMA} .store=${this.store}></sonos-card-editor-form>
+          <sonos-card-editor-form
+            .schema=${ENTITIES_SCHEMA}
+            .config=${this.config}
+            .hass=${this.hass}
+          ></sonos-card-editor-form>
           <div>
             Predefined Groups
             <ha-control-button-group>
               ${predefinedGroups?.map(
                 (pg, index) => html`
-                  <ha-control-button @click="${() => (this.editGroup = index)}">
+                  <ha-control-button @click=${() => (this.editGroup = index)}>
                     ${pg.name}<ha-svg-icon .path=${mdiPen} label="Edit Group"></ha-svg-icon>
                   </ha-control-button>
                 `,
               )}
-              <ha-control-button @click="${() => (this.editGroup = predefinedGroups ? predefinedGroups.length : 0)}">
+              <ha-control-button @click=${() => (this.editGroup = predefinedGroups ? predefinedGroups.length : 0)}>
                 Add group<ha-svg-icon .path=${mdiPlus} label="Add Group"></ha-svg-icon>
               </ha-control-button>
             </ha-control-button-group>
@@ -66,7 +68,11 @@ class EntitiesEditor extends BaseEditor {
 
           <div>
             Entity Renaming
-            <sonos-card-editor-form .schema=${ENTITIES_RENAME_SCHEMA} .store=${this.store}></sonos-card-editor-form>
+            <sonos-card-editor-form
+              .schema=${ENTITIES_RENAME_SCHEMA}
+              .config=${this.config}
+              .hass=${this.hass}
+            ></sonos-card-editor-form>
           </div>
         `;
   }

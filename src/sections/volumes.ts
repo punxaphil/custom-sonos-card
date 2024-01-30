@@ -48,14 +48,14 @@ class Volumes extends LitElement {
         <div class="volume-name-text">${name}</div>
       </div>
       <div class="slider-row">
-        <ha-icon-button hide=${noUpDown} @click="${volDown}" .path=${mdiVolumeMinus}></ha-icon-button>
+        <ha-icon-button hide=${noUpDown} @click=${volDown} .path=${mdiVolumeMinus}></ha-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <ha-icon-button hide=${noUpDown} @click="${volUp}" .path=${mdiVolumePlus}></ha-icon-button>
+        <ha-icon-button hide=${noUpDown} @click=${volUp} .path=${mdiVolumePlus}></ha-icon-button>
         <ha-icon-button
           hide=${updateMembers || nothing}
-          @click="${() => this.toggleShowSwitches(player)}"
+          @click=${() => this.toggleShowSwitches(player)}
           .path=${mdiCog}
-          show-switches="${this.showSwitches[player.id] || nothing}"
+          show-switches=${this.showSwitches[player.id] || nothing}
         ></ha-icon-button>
       </div>
       <div class="switches">

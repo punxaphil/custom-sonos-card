@@ -23,7 +23,7 @@ export class Player extends LitElement {
     return html`
       <div class="container">
         <sonos-player-header class="header" .store=${this.store}></sonos-player-header>
-        <div class="artwork" style="${this.getBackgroundImage()}"></div>
+        <div class="artwork" style=${this.getBackgroundImage()}></div>
         <sonos-player-controls class="controls" .store=${this.store}></sonos-player-controls>
       </div>
     `;

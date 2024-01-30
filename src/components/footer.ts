@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from 'lit';
 
 import { property } from 'lit/decorators.js';
 import { CardConfig, Section } from '../types';
-import { dispatch } from '../utils/utils';
+import { customEvent } from '../utils/utils';
 import { mdiCastVariant, mdiHome, mdiSpeakerMultiple, mdiStarOutline, mdiTune } from '@mdi/js';
 import { SHOW_SECTION } from '../constants';
 
@@ -17,34 +17,38 @@ class Footer extends LitElement {
       <ha-icon-button
         hide=${this.hide(PLAYER)}
         .path=${mdiHome}
-        @click="${() => dispatch(SHOW_SECTION, PLAYER)}"
-        selected="${this.selected(PLAYER)}"
+        @click=${() => this.dispatchSection(PLAYER)}
+        selected=${this.selected(PLAYER)}
       ></ha-icon-button>
       <ha-icon-button
         hide=${this.hide(MEDIA_BROWSER)}
         .path=${mdiStarOutline}
-        @click="${() => dispatch(SHOW_SECTION, MEDIA_BROWSER)}"
-        selected="${this.selected(MEDIA_BROWSER)}"
+        @click=${() => this.dispatchSection(MEDIA_BROWSER)}
+        selected=${this.selected(MEDIA_BROWSER)}
       ></ha-icon-button>
       <ha-icon-button
         hide=${this.hide(GROUPS)}
         .path=${mdiSpeakerMultiple}
-        @click="${() => dispatch(SHOW_SECTION, GROUPS)}"
-        selected="${this.selected(GROUPS)}"
+        @click=${() => this.dispatchSection(GROUPS)}
+        selected=${this.selected(GROUPS)}
       ></ha-icon-button>
       <ha-icon-button
         hide=${this.hide(GROUPING)}
         .path=${mdiCastVariant}
-        @click="${() => dispatch(SHOW_SECTION, GROUPING)}"
-        selected="${this.selected(GROUPING)}"
+        @click=${() => this.dispatchSection(GROUPING)}
+        selected=${this.selected(GROUPING)}
       ></ha-icon-button>
       <ha-icon-button
         hide=${this.hide(VOLUMES)}
         .path=${mdiTune}
-        @click="${() => dispatch(SHOW_SECTION, VOLUMES)}"
-        selected="${this.selected(VOLUMES)}"
+        @click=${() => this.dispatchSection(VOLUMES)}
+        selected=${this.selected(VOLUMES)}
       ></ha-icon-button>
     `;
+  }
+
+  private dispatchSection(section: Section) {
+    this.dispatchEvent(customEvent(SHOW_SECTION, section));
   }
 
   private selected(section: Section | typeof nothing) {

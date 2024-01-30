@@ -1,6 +1,6 @@
 import { HassEntity } from 'home-assistant-js-websocket';
-import { CardConfig, PredefinedGroup } from '../types';
-import { ACTIVE_PLAYER_EVENT } from '../constants';
+import { CardConfig, PredefinedGroup, Section } from '../types';
+import { ACTIVE_PLAYER_EVENT, ACTIVE_PLAYER_EVENT_INTERNAL } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
 export function getSpeakerList(mainPlayer: MediaPlayer, predefinedGroups: PredefinedGroup[] = []) {
@@ -20,16 +20,28 @@ export function getSpeakerList(mainPlayer: MediaPlayer, predefinedGroups: Predef
   return [mainPlayer.name, ...mainPlayer.members.map((member) => member.name)].join(' + ');
 }
 
-export function dispatchActivePlayerId(playerId: string) {
-  dispatch(ACTIVE_PLAYER_EVENT, { entityId: playerId });
+export function dispatchActivePlayerId(playerId: string, config: CardConfig, element: Element) {
+  if (cardDoesNotContainAllSections(config)) {
+    dispatch(ACTIVE_PLAYER_EVENT, { entityId: playerId });
+  } else {
+    element.dispatchEvent(customEvent(ACTIVE_PLAYER_EVENT_INTERNAL, { entityId: playerId }));
+  }
 }
 
-export function dispatch(type: string, detail?: unknown) {
-  const event = new CustomEvent(type, {
+export function cardDoesNotContainAllSections(config: CardConfig) {
+  return config.sections && config.sections.length < Object.keys(Section).length;
+}
+
+export function customEvent(type: string, detail?: unknown) {
+  return new CustomEvent(type, {
     bubbles: true,
     composed: true,
     detail,
   });
+}
+
+export function dispatch(type: string, detail?: unknown) {
+  const event = customEvent(type, detail);
   window.dispatchEvent(event);
 }
 
