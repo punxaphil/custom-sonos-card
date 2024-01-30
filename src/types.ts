@@ -48,6 +48,7 @@ export interface CardConfig extends LovelaceCardConfig {
   onlyShowSonosPlayers?: boolean;
   fallbackArtwork?: string;
   entitiesToIgnoreVolumeLevelFor?: string[];
+  replaceHttpWithHttpsForThumbnails?: boolean;
 }
 
 export interface MediaArtworkOverride {

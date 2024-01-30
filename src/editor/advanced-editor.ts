@@ -54,6 +54,10 @@ export const ADVANCED_SCHEMA = [
     help: 'If you want to ignore volume level for certain players in the player section',
     selector: { entity: { multiple: true, filter: { domain: 'media_player' } } },
   },
+  {
+    name: 'replaceHttpWithHttpsForThumbnails',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

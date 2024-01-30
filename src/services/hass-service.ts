@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { MediaPlayerItem, Section, TemplateResult } from '../types';
+import { CardConfig, MediaPlayerItem, Section, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 import { MediaPlayer } from '../model/media-player';
@@ -26,17 +26,24 @@ export default class HassService {
     }
   }
 
-  async browseMedia(mediaPlayer: MediaPlayer, media_content_type?: string, media_content_id?: string) {
+  async browseMedia(
+    mediaPlayer: MediaPlayer,
+    config: CardConfig,
+    media_content_type?: string,
+    media_content_id?: string,
+  ) {
     const mediaPlayerItem = await this.hass.callWS<MediaPlayerItem>({
       type: 'media_player/browse_media',
       entity_id: mediaPlayer.id,
       media_content_id,
       media_content_type,
     });
-    mediaPlayerItem.children = mediaPlayerItem.children?.map((child) => ({
-      ...child,
-      thumbnail: child.thumbnail?.replace('http://', 'https://'),
-    }));
+    if (config.replaceHttpWithHttpsForThumbnails) {
+      mediaPlayerItem.children = mediaPlayerItem.children?.map((child) => ({
+        ...child,
+        thumbnail: child.thumbnail?.replace('http://', 'https://'),
+      }));
+    }
     return mediaPlayerItem;
   }
 

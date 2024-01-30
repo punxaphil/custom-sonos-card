@@ -161,6 +161,7 @@ topFavorites: # Show these favorites at the top of the list
   - Kacey Musgraves Radio
 numberOfFavoritesToShow: 10 # Use this to limit the amount of favorites to show
 hideBrowseMediaButton: true # default is false. Hides the button to open the media browser.
+replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
 ```
 
 ## Using individual section cards
