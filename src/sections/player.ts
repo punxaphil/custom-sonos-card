@@ -33,7 +33,6 @@ export class Player extends LitElement {
     const fallbackImage =
       this.config.fallbackArtwork ??
       (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
-    console.log(fallbackImage);
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
     if (image) {
