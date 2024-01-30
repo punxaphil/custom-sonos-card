@@ -30,16 +30,18 @@ export class Player extends LitElement {
   }
 
   private getBackgroundImage() {
-    const backgroundImage = `url(${
-      this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE
-    })`;
+    const fallbackImage =
+      this.config.fallbackArtwork ??
+      (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
+    console.log(fallbackImage);
+    const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
     if (image) {
-      return `background-image: url(${image.entityImage}), ${backgroundImage}${
+      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${
         image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
       }`;
     } else {
-      return `background-image: ${backgroundImage}`;
+      return `background-image: ${fallbackBackgroundUrl}`;
     }
   }
 

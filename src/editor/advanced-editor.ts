@@ -44,6 +44,11 @@ export const ADVANCED_SCHEMA = [
     name: 'showAudioInputFormat',
     selector: { boolean: {} },
   },
+  {
+    type: 'string',
+    help: 'Override default fallback artwork image if artwork is missing for the currently selected media',
+    name: 'fallbackArtwork',
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {
