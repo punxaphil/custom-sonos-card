@@ -120,15 +120,17 @@ export default class Store {
     const configEntities = [...new Set(this.config.entities)];
     return Object.values(hass.states)
       .filter((hassEntity) => {
-        const isPlayer = hassEntity.entity_id.includes('media_player');
-
-        const platform = hassWithEntities.entities?.[hassEntity.entity_id]?.platform;
-        const isCorrectPlatform = !platform || !this.config.onlyShowSonosPlayers || platform === 'sonos';
-
-        const includesEntity = configEntities.includes(hassEntity.entity_id);
-        const isInConfig = !configEntities.length || !!this.config.excludeItemsInEntitiesList !== includesEntity;
-
-        return isPlayer && isCorrectPlatform && isInConfig;
+        if (hassEntity.entity_id.includes('media_player')) {
+          const platform = hassWithEntities.entities?.[hassEntity.entity_id]?.platform;
+          if (!platform || this.config.showNonSonosPlayers || platform === 'sonos') {
+            if (configEntities.length) {
+              const includesEntity = configEntities.includes(hassEntity.entity_id);
+              return !!this.config.excludeItemsInEntitiesList !== includesEntity;
+            }
+            return true;
+          }
+        }
+        return false;
       })
       .sort((a, b) => a.entity_id.localeCompare(b.entity_id));
   }

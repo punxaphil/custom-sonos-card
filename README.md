@@ -90,7 +90,7 @@ entities: # Entities are automatically discovered if you don't supply this setti
   - media_player.sonos_bedroom
   - media_player.sonos_livingroom
 excludeItemsInEntitiesList: true # Will invert the selection in the `entities` list, so that all players that are not in the list will be used.
-onlyShowSonosPlayers: true # default is false. Will only show Sonos players. Useful if you have other media players in your setup.
+showNonSonosPlayers: true # default is false, which means only Sonos players will be shown.
 
 # groups specific
 groupsTitle: ''

@@ -20,7 +20,8 @@ export const ENTITIES_RENAME_SCHEMA = [
 
 export const ENTITIES_SCHEMA = [
   {
-    name: 'onlyShowSonosPlayers',
+    name: 'showNonSonosPlayers',
+    help: 'Show all media players, including those that are not on the Sonos platform',
     selector: { boolean: {} },
   },
   {
