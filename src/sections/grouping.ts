@@ -10,26 +10,23 @@ import '../components/grouping-button';
 
 export class Grouping extends LitElement {
   @property({ attribute: false }) store!: Store;
-  @state() groupingItems!: GroupingItem[];
-  private originalGroupingItems!: GroupingItem[];
+  private groupingItems!: GroupingItem[];
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private allGroups!: MediaPlayer[];
   private mediaPlayerIds!: string[];
   private notJoinedPlayers!: string[];
   private joinedPlayers!: string[];
+  @state() modifiedItems: string[] = [];
 
   render() {
-    if (!this.groupingItems?.length) {
-      this.activePlayer = this.store.activePlayer;
-      this.allGroups = this.store.allGroups;
-      this.mediaControlService = this.store.mediaControlService;
-      this.mediaPlayerIds = this.store.allMediaPlayers.map((player) => player.id);
-      this.groupingItems = this.getGroupingItems();
-      this.originalGroupingItems = this.getGroupingItems();
-      this.notJoinedPlayers = this.getNotJoinedPlayers();
-      this.joinedPlayers = this.getJoinedPlayers();
-    }
+    this.activePlayer = this.store.activePlayer;
+    this.allGroups = this.store.allGroups;
+    this.mediaControlService = this.store.mediaControlService;
+    this.mediaPlayerIds = this.store.allMediaPlayers.map((player) => player.id);
+    this.groupingItems = this.getGroupingItems();
+    this.notJoinedPlayers = this.getNotJoinedPlayers();
+    this.joinedPlayers = this.getJoinedPlayers();
 
     return html`
       <div class="wrapper">
@@ -40,7 +37,7 @@ export class Grouping extends LitElement {
         <div class="list">
           ${this.groupingItems.map((item) => {
             return html`
-              <div class="item" modified=${item.isModified() || nothing} disabled=${item.isDisabled || nothing}>
+              <div class="item" modified=${item.isModified || nothing} disabled=${item.isDisabled || nothing}>
                 <ha-icon
                   class="icon"
                   selected=${item.isSelected || nothing}
@@ -61,7 +58,7 @@ export class Grouping extends LitElement {
             `;
           })}
         </div>
-        <ha-control-button-group class="buttons" hide=${this.isGroupingModified() || nothing}>
+        <ha-control-button-group class="buttons" hide=${this.modifiedItems.length === 0 || nothing}>
           <ha-control-button class="apply" @click=${this.applyGrouping}> Apply </ha-control-button>
           <ha-control-button @click=${this.cancelGrouping}> Cancel </ha-control-button>
         </ha-control-button-group>
@@ -148,24 +145,16 @@ export class Grouping extends LitElement {
     ];
   }
 
-  async itemClick(item: GroupingItem) {
-    if (!item.isDisabled) {
-      item.toggle();
-      const selectedItems = this.groupingItems.filter((item) => {
-        item.isDisabled = false;
-        return item.isSelected;
-      });
-      if (selectedItems.length === 1) {
-        selectedItems[0].isDisabled = true;
-      }
-      this.requestUpdate();
+  itemClick(item: GroupingItem) {
+    if (item.isDisabled) {
+      return;
+    }
+    if (this.modifiedItems.includes(item.player.id)) {
+      this.modifiedItems = this.modifiedItems.filter((id) => id !== item.player.id);
+    } else {
+      this.modifiedItems = [...this.modifiedItems, item.player.id];
     }
   }
-
-  private isGroupingModified() {
-    return JSON.stringify(this.groupingItems) === JSON.stringify(this.originalGroupingItems);
-  }
-
   async applyGrouping() {
     const isSelected = this.groupingItems.filter((item) => item.isSelected);
     const unjoin = this.groupingItems
@@ -187,7 +176,7 @@ export class Grouping extends LitElement {
     if (join.length > 0) {
       await this.mediaControlService.join(main, join);
     }
-    this.groupingItems = this.originalGroupingItems = [];
+    this.modifiedItems = [];
   }
 
   private cancelGrouping() {
@@ -195,7 +184,15 @@ export class Grouping extends LitElement {
   }
 
   private getGroupingItems() {
-    return this.store.allMediaPlayers.map((player) => new GroupingItem(player, this.activePlayer));
+    const groupingItems = this.store.allMediaPlayers.map(
+      (player) => new GroupingItem(player, this.activePlayer, this.modifiedItems.includes(player.id)),
+    );
+    const selectedItems = groupingItems.filter((item) => item.isSelected);
+    if (selectedItems.length === 1) {
+      selectedItems[0].isDisabled = true;
+    }
+
+    return groupingItems;
   }
 
   private renderJoinAllButton() {
@@ -228,7 +225,7 @@ export class Grouping extends LitElement {
 
   private getJoinedPlayers() {
     return this.mediaPlayerIds.filter(
-      (playerId) => playerId !== this.activePlayer.id && this.activePlayer.hasMember(playerId),
+      (playerId) => playerId === this.activePlayer.id || this.activePlayer.hasMember(playerId),
     );
   }
 
@@ -237,7 +234,7 @@ export class Grouping extends LitElement {
       return html`
         <sonos-grouping-button
           @click=${async () => {
-            this.groupingItems = this.originalGroupingItems = [];
+            this.modifiedItems = [];
             await this.mediaControlService.createGroup(predefinedGroup, this.allGroups, this.store.config, this);
           }}
           .icon=${'mdi:speaker-multiple'}
@@ -251,33 +248,19 @@ export class Grouping extends LitElement {
 class GroupingItem {
   isSelected: boolean;
   icon!: string;
-  isDisabled: boolean;
+  isDisabled = false;
+  isModified: boolean;
   readonly name: string;
   readonly isMain: boolean;
   readonly player: MediaPlayer;
-  readonly originalState: boolean;
 
-  constructor(player: MediaPlayer, activePlayer: MediaPlayer) {
+  constructor(player: MediaPlayer, activePlayer: MediaPlayer, isModified: boolean) {
     this.isMain = player.id === activePlayer.id;
-    this.isSelected = this.isMain || activePlayer.hasMember(player.id);
-    this.originalState = this.isSelected;
+    this.isModified = isModified;
+    const currentlyJoined = this.isMain || activePlayer.hasMember(player.id);
+    this.isSelected = isModified ? !currentlyJoined : currentlyJoined;
     this.player = player;
-
-    this.isDisabled = this.isSelected && !activePlayer.isGrouped();
     this.name = player.name;
-    this.updateIcon();
-  }
-
-  toggle() {
-    this.isSelected = !this.isSelected;
-    this.updateIcon();
-  }
-
-  isModified() {
-    return this.isSelected !== this.originalState;
-  }
-
-  private updateIcon() {
     this.icon = this.isSelected ? 'check-circle' : 'checkbox-blank-circle-outline';
   }
 }

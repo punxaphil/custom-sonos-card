@@ -27,11 +27,6 @@ export class Card extends LitElement {
 
   render() {
     this.createStore();
-
-    if (cardDoesNotContainAllSections(this.config)) {
-      window.addEventListener(ACTIVE_PLAYER_EVENT, this.activePlayerListener);
-    }
-
     let height = getHeight(this.config);
     const sections = this.config.sections;
     const showFooter = !sections || sections.length > 1;
@@ -112,6 +107,9 @@ export class Card extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    if (cardDoesNotContainAllSections(this.config)) {
+      window.addEventListener(ACTIVE_PLAYER_EVENT, this.activePlayerListener);
+    }
     window.addEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
     window.addEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
   }

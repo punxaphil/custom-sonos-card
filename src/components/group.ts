@@ -2,28 +2,24 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../model/store';
-import { CardConfig } from '../types';
 import { dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 
 class Group extends LitElement {
   @property({ attribute: false }) store!: Store;
-  private config!: CardConfig;
   @property({ attribute: false }) player!: MediaPlayer;
   @property({ type: Boolean }) selected = false;
 
   dispatchEntityIdEvent = () => {
     if (this.selected) {
       const entityId = this.player.id;
-      dispatchActivePlayerId(entityId, this.config, this);
+      dispatchActivePlayerId(entityId, this.store.config, this);
     }
   };
 
   render() {
-    this.config = this.store.config;
-    const currentTrack = this.config.hideGroupCurrentTrack ? '' : this.player.getCurrentTrack();
+    const currentTrack = this.store.config.hideGroupCurrentTrack ? '' : this.player.getCurrentTrack();
     const speakerList = getSpeakerList(this.player, this.store.predefinedGroups);
-    this.dispatchEntityIdEvent();
     const icon = this.player.attributes.icon;
     return html`
       <mwc-list-item
@@ -52,6 +48,11 @@ class Group extends LitElement {
         )}
       </mwc-list-item>
     `;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.dispatchEntityIdEvent();
   }
 
   private handleGroupClicked() {
