@@ -30,9 +30,7 @@ class Volume extends LitElement {
           <ha-control-slider .value=${volume} max=${max} @value-changed=${this.volumeChanged}></ha-control-slider>
           <div class="volume-level">
             <div style="flex: ${volume}">0%</div>
-            ${volume >= max / 10 && volume <= 100 - max / 10
-              ? html` <div class="percentage">${Math.round(volume)}%</div>`
-              : ''}
+            <div class="percentage">${Math.round(volume)}%</div>
             <div style="flex: ${max - volume};text-align: right">${max}%</div>
           </div>
         </div>
