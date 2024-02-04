@@ -58,6 +58,11 @@ export const ADVANCED_SCHEMA = [
     name: 'replaceHttpWithHttpsForThumbnails',
     selector: { boolean: {} },
   },
+  {
+    type: 'integer',
+    name: 'volumeStepSize',
+    valueMin: 1,
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

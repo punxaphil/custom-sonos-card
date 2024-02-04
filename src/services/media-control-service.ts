@@ -5,9 +5,11 @@ import { MediaPlayer } from '../model/media-player';
 
 export default class MediaControlService {
   private hassService: HassService;
+  private readonly config: CardConfig;
 
-  constructor(hassService: HassService) {
+  constructor(hassService: HassService, config: CardConfig) {
     this.hassService = hassService;
+    this.config = config;
   }
 
   async join(main: string, memberIds: string[]) {
@@ -28,38 +30,33 @@ export default class MediaControlService {
     });
   }
 
-  async createGroup(
-    predefinedGroup: PredefinedGroup,
-    currentGroups: MediaPlayer[],
-    config: CardConfig,
-    element: Element,
-  ) {
+  async createGroup(predefinedGroup: PredefinedGroup, currentGroups: MediaPlayer[], element: Element) {
     let candidateGroup!: MediaPlayer;
     for (const group of currentGroups) {
       if (predefinedGroup.entities.some((item) => item.player.id === group.id)) {
         if (group.isPlaying()) {
-          await this.modifyExistingGroup(group, predefinedGroup, config, element);
+          await this.modifyExistingGroup(group, predefinedGroup, element);
           return;
         }
         candidateGroup = candidateGroup || group;
       }
     }
     if (candidateGroup) {
-      await this.modifyExistingGroup(candidateGroup, predefinedGroup, config, element);
+      await this.modifyExistingGroup(candidateGroup, predefinedGroup, element);
     } else {
       const { player } = predefinedGroup.entities[0];
-      dispatchActivePlayerId(player.id, config, element);
+      dispatchActivePlayerId(player.id, this.config, element);
       await this.joinPredefinedGroup(player, predefinedGroup);
     }
   }
 
-  private async modifyExistingGroup(group: MediaPlayer, pg: PredefinedGroup, config: CardConfig, element: Element) {
+  private async modifyExistingGroup(group: MediaPlayer, pg: PredefinedGroup, element: Element) {
     const members = group.members;
     const membersNotToBeGrouped = members.filter((member) => !pg.entities.some((item) => item.player.id === member.id));
     if (membersNotToBeGrouped?.length) {
       await this.unJoin(membersNotToBeGrouped.map((member) => member.id));
     }
-    dispatchActivePlayerId(group.id, config, element);
+    dispatchActivePlayerId(group.id, this.config, element);
     await this.joinPredefinedGroup(group, pg);
     for (const pgp of pg.entities) {
       const volume = pgp.volume ?? pg.volume;
@@ -76,19 +73,32 @@ export default class MediaControlService {
   }
 
   async volumeDown(mediaPlayer: MediaPlayer, updateMembers = true) {
-    await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
-    if (updateMembers) {
-      for (const member of mediaPlayer.members) {
-        await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+    if (this.config.volumeStepSize) {
+      const volume = mediaPlayer.attributes.volume_level * 100;
+      const newVolume = Math.max(0, volume - this.config.volumeStepSize);
+      await this.volumeSet(mediaPlayer, newVolume, updateMembers);
+      return;
+    } else {
+      await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
+      if (updateMembers) {
+        for (const member of mediaPlayer.members) {
+          await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+        }
       }
     }
   }
 
   async volumeUp(mediaPlayer: MediaPlayer, updateMembers = true) {
-    await this.hassService.callMediaService('volume_up', { entity_id: mediaPlayer.id });
-    if (updateMembers) {
-      for (const member of mediaPlayer.members) {
-        await this.hassService.callMediaService('volume_up', { entity_id: member.id });
+    if (this.config.volumeStepSize) {
+      const volume = mediaPlayer.attributes.volume_level * 100;
+      const newVolume = Math.min(100, volume + this.config.volumeStepSize);
+      await this.volumeSet(mediaPlayer, newVolume, updateMembers);
+    } else {
+      await this.hassService.callMediaService('volume_up', { entity_id: mediaPlayer.id });
+      if (updateMembers) {
+        for (const member of mediaPlayer.members) {
+          await this.hassService.callMediaService('volume_up', { entity_id: member.id });
+        }
       }
     }
   }

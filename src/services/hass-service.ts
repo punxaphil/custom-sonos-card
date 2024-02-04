@@ -10,11 +10,13 @@ export default class HassService {
   private readonly hass: HomeAssistant;
   private readonly currentSection: Section;
   private readonly card: Element;
+  private readonly config: CardConfig;
 
-  constructor(hass: HomeAssistant, section: Section, card: Element) {
+  constructor(hass: HomeAssistant, section: Section, card: Element, config: CardConfig) {
     this.hass = hass;
     this.currentSection = section;
     this.card = card;
+    this.config = config;
   }
 
   async callMediaService(service: string, inOptions: ServiceCallRequest['serviceData']) {
@@ -26,19 +28,14 @@ export default class HassService {
     }
   }
 
-  async browseMedia(
-    mediaPlayer: MediaPlayer,
-    config: CardConfig,
-    media_content_type?: string,
-    media_content_id?: string,
-  ) {
+  async browseMedia(mediaPlayer: MediaPlayer, media_content_type?: string, media_content_id?: string) {
     const mediaPlayerItem = await this.hass.callWS<MediaPlayerItem>({
       type: 'media_player/browse_media',
       entity_id: mediaPlayer.id,
       media_content_id,
       media_content_type,
     });
-    if (config.replaceHttpWithHttpsForThumbnails) {
+    if (this.config.replaceHttpWithHttpsForThumbnails) {
       mediaPlayerItem.children = mediaPlayerItem.children?.map((child) => ({
         ...child,
         thumbnail: child.thumbnail?.replace('http://', 'https://'),

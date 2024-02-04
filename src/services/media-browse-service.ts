@@ -5,21 +5,23 @@ import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
 
 export default class MediaBrowseService {
   private hassService: HassService;
+  private config: CardConfig;
 
-  constructor(hassService: HassService) {
+  constructor(hassService: HassService, config: CardConfig) {
     this.hassService = hassService;
+    this.config = config;
   }
 
-  async getFavorites(player: MediaPlayer, config: CardConfig): Promise<MediaPlayerItem[]> {
+  async getFavorites(player: MediaPlayer): Promise<MediaPlayerItem[]> {
     if (!player) {
       return [];
     }
-    let favorites = await this.getFavoritesForPlayer(player, config);
+    let favorites = await this.getFavoritesForPlayer(player);
     favorites = favorites.flatMap((f) => f);
     favorites = this.removeDuplicates(favorites);
     favorites = favorites.length ? favorites : this.getFavoritesFromStates(player);
     return favorites.filter(
-      (item) => indexOfWithoutSpecialChars(config.mediaBrowserTitlesToIgnore ?? [], item.title) === -1,
+      (item) => indexOfWithoutSpecialChars(this.config.mediaBrowserTitlesToIgnore ?? [], item.title) === -1,
     );
   }
 
@@ -29,11 +31,11 @@ export default class MediaBrowseService {
     });
   }
 
-  private async getFavoritesForPlayer(player: MediaPlayer, config: CardConfig) {
+  private async getFavoritesForPlayer(player: MediaPlayer) {
     try {
-      const favoritesRoot = await this.hassService.browseMedia(player, config, 'favorites', '');
+      const favoritesRoot = await this.hassService.browseMedia(player, 'favorites', '');
       const favoriteTypesPromise = favoritesRoot.children?.map((favoriteItem) =>
-        this.hassService.browseMedia(player, config, favoriteItem.media_content_type, favoriteItem.media_content_id),
+        this.hassService.browseMedia(player, favoriteItem.media_content_type, favoriteItem.media_content_id),
       );
       const favoriteTypes = favoriteTypesPromise ? await Promise.all(favoriteTypesPromise) : [];
       return favoriteTypes.flatMap((item) => item.children ?? []);

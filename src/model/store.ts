@@ -44,9 +44,9 @@ export default class Store {
       )
       .sort((a, b) => a.name.localeCompare(b.name));
     this.activePlayer = this.determineActivePlayer(activePlayerId);
-    this.hassService = new HassService(this.hass, currentSection, card);
-    this.mediaControlService = new MediaControlService(this.hassService);
-    this.mediaBrowseService = new MediaBrowseService(this.hassService);
+    this.hassService = new HassService(this.hass, currentSection, card, config);
+    this.mediaControlService = new MediaControlService(this.hassService, config);
+    this.mediaBrowseService = new MediaBrowseService(this.hassService, config);
     this.predefinedGroups = this.createPredefinedGroups();
   }
 
