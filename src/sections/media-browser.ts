@@ -71,7 +71,7 @@ export class MediaBrowser extends LitElement {
   }
 
   private async getFavorites(player: MediaPlayer) {
-    let favorites = await this.mediaBrowseService.getFavorites(player, this.config);
+    let favorites = await this.mediaBrowseService.getFavorites(player);
     favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
     favorites = [
       ...(this.config.customSources?.[this.activePlayer.id]?.map(MediaBrowser.createSource) || []),
