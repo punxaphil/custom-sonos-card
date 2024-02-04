@@ -235,7 +235,7 @@ export class Grouping extends LitElement {
         <sonos-grouping-button
           @click=${async () => {
             this.modifiedItems = [];
-            await this.mediaControlService.createGroup(predefinedGroup, this.allGroups, this.store.config, this);
+            await this.mediaControlService.createGroup(predefinedGroup, this.allGroups, this);
           }}
           .icon=${'mdi:speaker-multiple'}
           .name=${predefinedGroup.name}
