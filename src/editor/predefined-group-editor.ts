@@ -38,7 +38,7 @@ class PredefinedGroupEditor extends BaseEditor {
             {
               type: 'integer',
               name: 'volume',
-              label: `${this.hass.states[player].attributes.friendly_name}${volume !== undefined ? `: ${volume}` : ''}`,
+              label: `${this.hass.states[player]?.attributes.friendly_name ?? ''}${volume !== undefined ? `: ${volume}` : ''}`,
               valueMin: 0,
               valueMax: 100,
             },
