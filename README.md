@@ -7,7 +7,7 @@ Media player card for Sonos speakers!
 * Group/Ungroup speakers
 * Control multiple speaker
 * Play favorites from list
-* Media browser
+* Media browser button
 * Control individual volumes in a group
 * Artwork background
 * Possibility to override artwork
@@ -19,11 +19,11 @@ Media player card for Sonos speakers!
 
 and more!
 
-![player.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/player.png)
-![media_browser.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/media_browser.png)
-![groups.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/groups.png)
-![grouping.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/grouping.png)
-![volumes.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/volumes.png)
+![player.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/player.png)
+![media_browser.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/media_browser.png)
+![groups.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/groups.png)
+![grouping.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/grouping.png)
+![volumes.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/volumes.png)
 
 ## Support the project
 
@@ -35,7 +35,7 @@ Do you like the Sonos Card? Support the project with a coffee ☕️
 
 ### HACS
 
-This card is available in HACS (Home Assistant Community Store)
+Recommended way of installing this card is with HACS (Home Assistant Community Store).
 
 ### Manual
 
@@ -53,10 +53,10 @@ resources:
 
 ### Individual sections
 
-By default, all sections of the card is available and you can jump between them in the footer of the card.
+By default, all sections of the card is available, and you can jump between them in the footer of the card.
 
 However, you can also select individual sections to enable. Use this if you want to show the different sections next to
-each (by adding multiple instances of the card with different sections enabled).
+each other (by adding multiple instances of the card with different sections enabled).
 
 By using the section configuration you can utilise the full power of Home Assistant's layout capabilities and also drag
 in other cards in your Sonos Dashboard view.
@@ -145,8 +145,8 @@ entitiesToIgnoreVolumeLevelFor: # default is empty. Use this if you want to igno
   - media_player.my_sonos_port_device
 
 # media browser specific
-mediaBrowserItemsPerRow: 4 # default is 1. Use this to show items as icons.
-mediaBrowserShowTitleForThumbnailIcons: true # default is false. Only makes a difference if mediaBrowserItemsPerRow > 1. Will show title for thumbnail artworks.
+mediaBrowserItemsPerRow: 1 # default is 4. Use this to show items as list.
+mediaBrowserHideTitleForThumbnailIcons: true # default is false. Only makes a difference if mediaBrowserItemsPerRow > 1. Will hide title for thumbnail artworks.
 customThumbnail:
   Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
 customThumbnailIfMissing:
@@ -171,32 +171,20 @@ As mentioned earlier, use the individual sections for more layout flexibility.
 
 Here is an example:
 
-![sections.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/sections.png)
-
+![sections.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/sections.png)
 ```yaml
 type: horizontal-stack
 cards:
   - type: custom:sonos-card
     sections:
       - groups
-      - grouping
       - volumes
-    widthPercentage: 100
-  - type: vertical-stack
-    cards:
-      - type: entities
-        entities:
-          - type: button
-            tap_action:
-              action: navigate
-              navigation_path: /
-            icon: mdi:arrow-left-circle
-            name: Back to home
-      - type: custom:sonos-card
-        sections:
-          - player
   - type: custom:sonos-card
     sections:
+      - player
+  - type: custom:sonos-card
+    sections:
+      - grouping
       - media browser
 ```
 
@@ -215,7 +203,7 @@ Read more about using theme variables here: https://www.home-assistant.io/integr
 
 ## CSS Styling
 
-The recommend way to change look and feel is to use the built in theming capabilities in Home Assistant. If that is not enough this card supports being styled with [card_mod](https://github.com/thomasloven/lovelace-card-mod).
+The recommend way to change look and feel is to use the built-in theming capabilities in Home Assistant. If that is not enough this card supports being styled with [card_mod](https://github.com/thomasloven/lovelace-card-mod).
 
 Example:
 
@@ -235,7 +223,7 @@ card_mod:
 
 The above YAML renders the following:
 
-![styling.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/styling.png)
+![styling.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/styling.png)
 
 ## Dynamic volume level slider
 
@@ -243,7 +231,7 @@ The volume level slider is dynamically adjusting its scale. If volume is below 2
 20% it will show a scale up to 100%. The color will also change from green to red clearly indicating which scale is
 being used.
 
-![dynamic_volumes.png](https://github.com/johanfrick/custom-sonos-card/raw/master/img/dynamic_volumes.png)
+![dynamic_volumes.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/dynamic_volumes.png)
 
 Enable it in config with `dynamicVolumeSlider: true`
 

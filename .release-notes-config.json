@@ -18,7 +18,7 @@
     }
   ],
   "template": "${{CHANGELOG}}",
-  "pr_template": "- [${{TITLE}}](https://github.com/johanfrick/custom-sonos-card/commit/${{MERGE_SHA}})",
+  "pr_template": "- [${{TITLE}}](https://github.com/punxaphil/custom-sonos-card/commit/${{MERGE_SHA}})",
   "empty_template": "- no changes",
   "label_extractor": [
     {
