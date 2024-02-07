@@ -2,7 +2,6 @@ import { css, LitElement } from 'lit';
 import { fireEvent, HomeAssistant } from 'custom-card-helpers';
 import { property } from 'lit/decorators.js';
 import { CardConfig } from '../types';
-import { dispatch } from '../utils/utils';
 
 export abstract class BaseEditor extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
@@ -33,6 +32,6 @@ export abstract class BaseEditor extends LitElement {
     this.requestUpdate();
   }
   protected dispatchClose() {
-    return dispatch('closed');
+    return this.dispatchEvent(new CustomEvent('closed'));
   }
 }
