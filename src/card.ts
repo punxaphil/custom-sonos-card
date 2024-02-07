@@ -212,6 +212,7 @@ export class Card extends LitElement {
     } else {
       this.section = PLAYER;
     }
+    newConfig.mediaBrowserItemsPerRow = newConfig.mediaBrowserItemsPerRow || 4;
     this.config = newConfig;
   }
 

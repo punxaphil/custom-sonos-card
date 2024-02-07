@@ -16,7 +16,7 @@ export const GENERAL_SCHEMA = [
   {
     type: 'integer',
     name: 'mediaBrowserItemsPerRow',
-    default: 1,
+    default: 4,
     required: true,
     valueMin: 1,
     valueMax: 30,

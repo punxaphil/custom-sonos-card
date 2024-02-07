@@ -33,7 +33,7 @@ export class MediaBrowser extends LitElement {
       until(
         this.getFavorites(this.activePlayer).then((items) => {
           if (items?.length) {
-            return (this.config.mediaBrowserItemsPerRow ?? 0) > 1
+            return (this.config.mediaBrowserItemsPerRow ?? 4) > 1
               ? html`
                   <sonos-media-browser-icons
                     .items=${items}

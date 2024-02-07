@@ -28,7 +28,7 @@ export const ADVANCED_SCHEMA = [
     name: 'artworkHostname',
   },
   {
-    name: 'mediaBrowserShowTitleForThumbnailIcons',
+    name: 'mediaBrowserHideTitleForThumbnailIcons',
     selector: { boolean: {} },
   },
   {

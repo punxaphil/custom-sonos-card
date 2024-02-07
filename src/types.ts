@@ -40,7 +40,7 @@ export interface CardConfig extends LovelaceCardConfig {
   customThumbnailIfMissing?: CustomThumbnails;
   mediaBrowserTitlesToIgnore?: string[];
   mediaBrowserItemsPerRow?: number;
-  mediaBrowserShowTitleForThumbnailIcons?: boolean;
+  mediaBrowserHideTitleForThumbnailIcons?: boolean;
   topFavorites?: string[];
   numberOfFavoritesToShow?: number;
   hideBrowseMediaButton?: boolean;
