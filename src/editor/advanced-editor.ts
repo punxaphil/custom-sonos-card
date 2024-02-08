@@ -25,6 +25,10 @@ export const ADVANCED_SCHEMA = [
   },
   {
     type: 'string',
+    name: 'mediaBrowserTitle',
+  },
+  {
+    type: 'string',
     name: 'artworkHostname',
   },
   {

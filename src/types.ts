@@ -50,6 +50,7 @@ export interface CardConfig extends LovelaceCardConfig {
   entitiesToIgnoreVolumeLevelFor?: string[];
   replaceHttpWithHttpsForThumbnails?: boolean;
   volumeStepSize?: number;
+  mediaBrowserTitle?: string;
 }
 
 export interface MediaArtworkOverride {

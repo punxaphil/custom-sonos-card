@@ -8,7 +8,7 @@ class MediaBrowserHeader extends LitElement {
 
   render() {
     return html`
-      <div class="title">All Favorites</div>
+      <div class="title">${this.store.config.mediaBrowserTitle ?? 'All Favorites'}</div>
       <sonos-ha-player
         hide=${this.store.config.hideBrowseMediaButton || nothing}
         .store=${this.store}
