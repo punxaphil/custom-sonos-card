@@ -104,11 +104,16 @@ export default class MediaControlService {
   }
 
   async volumeSet(mediaPlayer: MediaPlayer, volume: number, updateMembers = true) {
-    const volume_level = volume / 100;
+    let volume_level = volume / 100;
 
     await this.hassService.callMediaService('volume_set', { entity_id: mediaPlayer.id, volume_level: volume_level });
+    const relativeVolumeChange = volume_level - mediaPlayer.attributes.volume_level;
     if (updateMembers) {
       for (const member of mediaPlayer.members) {
+        if (this.config.adjustVolumeRelativeToMainPlayer) {
+          volume_level = member.attributes.volume_level + relativeVolumeChange;
+          volume_level = Math.min(1, Math.max(0, volume_level));
+        }
         await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
       }
     }

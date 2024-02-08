@@ -51,6 +51,7 @@ export interface CardConfig extends LovelaceCardConfig {
   replaceHttpWithHttpsForThumbnails?: boolean;
   volumeStepSize?: number;
   mediaBrowserTitle?: string;
+  adjustVolumeRelativeToMainPlayer?: boolean;
 }
 
 export interface MediaArtworkOverride {

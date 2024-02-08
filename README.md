@@ -91,7 +91,8 @@ entities: # Entities are automatically discovered if you don't supply this setti
   - media_player.sonos_livingroom
 excludeItemsInEntitiesList: true # Will invert the selection in the `entities` list, so that all players that are not in the list will be used.
 showNonSonosPlayers: true # default is false, which means only Sonos players will be shown.
-volumeStepSize: 1 # Use this to change the step size when using volume up/down.. Default is to use the step size of Home Assistant's media player integration. 
+volumeStepSize: 1 # Use this to change the step size when using volume up/down. Default is to use the step size of Home Assistant's media player integration. 
+adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.
 
 # groups specific
 groupsTitle: ''
