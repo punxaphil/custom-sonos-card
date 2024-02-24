@@ -122,7 +122,8 @@ export default class Store {
       .filter((hassEntity) => {
         if (hassEntity.entity_id.includes('media_player')) {
           const platform = hassWithEntities.entities?.[hassEntity.entity_id]?.platform;
-          if (!platform || this.config.showNonSonosPlayers || platform === 'sonos') {
+          const hasGrouping = !!hassEntity.attributes?.group_members;
+          if ((!platform && hasGrouping) || this.config.showNonSonosPlayers || platform === 'sonos') {
             if (configEntities.length) {
               const includesEntity = configEntities.includes(hassEntity.entity_id);
               return !!this.config.excludeItemsInEntitiesList !== includesEntity;
