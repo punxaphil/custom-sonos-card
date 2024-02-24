@@ -7,13 +7,13 @@ import { dispatchActivePlayerId } from '../utils/utils';
 import { listStyle } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import '../components/grouping-button';
+import { PredefinedGroup, PredefinedGroupPlayer } from '../types';
 
 export class Grouping extends LitElement {
   @property({ attribute: false }) store!: Store;
   private groupingItems!: GroupingItem[];
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
-  private allGroups!: MediaPlayer[];
   private mediaPlayerIds!: string[];
   private notJoinedPlayers!: string[];
   private joinedPlayers!: string[];
@@ -21,7 +21,6 @@ export class Grouping extends LitElement {
 
   render() {
     this.activePlayer = this.store.activePlayer;
-    this.allGroups = this.store.allGroups;
     this.mediaControlService = this.store.mediaControlService;
     this.mediaPlayerIds = this.store.allMediaPlayers.map((player) => player.id);
     this.groupingItems = this.getGroupingItems();
@@ -42,7 +41,7 @@ export class Grouping extends LitElement {
                   class="icon"
                   selected=${item.isSelected || nothing}
                   .icon="mdi:${item.icon}"
-                  @click=${() => this.itemClick(item)}
+                  @click=${() => this.toggleItem(item)}
                 ></ha-icon>
                 <div class="name-and-volume">
                   <span class="name">${item.name}</span>
@@ -145,19 +144,24 @@ export class Grouping extends LitElement {
     ];
   }
 
-  itemClick(item: GroupingItem) {
+  toggleItem(item: GroupingItem) {
     if (item.isDisabled) {
       return;
     }
+    this.toggleItemWithoutDisabledCheck(item);
+  }
+
+  private toggleItemWithoutDisabledCheck(item: GroupingItem) {
     if (this.modifiedItems.includes(item.player.id)) {
       this.modifiedItems = this.modifiedItems.filter((id) => id !== item.player.id);
     } else {
       this.modifiedItems = [...this.modifiedItems, item.player.id];
     }
   }
+
   async applyGrouping() {
     const isSelected = this.groupingItems.filter((item) => item.isSelected);
-    const unjoin = this.groupingItems
+    const unJoin = this.groupingItems
       .filter((item) => !item.isSelected && this.joinedPlayers.includes(item.player.id))
       .map((item) => item.player.id);
     const join = this.groupingItems
@@ -165,18 +169,31 @@ export class Grouping extends LitElement {
       .map((item) => item.player.id);
 
     let main = this.activePlayer.id;
-    if (unjoin.includes(this.activePlayer.id)) {
-      main = isSelected[0].player.id;
-      dispatchActivePlayerId(main, this.store.config, this);
-    }
 
-    if (unjoin.length > 0) {
-      await this.mediaControlService.unJoin(unjoin);
+    if (unJoin.length > 0) {
+      await this.mediaControlService.unJoin(unJoin);
     }
     if (join.length > 0) {
       await this.mediaControlService.join(main, join);
     }
+    await this.handlePredefinedGroupConfig(isSelected);
+    if (unJoin.includes(this.activePlayer.id)) {
+      main = isSelected[0].player.id;
+      dispatchActivePlayerId(main, this.store.config, this);
+    }
     this.modifiedItems = [];
+  }
+
+  private async handlePredefinedGroupConfig(isSelected: GroupingItem[]) {
+    const predefinedGroup = this.store.predefinedGroups.find((pg) => {
+      return (
+        pg.entities.length === isSelected.length &&
+        pg.entities.every((pgp) => isSelected.some((s) => s.player.id === pgp.player.id))
+      );
+    });
+    if (predefinedGroup) {
+      await this.mediaControlService.setVolumeAndMediaForPredefinedGroup(predefinedGroup);
+    }
   }
 
   private cancelGrouping() {
@@ -196,14 +213,13 @@ export class Grouping extends LitElement {
   }
 
   private renderJoinAllButton() {
-    return when(this.notJoinedPlayers.length, () => {
-      return html`
-        <sonos-grouping-button
-          @click=${async () => await this.mediaControlService.join(this.activePlayer.id, this.notJoinedPlayers)}
-          .icon=${'mdi:checkbox-multiple-marked-outline'}
-        ></sonos-grouping-button>
-      `;
-    });
+    return when(this.notJoinedPlayers.length, () =>
+      this.groupingButton('mdi:checkbox-multiple-marked-outline', this.selectAll),
+    );
+  }
+
+  private groupingButton(icon: string, click: () => void) {
+    return html` <sonos-grouping-button @click=${click} .icon=${icon}></sonos-grouping-button> `;
   }
 
   private getNotJoinedPlayers() {
@@ -213,14 +229,9 @@ export class Grouping extends LitElement {
   }
 
   private renderUnJoinAllButton() {
-    return when(this.joinedPlayers.length, () => {
-      return html`
-        <sonos-grouping-button
-          @click=${async () => await this.mediaControlService.unJoin(this.joinedPlayers)}
-          .icon=${'mdi:minus-box-multiple-outline'}
-        ></sonos-grouping-button>
-      `;
-    });
+    return when(this.joinedPlayers.length, () =>
+      this.groupingButton('mdi:minus-box-multiple-outline', this.deSelectAll),
+    );
   }
 
   private getJoinedPlayers() {
@@ -233,14 +244,36 @@ export class Grouping extends LitElement {
     return this.store.predefinedGroups.map((predefinedGroup) => {
       return html`
         <sonos-grouping-button
-          @click=${async () => {
-            this.modifiedItems = [];
-            await this.mediaControlService.createGroup(predefinedGroup, this.allGroups, this);
-          }}
+          @click=${async () => this.selectPredefinedGroup(predefinedGroup)}
           .icon=${'mdi:speaker-multiple'}
           .name=${predefinedGroup.name}
         ></sonos-grouping-button>
       `;
+    });
+  }
+
+  private selectPredefinedGroup(predefinedGroup: PredefinedGroup<PredefinedGroupPlayer>) {
+    this.groupingItems.forEach((item) => {
+      const inPG = predefinedGroup.entities.some((pgp) => pgp.player.id === item.player.id);
+      if ((inPG && !item.isSelected) || (!inPG && item.isSelected)) {
+        this.toggleItemWithoutDisabledCheck(item);
+      }
+    });
+  }
+
+  private selectAll() {
+    this.groupingItems.forEach((item) => {
+      if (!item.isSelected) {
+        this.toggleItem(item);
+      }
+    });
+  }
+
+  private deSelectAll() {
+    this.groupingItems.forEach((item) => {
+      if ((!item.isMain && item.isSelected) || (item.isMain && !item.isSelected)) {
+        this.toggleItem(item);
+      }
     });
   }
 }
