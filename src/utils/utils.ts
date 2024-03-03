@@ -4,7 +4,7 @@ import { ACTIVE_PLAYER_EVENT, ACTIVE_PLAYER_EVENT_INTERNAL } from '../constants'
 import { MediaPlayer } from '../model/media-player';
 
 export function getSpeakerList(mainPlayer: MediaPlayer, predefinedGroups: PredefinedGroup[] = []) {
-  const playerIds = [mainPlayer.id, ...mainPlayer.members.map((member) => member.id)].sort();
+  const playerIds = mainPlayer.members.map((member) => member.id).sort();
   if (predefinedGroups?.length) {
     const found = predefinedGroups.find(
       (pg) =>
@@ -17,7 +17,7 @@ export function getSpeakerList(mainPlayer: MediaPlayer, predefinedGroups: Predef
       return found.name;
     }
   }
-  return [mainPlayer.name, ...mainPlayer.members.map((member) => member.name)].join(' + ');
+  return mainPlayer.members.map((member) => member.name).join(' + ');
 }
 
 export function dispatchActivePlayerId(playerId: string, config: CardConfig, element: Element) {

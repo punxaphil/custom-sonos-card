@@ -18,6 +18,8 @@ export enum Section {
 
 export type ConfigPredefinedGroupPlayer = PredefinedGroupPlayer<string>;
 export type ConfigPredefinedGroup = PredefinedGroup<string | ConfigPredefinedGroupPlayer>;
+export type CalculateVolume = (member: MediaPlayer, volumeStepSize: number) => number;
+
 export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
   showVolumeUpAndDownButtons?: boolean;

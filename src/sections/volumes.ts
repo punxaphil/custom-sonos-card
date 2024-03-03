@@ -28,8 +28,8 @@ class Volumes extends LitElement {
 
     const members = this.activePlayer.members;
     return html`
-      ${when(members.length, () => this.volumeWithName(this.activePlayer))}
-      ${[this.activePlayer, ...members].map((member) => this.volumeWithName(member, false))}
+      ${when(members.length > 1, () => this.volumeWithName(this.activePlayer))}
+      ${members.map((member) => this.volumeWithName(member, false))}
     `;
   }
 
@@ -48,9 +48,19 @@ class Volumes extends LitElement {
         <div class="volume-name-text">${name}</div>
       </div>
       <div class="slider-row">
-        <ha-icon-button hide=${noUpDown} @click=${volDown} .path=${mdiVolumeMinus}></ha-icon-button>
+        <ha-icon-button
+          .disabled=${player.ignoreVolume}
+          hide=${noUpDown}
+          @click=${volDown}
+          .path=${mdiVolumeMinus}
+        ></ha-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <ha-icon-button hide=${noUpDown} @click=${volUp} .path=${mdiVolumePlus}></ha-icon-button>
+        <ha-icon-button
+          .disabled=${player.ignoreVolume}
+          hide=${noUpDown}
+          @click=${volUp}
+          .path=${mdiVolumePlus}
+        ></ha-icon-button>
         <ha-icon-button
           hide=${updateMembers || nothing}
           @click=${() => this.toggleShowSwitches(player)}

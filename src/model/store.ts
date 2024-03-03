@@ -38,10 +38,7 @@ export default class Store {
     const mediaPlayerHassEntities = this.getMediaPlayerHassEntities(this.hass);
     this.allGroups = this.createPlayerGroups(mediaPlayerHassEntities);
     this.allMediaPlayers = this.allGroups
-      .reduce(
-        (previousValue: MediaPlayer[], currentValue) => [...previousValue, currentValue, ...currentValue.members],
-        [],
-      )
+      .reduce((previousValue: MediaPlayer[], currentValue) => [...previousValue, ...currentValue.members], [])
       .sort((a, b) => a.name.localeCompare(b.name));
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     this.hassService = new HassService(this.hass, currentSection, card, config);
@@ -169,7 +166,7 @@ export default class Store {
   private determineActivePlayer(activePlayerId?: string): MediaPlayer {
     const playerId = activePlayerId || this.config.entityId || this.getActivePlayerFromUrl();
     return (
-      this.allGroups.find((group) => group.getPlayer(playerId) !== undefined) ||
+      this.allGroups.find((group) => group.getMember(playerId) !== undefined) ||
       this.allGroups.find((group) => group.isPlaying()) ||
       this.allGroups[0]
     );

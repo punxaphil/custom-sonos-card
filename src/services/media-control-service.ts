@@ -1,4 +1,4 @@
-import { CardConfig, MediaPlayerItem, PredefinedGroup } from '../types';
+import { CalculateVolume, CardConfig, MediaPlayerItem, PredefinedGroup } from '../types';
 import HassService from './hass-service';
 import { MediaPlayer } from '../model/media-player';
 
@@ -28,7 +28,7 @@ export default class MediaControlService {
     for (const pgp of pg.entities) {
       const volume = pgp.volume ?? pg.volume;
       if (volume) {
-        await this.volumeSet(pgp.player, volume, false);
+        await this.volumeSetSinglePlayer(pgp.player, volume);
       }
       if (pg.unmuteWhenGrouped) {
         await this.setVolumeMute(pgp.player, false, false);
@@ -39,50 +39,90 @@ export default class MediaControlService {
     }
   }
 
-  async volumeDown(mediaPlayer: MediaPlayer, updateMembers = true) {
+  async volumeDown(mainPlayer: MediaPlayer, updateMembers = true) {
+    await this.volumeStep(mainPlayer, updateMembers, this.getStepDownVolume, 'volume_down');
+  }
+
+  async volumeUp(mainPlayer: MediaPlayer, updateMembers = true) {
+    await this.volumeStep(mainPlayer, updateMembers, this.getStepUpVolume, 'volume_up');
+  }
+
+  private async volumeStep(
+    mainPlayer: MediaPlayer,
+    updateMembers: boolean,
+    calculateVolume: (member: MediaPlayer, volumeStepSize: number) => number,
+    stepDirection: string,
+  ) {
     if (this.config.volumeStepSize) {
-      const volume = mediaPlayer.attributes.volume_level * 100;
-      const newVolume = Math.max(0, volume - this.config.volumeStepSize);
-      await this.volumeSet(mediaPlayer, newVolume, updateMembers);
-      return;
+      await this.volumeWithStepSize(mainPlayer, updateMembers, this.config.volumeStepSize, calculateVolume);
     } else {
-      await this.hassService.callMediaService('volume_down', { entity_id: mediaPlayer.id });
-      if (updateMembers) {
-        for (const member of mediaPlayer.members) {
-          await this.hassService.callMediaService('volume_down', { entity_id: member.id });
+      await this.volumeDefaultStep(mainPlayer, updateMembers, stepDirection);
+    }
+  }
+
+  private async volumeWithStepSize(
+    mainPlayer: MediaPlayer,
+    updateMembers: boolean,
+    volumeStepSize: number,
+    calculateVolume: CalculateVolume,
+  ) {
+    for (const member of mainPlayer.members) {
+      if (mainPlayer.id === member.id || updateMembers) {
+        const newVolume = calculateVolume(member, volumeStepSize);
+        await this.volumeSetSinglePlayer(member, newVolume);
+      }
+    }
+  }
+
+  private getStepDownVolume(member: MediaPlayer, volumeStepSize: number) {
+    return Math.max(0, member.getVolume() - volumeStepSize);
+  }
+
+  private getStepUpVolume(member: MediaPlayer, stepSize: number) {
+    return Math.min(100, member.getVolume() + stepSize);
+  }
+
+  private async volumeDefaultStep(mainPlayer: MediaPlayer, updateMembers: boolean, stepDirection: string) {
+    for (const member of mainPlayer.members) {
+      if (mainPlayer.id === member.id || updateMembers) {
+        if (!member.ignoreVolume) {
+          await this.hassService.callMediaService(stepDirection, { entity_id: member.id });
         }
       }
     }
   }
 
-  async volumeUp(mediaPlayer: MediaPlayer, updateMembers = true) {
-    if (this.config.volumeStepSize) {
-      const volume = mediaPlayer.attributes.volume_level * 100;
-      const newVolume = Math.min(100, volume + this.config.volumeStepSize);
-      await this.volumeSet(mediaPlayer, newVolume, updateMembers);
-    } else {
-      await this.hassService.callMediaService('volume_up', { entity_id: mediaPlayer.id });
-      if (updateMembers) {
-        for (const member of mediaPlayer.members) {
-          await this.hassService.callMediaService('volume_up', { entity_id: member.id });
-        }
-      }
-    }
-  }
-
-  async volumeSet(mediaPlayer: MediaPlayer, volume: number, updateMembers = true) {
-    let volume_level = volume / 100;
-
-    await this.hassService.callMediaService('volume_set', { entity_id: mediaPlayer.id, volume_level: volume_level });
-    const relativeVolumeChange = volume_level - mediaPlayer.attributes.volume_level;
+  async volumeSet(player: MediaPlayer, volume: number, updateMembers: boolean) {
     if (updateMembers) {
-      for (const member of mediaPlayer.members) {
-        if (this.config.adjustVolumeRelativeToMainPlayer) {
-          volume_level = member.attributes.volume_level + relativeVolumeChange;
-          volume_level = Math.min(1, Math.max(0, volume_level));
+      return await this.volumeSetGroup(player, volume);
+    } else {
+      return await this.volumeSetSinglePlayer(player, volume);
+    }
+  }
+  private async volumeSetGroup(player: MediaPlayer, volumePercent: number) {
+    let relativeVolumeChange: number | undefined;
+    if (this.config.adjustVolumeRelativeToMainPlayer) {
+      relativeVolumeChange = volumePercent - player.getVolume();
+    }
+
+    await Promise.all(
+      player.members.map((member) => {
+        let memberVolume = volumePercent;
+        if (relativeVolumeChange !== undefined) {
+          if (this.config.adjustVolumeRelativeToMainPlayer) {
+            memberVolume = member.getVolume() + relativeVolumeChange;
+            memberVolume = Math.min(100, Math.max(0, memberVolume));
+          }
         }
-        await this.hassService.callMediaService('volume_set', { entity_id: member.id, volume_level });
-      }
+        return this.volumeSetSinglePlayer(member, memberVolume);
+      }),
+    );
+  }
+
+  async volumeSetSinglePlayer(player: MediaPlayer, volumePercent: number) {
+    if (!player.ignoreVolume) {
+      const volume = volumePercent / 100;
+      await this.hassService.callMediaService('volume_set', { entity_id: player.id, volume_level: volume });
     }
   }
 
@@ -92,9 +132,8 @@ export default class MediaControlService {
   }
 
   async setVolumeMute(mediaPlayer: MediaPlayer, muteVolume: boolean, updateMembers = true) {
-    await this.hassService.callMediaService('volume_mute', { entity_id: mediaPlayer.id, is_volume_muted: muteVolume });
-    if (updateMembers) {
-      for (const member of mediaPlayer.members) {
+    for (const member of mediaPlayer.members) {
+      if (mediaPlayer.id === member.id || updateMembers) {
         await this.hassService.callMediaService('volume_mute', { entity_id: member.id, is_volume_muted: muteVolume });
       }
     }

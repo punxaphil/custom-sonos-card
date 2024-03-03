@@ -19,15 +19,21 @@ class Volume extends LitElement {
     this.config = this.store.config;
     this.mediaControlService = this.store.mediaControlService;
 
-    const volume = this.getVolume();
+    const volume = this.player.getVolume();
     const max = volume < 20 && this.config.dynamicVolumeSlider ? 30 : 100;
 
     const muteIcon = this.player.isMuted(this.updateMembers) ? mdiVolumeMute : mdiVolumeHigh;
+    const disabled = this.player.ignoreVolume;
     return html`
       <div class="volume" slim=${this.slim || nothing}>
-        <ha-icon-button @click=${this.mute} .path=${muteIcon}> </ha-icon-button>
+        <ha-icon-button .disabled=${disabled} @click=${this.mute} .path=${muteIcon}> </ha-icon-button>
         <div class="volume-slider">
-          <ha-control-slider .value=${volume} max=${max} @value-changed=${this.volumeChanged}></ha-control-slider>
+          <ha-control-slider
+            .value=${volume}
+            max=${max}
+            @value-changed=${this.volumeChanged}
+            .disabled=${disabled}
+          ></ha-control-slider>
           <div class="volume-level">
             <div style="flex: ${volume}">0%</div>
             <div class="percentage">${Math.round(volume)}%</div>
@@ -38,37 +44,9 @@ class Volume extends LitElement {
     `;
   }
 
-  private getVolume() {
-    if (this.updateMembers && this.config.adjustVolumeRelativeToMainPlayer) {
-      const volumes = [
-        this.player.attributes.volume_level,
-        ...this.player.members.map((m) => m.attributes.volume_level),
-      ];
-      return (100 * volumes.reduce((a, b) => a + b, 0)) / volumes.length;
-    } else {
-      return 100 * this.getVolumeLevelPlayer().attributes.volume_level;
-    }
-  }
-
-  private getVolumeLevelPlayer() {
-    let volumeLevelPlayer = this.player;
-    if (this.updateMembers && this.player.members.length && this.config.entitiesToIgnoreVolumeLevelFor) {
-      const players = [volumeLevelPlayer, ...volumeLevelPlayer.members];
-      volumeLevelPlayer =
-        players.find((p) => {
-          return !this.config.entitiesToIgnoreVolumeLevelFor?.includes(p.id);
-        }) ?? volumeLevelPlayer;
-    }
-    return volumeLevelPlayer;
-  }
-
   private async volumeChanged(e: Event) {
-    const volume = numberFromEvent(e);
-    return await this.setVolume(volume);
-  }
-
-  private async setVolume(volume: number) {
-    return await this.mediaControlService.volumeSet(this.player, volume, this.updateMembers);
+    const newVolume = numberFromEvent(e);
+    return await this.mediaControlService.volumeSet(this.player, newVolume, this.updateMembers);
   }
 
   private async mute() {
@@ -79,6 +57,9 @@ class Volume extends LitElement {
     return css`
       ha-control-slider {
         --control-slider-color: var(--accent-color);
+      }
+      ha-control-slider[disabled] {
+        --control-slider-color: var(--disabled-text-color);
       }
 
       *[slim] * {
