@@ -102,7 +102,7 @@ export default class MediaControlService {
   private async volumeSetGroup(player: MediaPlayer, volumePercent: number) {
     let relativeVolumeChange: number | undefined;
     if (this.config.adjustVolumeRelativeToMainPlayer) {
-      relativeVolumeChange = volumePercent - player.getVolume();
+      relativeVolumeChange = volumePercent / player.getVolume();
     }
 
     await Promise.all(
@@ -110,7 +110,7 @@ export default class MediaControlService {
         let memberVolume = volumePercent;
         if (relativeVolumeChange !== undefined) {
           if (this.config.adjustVolumeRelativeToMainPlayer) {
-            memberVolume = member.getVolume() + relativeVolumeChange;
+            memberVolume = member.getVolume() * relativeVolumeChange;
             memberVolume = Math.min(100, Math.max(0, memberVolume));
           }
         }
