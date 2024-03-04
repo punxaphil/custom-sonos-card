@@ -170,11 +170,11 @@ export class Grouping extends LitElement {
 
     let main = this.activePlayer.id;
 
-    if (unJoin.length > 0) {
-      await this.mediaControlService.unJoin(unJoin);
-    }
     if (join.length > 0) {
       await this.mediaControlService.join(main, join);
+    }
+    if (unJoin.length > 0) {
+      await this.mediaControlService.unJoin(unJoin);
     }
     await this.handlePredefinedGroupConfig(isSelected);
     if (unJoin.includes(this.activePlayer.id)) {
