@@ -197,7 +197,7 @@ export class Grouping extends LitElement {
   }
 
   private cancelGrouping() {
-    this.groupingItems = this.getGroupingItems();
+    this.modifiedItems = [];
   }
 
   private getGroupingItems() {
