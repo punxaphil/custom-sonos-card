@@ -28,8 +28,6 @@ class PlayerHeader extends LitElement {
   static get styles() {
     return css`
       .info {
-        margin: 0.25rem;
-        padding: 0.5rem 3.5rem;
         text-align: center;
       }
 

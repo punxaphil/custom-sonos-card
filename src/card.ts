@@ -174,6 +174,7 @@ export class Card extends LitElement {
       height: `${height}rem`,
       minWidth: `20rem`,
       maxWidth: `${width}rem`,
+      overflow: 'hidden',
     });
   }
 

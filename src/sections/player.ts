@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import '../components/player-controls';
 import '../components/player-header';
@@ -20,11 +20,21 @@ export class Player extends LitElement {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
 
+    const artworkAsBackground = this.config.artworkAsBackground;
+    const backgroundImage = this.getBackgroundImage();
     return html`
-      <div class="container">
-        <sonos-player-header class="header" .store=${this.store}></sonos-player-header>
-        <div class="artwork" style=${this.getBackgroundImage()}></div>
-        <sonos-player-controls class="controls" .store=${this.store}></sonos-player-controls>
+      <div class="container" style=${artworkAsBackground && backgroundImage}>
+        <sonos-player-header
+          class="header"
+          background=${artworkAsBackground || nothing}
+          .store=${this.store}
+        ></sonos-player-header>
+        <div class="artwork" hide=${artworkAsBackground || nothing} style=${backgroundImage}></div>
+        <sonos-player-controls
+          class="controls"
+          background=${artworkAsBackground || nothing}
+          .store=${this.store}
+        ></sonos-player-controls>
       </div>
     `;
   }
@@ -87,15 +97,22 @@ export class Player extends LitElement {
           'artwork'
           'controls';
         min-height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
       }
 
       .header {
         grid-area: header;
+        margin: 0.75rem 3.25rem;
+        padding: 0.5rem;
       }
 
       .controls {
         grid-area: controls;
         overflow-y: auto;
+        margin: 0.25rem;
+        padding: 0.5rem;
       }
 
       .artwork {
@@ -108,6 +125,15 @@ export class Player extends LitElement {
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
+      }
+
+      *[hide] {
+        display: none;
+      }
+
+      *[background] {
+        background-color: rgba(var(--rgb-card-background-color), 0.65);
+        border-radius: 10px;
       }
     `;
   }
