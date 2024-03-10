@@ -105,6 +105,7 @@ export class Player extends LitElement {
         flex-shrink: 0;
         width: 100%;
         height: 100%;
+        min-height: 20rem;
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
