@@ -132,7 +132,7 @@ export class Player extends LitElement {
       }
 
       *[background] {
-        background-color: rgba(var(--rgb-card-background-color), 0.65);
+        background-color: rgba(var(--rgb-card-background-color), 0.9);
         border-radius: 10px;
       }
     `;
