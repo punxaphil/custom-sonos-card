@@ -63,5 +63,5 @@ export function getWidth(config: CardConfig) {
 }
 
 export function getGroupPlayerIds(hassEntity: HassEntity): string[] {
-  return hassEntity.attributes.sonos_group || hassEntity.attributes.group_members || [];
+  return hassEntity.attributes.sonos_group || hassEntity.attributes.group_members || [hassEntity.entity_id];
 }
