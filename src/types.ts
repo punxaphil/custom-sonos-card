@@ -60,6 +60,7 @@ export interface CardConfig extends LovelaceCardConfig {
   dynamicVolumeSliderMax?: number;
   artworkMinHeight?: number;
   artworkAsBackground?: boolean;
+  playerVolumeOnlyAffectsMainPlayer?: boolean;
 }
 
 export interface MediaArtworkOverride {

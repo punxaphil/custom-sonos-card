@@ -38,14 +38,20 @@ class PlayerControls extends LitElement {
                 ${this.config.showAudioInputFormat && until(this.getAudioInputFormat())}
               </div>
             </div>
-            <sonos-volume .store=${this.store} .player=${this.activePlayer}></sonos-volume>
+            <sonos-volume
+              .store=${this.store}
+              .player=${this.activePlayer}
+              .updateMembers=${!this.config.playerVolumeOnlyAffectsMainPlayer}
+            ></sonos-volume>
           `,
         )}
       </div>
     `;
   }
-  private volDown = async () => await this.mediaControlService.volumeDown(this.activePlayer);
-  private volUp = async () => await this.mediaControlService.volumeUp(this.activePlayer);
+  private volDown = async () =>
+    await this.mediaControlService.volumeDown(this.activePlayer, !this.config.playerVolumeOnlyAffectsMainPlayer);
+  private volUp = async () =>
+    await this.mediaControlService.volumeUp(this.activePlayer, !this.config.playerVolumeOnlyAffectsMainPlayer);
 
   private async getAudioInputFormat() {
     const sensors = await this.store.hassService.getRelatedEntities(this.activePlayer, 'sensor');
