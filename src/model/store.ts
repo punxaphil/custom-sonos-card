@@ -108,6 +108,8 @@ export default class Store {
       if (player) {
         result = { player, volume };
       }
+    } else {
+      console.warn(`Player ${pgEntityId} is unavailable`);
     }
     return result;
   }
@@ -147,7 +149,11 @@ export default class Store {
       );
       const isGrouped = groupIds?.length > 1;
       const isMainInGroup = isGrouped && groupIds && groupIds[0] === hassEntity.entity_id;
-      return (!isGrouped || isMainInGroup) && this.hass.states[hassEntity.entity_id]?.state !== 'unavailable';
+      const available = this.hass.states[hassEntity.entity_id]?.state !== 'unavailable';
+      if (!available) {
+        console.warn(`Player ${hassEntity.entity_id} is unavailable`);
+      }
+      return (!isGrouped || isMainInGroup) && available;
     } catch (e) {
       console.error('Failed to determine main player', JSON.stringify(hassEntity), e);
       return false;
