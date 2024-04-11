@@ -23,6 +23,8 @@ class ArtworkOverridesEditor extends BaseEditor {
               ${items?.map((pg, index) => {
                 const itemName =
                   pg.mediaTitleEquals ||
+                  pg.mediaArtistEquals ||
+                  pg.mediaAlbumNameEquals ||
                   pg.mediaContentIdEquals ||
                   pg.mediaChannelEquals ||
                   (pg.ifMissing && 'if missing') ||
