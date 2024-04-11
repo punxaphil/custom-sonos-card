@@ -67,6 +67,8 @@ export interface CardConfig extends LovelaceCardConfig {
 export interface MediaArtworkOverride {
   ifMissing?: boolean;
   mediaTitleEquals?: string;
+  mediaArtistEquals?: string;
+  mediaAlbumNameEquals?: string;
   mediaContentIdEquals?: string;
   mediaChannelEquals?: string;
   imageUrl?: string;
