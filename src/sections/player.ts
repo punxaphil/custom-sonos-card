@@ -68,6 +68,8 @@ export class Player extends LitElement {
       let override = overrides.find(
         (value) =>
           (media_title && media_title === value.mediaTitleEquals) ||
+          (media_artist && media_artist === value.mediaArtistEquals) ||
+          (media_album_name && media_album_name === value.mediaAlbumNameEquals) ||
           (media_channel && media_channel === value.mediaChannelEquals) ||
           (media_content_id && media_content_id === value.mediaContentIdEquals),
       );
