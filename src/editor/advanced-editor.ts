@@ -89,8 +89,8 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
-    name: 'playerVolumeOnlyAffectsMainPlayer',
-    selector: { boolean: {} },
+    name: 'playerVolumeEntityId',
+    selector: { entity: { multiple: false, filter: { domain: 'media_player' } } },
   },
   {
     name: 'dontSwitchPlayerWhenGrouping',

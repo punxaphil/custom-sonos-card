@@ -23,7 +23,7 @@ export class MediaPlayer {
     this.ignoreVolume = !!this.config.entitiesToIgnoreVolumeLevelFor?.includes(this.volumePlayer.id);
   }
 
-  getMember(playerId: string) {
+  getMember(playerId?: string) {
     return this.members.find((member) => member.id === playerId);
   }
 

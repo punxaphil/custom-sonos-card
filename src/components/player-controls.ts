@@ -15,6 +15,7 @@ class PlayerControls extends LitElement {
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
+  private volumePlayer!: MediaPlayer;
 
   render() {
     this.config = this.store.config;
@@ -22,6 +23,7 @@ class PlayerControls extends LitElement {
     this.mediaControlService = this.store.mediaControlService;
 
     const noUpDown = !!this.config.showVolumeUpAndDownButtons && nothing;
+    this.volumePlayer = this.activePlayer.getMember(this.config.playerVolumeEntityId) ?? this.activePlayer;
     return html`
       <div class="main" id="mediaControls">
         ${when(
@@ -40,8 +42,8 @@ class PlayerControls extends LitElement {
             </div>
             <sonos-volume
               .store=${this.store}
-              .player=${this.activePlayer}
-              .updateMembers=${!this.config.playerVolumeOnlyAffectsMainPlayer}
+              .player=${this.volumePlayer}
+              .updateMembers=${!this.config.playerVolumeEntityId}
             ></sonos-volume>
           `,
         )}
@@ -49,9 +51,9 @@ class PlayerControls extends LitElement {
     `;
   }
   private volDown = async () =>
-    await this.mediaControlService.volumeDown(this.activePlayer, !this.config.playerVolumeOnlyAffectsMainPlayer);
+    await this.mediaControlService.volumeDown(this.volumePlayer, !this.config.playerVolumeEntityId);
   private volUp = async () =>
-    await this.mediaControlService.volumeUp(this.activePlayer, !this.config.playerVolumeOnlyAffectsMainPlayer);
+    await this.mediaControlService.volumeUp(this.volumePlayer, !this.config.playerVolumeEntityId);
 
   private async getAudioInputFormat() {
     const sensors = await this.store.hassService.getRelatedEntities(this.activePlayer, 'sensor');
