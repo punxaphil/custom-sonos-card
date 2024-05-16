@@ -7,7 +7,7 @@ import { dispatchActivePlayerId, getGroupingChanges } from '../utils/utils';
 import { listStyle } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import '../components/grouping-button';
-import { PredefinedGroup, PredefinedGroupPlayer } from '../types';
+import { CardConfig, PredefinedGroup, PredefinedGroupPlayer } from '../types';
 import { GroupingItem } from '../model/grouping-item';
 
 export class Grouping extends LitElement {
@@ -20,8 +20,10 @@ export class Grouping extends LitElement {
   private joinedPlayers!: string[];
   @state() modifiedItems: string[] = [];
   @state() selectedPredefinedGroup?: PredefinedGroup;
+  private config!: CardConfig;
 
   render() {
+    this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
     this.mediaPlayerIds = this.store.allMediaPlayers.map((player) => player.id);
@@ -29,10 +31,7 @@ export class Grouping extends LitElement {
     this.notJoinedPlayers = this.getNotJoinedPlayers();
     this.joinedPlayers = this.getJoinedPlayers();
 
-    if (
-      this.store.config.skipApplyButtonWhenGrouping &&
-      (this.modifiedItems.length > 0 || this.selectedPredefinedGroup)
-    ) {
+    if (this.config.skipApplyButtonWhenGrouping && (this.modifiedItems.length > 0 || this.selectedPredefinedGroup)) {
       this.applyGrouping();
     }
 
@@ -69,7 +68,7 @@ export class Grouping extends LitElement {
         <ha-control-button-group
           class="buttons"
           hide=${(this.modifiedItems.length === 0 && !this.selectedPredefinedGroup) ||
-          this.store.config.skipApplyButtonWhenGrouping ||
+          this.config.skipApplyButtonWhenGrouping ||
           nothing}
         >
           <ha-control-button class="apply" @click=${this.applyGrouping}> Apply</ha-control-button>
@@ -191,9 +190,14 @@ export class Grouping extends LitElement {
       await this.mediaControlService.setVolumeAndMediaForPredefinedGroup(this.selectedPredefinedGroup);
     }
 
-    if (newMainPlayer !== activePlayerId && !this.store.config.dontSwitchPlayerWhenGrouping) {
-      dispatchActivePlayerId(newMainPlayer, this.store.config, this);
+    if (newMainPlayer !== activePlayerId && !this.config.dontSwitchPlayerWhenGrouping) {
+      dispatchActivePlayerId(newMainPlayer, this.config, this);
     }
+    // if config entityid is part of unjoin and dontSwitchPlayerWhenGrouping is true, we need to update the active player to config entityid
+    if (this.config.entityId && unJoin.includes(this.config.entityId) && this.config.dontSwitchPlayerWhenGrouping) {
+      dispatchActivePlayerId(this.config.entityId, this.config, this);
+    }
+
     this.modifiedItems = [];
     this.selectedPredefinedGroup = undefined;
   }
