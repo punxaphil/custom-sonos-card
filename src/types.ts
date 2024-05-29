@@ -14,6 +14,7 @@ export enum Section {
   PLAYER = 'player',
   GROUPING = 'grouping',
   VOLUMES = 'volumes',
+  QUEUE = 'queue',
 }
 
 export type ConfigPredefinedGroupPlayer = PredefinedGroupPlayer<string>;
@@ -42,8 +43,10 @@ export interface CardConfig extends LovelaceCardConfig {
   customThumbnail?: CustomThumbnails;
   customThumbnailIfMissing?: CustomThumbnails;
   favoritesToIgnore?: string[];
-  mediaBrowserItemsPerRow?: number;
-  mediaBrowserHideTitleForThumbnailIcons?: boolean;
+  mediaItemsPerRow?: number;
+  mediaBrowserItemsPerRow?: number; // Deprecated
+  mediaHideTitleForThumbnailIcons?: boolean;
+  mediaBrowserHideTitleForThumbnailIcons?: boolean; // Deprecated
   topFavorites?: string[];
   numberOfFavoritesToShow?: number;
   hideBrowseMediaButton?: boolean;
@@ -53,7 +56,8 @@ export interface CardConfig extends LovelaceCardConfig {
   entitiesToIgnoreVolumeLevelFor?: string[];
   replaceHttpWithHttpsForThumbnails?: boolean;
   volumeStepSize?: number;
-  mediaBrowserTitle?: string;
+  mediaTitle?: string;
+  mediaBrowserTitle?: string; // Deprecated
   adjustVolumeRelativeToMainPlayer?: boolean;
   skipApplyButtonWhenGrouping?: boolean;
   hideVolumeCogwheel?: boolean;
@@ -147,4 +151,27 @@ export interface HomeAssistantWithEntities extends HomeAssistant {
   entities: {
     [entity_id: string]: HassEntityExtended;
   };
+}
+
+export interface TodoResponse {
+  response: TodoLists;
+}
+
+export interface TodoLists {
+  [id: string]: TodoList;
+}
+
+export interface TodoList {
+  items: TodoItem[];
+}
+
+export interface TodoItem {
+  summary: string;
+  description: string;
+}
+
+export interface QueueItem {
+  title: string;
+  artist: string;
+  artUri: string;
 }

@@ -1,18 +1,16 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
+import './media-row';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
-import { listStyle, MEDIA_ITEM_SELECTED, mediaBrowserTitleStyle } from '../constants';
-import {
-  itemsWithFallbacks,
-  mediaItemBackgroundImageStyle,
-  renderMediaBrowserItem,
-} from '../utils/media-browser-utils';
+import { listStyle, MEDIA_ITEM_SELECTED, mediaTitleStyle } from '../constants';
+import { itemsWithFallbacks } from '../utils/media-browser-utils';
 
-export class MediaBrowserList extends LitElement {
+export class MediaList extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ type: Array }) items!: MediaPlayerItem[];
+  @property() selected!: number;
   private config!: CardConfig;
 
   render() {
@@ -22,10 +20,11 @@ export class MediaBrowserList extends LitElement {
       <mwc-list multi class="list">
         ${itemsWithFallbacks(this.items, this.config).map((item, index) => {
           return html`
-            ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
-            <mwc-list-item class="button" @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}>
-              <div class="row">${renderMediaBrowserItem(item)}</div>
-            </mwc-list-item>
+            <sonos-media-row
+              @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, { item, index }))}
+              .item=${item}
+              .selected=${this.selected !== undefined && this.selected === index}
+            ></sonos-media-row>
           `;
         })}
       </mwc-list>
@@ -58,10 +57,10 @@ export class MediaBrowserList extends LitElement {
           flex: 1;
         }
       `,
-      mediaBrowserTitleStyle,
+      mediaTitleStyle,
       listStyle,
     ];
   }
 }
 
-customElements.define('sonos-media-browser-list', MediaBrowserList);
+customElements.define('sonos-media-list', MediaList);

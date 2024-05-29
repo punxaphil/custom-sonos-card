@@ -3,12 +3,12 @@ import { property } from 'lit/decorators.js';
 import { MediaPlayerEntityFeature } from '../types';
 import Store from '../model/store';
 
-class MediaBrowserHeader extends LitElement {
+class MediaHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
 
   render() {
     return html`
-      <div class="title">${this.store.config.mediaBrowserTitle ?? 'All Favorites'}</div>
+      <div class="title">${this.store.config.mediaTitle ?? 'All Favorites'}</div>
       <sonos-ha-player
         hide=${this.store.config.hideBrowseMediaButton || nothing}
         .store=${this.store}
@@ -41,4 +41,4 @@ class MediaBrowserHeader extends LitElement {
   }
 }
 
-customElements.define('sonos-media-browser-header', MediaBrowserHeader);
+customElements.define('sonos-media-header', MediaHeader);

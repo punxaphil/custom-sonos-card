@@ -1,10 +1,11 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, MediaPlayerItem, Section, TemplateResult } from '../types';
+import { CardConfig, MediaPlayerItem, QueueItem, Section, TemplateResult, TodoResponse } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { customEvent } from '../utils/utils';
+import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
 
 export default class HassService {
   private readonly hass: HomeAssistant;
@@ -48,7 +49,7 @@ export default class HassService {
     return new Promise<HassEntity[]>(async (resolve, reject) => {
       const subscribeMessage = {
         type: 'render_template',
-        template: "{{ device_entities(device_id('" + player.id + "')) }}",
+        template: `{{ device_entities(device_id('${player.id}')) }}`,
       };
       try {
         const unsubscribe = await this.hass.connection.subscribeMessage<TemplateResult>((response) => {
@@ -63,5 +64,84 @@ export default class HassService {
         reject(e);
       }
     });
+  }
+
+  async getQueue(mediaPlayer: MediaPlayer): Promise<MediaPlayerItem[]> {
+    const entityId = 'todo.sonos_queues';
+    const ret = await this.hass.callWS<TodoResponse>({
+      type: 'call_service',
+      domain: 'todo',
+      service: 'get_items',
+      target: {
+        entity_id: entityId,
+      },
+      service_data: {
+        status: 'needs_action',
+      },
+      return_response: true,
+    });
+
+    const responseElement = ret.response[entityId];
+    const queueJson = responseElement.items.filter((value) => value.summary === mediaPlayer.name)[0]?.description;
+    if (queueJson) {
+      const queueItems = JSON.parse(queueJson) as QueueItem[];
+      return queueItems.map((item) => {
+        return {
+          title: `${item.artist} - ${item.title}`,
+        };
+      });
+    } else {
+      return [];
+    }
+  }
+
+  async playQueue(mediaPlayer: MediaPlayer, queuePosition: number) {
+    this.card.dispatchEvent(customEvent(CALL_MEDIA_STARTED, { section: this.currentSection }));
+    try {
+      await this.hass.callService('sonos', 'play_queue', {
+        entity_id: mediaPlayer.id,
+        queue_position: queuePosition,
+      });
+    } finally {
+      this.card.dispatchEvent(customEvent(CALL_MEDIA_DONE));
+    }
+  }
+
+  async getFavorites(player: MediaPlayer): Promise<MediaPlayerItem[]> {
+    if (!player) {
+      return [];
+    }
+    let favorites = await this.getFavoritesForPlayer(player);
+    favorites = favorites.flatMap((f) => f);
+    favorites = this.removeDuplicates(favorites);
+    favorites = favorites.length ? favorites : this.getFavoritesFromStates(player);
+    return favorites.filter(
+      (item) => indexOfWithoutSpecialChars(this.config.favoritesToIgnore ?? [], item.title) === -1,
+    );
+  }
+
+  private removeDuplicates(items: MediaPlayerItem[]) {
+    return items.filter((item, index, all) => {
+      return index === all.findIndex((current) => current.title === item.title);
+    });
+  }
+
+  private async getFavoritesForPlayer(player: MediaPlayer) {
+    try {
+      const favoritesRoot = await this.browseMedia(player, 'favorites', '');
+      const favoriteTypesPromise = favoritesRoot.children?.map((favoriteItem) =>
+        this.browseMedia(player, favoriteItem.media_content_type, favoriteItem.media_content_id),
+      );
+      const favoriteTypes = favoriteTypesPromise ? await Promise.all(favoriteTypesPromise) : [];
+      return favoriteTypes.flatMap((item) => item.children ?? []);
+    } catch (e) {
+      console.log(`Custom Sonos Card: error getting favorites for player ${player.id}: ${JSON.stringify(e)}`);
+      return [];
+    }
+  }
+
+  private getFavoritesFromStates(mediaPlayer: MediaPlayer) {
+    const titles = mediaPlayer.attributes.hasOwnProperty('source_list') ? mediaPlayer.attributes.source_list : [];
+    return titles.map((title: string) => ({ title }));
   }
 }

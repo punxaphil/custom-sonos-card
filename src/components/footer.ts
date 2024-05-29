@@ -1,18 +1,22 @@
 import { css, html, LitElement, nothing } from 'lit';
 
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import { CardConfig, Section } from '../types';
 import { customEvent } from '../utils/utils';
-import { mdiCastVariant, mdiHome, mdiSpeakerMultiple, mdiStarOutline, mdiTune } from '@mdi/js';
+import { mdiCastVariant, mdiHome, mdiQueueFirstInLastOut, mdiSpeakerMultiple, mdiStarOutline, mdiTune } from '@mdi/js';
 import { SHOW_SECTION } from '../constants';
+import Store from '../model/store';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 
 class Footer extends LitElement {
-  @property({ attribute: false }) config!: CardConfig;
+  @property({ attribute: false }) store!: Store;
   @property() section!: Section;
 
+  @state() config!: CardConfig;
+
   render() {
+    this.config = this.store.config;
     return html`
       <ha-icon-button
         hide=${this.hide(PLAYER)}
@@ -44,6 +48,12 @@ class Footer extends LitElement {
         @click=${() => this.dispatchSection(VOLUMES)}
         selected=${this.selected(VOLUMES)}
       ></ha-icon-button>
+      <ha-icon-button
+        hide=${this.hide(QUEUE)}
+        .path=${mdiQueueFirstInLastOut}
+        @click=${() => this.dispatchSection(QUEUE)}
+        selected=${this.selected(QUEUE)}
+      ></ha-icon-button>
     `;
   }
 
@@ -55,8 +65,12 @@ class Footer extends LitElement {
     return this.section === section || nothing;
   }
 
-  private hide(searchElement: Section) {
-    return (this.config.sections && !this.config.sections?.includes(searchElement)) || nothing;
+  private hide(section: Section) {
+    return (
+      (this.config.sections && !this.config.sections?.includes(section)) ||
+      !!this.store.hass.states['todo.sonos_queue'] ||
+      nothing
+    );
   }
 
   static get styles() {

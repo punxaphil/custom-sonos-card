@@ -11,7 +11,7 @@ import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { cardDoesNotContainAllSections, getHeight, getWidth } from './utils/utils';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 const TITLE_HEIGHT = 2;
 const FOOTER_HEIGHT = 5;
 
@@ -64,13 +64,15 @@ export class Card extends LitElement {
                   [
                     MEDIA_BROWSER,
                     () => html`
-                      <sonos-media-browser
-                        .store=${this.store}
-                        @item-selected=${this.onMediaItemSelected}
-                      ></sonos-media-browser>
+                      <sonos-media .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-media>
                     `,
                   ],
                   [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+                  [
+                    QUEUE,
+                    () =>
+                      html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
+                  ],
                 ])
               : html`<div class="no-players">No supported players found</div>`
           }
@@ -80,7 +82,7 @@ export class Card extends LitElement {
           () =>
             html`<sonos-footer
               style=${this.footerStyle()}
-              .config=${this.config}
+              .store=${this.store}
               .section=${this.section}
               @show-section=${this.showSectionListener}
             >
@@ -209,11 +211,17 @@ export class Card extends LitElement {
             ? GROUPS
             : sections.includes(GROUPING)
               ? GROUPING
-              : VOLUMES;
+              : sections.includes(QUEUE)
+                ? QUEUE
+                : VOLUMES;
     } else {
       this.section = PLAYER;
     }
-    newConfig.mediaBrowserItemsPerRow = newConfig.mediaBrowserItemsPerRow || 4;
+    // Deprecated
+    newConfig.mediaItemsPerRow = newConfig.mediaItemsPerRow || newConfig.mediaBrowserItemsPerRow || 4;
+    newConfig.mediaHideTitleForThumbnailIcons =
+      newConfig.mediaHideTitleForThumbnailIcons || newConfig.mediaBrowserHideTitleForThumbnailIcons;
+    newConfig.mediaTitle = newConfig.mediaTitle || newConfig.mediaBrowserTitle;
     this.config = newConfig;
   }
 

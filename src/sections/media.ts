@@ -1,52 +1,52 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import '../components/media-browser-list';
-import '../components/media-browser-icons';
-import '../components/media-browser-header';
+import '../components/media-list';
+import '../components/media-icons';
+import '../components/media-header';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
-import MediaBrowseService from '../services/media-browse-service';
 import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
 import { MEDIA_ITEM_SELECTED } from '../constants';
+import HassService from '../services/hass-service';
 
-export class MediaBrowser extends LitElement {
+export class Media extends LitElement {
   @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
-  private mediaBrowseService!: MediaBrowseService;
+  private hassService!: HassService;
 
   render() {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
-    this.mediaBrowseService = this.store.mediaBrowseService;
+    this.hassService = this.store.hassService;
     this.mediaControlService = this.store.mediaControlService;
 
     return html`
-      <sonos-media-browser-header .store=${this.store}></sonos-media-browser-header>
+      <sonos-media-header .store=${this.store}></sonos-media-header>
 
       ${this.activePlayer &&
       until(
         this.getFavorites(this.activePlayer).then((items) => {
           if (items?.length) {
-            return (this.config.mediaBrowserItemsPerRow ?? 4) > 1
+            return (this.config.mediaItemsPerRow ?? 4) > 1
               ? html`
-                  <sonos-media-browser-icons
+                  <sonos-media-icons
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onMediaItemSelected}
-                  ></sonos-media-browser-icons>
+                  ></sonos-media-icons>
                 `
               : html`
-                  <sonos-media-browser-list
+                  <sonos-media-list
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onMediaItemSelected}
-                  ></sonos-media-browser-list>
+                  ></sonos-media-list>
                 `;
           } else {
             return html`<div class="no-items">No favorites found</div>`;
@@ -57,9 +57,9 @@ export class MediaBrowser extends LitElement {
   }
 
   private onMediaItemSelected = (event: Event) => {
-    const mediaItem = (event as CustomEvent).detail;
+    const mediaItem = (event as CustomEvent).detail.item;
     this.playItem(mediaItem);
-    this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, mediaItem));
+    this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED));
   };
 
   private async playItem(mediaItem: MediaPlayerItem) {
@@ -71,11 +71,11 @@ export class MediaBrowser extends LitElement {
   }
 
   private async getFavorites(player: MediaPlayer) {
-    let favorites = await this.mediaBrowseService.getFavorites(player);
+    let favorites = await this.hassService.getFavorites(player);
     favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
     favorites = [
-      ...(this.config.customSources?.[this.activePlayer.id]?.map(MediaBrowser.createSource) || []),
-      ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
+      ...(this.config.customSources?.[this.activePlayer.id]?.map(Media.createSource) || []),
+      ...(this.config.customSources?.all?.map(Media.createSource) || []),
       ...favorites,
     ];
     return this.config.numberOfFavoritesToShow ? favorites.slice(0, this.config.numberOfFavoritesToShow) : favorites;

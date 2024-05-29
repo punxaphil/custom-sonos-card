@@ -2,15 +2,11 @@ import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
-import { customEvent } from '../utils/utils';
-import { MEDIA_ITEM_SELECTED, mediaBrowserTitleStyle } from '../constants';
-import {
-  itemsWithFallbacks,
-  mediaItemBackgroundImageStyle,
-  renderMediaBrowserItem,
-} from '../utils/media-browser-utils';
+import { customEvent, renderThumbnailAndTitle } from '../utils/utils';
+import { MEDIA_ITEM_SELECTED, mediaTitleStyle } from '../constants';
+import { itemsWithFallbacks } from '../utils/media-browser-utils';
 
-export class MediaBrowserIcons extends LitElement {
+export class MediaIcons extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ attribute: false }) items!: MediaPlayerItem[];
   private config!: CardConfig;
@@ -21,18 +17,21 @@ export class MediaBrowserIcons extends LitElement {
     return html`
       <style>
         :host {
-          --items-per-row: ${this.config.mediaBrowserItemsPerRow};
+          --items-per-row: ${this.config.mediaItemsPerRow};
         }
       </style>
       <div class="icons">
         ${itemsWithFallbacks(this.items, this.config).map(
           (item, index) => html`
-            ${mediaItemBackgroundImageStyle(item.thumbnail, index)}
             <ha-control-button
               class="button"
-              @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
+              @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, { item, index }))}
             >
-              ${renderMediaBrowserItem(item, !item.thumbnail || !this.config.mediaBrowserHideTitleForThumbnailIcons)}
+              ${renderThumbnailAndTitle(
+                item.thumbnail,
+                item.title,
+                !item.thumbnail || !this.config.mediaHideTitleForThumbnailIcons,
+              )}
             </ha-control-button>
           `,
         )}
@@ -41,7 +40,7 @@ export class MediaBrowserIcons extends LitElement {
   }
   static get styles() {
     return [
-      mediaBrowserTitleStyle,
+      mediaTitleStyle,
       css`
         .icons {
           display: flex;
@@ -78,4 +77,4 @@ export class MediaBrowserIcons extends LitElement {
   }
 }
 
-customElements.define('sonos-media-browser-icons', MediaBrowserIcons);
+customElements.define('sonos-media-icons', MediaIcons);

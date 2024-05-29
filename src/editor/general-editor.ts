@@ -15,7 +15,7 @@ export const GENERAL_SCHEMA = [
   },
   {
     type: 'integer',
-    name: 'mediaBrowserItemsPerRow',
+    name: 'mediaItemsPerRow',
     default: 4,
     required: true,
     valueMin: 1,

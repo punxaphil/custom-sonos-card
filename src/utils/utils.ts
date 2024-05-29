@@ -3,6 +3,8 @@ import { CardConfig, PredefinedGroup, Section } from '../types';
 import { ACTIVE_PLAYER_EVENT, ACTIVE_PLAYER_EVENT_INTERNAL } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import { GroupingItem } from '../model/grouping-item';
+import { html } from 'lit';
+import { styleMap } from 'lit-html/directives/style-map.js';
 
 export function getSpeakerList(mainPlayer: MediaPlayer, predefinedGroups: PredefinedGroup[] = []) {
   const playerIds = mainPlayer.members.map((member) => member.id).sort();
@@ -82,4 +84,11 @@ export function getGroupingChanges(groupingItems: GroupingItem[], joinedPlayers:
     newMainPlayer = isSelected[0].player.id;
   }
   return { unJoin, join, newMainPlayer };
+}
+
+export function renderThumbnailAndTitle(thumbnail: string | undefined, title: string, showTitle = true) {
+  return html`
+    <div class="thumbnail" ?hidden=${!thumbnail} style=${styleMap({ backgroundImage: `url(${thumbnail})` })}></div>
+    <div class="title" ?hidden=${!showTitle}>${title}</div>
+  `;
 }

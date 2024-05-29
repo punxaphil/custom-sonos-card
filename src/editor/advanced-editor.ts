@@ -49,14 +49,14 @@ export const ADVANCED_SCHEMA = [
   },
   {
     type: 'string',
-    name: 'mediaBrowserTitle',
+    name: 'mediaTitle',
   },
   {
     type: 'string',
     name: 'artworkHostname',
   },
   {
-    name: 'mediaBrowserHideTitleForThumbnailIcons',
+    name: 'mediaHideTitleForThumbnailIcons',
     selector: { boolean: {} },
   },
   {
