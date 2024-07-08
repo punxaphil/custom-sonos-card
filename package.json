@@ -20,7 +20,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@typescript-eslint/eslint-plugin": "^7.14.0",
     "@typescript-eslint/parser": "^7.13.1",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^2.0.1",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -34,7 +34,7 @@
     "rollup-plugin-typescript2": "^0.36.0",
     "typescript": "^5.5.2",
     "vite": "^5.3.1",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.1"
   },
   "scripts": {
     "start": "rollup -c --watch",
