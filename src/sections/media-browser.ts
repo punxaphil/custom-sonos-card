@@ -1,17 +1,17 @@
-import { css, html, LitElement } from 'lit';
-import { property } from 'lit/decorators.js';
-import '../components/media-browser-list';
-import '../components/media-browser-icons';
-import '../components/media-browser-header';
-import MediaControlService from '../services/media-control-service';
-import Store from '../model/store';
-import { CardConfig, MediaPlayerItem } from '../types';
-import { customEvent } from '../utils/utils';
-import { MediaPlayer } from '../model/media-player';
-import { until } from 'lit-html/directives/until.js';
-import MediaBrowseService from '../services/media-browse-service';
-import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
-import { MEDIA_ITEM_SELECTED } from '../constants';
+import { css, html, LitElement } from 'lit'
+import { property } from 'lit/decorators.js'
+import '../components/media-browser-list'
+import '../components/media-browser-icons'
+import '../components/media-browser-header'
+import MediaControlService from '../services/media-control-service'
+import Store from '../model/store'
+import { CardConfig, MediaPlayerItem } from '../types'
+import { customEvent } from '../utils/utils'
+import { MediaPlayer } from '../model/media-player'
+import { until } from 'lit-html/directives/until.js'
+import MediaBrowseService from '../services/media-browse-service'
+import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils'
+import { MEDIA_ITEM_SELECTED } from '../constants'
 
 export class MediaBrowser extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -33,8 +33,6 @@ export class MediaBrowser extends LitElement {
       until(
         this.getFavorites(this.activePlayer).then((items) => {
           if (items?.length) {
-            const itemsPerRow = this.config.mediaBrowserItemsPerRow || 4;
-            if (itemsPerRow > 1) {
               return html`
                 <sonos-media-browser-icons
                   .items=${items}
@@ -42,15 +40,6 @@ export class MediaBrowser extends LitElement {
                   @item-selected=${this.onMediaItemSelected}
                 ></sonos-media-browser-icons>
               `;
-            } else {
-              return html`
-                <sonos-media-browser-list
-                  .items=${items}
-                  .store=${this.store}
-                  @item-selected=${this.onMediaItemSelected}
-                ></sonos-media-browser-list>
-              `;
-            }
           } else {
             return html`<div class="no-items">No favorites found</div>`;
           }
