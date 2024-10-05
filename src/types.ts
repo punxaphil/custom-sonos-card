@@ -22,6 +22,11 @@ export type CalculateVolume = (member: MediaPlayer, volumeStepSize: number) => n
 
 export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
+  hidePlayerControlRepeatButton?: boolean;
+  hidePlayerControlShuffleButton?: boolean;
+  hidePlayerControlNextTrackButton?: boolean;
+  hidePlayerControlPrevTrackButton?: boolean;
+  hidePlayerControlPowerButton?: boolean;
   showVolumeUpAndDownButtons?: boolean;
   entityId?: string;
   entities?: string[];

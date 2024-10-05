@@ -30,6 +30,26 @@ export const GENERAL_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'hidePlayerControlPowerButton',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'hidePlayerControlShuffleButton',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'hidePlayerControlPrevTrackButton',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'hidePlayerControlNextTrackButton',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'hidePlayerControlRepeatButton',
+    selector: { boolean: {} },
+  },
+  {
     type: 'integer',
     name: 'widthPercentage',
     default: 100,

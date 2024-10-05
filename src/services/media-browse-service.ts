@@ -40,7 +40,7 @@ export default class MediaBrowseService {
       const favoriteTypes = favoriteTypesPromise ? await Promise.all(favoriteTypesPromise) : [];
       return favoriteTypes.flatMap((item) => item.children ?? []);
     } catch (e) {
-      console.log('Custom Sonos Card: error getting favorites for player ' + player.id + ': ' + JSON.stringify(e));
+      console.log(`Sonos Card: error getting favorites for player ${player.id}: ${JSON.stringify(e)}`);
       return [];
     }
   }

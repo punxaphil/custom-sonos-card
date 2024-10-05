@@ -6,13 +6,10 @@ import { MediaBrowser } from './sections/media-browser';
 import './sections/volumes';
 import './components/ha-player';
 
-const name = (type?: string) => `Sonos${type ? ` (${type})` : ''}`;
-const desc = (type?: string) => `Media player for your Sonos speakers${type ? ` (${type})` : ''}`;
-
 window.customCards.push({
   type: 'sonos-card',
-  name: name(),
-  description: desc(),
+  name: 'Sonos',
+  description: 'Media player for your Sonos speakers',
   preview: true,
 });
 

@@ -2,11 +2,9 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
-import { CardConfig, MediaPlayerEntityFeature } from '../types';
+import { CardConfig } from '../types';
 import { mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
-
-const { TURN_ON, TURN_OFF } = MediaPlayerEntityFeature;
 
 class Volume extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -26,8 +24,6 @@ class Volume extends LitElement {
 
     const muteIcon = this.player.isMuted(this.updateMembers) ? mdiVolumeMute : mdiVolumeHigh;
     const disabled = this.player.ignoreVolume;
-    const supportsTurnOn = (this.player.attributes.supported_features || 0) & TURN_ON;
-    const showPowerButton = supportsTurnOn && nothing;
 
     return html`
       <div class="volume" slim=${this.slim || nothing}>
@@ -47,11 +43,7 @@ class Volume extends LitElement {
           </div>
         </div>
         <div class="percentage-slim" hide=${this.slim && nothing}>${volume}%</div>
-        <sonos-ha-player
-          hide=${showPowerButton}
-          .store=${this.store}
-          .features=${[TURN_ON, TURN_OFF]}
-        ></sonos-ha-player>
+        <sonos-ha-player .store=${this.store} .features=${this.store.showPower()}></sonos-ha-player>
       </div>
     `;
   }
