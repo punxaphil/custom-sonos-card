@@ -218,6 +218,10 @@ export class Card extends LitElement {
     if (newConfig.entities?.length && newConfig.entities[0].entity) {
       newConfig.entities = newConfig.entities.map((entity: { entity: string }) => entity.entity);
     }
+    newConfig.entityPlatform = 'sonos'; //#ONLY_SONOS_CARD
+    if (newConfig.showNonSonosPlayers /*#ONLY_SONOS_CARD*/) {
+      newConfig.entityPlatform = undefined; //#ONLY_SONOS_CARD
+    } //#ONLY_SONOS_CARD
     this.config = newConfig;
   }
 

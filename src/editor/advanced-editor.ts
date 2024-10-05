@@ -3,6 +3,11 @@ import { BaseEditor } from './base-editor';
 
 export const ADVANCED_SCHEMA = [
   {
+    name: 'entityPlatform',
+    help: 'Show all media players for the selected platform',
+    type: 'string',
+  },
+  {
     name: 'hideGroupCurrentTrack',
     selector: { boolean: {} },
   },

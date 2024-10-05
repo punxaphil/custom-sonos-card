@@ -18,12 +18,13 @@ export const ENTITIES_RENAME_SCHEMA = [
   },
 ];
 
+const SHOW_NON_SONOS_PLAYERS = {
+  name: 'showNonSonosPlayers',
+  help: 'Show all media players, including those that are not on the Sonos platform',
+  selector: { boolean: {} },
+};
 export const ENTITIES_SCHEMA = [
-  {
-    name: 'showNonSonosPlayers',
-    help: 'Show all media players, including those that are not on the Sonos platform',
-    selector: { boolean: {} },
-  },
+  SHOW_NON_SONOS_PLAYERS, //#ONLY_SONOS_CARD
   {
     name: 'entityId',
     help: 'Not needed, but forces this player to be the selected one on loading the card (overrides url param etc)',
