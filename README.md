@@ -1,11 +1,11 @@
-# Sonos card for Home Assistant's Dashboard UI
+# Sonos Card
 
-Media player card for Sonos speakers!
+Sonos Card for Home Assistant UI with a focus on managing multiple media players!
 
 ## Features:
 
 * Group/Ungroup speakers
-* Control multiple speaker
+* Control multiple speakers
 * Play favorites from list
 * Media browser button
 * Control individual volumes in a group
@@ -31,23 +31,34 @@ Do you like the Sonos Card? Support the project with a coffee ☕️
 
 [![BMC](https://www.buymeacoffee.com/assets/img/custom_images/white_img.png)](https://www.buymeacoffee.com/punxaphil)
 
-## Installation
+# Installation
+## With HACS (recommended)
+<!-- //#ONLY_SONOS_CARD
+1. Download HACS following the instructions on https://hacs.xyz/docs/setup/download
+1. Proceed to the initial configuration following the instructions on https://hacs.xyz/docs/configuration/basic
+1. On your sidebar go to HACS > Frontend
+1. click on the icon at the right top corner then on Custom repositories
+1. For the repository add this: https://github.com/punxaphil/maxi-media-player
+1. For the category select Lovelace then click Add
+1. Now click on Maxi Media Player then on the Dowload button
+1. Go back on your dashboard and click on the icon at the right top corner then on Edit dashboard
+1. You can now click on Add card in the bottom right corner and search for Maxi Media Player
 
-### HACS
+Coming soon in the HACS default repo (still waiting for validation).
+--> <!-- //#ONLY_SONOS_CARD -->
+Recommended way of installing this card is with HACS (Home Assistant Community Store).<!-- //#ONLY_SONOS_CARD -->
 
-Recommended way of installing this card is with HACS (Home Assistant Community Store).
-
-### Manual
-
-Download the resources, as you would do with all other modules.
-
-Add the custom card as a module, like this:
-
-```yaml
-resources:
-  - url: /local/custom-sonos-card.js?v=1.0
-    type: module
-```
+## Without HACS
+1. Download this file: custom-sonos-card.js
+1. Add this file into your <config>/www folder
+1. On your dashboard click on the icon at the right top corner then on Edit dashboard
+1. Click again on that icon and then on Manage resources
+1. Click on Add resource
+1. Copy and paste this: /local/custom-sonos-card.js?v=1
+1. Click on JavaScript Module then Create
+1. Go back and refresh your page
+1. You can now click on Add card in the bottom right corner and search for Maxi Media Player
+1. After any update of the file you will have to edit /local/custom-sonos-card.js?v=1 and change the version to any higher number
 
 ## Usage
 
@@ -58,8 +69,7 @@ By default, all sections of the card is available, and you can jump between them
 However, you can also select individual sections to enable. Use this if you want to show the different sections next to
 each other (by adding multiple instances of the card with different sections enabled).
 
-By using the section configuration you can utilise the full power of Home Assistant's layout capabilities and also drag
-in other cards in your Sonos Dashboard view.
+By using the section configuration you can utilise the full power of Home Assistant's layout capabilities and also drag in other cards in your Dashboard view.
 
 ### Configuration
 
@@ -67,10 +77,33 @@ Use the Visual Editor in Home Assistant to configure the card. Most options are 
 
 ### Configuration in YAML
 
+<!-- //#ONLY_SONOS_CARD
+```yaml
+type: custom:maxi-media-player
+entities: # Required unless you specify entityPlatform
+  - media_player.kitchen_player
+  - media_player.hallway_player
+  - media_player.bedroom_player
+  - media_player.livingroom_player
+excludeItemsInEntitiesList: true # Will invert the selection in the `entities` list, so that all players that are not in the list will be used.
+entityPlatform: sonos # will select all entities for this platform. Will override the `entities` list if set.
+```
+--> <!-- //#ONLY_SONOS_CARD -->
+<!-- //#ONLY_SONOS_CARD_START -->
 ```yaml
 type: custom:sonos-card
-# All settings below are optional
+entities: # Entities are automatically discovered if you don't supply this setting
+  - media_player.sonos_kitchen
+  - media_player.sonos_hallway
+  - media_player.sonos_bedroom
+  - media_player.sonos_livingroom
+excludeItemsInEntitiesList: true # Will invert the selection in the `entities` list, so that all players that are not in the list will be used.
+showNonSonosPlayers: true # default is false, which means only Sonos players will be shown.
+```
+<!-- //#ONLY_SONOS_CARD_END -->
 
+All settings below are optional
+```yaml
 # common for all sections
 title: ''
 sections: # see explanation further up
@@ -81,16 +114,9 @@ sections: # see explanation further up
   - player
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
 heightPercentage: 75 # default is 100. Use this to change the height of the card. Set to 'auto' to make the card height adjust to the content.
-entityId: media_player.sonos_bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)
-entityNameRegexToReplace: 'SONOS ' # Regex pattern to replace parts of the entity names
+entityId: media_player.bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)
+entityNameRegexToReplace: ' PLAYER' # Regex pattern to replace parts of the entity names
 entityNameReplacement: ''
-entities: # Entities are automatically discovered if you don't supply this setting
-  - media_player.sonos_kitchen
-  - media_player.sonos_hallway
-  - media_player.sonos_bedroom
-  - media_player.sonos_livingroom
-excludeItemsInEntitiesList: true # Will invert the selection in the `entities` list, so that all players that are not in the list will be used.
-showNonSonosPlayers: true # default is false, which means only Sonos players will be shown.
 volumeStepSize: 1 # Use this to change the step size when using volume up/down. Default is to use the step size of Home Assistant's media player integration. 
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.
 
@@ -122,6 +148,11 @@ skipApplyButtonWhenGrouping: true # default is false. Will skip the apply button
 dontSwitchPlayerWhenGrouping: true # default is false. Will not switch to another player if main player is ungrouped.
 
 # player specific
+hidePlayerControlNextTrackButton: true # default is false, hides player control next track button.
+hidePlayerControlPrevTrackButton: true # default is false, hides player control previous track button.
+hidePlayerControlRepeatButton: true # default is false, hides player control track repeat mode button.
+hidePlayerControlShuffleButton: true # default is false, hides player control track shuffle mode button.
+hidePlayerControlPowerButton: true # default is false, hides player control power button if media player TURN_ON feature is enabled.  This setting does nothing if media player TURN_ON feature is not supported.
 showVolumeUpAndDownButtons: true # default is false, shows buttons for increasing and decreasing volume
 labelWhenNoMediaIsSelected: 'No media selected'
 labelForTheAllVolumesSlider: 'All volumes'
@@ -129,7 +160,7 @@ mediaArtworkOverrides: # Show your own selected artwork if certain rules match
   - mediaTitleEquals: TV
     imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
     sizePercentage: 40
-  - mediaContentIdEquals: "x-sonos-htastream:RINCON_949F3EC2E15B01400:spdif"
+  - mediaContentIdEquals: "x-htastream:RINCON_949F3EC2E15B01400:spdif"
     imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108783.png
   - mediaTitleEquals: p4malmo-aac-192
     imageUrl: >-
@@ -265,6 +296,7 @@ The above YAML renders the following:
 
 ![styling.png](https://github.com/punxaphil/custom-sonos-card/raw/master/img/styling.png)
 
+<!-- //#ONLY_SONOS_CARD_START -->
 ### More card_mod examples
 
 ### Example 1
@@ -684,7 +716,7 @@ card_mod:
       }
 ```
 
-### Example 23 - Increase entity font 
+### Example 23 - Increase entity font
 ```
 card_mod:
   style:
@@ -693,3 +725,4 @@ card_mod:
         font-size: 12px !important;
       }
 ```
+<!-- //#ONLY_SONOS_CARD_END -->
