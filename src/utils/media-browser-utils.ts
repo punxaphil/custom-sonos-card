@@ -55,16 +55,6 @@ export function itemsWithFallbacks(mediaPlayerItems: MediaPlayerItem[], config: 
   });
 }
 
-export function mediaItemBackgroundImageStyle(thumbnail: string, index: number) {
-  return html`
-    <style>
-      .button:nth-of-type(${index + 1}) .thumbnail {
-        background-image: url(${thumbnail});
-      }
-    </style>
-  `;
-}
-
 export function renderMediaBrowserItem(item: MediaPlayerItem, showTitle = true) {
   return html`
     <div class="thumbnail" ?hidden=${!item.thumbnail} style="background-image: url(${item.thumbnail})"></div>

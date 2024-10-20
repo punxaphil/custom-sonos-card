@@ -3,8 +3,8 @@ import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
-import { listStyle, MEDIA_ITEM_SELECTED, mediaBrowserTitleStyle } from '../constants';
-import { itemsWithFallbacks, renderMediaBrowserItem } from '../utils/media-browser-utils';
+import { listStyle, MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../constants';
+import { itemsWithFallbacks } from '../utils/media-browser-utils';
 
 export class MediaBrowserList extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -18,9 +18,10 @@ export class MediaBrowserList extends LitElement {
       <mwc-list multi class="list">
         ${itemsWithFallbacks(this.items, this.config).map((item) => {
           return html`
-            <mwc-list-item class="button" @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}>
-              <div class="row">${renderMediaBrowserItem(item)}</div>
-            </mwc-list-item>
+            <sonos-media-row
+              @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
+              .item=${item}
+            ></sonos-media-row>
           `;
         })}
       </mwc-list>
@@ -53,7 +54,7 @@ export class MediaBrowserList extends LitElement {
           flex: 1;
         }
       `,
-      mediaBrowserTitleStyle,
+      mediaItemTitleStyle,
       listStyle,
     ];
   }

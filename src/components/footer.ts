@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { CardConfig, Section } from '../types';
 import './section-button';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 
 class Footer extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
@@ -17,6 +17,7 @@ class Footer extends LitElement {
       [GROUPS, icons?.groups ?? 'mdi:speaker-multiple'],
       [GROUPING, icons?.grouping ?? 'mdi:checkbox-multiple-marked-circle-outline'],
       [VOLUMES, icons?.volumes ?? 'mdi:tune'],
+      [QUEUE, icons?.queue ?? 'mdi:queue-first-in-last-out'],
     ];
     sections = sections.filter(([section]) => !this.config.sections || this.config.sections?.includes(section));
     return html`
