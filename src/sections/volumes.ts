@@ -12,7 +12,7 @@ import { HassEntity } from 'home-assistant-js-websocket';
 
 const { SELECT_SOURCE } = MediaPlayerEntityFeature;
 
-class Volumes extends LitElement {
+export class Volumes extends LitElement {
   @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
@@ -152,5 +152,3 @@ class Volumes extends LitElement {
     `;
   }
 }
-
-customElements.define('sonos-volumes', Volumes);

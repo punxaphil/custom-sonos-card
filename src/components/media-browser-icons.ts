@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
-import { MEDIA_ITEM_SELECTED, mediaBrowserTitleStyle } from '../constants';
+import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../constants';
 import { itemsWithFallbacks, renderMediaBrowserItem } from '../utils/media-browser-utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
@@ -43,7 +43,7 @@ export class MediaBrowserIcons extends LitElement {
 
   static get styles() {
     return [
-      mediaBrowserTitleStyle,
+      mediaItemTitleStyle,
       css`
         .icons {
           display: flex;
