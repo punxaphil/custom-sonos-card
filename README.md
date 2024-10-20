@@ -235,6 +235,9 @@ mediaBrowserTitle: My favorites # default is 'All favorites'. Use this to change
 
 # volumes specific
 hideVolumeCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
+
+# queue specific
+queueTitle: Songs # default is 'Play Queue'. Use this to change the title for the queue section.
 ```
 
 ## Using individual section cards

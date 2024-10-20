@@ -21,7 +21,7 @@ export const listStyle = css`
   }
 `;
 
-export const mediaBrowserTitleStyle = css`
+export const mediaItemTitleStyle = css`
   .title {
     color: var(--secondary-text-color);
     font-weight: bold;

@@ -57,6 +57,10 @@ export const ADVANCED_SCHEMA = [
     type: 'string',
   },
   {
+    name: 'queueTitle',
+    type: 'string',
+  },
+  {
     name: 'artworkHostname',
     type: 'string',
   },

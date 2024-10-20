@@ -11,7 +11,7 @@ import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { cardDoesNotContainAllSections, getHeight, getWidth, isSonosCard } from './utils/utils';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 const TITLE_HEIGHT = 2;
 const FOOTER_HEIGHT = 5;
 
@@ -71,6 +71,11 @@ export class Card extends LitElement {
                     `,
                   ],
                   [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+                  [
+                    QUEUE,
+                    () =>
+                      html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
+                  ],
                 ])
               : html`<div class="no-players">No supported players found</div>`
           }
@@ -199,8 +204,10 @@ export class Card extends LitElement {
         delete newConfig[key];
       }
     }
-    const sections = newConfig.sections;
-    if (sections) {
+    const sections = newConfig.sections || Object.values(Section);
+    if (newConfig.startSection && sections.includes(newConfig.startSection)) {
+      this.section = newConfig.startSection;
+    } else if (sections) {
       this.section = sections.includes(PLAYER)
         ? PLAYER
         : sections.includes(MEDIA_BROWSER)
@@ -209,10 +216,13 @@ export class Card extends LitElement {
             ? GROUPS
             : sections.includes(GROUPING)
               ? GROUPING
-              : VOLUMES;
+              : sections.includes(QUEUE)
+                ? QUEUE
+                : VOLUMES;
     } else {
       this.section = PLAYER;
     }
+
     newConfig.mediaBrowserItemsPerRow = newConfig.mediaBrowserItemsPerRow || 4;
     // support custom:auto-entities
     if (newConfig.entities?.length && newConfig.entities[0].entity) {
