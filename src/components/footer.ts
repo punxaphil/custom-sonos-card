@@ -16,8 +16,8 @@ class Footer extends LitElement {
       [MEDIA_BROWSER, icons?.mediaBrowser ?? 'mdi:star-outline'],
       [GROUPS, icons?.groups ?? 'mdi:speaker-multiple'],
       [GROUPING, icons?.grouping ?? 'mdi:checkbox-multiple-marked-circle-outline'],
-      [VOLUMES, icons?.volumes ?? 'mdi:tune'],
       [QUEUE, icons?.queue ?? 'mdi:queue-first-in-last-out'],
+      [VOLUMES, icons?.volumes ?? 'mdi:tune'],
     ];
     sections = sections.filter(([section]) => !this.config.sections || this.config.sections?.includes(section));
     return html`
