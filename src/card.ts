@@ -186,7 +186,7 @@ export class Card extends LitElement {
   footerStyle() {
     return styleMap({
       height: `${FOOTER_HEIGHT}rem`,
-      paddingBottom: '1rem',
+      padding: '0 1rem',
     });
   }
 
