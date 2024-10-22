@@ -10,6 +10,7 @@ export const GENERAL_SCHEMA = [
       groups: 'Groups',
       grouping: 'Grouping',
       volumes: 'Volumes',
+      queue: 'Queue',
     },
     name: 'sections',
   },
