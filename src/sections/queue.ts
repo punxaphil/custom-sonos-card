@@ -77,6 +77,7 @@ export class Queue extends LitElement {
 
   private async removeFromQueue(index: number) {
     await this.store.hassService.removeFromQueue(this.activePlayer, index);
+    this.requestUpdate();
   }
 
   static get styles() {
