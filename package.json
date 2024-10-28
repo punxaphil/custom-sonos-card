@@ -13,14 +13,10 @@
     "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.8",
-    "@rollup/plugin-babel": "^6.0.4",
-    "@rollup/plugin-commonjs": "^28.0.1",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.11.0",
-    "@typescript-eslint/parser": "^8.11.0",
-    "@vitest/coverage-v8": "^2.1.3",
+    "@babel/core": "^7.26.0",
+    "@typescript-eslint/eslint-plugin": "^8.12.0",
+    "@typescript-eslint/parser": "^8.12.0",
+    "@vitest/coverage-v8": "^2.1.4",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^9.1.0",
@@ -28,20 +24,14 @@
     "eslint-plugin-prettier": "^5.2.1",
     "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
-    "rollup": "^2.79.2",
-    "rollup-plugin-serve": "^2.0.3",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.36.0",
     "typescript": "^5.6.3",
-    "vite": "^5.4.9",
+    "vite": "^5.4.10",
     "vitest": "^2.1.3"
   },
   "scripts": {
-    "start": "rollup -c --watch",
-    "build": "npm run lint && npm run rollup",
+    "build": "npm run lint && vite build",
     "local-deploy": "npm run build && cp dist/custom-sonos-card.js ~/homeassistant/www/community/custom-sonos-card/custom-sonos-card.js",
     "lint": "eslint src/*.ts",
-    "rollup": "rollup -c",
     "test": "vitest",
     "test:ci": "vitest run"
   }
