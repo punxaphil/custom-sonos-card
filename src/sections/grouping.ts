@@ -178,6 +178,9 @@ export class Grouping extends LitElement {
     const joinedPlayers = this.joinedPlayers;
     const activePlayerId = this.activePlayer.id;
     const { unJoin, join, newMainPlayer } = getGroupingChanges(groupingItems, joinedPlayers, activePlayerId);
+    this.modifiedItems = [];
+    const selectedPredefinedGroup = this.selectedPredefinedGroup;
+    this.selectedPredefinedGroup = undefined;
 
     if (join.length > 0) {
       await this.mediaControlService.join(newMainPlayer, join);
@@ -185,8 +188,8 @@ export class Grouping extends LitElement {
     if (unJoin.length > 0) {
       await this.mediaControlService.unJoin(unJoin);
     }
-    if (this.selectedPredefinedGroup) {
-      await this.mediaControlService.setVolumeAndMediaForPredefinedGroup(this.selectedPredefinedGroup);
+    if (selectedPredefinedGroup) {
+      await this.mediaControlService.setVolumeAndMediaForPredefinedGroup(selectedPredefinedGroup);
     }
 
     if (newMainPlayer !== activePlayerId && !this.config.dontSwitchPlayerWhenGrouping) {
@@ -195,9 +198,6 @@ export class Grouping extends LitElement {
     if (this.config.entityId && unJoin.includes(this.config.entityId) && this.config.dontSwitchPlayerWhenGrouping) {
       dispatchActivePlayerId(this.config.entityId, this.config, this);
     }
-
-    this.modifiedItems = [];
-    this.selectedPredefinedGroup = undefined;
   }
 
   private cancelGrouping() {
