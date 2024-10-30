@@ -66,7 +66,9 @@ export function getWidth(config: CardConfig) {
 }
 
 export function getGroupPlayerIds(hassEntity: HassEntity): string[] {
-  return hassEntity.attributes.group_members || [hassEntity.entity_id];
+  let groupMembers = hassEntity.attributes.group_members;
+  groupMembers = groupMembers?.filter((id: string) => id !== null && id !== undefined);
+  return groupMembers?.length ? groupMembers : [hassEntity.entity_id];
 }
 
 export function supportsTurnOn(player: MediaPlayer) {
@@ -90,40 +92,37 @@ export function getGroupingChanges(groupingItems: GroupingItem[], joinedPlayers:
   return { unJoin, join, newMainPlayer };
 }
 
-export function entityMatchSonos(
-  config: CardConfig,
-  hassEntity: HassEntity,
-  hassWithEntities: HomeAssistantWithEntities,
-) {
+export function entityMatchSonos(config: CardConfig, entityId: string, hassWithEntities: HomeAssistantWithEntities) {
   const configEntities = [...new Set(config.entities)];
   let includeEntity = true;
   if (configEntities.length) {
-    const includesEntity = configEntities.includes(hassEntity.entity_id);
+    const includesEntity = configEntities.includes(entityId);
     includeEntity = !!config.excludeItemsInEntitiesList !== includesEntity;
   }
   let matchesPlatform = true;
   if (config.entityPlatform) {
-    const platform = hassWithEntities.entities?.[hassEntity.entity_id]?.platform;
+    const platform = hassWithEntities.entities?.[entityId]?.platform;
     matchesPlatform = platform === config.entityPlatform;
   }
   return includeEntity && matchesPlatform;
 }
 
-export function entityMatchMxmp(
-  config: CardConfig,
-  hassEntity: HassEntity,
-  hassWithEntities: HomeAssistantWithEntities,
-) {
+export function entityMatchMxmp(config: CardConfig, entityId: string, hassWithEntities: HomeAssistantWithEntities) {
   const configEntities = [...new Set(config.entities)];
+  let matchesPlatform = false;
   if (config.entityPlatform) {
-    const platform = hassWithEntities.entities?.[hassEntity.entity_id]?.platform;
-    return platform === config.entityPlatform;
+    const platform = hassWithEntities.entities?.[entityId]?.platform;
+    matchesPlatform = platform === config.entityPlatform;
   }
+  let includeEntity = false;
   if (configEntities.length) {
-    const includesEntity = configEntities.includes(hassEntity.entity_id);
-    return !!config.excludeItemsInEntitiesList !== includesEntity;
+    const includesEntity = configEntities.includes(entityId);
+    includeEntity = !!config.excludeItemsInEntitiesList !== includesEntity;
   }
-  return false;
+  if (config.entityPlatform && configEntities.length) {
+    return matchesPlatform && includeEntity;
+  }
+  return matchesPlatform || includeEntity;
 }
 
 export function isSonosCard(config: CardConfig) {
