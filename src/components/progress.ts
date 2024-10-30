@@ -5,7 +5,7 @@ import { MediaPlayer } from '../model/media-player';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 class Progress extends LitElement {
-  @property({attribute: false}) store!: Store;
+  @property({ attribute: false }) store!: Store;
   private activePlayer!: MediaPlayer;
 
   @state() private playingProgress!: number;
