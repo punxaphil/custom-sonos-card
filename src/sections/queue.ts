@@ -9,7 +9,7 @@ import '../components/media-row';
 import { MediaPlayerEntityFeature } from '../types';
 import { until } from 'lit-html/directives/until.js';
 
-const { SHUFFLE_SET, REPEAT_SET } = MediaPlayerEntityFeature;
+const { SHUFFLE_SET, REPEAT_SET, CLEAR_PLAYLIST } = MediaPlayerEntityFeature;
 
 export class Queue extends LitElement {
   @property() store!: Store;
@@ -33,7 +33,10 @@ export class Queue extends LitElement {
             (this.activePlayer.attributes.media_channel ? ' (not active)' : '')}
         </div>
         <div class="header-icons">
-          <sonos-ha-player .store=${this.store} .features=${[SHUFFLE_SET, REPEAT_SET]}></sonos-ha-player>
+          <sonos-ha-player
+            .store=${this.store}
+            .features=${[SHUFFLE_SET, REPEAT_SET, CLEAR_PLAYLIST]}
+          ></sonos-ha-player>
           <ha-icon-button
             .path=${mdiPlaylistEdit}
             @click=${this.toggleEditMode}
