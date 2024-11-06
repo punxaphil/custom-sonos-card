@@ -46,7 +46,7 @@ export default class MediaBrowseService {
   }
 
   private getFavoritesFromStates(mediaPlayer: MediaPlayer) {
-    const titles = mediaPlayer.attributes.hasOwnProperty('source_list') ? mediaPlayer.attributes.source_list : [];
+    const titles = mediaPlayer.attributes.source_list ?? [];
     return titles.map((title: string) => ({ title }));
   }
 }

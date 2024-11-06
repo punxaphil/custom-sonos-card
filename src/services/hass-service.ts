@@ -45,24 +45,25 @@ export default class HassService {
   }
 
   async getRelatedEntities(player: MediaPlayer, ...entityTypes: string[]) {
-    return new Promise<HassEntity[]>(async (resolve) => {
+    return new Promise<HassEntity[]>((resolve) => {
       const subscribeMessage = {
         type: 'render_template',
         template: `{{ device_entities(device_id('${player.id}')) }}`,
       };
       try {
-        const unsubscribe = await this.hass.connection.subscribeMessage<TemplateResult>((response) => {
-          try {
-            unsubscribe();
-            resolve(
-              response.result
-                .filter((item: string) => entityTypes.some((type) => item.includes(type)))
-                .map((item) => this.hass.states[item]),
-            );
-          } catch {
-            resolve([]);
-          }
-        }, subscribeMessage);
+        this.hass.connection
+          .subscribeMessage<TemplateResult>((response) => {
+            try {
+              resolve(
+                response.result
+                  .filter((item: string) => entityTypes.some((type) => item.includes(type)))
+                  .map((item) => this.hass.states[item]),
+              );
+            } catch {
+              resolve([]);
+            }
+          }, subscribeMessage)
+          .then((unsub) => unsub);
       } catch {
         resolve([]);
       }
