@@ -1,18 +1,24 @@
 import { html, TemplateResult } from 'lit';
 import { BaseEditor } from './base-editor';
 
+const options = {
+  player: 'Player',
+  'media browser': 'Media Browser',
+  groups: 'Groups',
+  grouping: 'Grouping',
+  volumes: 'Volumes',
+  queue: 'Queue',
+};
 export const GENERAL_SCHEMA = [
   {
     type: 'multi_select',
-    options: {
-      player: 'Player',
-      'media browser': 'Media Browser',
-      groups: 'Groups',
-      grouping: 'Grouping',
-      volumes: 'Volumes',
-      queue: 'Queue',
-    },
+    options: options,
     name: 'sections',
+  },
+  {
+    type: 'select',
+    options: options,
+    name: 'startSection',
   },
   {
     type: 'integer',
