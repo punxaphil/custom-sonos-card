@@ -111,4 +111,8 @@ export default class HassService {
       queue_position: queuePosition,
     });
   }
+
+  async clearQueue(mediaPlayer: MediaPlayer) {
+    await this.hass.callService('media_player', 'clear_playlist', { entity_id: mediaPlayer.id });
+  }
 }

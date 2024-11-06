@@ -4,7 +4,7 @@ import Store from '../model/store';
 import { MediaPlayer } from '../model/media-player';
 import { listStyle, MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
-import { mdiPlaylistEdit, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPlaylistEdit, mdiPlaylistRemove, mdiTrashCanOutline } from '@mdi/js';
 import '../components/media-row';
 import { MediaPlayerEntityFeature } from '../types';
 import { until } from 'lit-html/directives/until.js';
@@ -37,6 +37,7 @@ export class Queue extends LitElement {
             .store=${this.store}
             .features=${[SHUFFLE_SET, REPEAT_SET, CLEAR_PLAYLIST]}
           ></sonos-ha-player>
+          <ha-icon-button .path=${mdiPlaylistRemove} @click=${this.clearQueue}></ha-icon-button>
           <ha-icon-button
             .path=${mdiPlaylistEdit}
             @click=${this.toggleEditMode}
@@ -81,6 +82,11 @@ export class Queue extends LitElement {
 
   private toggleEditMode() {
     this.editMode = !this.editMode;
+  }
+
+  private async clearQueue() {
+    await this.store.hassService.clearQueue(this.activePlayer);
+    this.requestUpdate();
   }
 
   private async removeFromQueue(index: number) {
