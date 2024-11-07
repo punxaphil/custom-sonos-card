@@ -77,8 +77,8 @@ export class MediaBrowser extends LitElement {
     let favorites = await this.mediaBrowseService.getFavorites(player);
     favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
     favorites = [
-      ...(this.config.customSources?.[this.activePlayer.id]?.map(MediaBrowser.createSource) || []),
-      ...(this.config.customSources?.all?.map(MediaBrowser.createSource) || []),
+      ...(this.config.customFavorites?.[this.activePlayer.id]?.map(MediaBrowser.createFavorite) || []),
+      ...(this.config.customFavorites?.all?.map(MediaBrowser.createFavorite) || []),
       ...favorites,
     ];
     return this.config.numberOfFavoritesToShow ? favorites.slice(0, this.config.numberOfFavoritesToShow) : favorites;
@@ -99,7 +99,7 @@ export class MediaBrowser extends LitElement {
     }
   }
 
-  private static createSource(source: MediaPlayerItem) {
+  private static createFavorite(source: MediaPlayerItem) {
     return { ...source, can_play: true };
   }
 

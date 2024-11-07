@@ -234,6 +234,10 @@ export class Card extends LitElement {
         newConfig.entityPlatform = undefined;
       }
     }
+    // handle deprecated config
+    if (newConfig.customSources) {
+      newConfig.customFavorites = newConfig.customSources;
+    }
     this.config = newConfig;
   }
 

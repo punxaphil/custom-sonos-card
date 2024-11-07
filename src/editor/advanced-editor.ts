@@ -165,7 +165,7 @@ class AdvancedEditor extends BaseEditor {
       <div>
         The following needs to be configured using code (YAML):
         <ul>
-          <li>customSources</li>
+          <li>customFavorites</li>
           <li>customThumbnail</li>
           <li>customThumbnailIfMissing</li>
           <li>favoritesToIgnore</li>

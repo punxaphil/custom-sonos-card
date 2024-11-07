@@ -193,8 +193,8 @@ mediaArtworkOverrides: # Show your own selected artwork if certain rules match
     imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108794.png
   - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
     imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
-customSources: # Read more in 'Custom Favorites / Sources' section below
-  media_player.tv: # set this to 'all' to show the custom source for all players
+customFavorites: # Read more in 'Custom Favorites' section below
+  media_player.tv: # set this to 'all' to show the custom favorite for all players
     - title: TV # Must match the name of the source (unless you specify media_content_id/type as shown below)
       thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
   all:
@@ -282,7 +282,7 @@ The following variables are being used and can be set in your theme to change th
 
 Read more about using theme variables here: https://www.home-assistant.io/integrations/frontend/#defining-themes
 
-## Custom Favorites / Sources
+## Custom Favorites
 
 You can add your own buttons to the Favorites section. This can be useful if you want to quickly start a specific radio station or playlist.
 
@@ -293,14 +293,14 @@ To determine what to configure for a button do the following:
 4. Find the media player entity that is playing the radio station or playlist.
 5. Look for the `media_content_id` and `media_content_type` attributes.
 6. For the thumbnail, you can inspect the HTML to see what image the media browser is using, or you can also use a local URL if you have the image stored locally.
-7. Use these values to configure the custom source.
+7. Use these values to configure the custom favorite.
 
 Example:
-![custom_sources.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/custom_sources.png)
+![custom_favorites.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/custom_favorites.png)
     
 ```yaml
 type: custom:sonos-card
-customSources: 
+customFavorites: 
   all: # 'all' means it will show for all players, otherwise specify the entity_id of the player.
     - title: BBC
       media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service

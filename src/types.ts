@@ -60,7 +60,7 @@ export interface CardConfig extends LovelaceCardConfig {
   hideGroupCurrentTrack?: boolean;
   dynamicVolumeSlider?: boolean;
   mediaArtworkOverrides?: MediaArtworkOverride[];
-  customSources?: CustomSources;
+  customFavorites?: CustomFavorites;
   customThumbnail?: CustomThumbnails;
   customThumbnailIfMissing?: CustomThumbnails;
   favoritesToIgnore?: string[];
@@ -108,11 +108,11 @@ export interface MediaArtworkOverride {
   sizePercentage?: number;
 }
 
-export interface CustomSources {
-  [name: string]: CustomSource[];
+export interface CustomFavorites {
+  [name: string]: CustomFavorite[];
 }
 
-export interface CustomSource {
+export interface CustomFavorite {
   title: string;
   thumbnail?: string;
 }
