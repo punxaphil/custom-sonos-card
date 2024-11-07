@@ -5,7 +5,6 @@ import { BaseEditor } from './base-editor';
 import { ConfigArea } from './config-area';
 import { choose } from 'lit/directives/choose.js';
 import './advanced-editor';
-import './custom-source-editor';
 import './general-editor';
 import './entities-editor';
 import './predefined-group-editor';
