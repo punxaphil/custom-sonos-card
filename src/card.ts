@@ -238,6 +238,12 @@ export class Card extends LitElement {
     if (newConfig.customSources) {
       newConfig.customFavorites = newConfig.customSources;
     }
+    if (newConfig.customThumbnail) {
+      newConfig.customFavoriteThumbnails = newConfig.customThumbnail;
+    }
+    if (newConfig.customThumbnailIfMissing) {
+      newConfig.customFavoriteThumbnailsIfMissing = newConfig.customThumbnailIfMissing;
+    }
     this.config = newConfig;
   }
 
