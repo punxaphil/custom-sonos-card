@@ -64,7 +64,7 @@ export interface CardConfig extends LovelaceCardConfig {
   customFavoriteThumbnails?: CustomFavoriteThumbnails;
   customFavoriteThumbnailsIfMissing?: CustomFavoriteThumbnails;
   favoritesToIgnore?: string[];
-  mediaBrowserItemsPerRow?: number;
+  favoritesItemsPerRow?: number;
   mediaBrowserHideTitleForThumbnailIcons?: boolean;
   topFavorites?: string[];
   numberOfFavoritesToShow?: number;
