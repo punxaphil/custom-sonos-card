@@ -65,7 +65,7 @@ export const ADVANCED_SCHEMA = [
     type: 'string',
   },
   {
-    name: 'mediaBrowserHideTitleForThumbnailIcons',
+    name: 'favoritesHideTitleForThumbnailIcons',
     selector: { boolean: {} },
   },
   {

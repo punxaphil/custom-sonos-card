@@ -220,7 +220,7 @@ hidePlaylistInPlayer: true # default is false. Will hide the playlist name in th
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
-mediaBrowserHideTitleForThumbnailIcons: true # default is false. Only makes a difference if favoritesItemsPerRow > 1. Will hide title for thumbnail artworks.
+favoritesHideTitleForThumbnailIcons: true # default is false. Only makes a difference if favoritesItemsPerRow > 1. Will hide title for thumbnail artworks.
 customFavoriteThumbnails:
   Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
 customFavoriteThumbnailsIfMissing:

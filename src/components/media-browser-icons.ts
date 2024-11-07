@@ -23,7 +23,7 @@ export class MediaBrowserIcons extends LitElement {
               style=${this.buttonStyle(this.config.favoritesItemsPerRow || 4)}
               @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
             >
-              ${renderMediaBrowserItem(item, !item.thumbnail || !this.config.mediaBrowserHideTitleForThumbnailIcons)}
+              ${renderMediaBrowserItem(item, !item.thumbnail || !this.config.favoritesHideTitleForThumbnailIcons)}
             </ha-control-button>
           `,
         )}
