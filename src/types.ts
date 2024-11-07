@@ -14,6 +14,7 @@ export enum Section {
   PLAYER = 'player',
   GROUPING = 'grouping',
   VOLUMES = 'volumes',
+  QUEUE = 'queue',
 }
 
 export type ConfigPredefinedGroupPlayer = PredefinedGroupPlayer<string>;
@@ -32,6 +33,7 @@ interface SectionButtonIcons {
   groups?: string;
   grouping?: string;
   volumes?: string;
+  queue?: string;
 }
 
 export interface CardConfig extends LovelaceCardConfig {
@@ -74,6 +76,7 @@ export interface CardConfig extends LovelaceCardConfig {
   replaceHttpWithHttpsForThumbnails?: boolean;
   volumeStepSize?: number;
   mediaBrowserTitle?: string;
+  queueTitle?: string;
   adjustVolumeRelativeToMainPlayer?: boolean;
   skipApplyButtonWhenGrouping?: boolean;
   hideVolumeCogwheel?: boolean;
@@ -175,4 +178,17 @@ export interface HomeAssistantWithEntities extends HomeAssistant {
   entities: {
     [entity_id: string]: HassEntityExtended;
   };
+}
+
+export type GetQueueResponse = {
+  response: {
+    [entity_id: string]: QueueItem[];
+  };
+};
+
+export interface QueueItem {
+  media_title: string;
+  media_album_name: string;
+  media_artist: string;
+  media_content_id: string;
 }
