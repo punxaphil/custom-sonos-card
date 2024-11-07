@@ -1,4 +1,4 @@
-import { CardConfig, CustomThumbnails, MediaPlayerItem } from '../types';
+import { CardConfig, CustomFavoriteThumbnails, MediaPlayerItem } from '../types';
 import { html } from 'lit';
 
 const DEFAULT_MEDIA_THUMBNAIL =
@@ -8,21 +8,25 @@ function hasItemsWithImage(items: MediaPlayerItem[]) {
   return items.some((item) => item.thumbnail);
 }
 
-function getValueFromKeyIgnoreSpecialChars(customThumbnails: CustomThumbnails | undefined, currentTitle: string) {
-  for (const title in customThumbnails) {
+function getValueFromKeyIgnoreSpecialChars(
+  customFavoriteThumbnails: CustomFavoriteThumbnails | undefined,
+  currentTitle: string,
+) {
+  for (const title in customFavoriteThumbnails) {
     if (removeSpecialChars(title) === removeSpecialChars(currentTitle)) {
-      return customThumbnails[title];
+      return customFavoriteThumbnails[title];
     }
   }
   return undefined;
 }
 
 function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
-  let thumbnail = getValueFromKeyIgnoreSpecialChars(config.customThumbnail, mediaItem.title) ?? mediaItem.thumbnail;
+  let thumbnail =
+    getValueFromKeyIgnoreSpecialChars(config.customFavoriteThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
   if (!thumbnail) {
-    thumbnail = getValueFromKeyIgnoreSpecialChars(config.customThumbnailIfMissing, mediaItem.title);
+    thumbnail = getValueFromKeyIgnoreSpecialChars(config.customFavoriteThumbnailsIfMissing, mediaItem.title);
     if (itemsWithImage && !thumbnail) {
-      thumbnail = config.customThumbnailIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
+      thumbnail = config.customFavoriteThumbnailsIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
     }
   } else if (thumbnail?.match(/https:\/\/brands\.home-assistant\.io\/.+\/logo.png/)) {
     thumbnail = thumbnail?.replace('logo.png', 'icon.png');

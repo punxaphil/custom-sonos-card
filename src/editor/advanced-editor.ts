@@ -166,8 +166,8 @@ class AdvancedEditor extends BaseEditor {
         The following needs to be configured using code (YAML):
         <ul>
           <li>customFavorites</li>
-          <li>customThumbnail</li>
-          <li>customThumbnailIfMissing</li>
+          <li>customFavoriteThumbnails</li>
+          <li>customFavoriteThumbnailsIfMissing</li>
           <li>favoritesToIgnore</li>
           <li>groupingButtonIcons</li>
           <li>sectionButtonIcons</li>

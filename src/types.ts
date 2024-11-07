@@ -61,8 +61,8 @@ export interface CardConfig extends LovelaceCardConfig {
   dynamicVolumeSlider?: boolean;
   mediaArtworkOverrides?: MediaArtworkOverride[];
   customFavorites?: CustomFavorites;
-  customThumbnail?: CustomThumbnails;
-  customThumbnailIfMissing?: CustomThumbnails;
+  customFavoriteThumbnails?: CustomFavoriteThumbnails;
+  customFavoriteThumbnailsIfMissing?: CustomFavoriteThumbnails;
   favoritesToIgnore?: string[];
   mediaBrowserItemsPerRow?: number;
   mediaBrowserHideTitleForThumbnailIcons?: boolean;
@@ -117,7 +117,7 @@ export interface CustomFavorite {
   thumbnail?: string;
 }
 
-export interface CustomThumbnails {
+export interface CustomFavoriteThumbnails {
   [title: string]: string;
 }
 

@@ -221,12 +221,12 @@ hidePlaylistInPlayer: true # default is false. Will hide the playlist name in th
 # media browser specific
 mediaBrowserItemsPerRow: 1 # default is 4. Use this to show items as list.
 mediaBrowserHideTitleForThumbnailIcons: true # default is false. Only makes a difference if mediaBrowserItemsPerRow > 1. Will hide title for thumbnail artworks.
-customThumbnail:
+customFavoriteThumbnails:
   Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-customThumbnailIfMissing:
+customFavoriteThumbnailsIfMissing:
   Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
   Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-  fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to black music notes with white background.  
+  fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to image of music notes.
 favoritesToIgnore:
   - My Favorite Album
   - My Bad Playlist
