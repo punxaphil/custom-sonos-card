@@ -38,6 +38,7 @@ interface SectionButtonIcons {
 
 export interface CardConfig extends LovelaceCardConfig {
   sections?: Section[];
+  startSection?: Section;
   hidePlayerControlRepeatButton?: boolean;
   hidePlayerControlShuffleButton?: boolean;
   hidePlayerControlNextTrackButton?: boolean;

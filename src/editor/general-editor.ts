@@ -16,6 +16,11 @@ export const GENERAL_SCHEMA = [
     name: 'sections',
   },
   {
+    type: 'select',
+    options: Object.entries(options).map((entry) => entry),
+    name: 'startSection',
+  },
+  {
     type: 'integer',
     name: 'mediaBrowserItemsPerRow',
     default: 4,
