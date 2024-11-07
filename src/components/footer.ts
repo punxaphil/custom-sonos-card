@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { CardConfig, Section } from '../types';
 import './section-button';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 
 class Footer extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
@@ -16,6 +16,7 @@ class Footer extends LitElement {
       [MEDIA_BROWSER, icons?.mediaBrowser ?? 'mdi:star-outline'],
       [GROUPS, icons?.groups ?? 'mdi:speaker-multiple'],
       [GROUPING, icons?.grouping ?? 'mdi:checkbox-multiple-marked-circle-outline'],
+      [QUEUE, icons?.queue ?? 'mdi:queue-first-in-last-out'],
       [VOLUMES, icons?.volumes ?? 'mdi:tune'],
     ];
     sections = sections.filter(([section]) => !this.config.sections || this.config.sections?.includes(section));
@@ -40,7 +41,7 @@ class Footer extends LitElement {
         justify-content: space-between;
       }
       :host > * {
-        padding: 1rem;
+        padding: 1rem 0;
       }
     `;
   }

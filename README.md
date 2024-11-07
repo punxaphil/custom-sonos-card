@@ -16,6 +16,7 @@ Sonos Card for Home Assistant UI with a focus on managing multiple media players
 * Configurable styling
 * Dynamic volume level slider
 * Track progress bar
+* Show, play and remove tracks of play queue
 
 and more!
 
@@ -24,6 +25,7 @@ and more!
 ![groups.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/groups.png)
 ![grouping.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/grouping.png)
 ![volumes.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/volumes.png)
+![queue.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/queue.png)
 
 ## Support the project
 
@@ -112,6 +114,7 @@ sections: # see explanation further up
   - grouping
   - media browser
   - player
+  - queue
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
 heightPercentage: 75 # default is 100. Use this to change the height of the card. Set to 'auto' to make the card height adjust to the content.
 entityId: media_player.bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)
@@ -237,6 +240,9 @@ mediaBrowserTitle: My favorites # default is 'All favorites'. Use this to change
 
 # volumes specific
 hideVolumeCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
+
+# queue specific
+queueTitle: Songs # default is 'Play Queue'. Use this to change the title for the queue section.
 ```
 
 ## Using individual section cards
