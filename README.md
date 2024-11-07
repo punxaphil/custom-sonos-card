@@ -115,6 +115,7 @@ sections: # see explanation further up
   - media browser
   - player
   - queue
+startSection: queue # default is player. Use this to set the default section to show. 
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
 heightPercentage: 75 # default is 100. Use this to change the height of the card. Set to 'auto' to make the card height adjust to the content.
 entityId: media_player.bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)

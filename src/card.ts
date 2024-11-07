@@ -204,8 +204,10 @@ export class Card extends LitElement {
         delete newConfig[key];
       }
     }
-    const sections = newConfig.sections;
-    if (sections) {
+    const sections = newConfig.sections || Object.values(Section);
+    if (newConfig.startSection && sections.includes(newConfig.startSection)) {
+      this.section = newConfig.startSection;
+    } else if (sections) {
       this.section = sections.includes(PLAYER)
         ? PLAYER
         : sections.includes(MEDIA_BROWSER)
