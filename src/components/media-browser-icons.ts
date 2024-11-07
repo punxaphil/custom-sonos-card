@@ -20,7 +20,7 @@ export class MediaBrowserIcons extends LitElement {
         ${itemsWithFallbacks(this.items, this.config).map(
           (item) => html`
             <ha-control-button
-              style=${this.buttonStyle(this.config.mediaBrowserItemsPerRow || 4)}
+              style=${this.buttonStyle(this.config.favoritesItemsPerRow || 4)}
               @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
             >
               ${renderMediaBrowserItem(item, !item.thumbnail || !this.config.mediaBrowserHideTitleForThumbnailIcons)}
@@ -31,9 +31,9 @@ export class MediaBrowserIcons extends LitElement {
     `;
   }
 
-  private buttonStyle(mediaBrowserItemsPerRow: number) {
+  private buttonStyle(favoritesItemsPerRow: number) {
     const margin = '1%';
-    const size = `calc(100% / ${mediaBrowserItemsPerRow} - ${margin} * 2)`;
+    const size = `calc(100% / ${favoritesItemsPerRow} - ${margin} * 2)`;
     return styleMap({
       width: size,
       height: size,
