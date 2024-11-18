@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@vitest/coverage-v8": "^2.1.4",
+    "@vitest/coverage-v8": "^2.1.5",
     "@types/eslint__js": "^8.42.3",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.1.0",
