@@ -33,6 +33,8 @@ jobs:
           diff=$(git diff)
           if [ ! -z "$diff" ]
           then 
+            git config user.name "Johan Frick"
+            git config user.email "johan.frick@gmail.com"
             git commit -am"updated README.md"
             git push origin main
           fi
