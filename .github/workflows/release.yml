@@ -1,14 +1,26 @@
 name: Release
 
-on: push
+on:
+  push:
+    tags:
+      - '*'
 
 jobs:
   release:
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Build Changelog
+        id: build_changelog
+        uses: mikepenz/release-changelog-builder-action@v5
         with:
-          ref: release_test
+          failOnError: true
+          commitMode: true
+          configuration: ".release-notes-config.json"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the file
         run: |
@@ -16,6 +28,22 @@ jobs:
           npm install
           npm run build
           sh create-dist-maxi-media-player.sh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{steps.build_changelog.outputs.changelog}}
+          prerelease: true
+          files: /home/runner/work/custom-sonos-card/custom-sonos-card/dist/custom-sonos-card.js
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{steps.build_changelog.outputs.changelog}}
+          repository: punxaphil/maxi-media-player
+          prerelease: true
+          token: ${{ secrets.PAT_TOKEN }}
+          files: /home/runner/work/custom-sonos-card/custom-sonos-card/dist-maxi-media-player/maxi-media-player.js
 
       - uses: actions/checkout@v4
         with:
