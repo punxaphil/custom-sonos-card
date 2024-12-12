@@ -31,6 +31,7 @@ jobs:
           mkdir img
           cp ../img/* img/
           diff=$(git diff)
+          echo "diff: $diff"
           if [ ! -z $diff ]
           then 
             git config user.name "github-actions[bot]"
