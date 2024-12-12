@@ -1,56 +1,27 @@
 name: Release
 
-on:
-  push:
-    tags:
-      - '*'
+on: push
 
 jobs:
   release:
-    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build Changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v5
-        with:
-          failOnError: true
-          commitMode: true
-          configuration: ".release-notes-config.json"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build the file
         run: |
           cd /home/runner/work/custom-sonos-card/custom-sonos-card
           npm install
           npm run build
-          alias gsed=sed
           sh create-dist-maxi-media-player.sh
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          body: ${{steps.build_changelog.outputs.changelog}}
-          prerelease: true
-          files: /home/runner/work/custom-sonos-card/custom-sonos-card/dist/custom-sonos-card.js
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          body: ${{steps.build_changelog.outputs.changelog}}
-          repository: punxaphil/maxi-media-player
-          prerelease: true
-          token: ${{ secrets.PAT_TOKEN }}
-          files: /home/runner/work/custom-sonos-card/custom-sonos-card/dist-maxi-media-player/maxi-media-player.js
 
       - uses: actions/checkout@v4
         with:
           repository: punxaphil/maxi-media-player
+          ref: release_test
           token:  ${{ secrets.PAT_TOKEN }}
           path: mxmp
+
       - name: setup git config
         run: |
           cd mxmp
@@ -64,6 +35,6 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -am"updated README.md"
-            git push origin main
+            git push origin release_test
           fi
           
