@@ -10,7 +10,7 @@
   "dependencies": {
     "@mdi/js": "^7.4.47",
     "custom-card-helpers": "^1.9.0",
-    "lit": "^3.2.1"
+    "lit": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
