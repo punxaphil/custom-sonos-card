@@ -174,7 +174,7 @@ export default class Store {
   }
 
   private determineActivePlayer(activePlayerId?: string): MediaPlayer {
-    const playerId = activePlayerId || this.config.entityId || this.getActivePlayerFromUrl();
+    const playerId = activePlayerId || this.config.entityId || this.getActivePlayerFromStorage();
     return (
       this.allGroups.find((group) => group.getMember(playerId) !== undefined) ||
       this.allGroups.find((group) => group.isPlaying()) ||
@@ -182,8 +182,8 @@ export default class Store {
     );
   }
 
-  private getActivePlayerFromUrl() {
-    return window.location.href.includes('#') ? window.location.href.replace(/.*#/g, '') : '';
+  private getActivePlayerFromStorage() {
+    return window.sessionStorage.sonosCardActivePlayer || '';
   }
 
   showPower(hideIfOn = false) {
