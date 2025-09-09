@@ -63,8 +63,8 @@ export class Player extends LitElement {
     const { media_title, media_artist, media_album_name, media_content_id, media_channel, entity_picture, entity_picture_local, app_id } =
       this.activePlayer.attributes;
     let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
-    if (app_id === 'music_assistant' && entity_picture_local) {
-      entityImage = entity_picture_local ? prefix + entity_picture_local : entity_picture_local;
+    if (app_id === 'music_assistant') {
+      entityImage = entity_picture_local ? prefix + entity_picture_local : entity_picture;
     }
     let sizePercentage = undefined;
     const overrides = this.config.mediaArtworkOverrides;
