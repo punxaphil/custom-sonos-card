@@ -174,7 +174,7 @@ export default class Store {
   }
 
   private determineActivePlayer(activePlayerId?: string): MediaPlayer {
-    const playerId = activePlayerId || this.config.entityId || this.getActivePlayerFromUrl();
+    const playerId = activePlayerId || this.getActivePlayerFromUrl() || this.config.entityId;
     return (
       this.allGroups.find((group) => group.getMember(playerId) !== undefined) ||
       this.allGroups.find((group) => group.isPlaying()) ||
