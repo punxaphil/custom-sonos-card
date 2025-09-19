@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../model/store';
 import { dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
+import { SESSION_STORAGE_PLAYER_ID } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 
 class Group extends LitElement {
@@ -73,7 +74,7 @@ class Group extends LitElement {
     if (!this.selected) {
       this.selected = true;
       if (this.store.config.storePlayerInSessionStorage) {
-        window.sessionStorage.setItem('sonosCardActivePlayer', this.player.id);
+        window.sessionStorage.setItem(SESSION_STORAGE_PLAYER_ID, this.player.id);
       } else {
         const newUrl = window.location.href.replace(/#.*/g, '');
         window.location.replace(`${newUrl}#${this.player.id}`);
