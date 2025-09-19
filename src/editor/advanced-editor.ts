@@ -160,11 +160,15 @@ export const ADVANCED_SCHEMA = [
   {
     name: 'inverseGroupMuteState',
     selector: { boolean: {} },
-  },
+  },  
   {
     name: 'sortFavoritesByType',
     selector: { boolean: {} },
   },
+  {
+    name: 'storePlayerInSessionStorage',
+    selector: { boolean: {} },
+  }
 ];
 
 class AdvancedEditor extends BaseEditor {

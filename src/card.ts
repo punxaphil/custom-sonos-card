@@ -122,8 +122,10 @@ export class Card extends LitElement {
     window.addEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
     window.addEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
     window.addEventListener('hashchange', () => {
-      this.activePlayerId = undefined;
-      this.createStore();
+      if (!this.config.storePlayerInSessionStorage) {
+        this.activePlayerId = undefined;
+        this.createStore();
+      }
     });
   }
 

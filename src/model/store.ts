@@ -174,7 +174,7 @@ export default class Store {
   }
 
   private determineActivePlayer(activePlayerId?: string): MediaPlayer {
-    const playerId = activePlayerId || this.getActivePlayerFromUrl() || this.config.entityId;
+    const playerId = activePlayerId || this.getActivePlayerMethod() || this.config.entityId;
     return (
       this.allGroups.find((group) => group.getMember(playerId) !== undefined) ||
       this.allGroups.find((group) => group.isPlaying()) ||
@@ -182,8 +182,19 @@ export default class Store {
     );
   }
 
+  private getActivePlayerMethod() {
+    if (this.config.storePlayerInSessionStorage) {
+      return this.getActivePlayerFromStorage();
+    }
+    return this.getActivePlayerFromUrl();
+  }
+
   private getActivePlayerFromUrl() {
     return window.location.href.includes('#') ? window.location.href.replace(/.*#/g, '') : '';
+  }
+
+  private getActivePlayerFromStorage(): string {
+    return window.sessionStorage.getItem('sonosCardActivePlayer') || '';
   }
 
   showPower(hideIfOn = false) {
