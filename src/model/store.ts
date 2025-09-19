@@ -1,5 +1,6 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import HassService from '../services/hass-service';
+import { SESSION_STORAGE_PLAYER_ID } from '../constants';
 import MediaBrowseService from '../services/media-browse-service';
 import MediaControlService from '../services/media-control-service';
 import {
@@ -174,7 +175,7 @@ export default class Store {
   }
 
   private determineActivePlayer(activePlayerId?: string): MediaPlayer {
-    const playerId = activePlayerId || this.getActivePlayerFromUrl() || this.config.entityId;
+    const playerId = activePlayerId || this.getActivePlayer() || this.config.entityId;
     return (
       this.allGroups.find((group) => group.getMember(playerId) !== undefined) ||
       this.allGroups.find((group) => group.isPlaying()) ||
@@ -182,8 +183,19 @@ export default class Store {
     );
   }
 
+  private getActivePlayer() {
+    if (this.config.storePlayerInSessionStorage) {
+      return this.getActivePlayerFromStorage();
+    }
+    return this.getActivePlayerFromUrl();
+  }
+
   private getActivePlayerFromUrl() {
     return window.location.href.includes('#') ? window.location.href.replace(/.*#/g, '') : '';
+  }
+
+  private getActivePlayerFromStorage(): string {
+    return window.sessionStorage.getItem(SESSION_STORAGE_PLAYER_ID) || '';
   }
 
   showPower(hideIfOn = false) {

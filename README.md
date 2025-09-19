@@ -209,6 +209,7 @@ showBrowseMediaInPlayerSection: true # default is false. Will show the browse me
 showChannelInPlayer: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
 hidePlaylistInPlayer: true # default is false. Will hide the playlist name in the player section.
 stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
+storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -336,11 +337,12 @@ being used.
 
 Enable it in config with `dynamicVolumeSlider: true`
 
-## Linking to specific player
+## Linking and Player Persistence
 
-Append `#media_player.my_sonos_player` to page URL to have that player selected.
+By default, you can append a player in URL hash (e.g. `#media_player.my_sonos_player`) to have that player selected.
+You can change this behavior to use the browser's session storage by setting `storePlayerInSessionStorage: true`. This prevents the URL from changing when you select a player.
 
-If `entityId` is configured for the card, the url param will be ignored. See more in the Usage section above.
+If `entityId` is configured for the card, both the URL hash and session storage will be ignored on initial load. See more in the Usage section above.
 
 ## Sort order of entities
 

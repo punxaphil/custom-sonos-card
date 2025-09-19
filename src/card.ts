@@ -121,16 +121,23 @@ export class Card extends LitElement {
     }
     window.addEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
     window.addEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
-    window.addEventListener('hashchange', () => {
-      this.activePlayerId = undefined;
-      this.createStore();
-    });
+    if (!this.config.storePlayerInSessionStorage) {
+      window.addEventListener('hashchange', this.hashChangeListener);
+    }
   }
 
   disconnectedCallback() {
     window.removeEventListener(ACTIVE_PLAYER_EVENT, this.activePlayerListener);
+    window.removeEventListener(CALL_MEDIA_STARTED, this.callMediaStartedListener);
+    window.removeEventListener(CALL_MEDIA_DONE, this.callMediaDoneListener);
+    window.removeEventListener('hashchange', this.hashChangeListener);
     super.disconnectedCallback();
   }
+
+  private hashChangeListener = () => {
+    this.activePlayerId = undefined;
+    this.createStore();
+  };
 
   private showSectionListener = (event: Event) => {
     const section = (event as CustomEvent).detail;
