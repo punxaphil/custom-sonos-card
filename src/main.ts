@@ -3,8 +3,6 @@ import { Card } from './card';
 import { Grouping } from './sections/grouping';
 import { Groups } from './sections/groups';
 import { MediaBrowser } from './sections/media-browser';
-import './sections/volumes';
-import './components/ha-player';
 import { Queue } from './sections/queue';
 import { Volumes } from './sections/volumes';
 

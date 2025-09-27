@@ -2,6 +2,8 @@ import { CardConfig, MediaPlayerItem } from '../types';
 import HassService from './hass-service';
 import { MediaPlayer } from '../model/media-player';
 import { stringContainsAnyItemInArray } from '../utils/media-browser-utils';
+import { customEvent } from '../utils/utils';
+import { HASS_MORE_INFO } from '../constants';
 
 export default class MediaBrowseService {
   private hassService: HassService;
@@ -69,5 +71,13 @@ export default class MediaBrowseService {
   private getFavoritesFromStates(mediaPlayer: MediaPlayer) {
     const titles = mediaPlayer.attributes.source_list ?? [];
     return titles.map((title: string) => ({ title }));
+  }
+
+  public showBrowseMedia(activePlayer: MediaPlayer, element: HTMLElement) {
+    const detail = {
+      entityId: activePlayer.id,
+      view: 'info',
+    };
+    element.dispatchEvent(customEvent(HASS_MORE_INFO, detail));
   }
 }

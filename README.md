@@ -697,7 +697,7 @@ card_mod:
       .icons {
         margin-bottom: 1rem;
       }
-      sonos-ha-player,ha-icon-button {
+      .icons * {    
         --mdc-icon-size: 3rem !important;
         --mdc-icon-button-size: 4rem !important;
       }  

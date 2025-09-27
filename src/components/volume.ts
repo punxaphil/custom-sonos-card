@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { CardConfig } from '../types';
-import { mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
+import { mdiPower, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
 
 class Volume extends LitElement {
@@ -14,6 +14,7 @@ class Volume extends LitElement {
   @property({ type: Boolean }) updateMembers = true;
   @property() volumeClicked?: () => void;
   @property() slim: boolean = false;
+  private togglePower = async () => await this.mediaControlService.togglePower(this.player);
 
   render() {
     this.config = this.store.config;
@@ -44,7 +45,7 @@ class Volume extends LitElement {
           </div>
         </div>
         <div class="percentage-slim" hide=${this.slim && nothing}>${volume}%</div>
-        <sonos-ha-player .store=${this.store} .features=${this.store.showPower()}></sonos-ha-player>
+        <ha-icon-button hide=${this.store.hidePower()} @click=${this.togglePower} .path=${mdiPower}></ha-icon-button>
       </div>
     `;
   }

@@ -105,4 +105,8 @@ export class MediaPlayer {
       .map((m) => m.attributes.volume_level || 0);
     return (100 * volumes.reduce((a, b) => a + b, 0)) / volumes.length;
   }
+
+  isOn() {
+    return this.state !== 'off' && this.state !== 'unavailable';
+  }
 }
