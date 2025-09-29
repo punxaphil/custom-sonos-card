@@ -197,18 +197,13 @@ export default class Store {
   }
 
   hidePower(hideIfOn = false) {
-    console.log(`decide to hide power button for ${this.activePlayer.id}`, hideIfOn);
     if (this.config.hidePlayerControlPowerButton) {
-      console.log('hide power button due to config');
       return true;
     } else if (!supportsTurnOn(this.activePlayer)) {
-      console.log('hide power button due to unsupported feature');
       return true;
     } else if (hideIfOn && this.activePlayer.isOn()) {
-      console.log('hide power button due to player being on');
       return true;
     } else {
-      console.log('show power button');
       return nothing;
     }
   }
