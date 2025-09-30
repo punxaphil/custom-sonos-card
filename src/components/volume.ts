@@ -35,6 +35,7 @@ class Volume extends LitElement {
             .value=${volume}
             max=${max}
             @value-changed=${this.volumeChanged}
+            @slider-moved=${this.volumeChanged}
             .disabled=${disabled}
             class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
           ></ha-control-slider>
