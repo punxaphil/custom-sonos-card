@@ -704,5 +704,16 @@ card_mod:
       .big-icon {
         --mdc-icon-size: 7rem !important;
         --mdc-icon-button-size: 4rem !important;
-      }  
+      }
+```
+
+#### Example 28 - Change the size of section button icons
+```yaml
+card_mod:
+  style:
+    sonos-footer$ sonos-section-button$: |
+      ha-icon-button {
+        --mdc-icon-button-size: 5rem !important;
+        --mdc-icon-size: 3rem !important;
+      }
 ```
