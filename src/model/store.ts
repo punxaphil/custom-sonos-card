@@ -8,7 +8,6 @@ import {
   ConfigPredefinedGroup,
   ConfigPredefinedGroupPlayer,
   HomeAssistantWithEntities,
-  MediaPlayerEntityFeature,
   PredefinedGroup,
   PredefinedGroupPlayer,
   Section,
@@ -23,8 +22,7 @@ import {
 } from '../utils/utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
-
-const { TURN_OFF, TURN_ON } = MediaPlayerEntityFeature;
+import { nothing } from 'lit';
 
 export default class Store {
   public hass: HomeAssistant;
@@ -198,15 +196,15 @@ export default class Store {
     return window.sessionStorage.getItem(SESSION_STORAGE_PLAYER_ID) || '';
   }
 
-  showPower(hideIfOn = false) {
+  hidePower(hideIfOn = false) {
     if (this.config.hidePlayerControlPowerButton) {
-      return [];
+      return true;
     } else if (!supportsTurnOn(this.activePlayer)) {
-      return [];
-    } else if (hideIfOn && 'off' !== this.activePlayer.state) {
-      return [];
+      return true;
+    } else if (hideIfOn && this.activePlayer.isOn()) {
+      return true;
     } else {
-      return [TURN_ON, TURN_OFF];
+      return nothing;
     }
   }
 }

@@ -6,10 +6,7 @@ import { listStyle, MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
 import { mdiPlaylistEdit, mdiPlaylistRemove, mdiTrashCanOutline } from '@mdi/js';
 import '../components/media-row';
-import { MediaPlayerEntityFeature } from '../types';
 import { until } from 'lit-html/directives/until.js';
-
-const { SHUFFLE_SET, REPEAT_SET, CLEAR_PLAYLIST } = MediaPlayerEntityFeature;
 
 export class Queue extends LitElement {
   @property() store!: Store;
@@ -33,10 +30,8 @@ export class Queue extends LitElement {
             (this.activePlayer.attributes.media_channel ? ' (not active)' : '')}
         </div>
         <div class="header-icons">
-          <sonos-ha-player
-            .store=${this.store}
-            .features=${[SHUFFLE_SET, REPEAT_SET, CLEAR_PLAYLIST]}
-          ></sonos-ha-player>
+          <sonos-shuffle .store=${this.store}></sonos-shuffle>
+          <sonos-repeat .store=${this.store}></sonos-repeat>
           <ha-icon-button .path=${mdiPlaylistRemove} @click=${this.clearQueue}></ha-icon-button>
           <ha-icon-button
             .path=${mdiPlaylistEdit}

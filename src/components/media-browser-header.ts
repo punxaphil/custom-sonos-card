@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { MediaPlayerEntityFeature } from '../types';
 import Store from '../model/store';
+import { mdiPlayBoxMultiple } from '@mdi/js';
 
 class MediaBrowserHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -9,11 +9,11 @@ class MediaBrowserHeader extends LitElement {
   render() {
     return html`
       <div class="title">${this.store.config.mediaBrowserTitle ?? 'All Favorites'}</div>
-      <sonos-ha-player
+      <ha-icon-button
         hide=${this.store.config.hideBrowseMediaButton || nothing}
-        .store=${this.store}
-        .features=${[MediaPlayerEntityFeature.BROWSE_MEDIA]}
-      ></sonos-ha-player>
+        @click=${() => this.store.mediaBrowseService.showBrowseMedia(this.store.activePlayer, this)}
+        .path=${mdiPlayBoxMultiple}
+      ></ha-icon-button>
     `;
   }
 

@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../model/store';
-import { CardConfig, MediaPlayerEntityFeature } from '../types';
+import { CardConfig } from '../types';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
 import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
@@ -10,8 +10,6 @@ import { MediaPlayer } from '../model/media-player';
 import HassService from '../services/hass-service';
 import { HassEntity } from 'home-assistant-js-websocket';
 import '../components/sleep-timer';
-
-const { SELECT_SOURCE } = MediaPlayerEntityFeature;
 
 export class Volumes extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -66,7 +64,7 @@ export class Volumes extends LitElement {
         ></ha-icon-button>
       </div>
       <div class="switches" hide=${hideSwitches || nothing}>
-        <sonos-ha-player .store=${this.store} .features=${[SELECT_SOURCE]}> </sonos-ha-player>
+        <sonos-source .store=${this.store}> </sonos-source>
         ${until(this.getAdditionalControls(hideSwitches, player))}
         <sonos-sleep-timer .store=${this.store} .player=${player}></sonos-sleep-timer>
       </div>

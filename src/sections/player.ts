@@ -60,8 +60,16 @@ export class Player extends LitElement {
 
   private getArtworkImage() {
     const prefix = this.config.artworkHostname || '';
-    const { media_title, media_artist, media_album_name, media_content_id, media_channel, entity_picture, entity_picture_local, app_id } =
-      this.activePlayer.attributes;
+    const {
+      media_title,
+      media_artist,
+      media_album_name,
+      media_content_id,
+      media_channel,
+      entity_picture,
+      entity_picture_local,
+      app_id,
+    } = this.activePlayer.attributes;
     let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
     if (app_id === 'music_assistant') {
       entityImage = entity_picture_local ? prefix + entity_picture_local : entity_picture;
