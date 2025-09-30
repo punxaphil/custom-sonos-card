@@ -19,6 +19,7 @@ import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import { findPlayer } from '../utils/utils';
 import MediaBrowseService from '../services/media-browse-service';
+import { when } from 'lit/directives/when.js';
 
 class PlayerControls extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -48,31 +49,34 @@ class PlayerControls extends LitElement {
     const playing = this.activePlayer.isPlaying();
     return html`
       <div class="main" id="mediaControls">
-          <div class="icons">
-              <div class="flex-1"></div>
-              <ha-icon-button hide=${noUpDown} @click=${this.volDown} .path=${mdiVolumeMinus}></ha-icon-button>
-            <sonos-shuffle hide=${noShuffle} .store=${this.store}></sonos-shuffle>
-            <ha-icon-button hide=${noPrev} @click=${this.prev} .path=${mdiSkipPrevious}></ha-icon-button>
-              <ha-icon-button hide=${noFastForwardAndRewind} @click=${this.rewind} .path=${mdiRewind}></ha-icon-button>
-            <ha-icon-button @click=${playing ? this.pauseOrStop : this.play} .path=${playing ? pauseOrStop : mdiPlayCircle} class="big-icon"></ha-icon-button>
-              <ha-icon-button hide=${noFastForwardAndRewind} @click=${this.fastForward} .path=${mdiFastForward}></ha-icon-button>
-            <ha-icon-button hide=${noNext} @click=${this.next} .path=${mdiSkipNext}></ha-icon-button>
-            <sonos-repeat hide=${noRepeat} .store=${this.store} ></sonos-repeat>
-              
-              <ha-icon-button hide=${noUpDown} @click=${this.volUp} .path=${mdiVolumePlus}></ha-icon-button>
-              <div class="audio-input-format">
-                ${this.config.showAudioInputFormat && until(this.getAudioInputFormat())}
-              </div>
-            <ha-icon-button hide=${noBrowse} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
+        <div class="icons">
+          <div class="flex-1"></div>
+          <ha-icon-button hide=${noUpDown} @click=${this.volDown} .path=${mdiVolumeMinus}></ha-icon-button>
+          <sonos-shuffle hide=${noShuffle} .store=${this.store}></sonos-shuffle>
+          <ha-icon-button hide=${noPrev} @click=${this.prev} .path=${mdiSkipPrevious}></ha-icon-button>
+          <ha-icon-button hide=${noFastForwardAndRewind} @click=${this.rewind} .path=${mdiRewind}></ha-icon-button>
+          <ha-icon-button @click=${playing ? this.pauseOrStop : this.play}
+                          .path=${playing ? pauseOrStop : mdiPlayCircle} class="big-icon"></ha-icon-button>
+          <ha-icon-button hide=${noFastForwardAndRewind} @click=${this.fastForward}
+                          .path=${mdiFastForward}></ha-icon-button>
+          <ha-icon-button hide=${noNext} @click=${this.next} .path=${mdiSkipNext}></ha-icon-button>
+          <sonos-repeat hide=${noRepeat} .store=${this.store}></sonos-repeat>
+
+          <ha-icon-button hide=${noUpDown} @click=${this.volUp} .path=${mdiVolumePlus}></ha-icon-button>
+          <div class="audio-input-format">
+            ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
           </div>
-          <sonos-volume .store=${this.store} .player=${this.volumePlayer}
-                       .updateMembers=${this.updateMemberVolumes}></sonos-volume>
-          <div class="icons">
-             <ha-icon-button hide=${this.store.hidePower(true)} @click=${this.togglePower}></ha-icon-button>
-          </div">
+          <ha-icon-button hide=${noBrowse} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
+        </div>
+        <sonos-volume .store=${this.store} .player=${this.volumePlayer}
+                      .updateMembers=${this.updateMemberVolumes}></sonos-volume>
+        <div class="icons">
+          <ha-icon-button hide=${this.store.hidePower(true)} @click=${this.togglePower}></ha-icon-button>
+        </div">
       </div>
-  `;
+    `;
   }
+
   private prev = async () => await this.mediaControlService.prev(this.activePlayer);
   private play = async () => await this.mediaControlService.play(this.activePlayer);
   private pauseOrStop = async () => {
@@ -139,19 +143,12 @@ class PlayerControls extends LitElement {
         flex: 1 0 0;
         margin-bottom: 10px;
         text-align: center;
-        align-self: stretch;
-        position: relative;
+        align-self: end;
       }
       .audio-input-format > div {
         color: var(--card-background-color);
         background: var(--disabled-text-color);
-        text-overflow: ellipsis;
-        overflow: hidden;
         white-space: nowrap;
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        max-width: 100%;
         font-size: smaller;
         line-height: normal;
         padding: 3px;
