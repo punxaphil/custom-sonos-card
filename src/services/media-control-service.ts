@@ -135,23 +135,32 @@ export default class MediaControlService {
     }
   }
   private async volumeSetGroup(player: MediaPlayer, volumePercent: number) {
-    let relativeVolumeChange: number | undefined;
-    if (this.config.adjustVolumeRelativeToMainPlayer) {
-      relativeVolumeChange = volumePercent / player.getVolume();
-    }
+    const allZero = player.members.every((member) => member.getVolume() === 0);
+    if (allZero) {
+      await Promise.all(
+        player.members.map((member) => {
+          return this.volumeSetSinglePlayer(member, volumePercent);
+        }),
+      );
+    } else {
+      let relativeVolumeChange: number | undefined;
+      if (this.config.adjustVolumeRelativeToMainPlayer) {
+        relativeVolumeChange = player.getVolume() < 1 ? 1 : volumePercent / player.getVolume();
+      }
 
-    await Promise.all(
-      player.members.map((member) => {
-        let memberVolume = volumePercent;
-        if (relativeVolumeChange !== undefined) {
-          if (this.config.adjustVolumeRelativeToMainPlayer) {
-            memberVolume = member.getVolume() * relativeVolumeChange;
-            memberVolume = Math.min(100, Math.max(0, memberVolume));
+      await Promise.all(
+        player.members.map((member) => {
+          let memberVolume = volumePercent;
+          if (relativeVolumeChange !== undefined) {
+            if (this.config.adjustVolumeRelativeToMainPlayer) {
+              memberVolume = member.getVolume() * relativeVolumeChange;
+              memberVolume = Math.min(100, Math.max(0, memberVolume));
+            }
           }
-        }
-        return this.volumeSetSinglePlayer(member, memberVolume);
-      }),
-    );
+          return this.volumeSetSinglePlayer(member, memberVolume);
+        }),
+      );
+    }
   }
 
   async volumeSetSinglePlayer(player: MediaPlayer, volumePercent: number) {
