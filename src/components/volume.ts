@@ -59,6 +59,7 @@ class Volume extends LitElement {
 
   private async volumeChanged(e: Event) {
     const newVolume = numberFromEvent(e);
+    console.log('newVolume', newVolume);
     return await this.mediaControlService.volumeSet(this.player, newVolume, this.updateMembers);
   }
 
@@ -128,6 +129,7 @@ class Volume extends LitElement {
   }
 }
 function numberFromEvent(e: Event) {
+  console.log('numberFromEvent e', JSON.stringify(e));
   return Number.parseInt((e?.target as HTMLInputElement)?.value);
 }
 

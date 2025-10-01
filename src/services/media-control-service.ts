@@ -157,6 +157,7 @@ export default class MediaControlService {
   async volumeSetSinglePlayer(player: MediaPlayer, volumePercent: number) {
     if (!player.ignoreVolume) {
       const volume = volumePercent / 100;
+      console.log('float', volume);
       await this.hassService.callMediaService('volume_set', { entity_id: player.id, volume_level: volume });
     }
   }
