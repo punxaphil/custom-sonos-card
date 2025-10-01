@@ -22,7 +22,7 @@ class Source extends LitElement {
           @selected=${this.setSource}
           naturalMenuWidth
         >
-          ${this.activePlayer.attributes.source_list.map((source: string) => {
+          ${this.activePlayer.attributes.source_list?.map((source: string) => {
             return html` <ha-list-item .value=${source}> ${source} </ha-list-item> `;
           })}
         </ha-select>
