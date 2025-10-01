@@ -73,11 +73,13 @@ class Group extends LitElement {
   private handleGroupClicked() {
     if (!this.selected) {
       this.selected = true;
-      if (this.store.config.storePlayerInSessionStorage) {
-        window.sessionStorage.setItem(SESSION_STORAGE_PLAYER_ID, this.player.id);
-      } else {
-        const newUrl = window.location.href.replace(/#.*/g, '');
-        window.location.replace(`${newUrl}#${this.player.id}`);
+      if (!this.store.config.doNotRememberSelectedPlayer) {
+        if (this.store.config.storePlayerInSessionStorage) {
+          window.sessionStorage.setItem(SESSION_STORAGE_PLAYER_ID, this.player.id);
+        } else {
+          const newUrl = window.location.href.replace(/#.*/g, '');
+          window.location.replace(`${newUrl}#${this.player.id}`);
+        }
       }
       this.dispatchEntityIdEvent();
     }

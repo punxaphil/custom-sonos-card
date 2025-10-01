@@ -103,6 +103,7 @@ export interface CardConfig extends LovelaceCardConfig {
   inverseGroupMuteState?: boolean;
   storePlayerInSessionStorage?: boolean;
   sortFavoritesByType?: boolean;
+  doNotRememberSelectedPlayer?: boolean;
 }
 
 export interface MediaArtworkOverride {

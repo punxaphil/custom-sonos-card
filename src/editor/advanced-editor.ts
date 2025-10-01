@@ -169,6 +169,10 @@ export const ADVANCED_SCHEMA = [
     name: 'storePlayerInSessionStorage',
     selector: { boolean: {} },
   },
+  {
+    name: 'doNotRememberSelectedPlayer',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

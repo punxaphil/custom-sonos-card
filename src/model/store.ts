@@ -182,6 +182,9 @@ export default class Store {
   }
 
   private getActivePlayer() {
+    if (this.config.doNotRememberSelectedPlayer) {
+      return '';
+    }
     if (this.config.storePlayerInSessionStorage) {
       return this.getActivePlayerFromStorage();
     }
