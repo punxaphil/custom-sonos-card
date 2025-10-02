@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { CardConfig } from '../types';
@@ -14,6 +14,8 @@ class Volume extends LitElement {
   @property({ type: Boolean }) updateMembers = true;
   @property() volumeClicked?: () => void;
   @property() slim: boolean = false;
+  @state() private sliderMoving: boolean = false;
+  @state() private startVolumeSliderMoving: number = 0;
   private togglePower = async () => await this.mediaControlService.togglePower(this.player);
 
   render() {
@@ -21,7 +23,7 @@ class Volume extends LitElement {
     this.mediaControlService = this.store.mediaControlService;
 
     const volume = this.player.getVolume();
-    const max = this.getMax(volume);
+    const max = this.getMax();
 
     const isMuted = this.updateMembers ? this.player.isGroupMuted() : this.player.isMemberMuted();
     const muteIcon = isMuted ? mdiVolumeMute : mdiVolumeHigh;
@@ -35,7 +37,7 @@ class Volume extends LitElement {
             .value=${volume}
             max=${max}
             @value-changed=${this.volumeChanged}
-            @slider-moved=${this.volumeChanged}
+            @slider-moved=${this.sliderMoved}
             .disabled=${disabled}
             class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
           ></ha-control-slider>
@@ -51,13 +53,27 @@ class Volume extends LitElement {
     `;
   }
 
-  private getMax(volume: number) {
+  private getMax() {
+    const volume = this.sliderMoving ? this.startVolumeSliderMoving : this.player.getVolume();
     const dynamicThreshold = Math.max(0, Math.min(this.config.dynamicVolumeSliderThreshold ?? 20, 100));
     const dynamicMax = Math.max(0, Math.min(this.config.dynamicVolumeSliderMax ?? 30, 100));
     return volume < dynamicThreshold && this.config.dynamicVolumeSlider ? dynamicMax : 100;
   }
 
+  private async sliderMoved(e: Event) {
+    if (!this.sliderMoving) {
+      this.startVolumeSliderMoving = this.player.getVolume();
+    }
+    this.sliderMoving = true;
+    return await this.setVolume(e);
+  }
+
   private async volumeChanged(e: Event) {
+    this.sliderMoving = false;
+    return await this.setVolume(e);
+  }
+
+  private async setVolume(e: Event) {
     const newVolume = numberFromEvent(e);
     return await this.mediaControlService.volumeSet(this.player, newVolume, this.updateMembers);
   }
