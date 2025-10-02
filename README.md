@@ -121,6 +121,8 @@ sectionButtonIcons: # customize icons for the section buttons
 mediaTitleRegexToReplace: '.wav?.*' # Regex pattern to replace parts of the media title
 mediaTitleReplacement: ' radio' # Replacement for the media title regex pattern
 inverseGroupMuteState: true # default is false, which means that only if all players are muted, mute icon shows as 'muted'. If set to true, mute icon will show as 'muted' if any player is muted.
+storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
+doNotRememberSelectedPlayer: true # default is false. If set to true, the selected player will not be remembered in URL hash or session storage.
   
 # groups specific
 groupsTitle: ''
@@ -152,6 +154,7 @@ groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
   predefinedGroup: mdi:account-group # default is mdi:speaker-multiple
   joinAll: mdi:account-multiple # default is mdi:checkbox-multiple-marked-outline
   unJoinAll: mdi:account-remove # default is mdi:minus-box-multiple-outline
+groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
 
 # player specific
 hidePlayerControlNextTrackButton: true # default is false, hides player control next track button.
@@ -209,8 +212,6 @@ showBrowseMediaInPlayerSection: true # default is false. Will show the browse me
 showChannelInPlayer: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
 hidePlaylistInPlayer: true # default is false. Will hide the playlist name in the player section.
 stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
-storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
-doNotRememberSelectedPlayer: true # default is false. If set to true, the selected player will not be remembered in URL hash or session storage.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.

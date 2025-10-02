@@ -212,13 +212,14 @@ export class Grouping extends LitElement {
     if (selectedItems.length === 1) {
       selectedItems[0].isDisabled = true;
     }
-    groupingItems.sort((a, b) => {
-      if ((a.isMain && !b.isMain) || (a.isSelected && !b.isSelected)) {
-        return -1;
-      }
-      return a.name.localeCompare(b.name);
-    });
-
+    if (!this.config.groupingDontSortMembersOnTop) {
+      groupingItems.sort((a, b) => {
+        if ((a.isMain && !b.isMain) || (a.isSelected && !a.isModified && !b.isSelected)) {
+          return -1;
+        }
+        return 0;
+      });
+    }
     return groupingItems;
   }
 

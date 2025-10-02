@@ -173,6 +173,10 @@ export const ADVANCED_SCHEMA = [
     name: 'doNotRememberSelectedPlayer',
     selector: { boolean: {} },
   },
+  {
+    name: 'groupingDontSortMembersOnTop',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

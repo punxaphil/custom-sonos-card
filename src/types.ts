@@ -104,6 +104,7 @@ export interface CardConfig extends LovelaceCardConfig {
   storePlayerInSessionStorage?: boolean;
   sortFavoritesByType?: boolean;
   doNotRememberSelectedPlayer?: boolean;
+  groupingDontSortMembersOnTop?: boolean;
 }
 
 export interface MediaArtworkOverride {
