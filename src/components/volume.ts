@@ -42,9 +42,9 @@ class Volume extends LitElement {
             class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
           ></ha-control-slider>
           <div class="volume-level">
-            <div style="flex: ${volume}">0%</div>
+            <div style="flex: ${volume}">${volume > 0 ? '0%' : ''}</div>
             <div class="percentage">${volume}%</div>
-            <div style="flex: ${max - volume};text-align: right">${max}%</div>
+            <div style="flex: ${max - volume};text-align: right">${volume < max ? `${max}%` : ''}</div>
           </div>
         </div>
         <div class="percentage-slim" hide=${this.slim && nothing}>${volume}%</div>
@@ -133,7 +133,6 @@ class Volume extends LitElement {
       .percentage,
       .percentage-slim {
         font-weight: bold;
-        font-size: 12px;
         align-self: center;
       }
 
