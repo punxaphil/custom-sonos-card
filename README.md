@@ -123,6 +123,7 @@ mediaTitleReplacement: ' radio' # Replacement for the media title regex pattern
 inverseGroupMuteState: true # default is false, which means that only if all players are muted, mute icon shows as 'muted'. If set to true, mute icon will show as 'muted' if any player is muted.
 storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
 doNotRememberSelectedPlayer: true # default is false. If set to true, the selected player will not be remembered in URL hash or session storage.
+changeVolumeOnSlide: true # default is false. If set to true, volume will be changed while sliding the volume slider. If false, volume will only be changed when releasing the slider.
   
 # groups specific
 groupsTitle: ''

@@ -61,11 +61,14 @@ class Volume extends LitElement {
   }
 
   private async sliderMoved(e: Event) {
-    if (!this.sliderMoving) {
-      this.startVolumeSliderMoving = this.player.getVolume();
+    if (this.config.changeVolumeOnSlide) {
+      console.log('slider moved', this.config.changeVolumeOnSlide);
+      if (!this.sliderMoving) {
+        this.startVolumeSliderMoving = this.player.getVolume();
+      }
+      this.sliderMoving = true;
+      return await this.setVolume(e);
     }
-    this.sliderMoving = true;
-    return await this.setVolume(e);
   }
 
   private async volumeChanged(e: Event) {

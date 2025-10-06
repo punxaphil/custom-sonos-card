@@ -177,6 +177,10 @@ export const ADVANCED_SCHEMA = [
     name: 'groupingDontSortMembersOnTop',
     selector: { boolean: {} },
   },
+  {
+    name: 'changeVolumeOnSlide',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

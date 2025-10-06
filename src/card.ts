@@ -198,6 +198,8 @@ export class Card extends LitElement {
       minWidth: `20rem`,
       maxWidth: `${width}rem`,
       overflow: 'hidden',
+      // only set borderRadius if this.config.style.borderRadius is set, otherwise the card looks weird with box-shadow
+      ...(this.config.style?.borderRadius ? { borderRadius: this.config.style.borderRadius } : {}),
     });
   }
 

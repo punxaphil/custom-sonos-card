@@ -36,7 +36,12 @@ interface SectionButtonIcons {
   queue?: string;
 }
 
+interface StyleConfig {
+  borderRadius?: string;
+}
+
 export interface CardConfig extends LovelaceCardConfig {
+  style?: StyleConfig;
   sections?: Section[];
   startSection?: Section;
   hidePlayerControlRepeatButton?: boolean;
@@ -105,6 +110,7 @@ export interface CardConfig extends LovelaceCardConfig {
   sortFavoritesByType?: boolean;
   doNotRememberSelectedPlayer?: boolean;
   groupingDontSortMembersOnTop?: boolean;
+  changeVolumeOnSlide?: boolean;
 }
 
 export interface MediaArtworkOverride {
