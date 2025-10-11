@@ -6,7 +6,7 @@ Sonos Card for Home Assistant UI with a focus on managing multiple media players
 This card is nearly identical to the [Maxi Media Player](https://github.com/punxaphil/maxi-media-player), but is optimized for Sonos players. It will, by default, automatically discover all Sonos players in your Home Assistant instance. It also includes some Sonos specific features like queue management and sleep timer.
 <!-- //#ONLY_SONOS_CARD_END -->
 <!-- //#ONLY_SONOS_CARD
-This card, Maxi Media Player, is a generalisation of the [Sonos Card](https://github.com/punxaphil/custom-sonos-card), and its aim is to work with all media players supported by Home Assistant. In contrast to the Sonos Card, it will not automatically discover your media players, but you will have to specify which ones to use in the configuration. <!-- //#NO_REPLACE_ON_THIS_LINE -->
+This card, Maxi Media Player, is a generalisation of the [Sonos Card](https://github.com/punxaphil/custom-sonos-card), and its aim is to work with all media players supported by Home Assistant. In contrast to the Sonos Card, it will not automatically discover your media players, but you will have to specify which ones to use in the configuration. #NO_REPLACE_ON_THIS_LINE
 --> <!-- //#ONLY_SONOS_CARD -->
 
 ## Features:
