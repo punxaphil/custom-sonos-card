@@ -149,6 +149,10 @@ export class Volumes extends LitElement {
       *[hide] {
         display: none;
       }
+
+      state-card-content {
+        --ha-font-size-m: 12px;
+      }
     `;
   }
 }
