@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
-    "@vitest/coverage-v8": "^4.0.6",
+    "@vitest/coverage-v8": "^4.0.8",
     "@types/eslint__js": "^9.14.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.1.8",
@@ -23,8 +23,8 @@
     "jsdom": "^27.1.0",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.3",
-    "vite": "^7.1.12",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.2",
     "vitest": "^4.0.4"
   },
   "scripts": {
