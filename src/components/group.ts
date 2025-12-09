@@ -25,6 +25,7 @@ class Group extends LitElement {
     return html`
       <mwc-list-item
         hasMeta
+        class=${this.store.config.compactGroups ? 'compact' : ''}
         ?selected=${this.selected}
         ?activated=${this.selected}
         @click=${() => this.handleGroupClicked()}
@@ -106,6 +107,10 @@ class Group extends LitElement {
         padding-left: 0;
       }
 
+      mwc-list-item.compact {
+        margin: 0.3rem;
+      }
+
       .row {
         display: flex;
         margin: 1rem 0;
@@ -150,6 +155,13 @@ class Group extends LitElement {
       ha-icon.small {
         --mdc-icon-size: 2rem;
         margin: 0;
+      }
+
+      .compact ha-icon {
+        --mdc-icon-size: 2rem;
+      }
+      .compact div {
+        margin: 0.1rem;
       }
 
       .bars {

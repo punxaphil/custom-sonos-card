@@ -49,7 +49,7 @@ class PlayerControls extends LitElement {
     const playing = this.activePlayer.isPlaying();
     return html`
       <div class="main" id="mediaControls">
-        <div class="icons">
+        <div class="icons ${this.config.playerControlsLargeIcons ? 'large-icons' : ''}">
           <div class="flex-1"></div>
           <ha-icon-button hide=${noUpDown} @click=${this.volDown} .path=${mdiVolumeMinus}></ha-icon-button>
           <sonos-shuffle hide=${noShuffle} .store=${this.store}></sonos-shuffle>
@@ -139,6 +139,16 @@ class PlayerControls extends LitElement {
         --mdc-icon-button-size: 5rem;
         --mdc-icon-size: 5rem;
       }
+
+      .large-icons ha-icon-button {
+        --mdc-icon-size: 3rem;
+        --mdc-icon-button-size: 4rem;
+      }
+
+      .large-icons .big-icon {
+        --mdc-icon-size: 5rem;
+        --mdc-icon-button-size: 5rem;
+      }
       .audio-input-format {
         flex: 1 0 0;
         margin-bottom: 10px;
@@ -155,6 +165,10 @@ class PlayerControls extends LitElement {
       }
       .flex-1 {
         flex: 1;
+      }
+
+      .large-icons {
+        margin-bottom: 2rem;
       }
     `;
   }

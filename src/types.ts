@@ -111,6 +111,11 @@ export interface CardConfig extends LovelaceCardConfig {
   doNotRememberSelectedPlayer?: boolean;
   groupingDontSortMembersOnTop?: boolean;
   changeVolumeOnSlide?: boolean;
+  hideMediaBrowserHeader?: boolean;
+  compactGroups?: boolean;
+  compactGrouping?: boolean;
+  hidePlayerArtwork?: boolean;
+  playerControlsLargeIcons?: boolean;
 }
 
 export interface MediaArtworkOverride {

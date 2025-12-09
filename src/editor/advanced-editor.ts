@@ -181,6 +181,26 @@ export const ADVANCED_SCHEMA = [
     name: 'changeVolumeOnSlide',
     selector: { boolean: {} },
   },
+  {
+    name: 'hideMediaBrowserHeader',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'compactGroups',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'compactGrouping',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'hidePlayerArtwork',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'playerControlsLargeIcons',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

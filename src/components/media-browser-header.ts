@@ -7,6 +7,9 @@ class MediaBrowserHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
 
   render() {
+    if (this.store.config.hideMediaBrowserHeader) {
+      return nothing;
+    }
     return html`
       <div class="title">${this.store.config.mediaBrowserTitle ?? 'All Favorites'}</div>
       <ha-icon-button

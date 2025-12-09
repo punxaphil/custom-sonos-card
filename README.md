@@ -135,6 +135,7 @@ changeVolumeOnSlide: true # default is false. If set to true, volume will be cha
 # groups specific
 groupsTitle: ''
 hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
+compactGroups: true # default is false. Makes the groups section more compact.
 
 # grouping specific
 groupingTitle: ''
@@ -163,6 +164,7 @@ groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
   joinAll: mdi:account-multiple # default is mdi:checkbox-multiple-marked-outline
   unJoinAll: mdi:account-remove # default is mdi:minus-box-multiple-outline
 groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
+compactGrouping: true # default is false. Makes the grouping section more compact.
 
 # player specific
 hidePlayerControlNextTrackButton: true # default is false, hides player control next track button.
@@ -220,6 +222,8 @@ showBrowseMediaInPlayerSection: true # default is false. Will show the browse me
 showChannelInPlayer: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
 hidePlaylistInPlayer: true # default is false. Will hide the playlist name in the player section.
 stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
+hidePlayerArtwork: true # default is false. Hides the artwork in the player section.
+playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -243,6 +247,7 @@ hideBrowseMediaButton: true # default is false. Hides the button to open the med
 replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
 mediaBrowserTitle: My favorites # default is 'All favorites'. Use this to change the title for the media browser/favorites section.
 sortFavoritesByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
+hideMediaBrowserHeader: true # default is false. Hides the header of the media browser section (title and browse media button).
 
 # volumes specific
 hideVolumeCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
@@ -286,6 +291,26 @@ The following variables are being used and can be set in your theme to change th
 ```
 
 Read more about using theme variables here: https://www.home-assistant.io/integrations/frontend/#defining-themes
+
+## Slim version
+
+This example will give a slimmer version of the card.
+```yaml
+type: custom:sonos-card
+heightPercentage: 60
+showVolumeUpAndDownButtons: true
+favoritesItemsPerRow: 6
+footerHeight: 3.5
+hideMediaBrowserHeader: true
+compactGroups: true
+compactGrouping: true
+hidePlayerArtwork: true
+playerControlsLargeIcons: true  
+```
+
+![slim.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/slim.png)
+
+
 
 ## Custom Favorites
 

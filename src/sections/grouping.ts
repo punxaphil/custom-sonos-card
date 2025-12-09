@@ -37,14 +37,19 @@ export class Grouping extends LitElement {
 
     return html`
       <div class="wrapper">
-        <div class="predefined-groups">
+        <div class="predefined-groups" compact=${this.config.compactGrouping || nothing}>
           ${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}
           ${when(this.store.predefinedGroups, () => this.renderPredefinedGroups())}
         </div>
         <div class="list">
           ${this.groupingItems.map((item) => {
             return html`
-              <div class="item" modified=${item.isModified || nothing} disabled=${item.isDisabled || nothing}>
+              <div
+                class="item"
+                modified=${item.isModified || nothing}
+                disabled=${item.isDisabled || nothing}
+                compact=${this.config.compactGrouping || nothing}
+              >
                 <ha-icon
                   class="icon"
                   selected=${item.isSelected || nothing}
@@ -100,11 +105,21 @@ export class Grouping extends LitElement {
           flex-shrink: 0;
         }
 
+        .predefined-groups[compact] {
+          margin: 0.3rem !important;
+        }
+
         .item {
           color: var(--secondary-text-color);
           padding: 0.5rem;
           display: flex;
           align-items: center;
+        }
+
+        .item[compact] {
+          padding-top: 0rem;
+          padding-bottom: 0;
+          border-bottom: 1px solid #333;
         }
 
         .icon {

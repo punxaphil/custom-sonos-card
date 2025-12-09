@@ -28,7 +28,11 @@ export class Player extends LitElement {
           background=${artworkAsBackground || nothing}
           .store=${this.store}
         ></sonos-player-header>
-        <div class="artwork" hide=${artworkAsBackground || nothing} style=${this.artworkStyle()}></div>
+        <div
+          class="artwork"
+          hide=${artworkAsBackground || this.config.hidePlayerArtwork || nothing}
+          style=${this.artworkStyle()}
+        ></div>
         <sonos-player-controls
           class="controls"
           background=${artworkAsBackground || nothing}
@@ -123,7 +127,7 @@ export class Player extends LitElement {
 
       .header {
         grid-area: header;
-        margin: 0.75rem 3.25rem;
+        margin: 0.75rem 1.25rem;
         padding: 0.5rem;
       }
 
