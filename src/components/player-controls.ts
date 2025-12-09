@@ -16,10 +16,8 @@ import {
   mdiVolumePlus,
 } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
-import { until } from 'lit-html/directives/until.js';
 import { findPlayer } from '../utils/utils';
 import MediaBrowseService from '../services/media-browse-service';
-import { when } from 'lit/directives/when.js';
 
 class PlayerControls extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -63,9 +61,7 @@ class PlayerControls extends LitElement {
           <sonos-repeat hide=${noRepeat} .store=${this.store}></sonos-repeat>
 
           <ha-icon-button hide=${noUpDown} @click=${this.volUp} .path=${mdiVolumePlus}></ha-icon-button>
-          <div class="audio-input-format">
-            ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
-          </div>
+          <div class="flex-1"></div>
           <ha-icon-button hide=${noBrowse} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
         </div>
         <sonos-volume .store=${this.store} .player=${this.volumePlayer}
@@ -114,14 +110,6 @@ class PlayerControls extends LitElement {
       this.activePlayer.attributes.media_position + (this.config.fastForwardAndRewindStepSizeSeconds || 15),
     );
 
-  private async getAudioInputFormat() {
-    const sensors = await this.store.hassService.getRelatedEntities(this.activePlayer, 'sensor');
-    const audioInputFormat = sensors.find((sensor) => sensor.entity_id.includes('audio_input_format'));
-    return audioInputFormat && audioInputFormat.state && audioInputFormat.state !== 'No audio'
-      ? html`<div>${audioInputFormat.state}</div>`
-      : '';
-  }
-
   static get styles() {
     return css`
       .main {
@@ -148,20 +136,6 @@ class PlayerControls extends LitElement {
       .large-icons .big-icon {
         --mdc-icon-size: 5rem;
         --mdc-icon-button-size: 5rem;
-      }
-      .audio-input-format {
-        flex: 1 0 0;
-        margin-bottom: 10px;
-        text-align: center;
-        align-self: end;
-      }
-      .audio-input-format > div {
-        color: var(--card-background-color);
-        background: var(--disabled-text-color);
-        white-space: nowrap;
-        font-size: smaller;
-        line-height: normal;
-        padding: 3px;
       }
       .flex-1 {
         flex: 1;

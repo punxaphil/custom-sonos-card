@@ -4,6 +4,8 @@ import Store from '../model/store';
 import { CardConfig } from '../types';
 import { getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
+import { until } from 'lit-html/directives/until.js';
+import { when } from 'lit/directives/when.js';
 
 class PlayerHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -17,7 +19,9 @@ class PlayerHeader extends LitElement {
     return html` <div class="info">
       <div class="entity">${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}</div>
       <div class="song">${this.getSong()}</div>
-      <div class="artist-album">${this.getAlbum()}</div>
+      <div class="artist-album">
+        ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
+      </div>
       <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
   }
@@ -39,6 +43,14 @@ class PlayerHeader extends LitElement {
       album = `${this.activePlayer.attributes.media_playlist} - ${album}`;
     }
     return album;
+  }
+
+  private async getAudioInputFormat() {
+    const sensors = await this.store.hassService.getRelatedEntities(this.activePlayer, 'sensor');
+    const audioInputFormat = sensors.find((sensor) => sensor.entity_id.includes('audio_input_format'));
+    return audioInputFormat && audioInputFormat.state && audioInputFormat.state !== 'No audio'
+      ? html`<span class="audio-input-format">${audioInputFormat.state}</span>`
+      : '';
   }
 
   static get styles() {
@@ -70,6 +82,16 @@ class PlayerHeader extends LitElement {
         font-size: 1rem;
         font-weight: 300;
         color: var(--secondary-text-color);
+      }
+
+      .audio-input-format {
+        color: var(--card-background-color);
+        background: var(--disabled-text-color);
+        white-space: nowrap;
+        font-size: smaller;
+        line-height: normal;
+        padding: 3px;
+        margin-left: 8px;
       }
     `;
   }
