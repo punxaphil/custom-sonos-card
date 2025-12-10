@@ -58,7 +58,7 @@ export default class HassService {
               resolve(defaultValue);
             }
           }, subscribeMessage)
-          .then((unsub) => unsub);
+          .then((unsub) => unsub());
       } catch {
         resolve(defaultValue);
       }
