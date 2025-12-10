@@ -216,6 +216,7 @@ entitiesToIgnoreVolumeLevelFor: # default is empty. Use this if you want to igno
 artworkMinHeight: 10 # default is 5. Use this to change the minimum height of the artwork in the player section. Unit is in rem.
 artworkAsBackground: true # default is false. Will show the artwork as background for the player section.
 artworkAsBackgroundBlur: 10 # default is 0 (no blur). Adds a blur effect to the background artwork and shows the normal artwork on top. Higher values = more blur. Creates a modern look similar to Apple Music. Implies artworkAsBackground.
+playerControlsAndHeaderBackgroundOpacity: 0.7 # default is 0.9. Adjusts the opacity of the header and controls background when artworkAsBackground is enabled. Range 0-1.
 playerVolumeEntityId: media_player.bedroom # default is empty. Use this to control the volume of another player in the player section. Entity ID must the selected player or part of the selected player's group, otherwise it will not be controlled.
 allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the playerVolumeEntityId to be outside the group of the selected player.
 showSourceInPlayer: true # default is false. Will show the source (if available) in the player section.
@@ -292,6 +293,18 @@ The following variables are being used and can be set in your theme to change th
 ```
 
 Read more about using theme variables here: https://www.home-assistant.io/integrations/frontend/#defining-themes
+
+## Blurred background
+
+Create a modern look by using a blurred version of the album artwork as background. The normal artwork is displayed on top, and the header/controls have a semi-transparent background.
+
+![blur.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/blur.png)
+
+```yaml
+type: custom:sonos-card
+artworkAsBackgroundBlur: 10
+playerControlsAndHeaderBackgroundOpacity: 0.7
+```
 
 ## Slim version
 
@@ -537,17 +550,7 @@ card_mod:
       }
 ```
 
-#### Example 10 - Hide background from controls when artwork is shown as background
-```yaml
-artworkAsBackground: true
-card_mod:
-  style: |
-    ha-card {
-      --rgb-card-background-color: false;
-    }
-```
-
-#### Example 11 - Modify transparency of background from controls when artwork is shown as background
+#### Example 10 - Modify transparency of background from controls when artwork is shown as background
 ```yaml
 artworkAsBackground: true
 card_mod:
@@ -558,7 +561,7 @@ card_mod:
       }
 ```
 
-#### Example 12 - Show only player and now playing text information
+#### Example 11 - Show only player and now playing text information
 ```yaml
 heightPercentage: auto
 sections:
@@ -574,7 +577,7 @@ card_mod:
       }
 ```
 
-#### Example 13 - Style the favorite section
+#### Example 12 - Style the favorite section
 ```yaml
 card_mod:
   style:
@@ -585,7 +588,7 @@ card_mod:
       }  
 ```
 
-#### Example 14 - Color of the player controls
+#### Example 13 - Color of the player controls
 ```yaml
 card_mod:
   style:
@@ -595,7 +598,7 @@ card_mod:
       }
 ```
 
-#### Example 15 - Remove the top "All favorites" and "Browse media" from the favorites section
+#### Example 14 - Remove the top "All favorites" and "Browse media" from the favorites section
 ```yaml
 card_mod:
   style:
@@ -605,7 +608,7 @@ card_mod:
       }
 ```
 
-#### Example 16 - Change colors of titles in favorites
+#### Example 15 - Change colors of titles in favorites
 ```yaml
 card_mod:
   style:
@@ -616,7 +619,7 @@ card_mod:
       }  
 ```
 
-#### Example 17 - Remove everything except the album art
+#### Example 16 - Remove everything except the album art
 ```yaml
 card_mod:
   style:
@@ -626,7 +629,7 @@ card_mod:
       }
 ```
 
-#### Example 18 - Hide the volume button and percentage
+#### Example 17 - Hide the volume button and percentage
 ```yaml
 card_mod:
   style:
@@ -638,7 +641,7 @@ card_mod:
 
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_2.png)
 
-#### Example 19 - Changing the font size of song title
+#### Example 18 - Changing the font size of song title
 ```yaml
 card_mod:
   style:
@@ -648,7 +651,7 @@ card_mod:
       }
 ```
 
-#### Example 20 - Artwork position
+#### Example 19 - Artwork position
 ```yaml
 heightPercentage: auto
 card_mod:
@@ -664,7 +667,7 @@ card_mod:
 
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_3.png)
 
-#### Example 21 - Size of group buttons
+#### Example 20 - Size of group buttons
 ```yaml
 card_mod:
   style:
@@ -674,7 +677,7 @@ card_mod:
       }
 ```
 
-#### Example 22 - Font size for everything
+#### Example 21 - Font size for everything
 ```yaml
 card_mod:
   style: |
@@ -683,7 +686,7 @@ card_mod:
       }
 ```
 
-#### Example 23 - Increase entity font
+#### Example 22 - Increase entity font
 ```yaml
 card_mod:
   style:
@@ -693,7 +696,7 @@ card_mod:
       }
 ```
 
-#### Example 24 - Hide the select all/none buttons at the top of the groupings page
+#### Example 23 - Hide the select all/none buttons at the top of the groupings page
 ```yaml
 card_mod:
   style:
@@ -703,7 +706,7 @@ card_mod:
       }  
 ```
 
-#### Example 25 - reduce min-width of the card
+#### Example 24 - reduce min-width of the card
 ```yaml
 widthPercentage: 30
 card_mod:
@@ -714,7 +717,7 @@ card_mod:
       }  
 ```
 
-#### Example 26 - Padding and border around grouping items
+#### Example 25 - Padding and border around grouping items
 ```yaml
 card_mod:
   style:
@@ -727,7 +730,7 @@ card_mod:
 ```
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_4.png)
 
-#### Example 27 - Larger icons in the player section
+#### Example 26 - Larger icons in the player section
 ```yaml
 card_mod:
   style:
@@ -745,7 +748,7 @@ card_mod:
       }
 ```
 
-#### Example 28 - Change the size of section button icons
+#### Example 27 - Change the size of section button icons
 ```yaml
 card_mod:
   style:

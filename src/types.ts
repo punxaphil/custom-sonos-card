@@ -91,6 +91,7 @@ export interface CardConfig extends LovelaceCardConfig {
   artworkMinHeight?: number;
   artworkAsBackground?: boolean;
   artworkAsBackgroundBlur?: number;
+  playerControlsAndHeaderBackgroundOpacity?: number;
   playerVolumeEntityId?: string;
   allowPlayerVolumeEntityOutsideOfGroup?: boolean;
   dontSwitchPlayerWhenGrouping?: boolean;

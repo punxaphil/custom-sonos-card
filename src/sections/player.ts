@@ -22,10 +22,11 @@ export class Player extends LitElement {
 
     const blurAmount = this.config.artworkAsBackgroundBlur ?? 0;
     const artworkAsBackground = this.config.artworkAsBackground || blurAmount > 0;
+    const backgroundOpacity = this.config.playerControlsAndHeaderBackgroundOpacity ?? 0.9;
     const containerStyle = artworkAsBackground
       ? blurAmount > 0
-        ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px`
-        : this.getBackgroundImage()
+        ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px; --background-opacity: ${backgroundOpacity}`
+        : `${this.getBackgroundImage()}; --background-opacity: ${backgroundOpacity}`
       : '';
     return html`
       <div class="container ${blurAmount > 0 ? 'blurred-background' : ''}" style=${containerStyle || nothing}>
@@ -200,7 +201,7 @@ export class Player extends LitElement {
       }
 
       *[background] {
-        background-color: rgba(var(--rgb-card-background-color), 0.9);
+        background-color: rgba(var(--rgb-card-background-color), var(--background-opacity, 0.9));
         border-radius: 10px;
       }
     `;

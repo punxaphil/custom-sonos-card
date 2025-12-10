@@ -98,6 +98,10 @@ export const ADVANCED_SCHEMA = [
     selector: { number: { min: 0, max: 100, step: 1 } },
   },
   {
+    name: 'playerControlsAndHeaderBackgroundOpacity',
+    selector: { number: { min: 0, max: 1, step: 0.1 } },
+  },
+  {
     name: 'playerVolumeEntityId',
     selector: { entity: { multiple: false, filter: { domain: 'media_player' } } },
   },
