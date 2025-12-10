@@ -171,8 +171,8 @@ export interface PredefinedGroupPlayer<T = MediaPlayer> {
   player: T;
   volume?: number;
 }
-export interface TemplateResult {
-  result: string[];
+export interface TemplateResult<T = string[]> {
+  result: T;
 }
 
 export enum MediaPlayerEntityFeature {

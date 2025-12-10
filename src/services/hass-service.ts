@@ -3,7 +3,6 @@ import { CardConfig, GetQueueResponse, MediaPlayerItem, Section, TemplateResult 
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 import { MediaPlayer } from '../model/media-player';
-import { HassEntity } from 'home-assistant-js-websocket';
 import { customEvent } from '../utils/utils';
 
 export default class HassService {
@@ -44,30 +43,34 @@ export default class HassService {
     return mediaPlayerItem;
   }
 
-  async getRelatedEntities(player: MediaPlayer, ...entityTypes: string[]) {
-    return new Promise<HassEntity[]>((resolve) => {
+  async renderTemplate<T>(template: string, defaultValue: T): Promise<T> {
+    return new Promise<T>((resolve) => {
       const subscribeMessage = {
         type: 'render_template',
-        template: `{{ device_entities(device_id('${player.id}')) }}`,
+        template,
       };
       try {
         this.hass.connection
-          .subscribeMessage<TemplateResult>((response) => {
+          .subscribeMessage<TemplateResult<T>>((response) => {
             try {
-              resolve(
-                response.result
-                  .filter((item: string) => entityTypes.some((type) => item.includes(type)))
-                  .map((item) => this.hass.states[item]),
-              );
+              resolve(response.result);
             } catch {
-              resolve([]);
+              resolve(defaultValue);
             }
           }, subscribeMessage)
           .then((unsub) => unsub);
       } catch {
-        resolve([]);
+        resolve(defaultValue);
       }
     });
+  }
+
+  async getRelatedEntities(player: MediaPlayer, ...entityTypes: string[]) {
+    const template = `{{ device_entities(device_id('${player.id}')) }}`;
+    const result = await this.renderTemplate<string[]>(template, []);
+    return result
+      .filter((item: string) => entityTypes.some((type) => item.includes(type)))
+      .map((item) => this.hass.states[item]);
   }
 
   async getQueue(mediaPlayer: MediaPlayer): Promise<MediaPlayerItem[]> {

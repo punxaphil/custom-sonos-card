@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from 'lit';
-import { property } from 'lit/decorators.js';
+import { property, state } from 'lit/decorators.js';
 import '../components/player-controls';
 import '../components/player-header';
 import '../components/progress';
@@ -13,13 +13,16 @@ import { MediaPlayer } from '../model/media-player';
 
 export class Player extends LitElement {
   @property({ attribute: false }) store!: Store;
+  @state() private resolvedImageUrl?: string;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
+  private lastTemplateUrl?: string;
 
   render() {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
 
+    this.resolveTemplateImageUrlIfNeeded();
     const blurAmount = this.config.artworkAsBackgroundBlur ?? 0;
     const artworkAsBackground = this.config.artworkAsBackground || blurAmount > 0;
     const backgroundOpacity = this.config.playerControlsAndHeaderBackgroundOpacity ?? 0.9;
@@ -82,42 +85,60 @@ export class Player extends LitElement {
     }
   }
 
+  private getMatchingOverride(entityImage?: string) {
+    const overrides = this.config.mediaArtworkOverrides;
+    if (!overrides) return undefined;
+
+    const { media_title, media_artist, media_album_name, media_content_id, media_channel } =
+      this.activePlayer.attributes;
+
+    let override = overrides.find(
+      (value) =>
+        (media_title && media_title === value.mediaTitleEquals) ||
+        (media_artist && media_artist === value.mediaArtistEquals) ||
+        (media_album_name && media_album_name === value.mediaAlbumNameEquals) ||
+        (media_channel && media_channel === value.mediaChannelEquals) ||
+        (media_content_id && media_content_id === value.mediaContentIdEquals),
+    );
+    if (!override) {
+      override = overrides.find((value) => !entityImage && value.ifMissing);
+    }
+    return override;
+  }
+
   private getArtworkImage() {
     const prefix = this.config.artworkHostname || '';
-    const {
-      media_title,
-      media_artist,
-      media_album_name,
-      media_content_id,
-      media_channel,
-      entity_picture,
-      entity_picture_local,
-      app_id,
-    } = this.activePlayer.attributes;
+    const { entity_picture, entity_picture_local, app_id } = this.activePlayer.attributes;
     let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
     if (app_id === 'music_assistant') {
       entityImage = entity_picture_local ? prefix + entity_picture_local : entity_picture;
     }
     let sizePercentage = undefined;
-    const overrides = this.config.mediaArtworkOverrides;
-    if (overrides) {
-      let override = overrides.find(
-        (value) =>
-          (media_title && media_title === value.mediaTitleEquals) ||
-          (media_artist && media_artist === value.mediaArtistEquals) ||
-          (media_album_name && media_album_name === value.mediaAlbumNameEquals) ||
-          (media_channel && media_channel === value.mediaChannelEquals) ||
-          (media_content_id && media_content_id === value.mediaContentIdEquals),
-      );
-      if (!override) {
-        override = overrides.find((value) => !entityImage && value.ifMissing);
-      }
-      if (override?.imageUrl) {
+    const override = this.getMatchingOverride(entityImage);
+    if (override?.imageUrl) {
+      if (override.imageUrl.includes('{{')) {
+        entityImage = this.resolvedImageUrl ?? '';
+      } else {
         entityImage = override.imageUrl;
-        sizePercentage = override?.sizePercentage ?? sizePercentage;
       }
+      sizePercentage = override?.sizePercentage ?? sizePercentage;
     }
     return { entityImage, sizePercentage };
+  }
+
+  private resolveTemplateImageUrlIfNeeded() {
+    const override = this.getMatchingOverride(this.activePlayer.attributes.entity_picture);
+    const templateUrl = override?.imageUrl?.includes('{{') ? override.imageUrl : undefined;
+
+    if (templateUrl && this.lastTemplateUrl !== templateUrl) {
+      this.lastTemplateUrl = templateUrl;
+      this.store.hassService.renderTemplate<string>(templateUrl, '').then((result) => {
+        this.resolvedImageUrl = result;
+      });
+    } else if (!templateUrl) {
+      this.lastTemplateUrl = undefined;
+      this.resolvedImageUrl = undefined;
+    }
   }
 
   static get styles() {

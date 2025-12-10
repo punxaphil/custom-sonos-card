@@ -197,6 +197,8 @@ mediaArtworkOverrides: # Show your own selected artwork if certain rules match
     imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108794.png
   - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
     imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
+  - mediaTitleEquals: "My Radio Station" # imageUrl supports templates
+    imageUrl: '{{ states("sensor.my_cover_image_entity") }}'
 customFavorites: # Read more in 'Custom Favorites' section below
   media_player.tv: # set this to 'all' to show the custom favorite for all players
     - title: TV # Must match the name of the source (unless you specify media_content_id/type as shown below)
