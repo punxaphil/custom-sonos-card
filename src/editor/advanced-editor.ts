@@ -94,6 +94,10 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'artworkAsBackgroundBlur',
+    selector: { number: { min: 0, max: 100, step: 1 } },
+  },
+  {
     name: 'playerVolumeEntityId',
     selector: { entity: { multiple: false, filter: { domain: 'media_player' } } },
   },

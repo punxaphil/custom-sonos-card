@@ -20,9 +20,15 @@ export class Player extends LitElement {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
 
-    const artworkAsBackground = this.config.artworkAsBackground;
+    const blurAmount = this.config.artworkAsBackgroundBlur ?? 0;
+    const artworkAsBackground = this.config.artworkAsBackground || blurAmount > 0;
+    const containerStyle = artworkAsBackground
+      ? blurAmount > 0
+        ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px`
+        : this.getBackgroundImage()
+      : '';
     return html`
-      <div class="container" style=${artworkAsBackground && this.getBackgroundImage()}>
+      <div class="container ${blurAmount > 0 ? 'blurred-background' : ''}" style=${containerStyle || nothing}>
         <sonos-player-header
           class="header"
           background=${artworkAsBackground || nothing}
@@ -30,7 +36,7 @@ export class Player extends LitElement {
         ></sonos-player-header>
         <div
           class="artwork"
-          hide=${artworkAsBackground || this.config.hidePlayerArtwork || nothing}
+          hide=${(artworkAsBackground && !blurAmount) || this.config.hidePlayerArtwork || nothing}
           style=${this.artworkStyle()}
         ></div>
         <sonos-player-controls
@@ -45,6 +51,19 @@ export class Player extends LitElement {
   private artworkStyle() {
     const minHeight = this.config.artworkMinHeight ?? 5;
     return `${this.getBackgroundImage()}; min-height: ${minHeight}rem`;
+  }
+
+  private getBackgroundImageUrl() {
+    const fallbackImage =
+      this.config.fallbackArtwork ??
+      (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
+    const fallbackBackgroundUrl = `url(${fallbackImage})`;
+    const image = this.getArtworkImage();
+    if (image?.entityImage) {
+      return `url(${image.entityImage}), ${fallbackBackgroundUrl}`;
+    } else {
+      return fallbackBackgroundUrl;
+    }
   }
 
   private getBackgroundImage() {
@@ -112,6 +131,7 @@ export class Player extends LitElement {
       }
 
       .container {
+        position: relative;
         display: grid;
         grid-template-columns: 100%;
         grid-template-rows: min-content auto min-content;
@@ -125,10 +145,32 @@ export class Player extends LitElement {
         background-size: cover;
       }
 
+      .container.blurred-background {
+        background: none;
+        isolation: isolate;
+      }
+
+      .container.blurred-background::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: var(--blur-background-image);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        filter: blur(var(--blur-amount));
+        transform: scale(1.1);
+        z-index: -1;
+      }
+
       .header {
         grid-area: header;
         margin: 0.75rem 1.25rem;
         padding: 0.5rem;
+        position: relative;
       }
 
       .controls {
@@ -136,6 +178,7 @@ export class Player extends LitElement {
         overflow-y: auto;
         margin: 0.25rem;
         padding: 0.5rem;
+        position: relative;
       }
 
       .artwork {
@@ -149,6 +192,7 @@ export class Player extends LitElement {
         background-position: center;
         background-repeat: no-repeat;
         background-size: contain;
+        position: relative;
       }
 
       *[hide] {

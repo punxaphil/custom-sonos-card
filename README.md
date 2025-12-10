@@ -215,6 +215,7 @@ entitiesToIgnoreVolumeLevelFor: # default is empty. Use this if you want to igno
   - media_player.my_sonos_port_device
 artworkMinHeight: 10 # default is 5. Use this to change the minimum height of the artwork in the player section. Unit is in rem.
 artworkAsBackground: true # default is false. Will show the artwork as background for the player section.
+artworkAsBackgroundBlur: 10 # default is 0 (no blur). Adds a blur effect to the background artwork and shows the normal artwork on top. Higher values = more blur. Creates a modern look similar to Apple Music. Implies artworkAsBackground.
 playerVolumeEntityId: media_player.bedroom # default is empty. Use this to control the volume of another player in the player section. Entity ID must the selected player or part of the selected player's group, otherwise it will not be controlled.
 allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the playerVolumeEntityId to be outside the group of the selected player.
 showSourceInPlayer: true # default is false. Will show the source (if available) in the player section.

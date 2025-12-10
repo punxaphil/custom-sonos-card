@@ -90,6 +90,7 @@ export interface CardConfig extends LovelaceCardConfig {
   dynamicVolumeSliderMax?: number;
   artworkMinHeight?: number;
   artworkAsBackground?: boolean;
+  artworkAsBackgroundBlur?: number;
   playerVolumeEntityId?: string;
   allowPlayerVolumeEntityOutsideOfGroup?: boolean;
   dontSwitchPlayerWhenGrouping?: boolean;
