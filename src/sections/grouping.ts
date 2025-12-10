@@ -227,6 +227,16 @@ export class Grouping extends LitElement {
     if (selectedItems.length === 1) {
       selectedItems[0].isDisabled = true;
     }
+    if (this.config.groupingDisableMainSpeakers) {
+      const mainSpeakerIds = this.store.allGroups
+        .filter((player) => player.members.length > 1)
+        .map((player) => player.id);
+      groupingItems.forEach((item) => {
+        if (mainSpeakerIds.includes(item.player.id)) {
+          item.isDisabled = true;
+        }
+      });
+    }
     if (!this.config.groupingDontSortMembersOnTop) {
       groupingItems.sort((a, b) => {
         if ((a.isMain && !b.isMain) || (a.isSelected && !a.isModified && !b.isSelected)) {

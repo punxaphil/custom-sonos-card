@@ -202,6 +202,10 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'groupingDisableMainSpeakers',
+    selector: { boolean: {} },
+  },
+  {
     name: 'hidePlayerArtwork',
     selector: { boolean: {} },
   },

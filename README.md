@@ -165,6 +165,7 @@ groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
   unJoinAll: mdi:account-remove # default is mdi:minus-box-multiple-outline
 groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
 compactGrouping: true # default is false. Makes the grouping section more compact.
+groupingDisableMainSpeakers: true # default is false. Disables (greys out) any speaker that is currently the main speaker of a multi-speaker group.
 
 # player specific
 hidePlayerControlNextTrackButton: true # default is false, hides player control next track button.

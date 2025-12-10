@@ -116,6 +116,7 @@ export interface CardConfig extends LovelaceCardConfig {
   hideMediaBrowserHeader?: boolean;
   compactGroups?: boolean;
   compactGrouping?: boolean;
+  groupingDisableMainSpeakers?: boolean;
   hidePlayerArtwork?: boolean;
   playerControlsLargeIcons?: boolean;
 }
