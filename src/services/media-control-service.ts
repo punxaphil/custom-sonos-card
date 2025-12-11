@@ -24,7 +24,7 @@ export default class MediaControlService {
     });
   }
 
-  async setVolumeAndMediaForPredefinedGroup(pg: PredefinedGroup) {
+  async activatePredefinedGroup(pg: PredefinedGroup) {
     for (const pgp of pg.entities) {
       const volume = pgp.volume ?? pg.volume;
       if (volume) {
@@ -33,10 +33,22 @@ export default class MediaControlService {
       if (pg.unmuteWhenGrouped) {
         await this.setVolumeMute(pgp.player, false, false);
       }
+      await this.applyPredefinedGroupSettings(pgp.player, pg);
     }
     if (pg.media) {
       await this.setSource(pg.entities[0].player, pg.media);
     }
+  }
+
+  private async applyPredefinedGroupSettings(player: MediaPlayer, pg: PredefinedGroup) {
+    await this.hassService.setRelatedEntityValue(player, 'bass', pg.bass);
+    await this.hassService.setRelatedEntityValue(player, 'treble', pg.treble);
+    await this.hassService.setRelatedEntityValue(player, 'loudness', pg.loudness);
+    await this.hassService.setRelatedEntityValue(player, 'night_sound', pg.nightSound);
+    await this.hassService.setRelatedEntityValue(player, 'speech_enhancement', pg.speechEnhancement);
+    await this.hassService.setRelatedEntityValue(player, 'crossfade', pg.crossfade);
+    await this.hassService.setRelatedEntityValue(player, 'touch_controls', pg.touchControls);
+    await this.hassService.setRelatedEntityValue(player, 'status_light', pg.statusLight);
   }
 
   async stop(mediaPlayer: MediaPlayer) {

@@ -7,7 +7,7 @@ import { dispatchActivePlayerId, getGroupingChanges } from '../utils/utils';
 import { listStyle } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import '../components/grouping-button';
-import { CardConfig, PredefinedGroup, PredefinedGroupPlayer } from '../types';
+import { CardConfig, PredefinedGroup } from '../types';
 import { GroupingItem } from '../model/grouping-item';
 
 export class Grouping extends LitElement {
@@ -204,7 +204,7 @@ export class Grouping extends LitElement {
       await this.mediaControlService.unJoin(unJoin);
     }
     if (selectedPredefinedGroup) {
-      await this.mediaControlService.setVolumeAndMediaForPredefinedGroup(selectedPredefinedGroup);
+      await this.mediaControlService.activatePredefinedGroup(selectedPredefinedGroup);
     }
 
     if (newMainPlayer !== activePlayerId && !this.config.dontSwitchPlayerWhenGrouping) {
@@ -287,14 +287,21 @@ export class Grouping extends LitElement {
     });
   }
 
-  private selectPredefinedGroup(predefinedGroup: PredefinedGroup<PredefinedGroupPlayer>) {
-    this.groupingItems.forEach(async (item) => {
+  private async selectPredefinedGroup(predefinedGroup: PredefinedGroup) {
+    let hasGroupingChanges = false;
+    this.groupingItems.forEach((item) => {
       const inPG = predefinedGroup.entities.some((pgp) => pgp.player.id === item.player.id);
       if ((inPG && !item.isSelected) || (!inPG && item.isSelected)) {
         this.toggleItemWithoutDisabledCheck(item);
+        hasGroupingChanges = true;
       }
     });
     this.selectedPredefinedGroup = predefinedGroup;
+
+    if (!hasGroupingChanges && this.config.skipApplyButtonWhenGrouping) {
+      await this.mediaControlService.activatePredefinedGroup(predefinedGroup);
+      this.selectedPredefinedGroup = undefined;
+    }
   }
 
   private selectAll() {

@@ -165,12 +165,21 @@ export interface PredefinedGroup<T = PredefinedGroupPlayer> {
   volume?: number;
   unmuteWhenGrouped?: boolean;
   excludeItemsInEntitiesList?: boolean;
+  bass?: number;
+  treble?: number;
+  loudness?: boolean;
+  nightSound?: boolean;
+  speechEnhancement?: boolean;
+  crossfade?: boolean;
+  touchControls?: boolean;
+  statusLight?: boolean;
 }
 
 export interface PredefinedGroupPlayer<T = MediaPlayer> {
   player: T;
   volume?: number;
 }
+
 export interface TemplateResult<T = string[]> {
   result: T;
 }

@@ -131,4 +131,38 @@ export default class HassService {
       entity_id: player.id,
     });
   }
+
+  async setSwitch(entityId: string, state: boolean) {
+    await this.hass.callService('switch', state ? 'turn_on' : 'turn_off', {
+      entity_id: entityId,
+    });
+  }
+
+  async setNumber(entityId: string, value: number) {
+    await this.hass.callService('number', 'set_value', {
+      entity_id: entityId,
+      value,
+    });
+  }
+
+  async setRelatedEntityValue(player: MediaPlayer, name: string, value: number | boolean | undefined) {
+    if (value === undefined) {
+      return;
+    }
+    const type = typeof value === 'number' ? 'number' : 'switch';
+    const entityId = await this.getRelatedEntityId(player, type, name);
+    if (!entityId) {
+      return;
+    }
+    if (typeof value === 'number') {
+      await this.setNumber(entityId, value);
+    } else {
+      await this.setSwitch(entityId, value);
+    }
+  }
+
+  async getRelatedEntityId(player: MediaPlayer, entityType: string, namePart: string) {
+    const entities = await this.getRelatedEntities(player, entityType);
+    return entities.find((e) => e?.entity_id?.toLowerCase().includes(namePart.toLowerCase()))?.entity_id;
+  }
 }
