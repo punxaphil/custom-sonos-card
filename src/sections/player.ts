@@ -170,6 +170,7 @@ export class Player extends LitElement {
       .container.blurred-background {
         background: none;
         isolation: isolate;
+        overflow: hidden;
       }
 
       .container.blurred-background::before {
