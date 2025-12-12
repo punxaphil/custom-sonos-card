@@ -159,6 +159,7 @@ groupsTitle: ''
 hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
 compactGroups: true # default is false. Makes the groups section more compact.
 groupButtonWidth: 10 # default is full width. Unit is 'rem'. Use this to change the width of the groups list.
+groupsItemMargin: '5px' # default is '1rem'. Use this to change the margin around groups list items.
 
 # grouping specific
 groupingTitle: ''
@@ -490,7 +491,7 @@ It is recommended to install this one in HACS GitHub - elax46/custom-brand-icons
 
 ## CSS Styling
 
-The recommend way to change look and feel is to use the built-in theming capabilities in Home Assistant. If that is not enough this card supports being styled with [card_mod](https://github.com/thomasloven/lovelace-card-mod).
+The recommend way to change look and feel is to use the built-in theming capabilities in Home Assistant, or use an already existing config option for this card (see Config section above). If that is not enough this card supports being styled with [card_mod](https://github.com/thomasloven/lovelace-card-mod).
 
 Example:
 
@@ -512,25 +513,8 @@ The above YAML renders the following:
 
 ![styling.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/styling.png)
 
-### More card_mod examples
+Here is another example of changing the position of the artwork in the player section:
 
-#### Example 1 - Reduce margin for grouping list items
-
-![card_mod_grouping_margin.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_grouping_margin.png)
-
-```yaml
-card_mod:
-  style:
-    sonos-groups$ sonos-group$: |
-      mwc-list-item {
-        margin: 5px !important;
-      }
-      .row {
-        margin: 0 !important;
-      }
-```
-
-#### Example 19 - Artwork position
 ```yaml
 heightPercentage: auto
 card_mod:

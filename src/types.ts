@@ -142,6 +142,7 @@ export interface CardConfig extends LovelaceCardConfig {
   favoritesIconPadding?: number;
   baseFontSize?: number;
   groupButtonWidth?: number;
+  groupsItemMargin?: string;
   groupingButtonColor?: string;
   groupingButtonFontSize?: number;
 }

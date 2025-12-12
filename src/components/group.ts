@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
 import Store from '../model/store';
@@ -22,6 +22,7 @@ class Group extends LitElement {
     const currentTrack = this.store.config.hideGroupCurrentTrack ? '' : this.player.getCurrentTrack();
     const speakerList = getSpeakerList(this.player, this.store.predefinedGroups);
     const icons = this.player.members.map((member) => member.attributes.icon).filter((icon) => icon);
+    const itemMargin = this.store.config.groupsItemMargin;
     return html`
       <mwc-list-item
         hasMeta
@@ -29,6 +30,7 @@ class Group extends LitElement {
         ?selected=${this.selected}
         ?activated=${this.selected}
         @click=${() => this.handleGroupClicked()}
+        style=${itemMargin ? `margin: ${itemMargin}` : nothing}
       >
         <div class="row">
           ${this.renderIcons(icons)}

@@ -314,6 +314,11 @@ export const ADVANCED_SCHEMA = [
     valueMin: 1,
   },
   {
+    name: 'groupsItemMargin',
+    type: 'string',
+    help: 'Margin around groups list items (e.g., 5px, 0.5rem)',
+  },
+  {
     name: 'hideGroupUngroupAllButtons',
     selector: { boolean: {} },
   },
