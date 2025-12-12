@@ -285,6 +285,8 @@ playerHideControls: true # default is false. Hides the player controls (play/pau
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
 favoritesHideTitleForThumbnailIcons: true # default is false. Only makes a difference if favoritesItemsPerRow > 1. Will hide title for thumbnail artworks.
+favoritesIconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
+favoritesIconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
 customFavoriteThumbnails:
   Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
 customFavoriteThumbnailsIfMissing:
@@ -302,8 +304,8 @@ topFavorites: # Show these favorites at the top of the list
 numberOfFavoritesToShow: 10 # Use this to limit the amount of favorites to show
 hideBrowseMediaButton: true # default is false. Hides the button to open the media browser.
 replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
-mediaBrowserTitle: My favorites # default is 'All favorites'. Use this to change the title for the media browser/favorites section.
 sortFavoritesByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
+mediaBrowserTitle: My favorites # default is 'All favorites'. Use this to change the title for the media browser/favorites section.
 hideMediaBrowserHeader: true # default is false. Hides the header of the media browser section (title and browse media button).
 
 # volumes specific
@@ -663,17 +665,6 @@ card_mod:
       sonos-media-browser-header {
         display: none;
       }
-```
-
-#### Example 15 - Change colors of titles in favorites
-```yaml
-card_mod:
-  style:
-    sonos-media-browser$ sonos-media-browser-icons$: |
-      .title {            
-        color: red !important;
-        background-color: blue !important; 
-      }  
 ```
 
 #### Example 19 - Artwork position

@@ -65,6 +65,16 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'favoritesIconTitleColor',
+    type: 'string',
+    help: 'Color for favorites icon titles (e.g., red, #ff0000)',
+  },
+  {
+    name: 'favoritesIconTitleBackgroundColor',
+    type: 'string',
+    help: 'Background color for favorites icon titles',
+  },
+  {
     name: 'topFavorites',
     type: 'string',
   },

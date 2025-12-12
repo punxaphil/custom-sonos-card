@@ -18,7 +18,15 @@ export class MediaBrowserIcons extends LitElement {
     const items = itemsWithFallbacks(this.items, this.config);
     let prevType: string | undefined = '';
     this.sortItemsByFavoriteTypeIfConfigured(items);
+    const color = this.config.favoritesIconTitleColor;
+    const bgColor = this.config.favoritesIconTitleBackgroundColor;
     return html`
+      <style>
+        .title {
+          ${color ? `color: ${color};` : ''}
+          ${bgColor ? `background-color: ${bgColor};` : ''}
+        }
+      </style>
       <div class="icons">
         ${items.map((item) => {
           const showFavoriteType = (this.config.sortFavoritesByType && item.favoriteType !== prevType) || nothing;
