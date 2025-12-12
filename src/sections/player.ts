@@ -81,8 +81,9 @@ export class Player extends LitElement {
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
     if (image) {
-      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
-        }`;
+      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${
+        image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
+      }`;
     } else {
       return `background-image: ${fallbackBackgroundUrl}`;
     }

@@ -35,7 +35,15 @@ export class Grouping extends LitElement {
       this.applyGrouping();
     }
 
+    const buttonColor = this.config.groupingButtonColor;
+    const buttonFontSize = this.config.groupingButtonFontSize;
     return html`
+      <style>
+        sonos-grouping-button {
+          ${buttonColor ? `--accent-color: ${buttonColor};` : ''}
+          ${buttonFontSize ? `font-size: ${buttonFontSize}rem;` : ''}
+        }
+      </style>
       <div class="wrapper">
         <div class="predefined-groups" compact=${this.config.compactGrouping || nothing}>
           ${this.config.hideGroupUngroupAllButtons

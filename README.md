@@ -162,6 +162,8 @@ groupButtonWidth: 10 # default is full width. Unit is 'rem'. Use this to change 
 
 # grouping specific
 groupingTitle: ''
+groupingButtonColor: black # default is theme accent color. Use this to change the background/accent color of grouping buttons.
+groupingButtonFontSize: 1.2 # default is 1. Unit is 'rem'. Use this to change the font size of grouping buttons.
 predefinedGroups: # defaults to empty. More advanced features in separate section further down.
   - name: Inside
     volume: 15 # If you want to set the volume of all speakers when grouping
@@ -540,17 +542,6 @@ card_mod:
         --mdc-icon-size: 1.5rem !important;
       }    
 
-```
-
-#### Example 3 - Change the font and background color of grouping button
-```yaml
-card_mod:
-  style:
-    sonos-grouping$: |
-      sonos-grouping-button {
-        --accent-color: black;
-        font-size: 30px;
-      }
 ```
 
 #### Example 19 - Artwork position

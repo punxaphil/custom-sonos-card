@@ -317,6 +317,17 @@ export const ADVANCED_SCHEMA = [
     name: 'hideGroupUngroupAllButtons',
     selector: { boolean: {} },
   },
+  {
+    name: 'groupingButtonColor',
+    type: 'string',
+    help: 'Background/accent color for grouping buttons',
+  },
+  {
+    name: 'groupingButtonFontSize',
+    type: 'float',
+    help: 'Font size for grouping buttons (rem)',
+    valueMin: 0.1,
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {
