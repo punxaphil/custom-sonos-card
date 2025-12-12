@@ -6,6 +6,7 @@ import { getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 class PlayerHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -15,9 +16,14 @@ class PlayerHeader extends LitElement {
   render() {
     this.config = this.store.config;
     this.activePlayer = this.store.activePlayer;
+    const entityStyle = this.config.playerHeaderEntityFontSize
+      ? { fontSize: `${this.config.playerHeaderEntityFontSize}rem` }
+      : {};
 
     return html` <div class="info">
-      <div class="entity">${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}</div>
+      <div class="entity" style=${styleMap(entityStyle)}>
+        ${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}
+      </div>
       <div class="song">${this.getSong()}</div>
       <div class="artist-album">
         ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}

@@ -122,6 +122,7 @@ export interface CardConfig extends LovelaceCardConfig {
   sectionButtonIconSize?: number;
   minWidth?: number;
   hideGroupUngroupAllButtons?: boolean;
+  playerHeaderEntityFontSize?: number;
 }
 
 export interface MediaArtworkOverride {

@@ -273,6 +273,7 @@ hidePlaylistInPlayer: true # default is false. Will hide the playlist name in th
 stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
 hidePlayerArtwork: true # default is false. Hides the artwork in the player section.
 playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
+playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -732,15 +733,5 @@ card_mod:
   style: |
       div {
         font-size: 22px !important;
-      }
-```
-
-#### Example 22 - Increase entity font
-```yaml
-card_mod:
-  style:
-    sonos-player$ sonos-player-header$: |
-      .entity {
-        font-size: 12px !important;
       }
 ```
