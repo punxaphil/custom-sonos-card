@@ -1,5 +1,6 @@
 # General
 - Use ESLint and Prettier for code formatting and linting.
+- After every significant change, run `npm run lint -- --fix` to ensure code quality and consistency.
 - Apply Clean Code™️
 - DRY: Avoid duplicate code.
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
