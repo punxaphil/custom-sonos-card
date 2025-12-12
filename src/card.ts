@@ -192,10 +192,11 @@ export class Card extends LitElement {
 
   haCardStyle(height: number) {
     const width = getWidth(this.config);
+    const minWidth = this.config.minWidth ?? 20;
     return styleMap({
       color: 'var(--secondary-text-color)',
       height: `${height}rem`,
-      minWidth: `20rem`,
+      minWidth: `${minWidth}rem`,
       maxWidth: `${width}rem`,
       overflow: 'hidden',
       // only set borderRadius if this.config.style.borderRadius is set, otherwise the card looks weird with box-shadow

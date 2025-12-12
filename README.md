@@ -131,6 +131,7 @@ sections: # see explanation further up
   - player
 startSection: groups # default is player. Use this to set the default section to show. 
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
+minWidth: 10 # default is 20. Unit is 'rem'. Use this to change the minimum width of the card.
 heightPercentage: 75 # default is 100. Use this to change the height of the card. Set to 'auto' to make the card height adjust to the content.
 footerHeight: 4 # default is 5. Unit is 'rem'. Use this to change the height of the footer.
 entityId: media_player.bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)
@@ -752,27 +753,3 @@ card_mod:
         display: none;
       }  
 ```
-
-#### Example 24 - reduce min-width of the card
-```yaml
-widthPercentage: 30
-card_mod:
-  style:
-    .: |
-      ha-card {            
-        min-width: 10rem !important;
-      }  
-```
-
-#### Example 25 - Padding and border around grouping items
-```yaml
-card_mod:
-  style:
-    sonos-grouping$: |
-      .item {
-        padding-top: 0rem !important;
-        padding-bottom: 0 !important;
-        border-bottom: 1px solid #333;
-      }  
-```
-![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_4.png)

@@ -120,6 +120,7 @@ export interface CardConfig extends LovelaceCardConfig {
   hidePlayerArtwork?: boolean;
   playerControlsLargeIcons?: boolean;
   sectionButtonIconSize?: number;
+  minWidth?: number;
 }
 
 export interface MediaArtworkOverride {
