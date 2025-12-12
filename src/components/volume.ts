@@ -30,7 +30,17 @@ class Volume extends LitElement {
     const muteIcon = isMuted ? mdiVolumeMute : mdiVolumeHigh;
     const disabled = this.player.ignoreVolume;
 
+    const sliderHeight = this.isPlayer && this.config.playerVolumeSliderHeight;
+    const muteButtonSize = this.isPlayer && this.config.playerVolumeMuteButtonSize;
     return html`
+      <style>
+        :host {
+          ${sliderHeight ? `--control-slider-thickness: ${sliderHeight}rem;` : ''}
+          ${muteButtonSize
+          ? `--mdc-icon-button-size: ${muteButtonSize}rem; --mdc-icon-size: ${muteButtonSize * 0.75}rem;`
+          : ''}
+        }
+      </style>
       <div class="volume" slim=${this.slim || nothing}>
         <ha-icon-button
           .disabled=${disabled}

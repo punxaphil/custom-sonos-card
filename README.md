@@ -289,6 +289,8 @@ playerHideEntityName: true # default is false. Hides the entity/group name in th
 playerHideArtistAlbum: true # default is false. Hides the artist/album text in the player header.
 playerHideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
 playerControlsMargin: '0 3rem' # default is '0.25rem'. Use this to change the margin around the player controls area.
+playerVolumeSliderHeight: 0.5 # default is 1.5. Unit is 'rem'. Use this to change the height of the volume slider in the player.
+playerVolumeMuteButtonSize: 2 # default is 2.5. Unit is 'rem'. Use this to change the size of the mute button in the player.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -526,22 +528,6 @@ card_mod:
       .row {
         margin: 0 !important;
       }
-```
-
-#### Example 2 - Resize volume and icons
-```yaml
-card_mod:
-  style:
-    .: |
-    sonos-player$ sonos-player-controls$ sonos-volume$: |
-      ha-control-slider {
-        height: 10px;
-      }
-      ha-icon-button {
-        --mdc-icon-button-size: 2rem !important;
-        --mdc-icon-size: 1.5rem !important;
-      }    
-
 ```
 
 #### Example 19 - Artwork position

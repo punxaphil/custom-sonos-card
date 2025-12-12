@@ -328,6 +328,18 @@ export const ADVANCED_SCHEMA = [
     help: 'Font size for grouping buttons (rem)',
     valueMin: 0.1,
   },
+  {
+    name: 'playerVolumeSliderHeight',
+    type: 'float',
+    help: 'Height of volume slider in player (rem)',
+    valueMin: 0.1,
+  },
+  {
+    name: 'playerVolumeMuteButtonSize',
+    type: 'float',
+    help: 'Size of mute button in player (rem)',
+    valueMin: 0.1,
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {
