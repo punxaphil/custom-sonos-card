@@ -126,6 +126,8 @@ export interface CardConfig extends LovelaceCardConfig {
   playerHeaderSongFontSize?: number;
   playerHideVolumePercentage?: boolean;
   playerHideVolumeMuteButton?: boolean;
+  playerHideHeader?: boolean;
+  playerHideControls?: boolean;
   baseFontSize?: number;
   groupButtonWidth?: number;
 }

@@ -213,6 +213,22 @@ export const ADVANCED_SCHEMA = [
     name: 'playerControlsLargeIcons',
     selector: { boolean: {} },
   },
+  {
+    name: 'playerHideHeader',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'playerHideControls',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'playerHideVolumePercentage',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'playerHideVolumeMuteButton',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {

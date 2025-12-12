@@ -37,6 +37,7 @@ export class Player extends LitElement {
           class="header"
           background=${artworkAsBackground || nothing}
           .store=${this.store}
+          hide=${this.config.playerHideHeader || nothing}
         ></sonos-player-header>
         <div
           class="artwork"
@@ -47,6 +48,7 @@ export class Player extends LitElement {
           class="controls"
           background=${artworkAsBackground || nothing}
           .store=${this.store}
+          hide=${this.config.playerHideControls || nothing}
         ></sonos-player-controls>
       </div>
     `;

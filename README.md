@@ -279,6 +279,8 @@ playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to chang
 playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
 playerHideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
 playerHideVolumeMuteButton: true # default is false. Hides the mute/unmute button in the player.
+playerHideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
+playerHideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -672,16 +674,6 @@ card_mod:
         color: red !important;
         background-color: blue !important; 
       }  
-```
-
-#### Example 16 - Remove everything except the album art
-```yaml
-card_mod:
-  style:
-    sonos-player$: |
-      sonos-player-header, sonos-player-controls {
-        display: none;
-      }
 ```
 
 #### Example 19 - Artwork position
