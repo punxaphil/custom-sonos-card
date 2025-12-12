@@ -46,6 +46,11 @@ class PlayerControls extends LitElement {
     const pauseOrStop = this.config.stopInsteadOfPause ? mdiStopCircle : mdiPauseCircle;
     const playing = this.activePlayer.isPlaying();
     return html`
+      <style>
+        .icons * {
+          ${this.config.playerControlsColor ? `color: ${this.config.playerControlsColor};` : ''}
+        }
+      </style>
       <div class="main" id="mediaControls">
         <div class="icons ${this.config.playerControlsLargeIcons ? 'large-icons' : ''}">
           <div class="flex-1"></div>

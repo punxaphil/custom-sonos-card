@@ -275,6 +275,7 @@ hidePlaylistInPlayer: true # default is false. Will hide the playlist name in th
 stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
 hidePlayerArtwork: true # default is false. Hides the artwork in the player section.
 playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
+playerControlsColor: pink # default is theme color. Use this to change the color of player control icons.
 playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
 playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
 playerHideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
@@ -645,26 +646,6 @@ card_mod:
         border: 1px solid white;
         color: red !important;
       }  
-```
-
-#### Example 13 - Color of the player controls
-```yaml
-card_mod:
-  style:
-    sonos-player$ sonos-player-controls$: |
-      .icons * {    
-        color: pink;
-      }
-```
-
-#### Example 14 - Remove the top "All favorites" and "Browse media" from the favorites section
-```yaml
-card_mod:
-  style:
-    sonos-media-browser$: |
-      sonos-media-browser-header {
-        display: none;
-      }
 ```
 
 #### Example 19 - Artwork position

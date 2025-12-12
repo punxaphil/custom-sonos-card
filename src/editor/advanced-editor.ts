@@ -224,6 +224,11 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'playerControlsColor',
+    type: 'string',
+    help: 'Color for player control icons (e.g., pink, #ff69b4)',
+  },
+  {
     name: 'playerHideHeader',
     selector: { boolean: {} },
   },
