@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { CardConfig } from '../types';
@@ -24,11 +24,11 @@ class PlayerHeader extends LitElement {
       : {};
 
     return html` <div class="info">
-      <div class="entity" style=${styleMap(entityStyle)}>
+      <div class="entity" style=${styleMap(entityStyle)} hide=${this.config.playerHideEntityName || nothing}>
         ${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}
       </div>
       <div class="song" style=${styleMap(songStyle)}>${this.getSong()}</div>
-      <div class="artist-album">
+      <div class="artist-album" hide=${this.config.playerHideArtistAlbum || nothing}>
         ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
       </div>
       <sonos-progress .store=${this.store}></sonos-progress>
@@ -101,6 +101,10 @@ class PlayerHeader extends LitElement {
         line-height: normal;
         padding: 3px;
         margin-left: 8px;
+      }
+
+      *[hide] {
+        display: none;
       }
     `;
   }

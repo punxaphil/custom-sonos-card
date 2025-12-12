@@ -283,6 +283,8 @@ playerHideVolumePercentage: true # default is false. Hides the volume percentage
 playerHideVolumeMuteButton: true # default is false. Hides the mute/unmute button in the player.
 playerHideVolume: true # default is false. Hides the entire volume component in the player.
 playerHideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
+playerHideEntityName: true # default is false. Hides the entity/group name in the player header.
+playerHideArtistAlbum: true # default is false. Hides the artist/album text in the player header.
 playerHideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
 
 # media browser specific
@@ -557,30 +559,6 @@ card_mod:
     sonos-player$: |
       .controls {
         margin: 0 3rem !important;
-      }
-```
-
-#### Example 5 - Hide entity/group name and album name
-```yaml
-card_mod:
-  style:
-    sonos-player$ sonos-player-header$: |
-      .entity,.artist-album {
-        display: none;
-      }
-```
-
-#### Example 6 - More transparent title track and volume slider
-```yaml
-card_mod:
-  style:
-    .: ''
-    sonos-player$: |
-      .controls {
-        background-color: rgba(var(--rgb-card-background-color), 0.4) !important;
-      }
-      sonos-player-header {
-        background-color: rgba(var(--rgb-card-background-color), 0.4) !important;
       }
 ```
 

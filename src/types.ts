@@ -128,6 +128,8 @@ export interface CardConfig extends LovelaceCardConfig {
   playerHideVolumeMuteButton?: boolean;
   playerHideVolume?: boolean;
   playerHideHeader?: boolean;
+  playerHideEntityName?: boolean;
+  playerHideArtistAlbum?: boolean;
   playerHideControls?: boolean;
   playerControlsColor?: string;
   playerBackgroundOverlayColor?: string;

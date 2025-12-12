@@ -249,6 +249,14 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'playerHideEntityName',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'playerHideArtistAlbum',
+    selector: { boolean: {} },
+  },
+  {
     name: 'playerHideControls',
     selector: { boolean: {} },
   },
