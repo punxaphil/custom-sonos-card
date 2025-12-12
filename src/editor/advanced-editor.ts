@@ -261,6 +261,11 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'playerControlsMargin',
+    type: 'string',
+    help: 'Margin around player controls (e.g., 0 3rem)',
+  },
+  {
     name: 'playerHideVolumePercentage',
     selector: { boolean: {} },
   },

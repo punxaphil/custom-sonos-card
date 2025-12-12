@@ -50,6 +50,7 @@ export class Player extends LitElement {
           background=${artworkAsBackground || nothing}
           .store=${this.store}
           hide=${this.config.playerHideControls || nothing}
+          style=${this.config.playerControlsMargin ? `margin: ${this.config.playerControlsMargin}` : nothing}
         ></sonos-player-controls>
       </div>
     `;
@@ -80,9 +81,8 @@ export class Player extends LitElement {
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
     if (image) {
-      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${
-        image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
-      }`;
+      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
+        }`;
     } else {
       return `background-image: ${fallbackBackgroundUrl}`;
     }

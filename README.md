@@ -286,6 +286,7 @@ playerHideHeader: true # default is false. Hides the player header (entity name,
 playerHideEntityName: true # default is false. Hides the entity/group name in the player header.
 playerHideArtistAlbum: true # default is false. Hides the artist/album text in the player header.
 playerHideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
+playerControlsMargin: '0 3rem' # default is '0.25rem'. Use this to change the margin around the player controls area.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -549,16 +550,6 @@ card_mod:
       sonos-grouping-button {
         --accent-color: black;
         font-size: 30px;
-      }
-```
-
-#### Example 4 - Resize controls area in player section
-```yaml
-card_mod:
-  style:
-    sonos-player$: |
-      .controls {
-        margin: 0 3rem !important;
       }
 ```
 
