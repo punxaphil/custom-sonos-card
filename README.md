@@ -158,6 +158,7 @@ changeVolumeOnSlide: true # default is false. If set to true, volume will be cha
 groupsTitle: ''
 hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
 compactGroups: true # default is false. Makes the groups section more compact.
+groupButtonWidth: 10 # default is full width. Unit is 'rem'. Use this to change the width of the groups list.
 
 # grouping specific
 groupingTitle: ''
@@ -717,15 +718,4 @@ card_mod:
 ```
 
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_3.png)
-
-#### Example 20 - Size of group buttons
-```yaml
-card_mod:
-  style:
-    sonos-groups$: |
-      mwc-list {
-        width: 10rem;
-      }
-```
-
 

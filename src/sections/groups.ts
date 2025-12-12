@@ -1,5 +1,6 @@
 import { html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import '../components/group';
 import Store from '../model/store';
 import { listStyle } from '../constants';
@@ -13,9 +14,12 @@ export class Groups extends LitElement {
   render() {
     this.activePlayer = this.store.activePlayer;
     this.groups = this.store.allGroups;
+    const listStyle = this.store.config.groupButtonWidth
+      ? styleMap({ width: `${this.store.config.groupButtonWidth}rem` })
+      : '';
 
     return html`
-      <mwc-list activatable class="list">
+      <mwc-list activatable class="list" style=${listStyle}>
         ${this.groups.map((group) => {
           const selected = this.activePlayer.id === group.id;
           return html` <sonos-group .store=${this.store} .player=${group} .selected=${selected}></sonos-group> `;

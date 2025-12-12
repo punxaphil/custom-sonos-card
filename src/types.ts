@@ -124,6 +124,7 @@ export interface CardConfig extends LovelaceCardConfig {
   hideGroupUngroupAllButtons?: boolean;
   playerHeaderEntityFontSize?: number;
   baseFontSize?: number;
+  groupButtonWidth?: number;
 }
 
 export interface MediaArtworkOverride {
