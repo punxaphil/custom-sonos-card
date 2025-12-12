@@ -255,6 +255,10 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'playerHideVolume',
+    selector: { boolean: {} },
+  },
+  {
     name: 'playerHeaderEntityFontSize',
     type: 'float',
     help: 'Font size for entity name in player header (rem)',

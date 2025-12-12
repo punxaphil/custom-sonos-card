@@ -33,8 +33,8 @@ export class MediaBrowserIcons extends LitElement {
       </style>
       <div class="icons">
         ${items.map((item) => {
-      const showFavoriteType = (this.config.sortFavoritesByType && item.favoriteType !== prevType) || nothing;
-      const toRender = html`
+          const showFavoriteType = (this.config.sortFavoritesByType && item.favoriteType !== prevType) || nothing;
+          const toRender = html`
             <div class="favorite-type" show=${showFavoriteType}>${item.favoriteType}</div>
             <ha-control-button
               style=${this.buttonStyle(this.config.favoritesItemsPerRow || 4)}
@@ -43,9 +43,9 @@ export class MediaBrowserIcons extends LitElement {
               ${renderMediaBrowserItem(item, !item.thumbnail || !this.config.favoritesHideTitleForThumbnailIcons)}
             </ha-control-button>
           `;
-      prevType = item.favoriteType;
-      return toRender;
-    })}
+          prevType = item.favoriteType;
+          return toRender;
+        })}
       </div>
     `;
   }

@@ -281,6 +281,7 @@ playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to chang
 playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
 playerHideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
 playerHideVolumeMuteButton: true # default is false. Hides the mute/unmute button in the player.
+playerHideVolume: true # default is false. Hides the entire volume component in the player.
 playerHideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
 playerHideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
 
@@ -599,16 +600,6 @@ card_mod:
     sonos-player$: |
       .artwork {
         display: none !important;
-      }
-```
-
-#### Example 9 - Hide volume slider and mute icon
-```yaml
-card_mod:
-  style:
-    "sonos-player$ sonos-player-controls$": |
-      sonos-volume {
-        display: none;
       }
 ```
 
