@@ -119,6 +119,7 @@ export interface CardConfig extends LovelaceCardConfig {
   groupingDisableMainSpeakers?: boolean;
   hidePlayerArtwork?: boolean;
   playerControlsLargeIcons?: boolean;
+  sectionButtonIconSize?: number;
 }
 
 export interface MediaArtworkOverride {

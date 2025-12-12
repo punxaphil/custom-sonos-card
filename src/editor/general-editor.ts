@@ -78,6 +78,14 @@ export const GENERAL_SCHEMA = [
     default: 100,
     required: true,
   },
+  {
+    type: 'integer',
+    name: 'sectionButtonIconSize',
+    default: 3,
+    required: false,
+    valueMin: 1,
+    valueMax: 10,
+  },
 ];
 
 class GeneralEditor extends BaseEditor {

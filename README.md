@@ -144,6 +144,7 @@ sectionButtonIcons: # customize icons for the section buttons
   groups: mdi:multicast
   grouping: mdi:group
   volumes: mdi:volume-high
+sectionButtonIconSize: 5 # Set the size of section button icons in rem units (e.g., 5 for 5rem)
 mediaTitleRegexToReplace: '.wav?.*' # Regex pattern to replace parts of the media title
 mediaTitleReplacement: ' radio' # Replacement for the media title regex pattern
 inverseGroupMuteState: true # default is false, which means that only if all players are muted, mute icon shows as 'muted'. If set to true, mute icon will show as 'muted' if any player is muted.
@@ -775,32 +776,3 @@ card_mod:
       }  
 ```
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_4.png)
-
-#### Example 26 - Larger icons in the player section
-```yaml
-card_mod:
-  style:
-    sonos-player$ sonos-player-controls$: |
-      .icons {
-        margin-bottom: 1rem;
-      }
-      .icons * {    
-        --mdc-icon-size: 3rem !important;
-        --mdc-icon-button-size: 4rem !important;
-      }  
-      .big-icon {
-        --mdc-icon-size: 7rem !important;
-        --mdc-icon-button-size: 4rem !important;
-      }
-```
-
-#### Example 27 - Change the size of section button icons
-```yaml
-card_mod:
-  style:
-    sonos-footer$ sonos-section-button$: |
-      ha-icon-button {
-        --mdc-icon-button-size: 5rem !important;
-        --mdc-icon-size: 3rem !important;
-      }
-```
