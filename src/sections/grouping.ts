@@ -38,7 +38,9 @@ export class Grouping extends LitElement {
     return html`
       <div class="wrapper">
         <div class="predefined-groups" compact=${this.config.compactGrouping || nothing}>
-          ${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}
+          ${this.config.hideGroupUngroupAllButtons
+            ? nothing
+            : html`${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}`}
           ${when(this.store.predefinedGroups, () => this.renderPredefinedGroups())}
         </div>
         <div class="list">

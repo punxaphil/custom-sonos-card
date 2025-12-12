@@ -209,6 +209,7 @@ groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
 groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
 compactGrouping: true # default is false. Makes the grouping section more compact.
 groupingDisableMainSpeakers: true # default is false. Disables (greys out) any speaker that is currently the main speaker of a multi-speaker group.
+hideGroupUngroupAllButtons: true # default is false. Hides the join all/unjoin all buttons in the grouping section.
 
 # player specific
 hidePlayerControlNextTrackButton: true # default is false, hides player control next track button.
@@ -742,14 +743,4 @@ card_mod:
       .entity {
         font-size: 12px !important;
       }
-```
-
-#### Example 23 - Hide the select all/none buttons at the top of the groupings page
-```yaml
-card_mod:
-  style:
-    sonos-grouping$: |
-      sonos-grouping-button {            
-        display: none;
-      }  
 ```
