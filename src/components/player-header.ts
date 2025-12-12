@@ -19,12 +19,15 @@ class PlayerHeader extends LitElement {
     const entityStyle = this.config.playerHeaderEntityFontSize
       ? { fontSize: `${this.config.playerHeaderEntityFontSize}rem` }
       : {};
+    const songStyle = this.config.playerHeaderSongFontSize
+      ? { fontSize: `${this.config.playerHeaderSongFontSize}rem` }
+      : {};
 
     return html` <div class="info">
       <div class="entity" style=${styleMap(entityStyle)}>
         ${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}
       </div>
-      <div class="song">${this.getSong()}</div>
+      <div class="song" style=${styleMap(songStyle)}>${this.getSong()}</div>
       <div class="artist-album">
         ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
       </div>

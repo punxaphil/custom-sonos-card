@@ -276,6 +276,7 @@ stopInsteadOfPause: true # default is false. Will show the stop button instead o
 hidePlayerArtwork: true # default is false. Hides the artwork in the player section.
 playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
 playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
+playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -692,16 +693,6 @@ card_mod:
 ```
 
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_2.png)
-
-#### Example 18 - Changing the font size of song title
-```yaml
-card_mod:
-  style:
-    sonos-player$ sonos-player-header$: |
-      .song {
-        font-size: 1.2em; !important;
-      }
-```
 
 #### Example 19 - Artwork position
 ```yaml
