@@ -20,11 +20,15 @@ export class MediaBrowserIcons extends LitElement {
     this.sortItemsByFavoriteTypeIfConfigured(items);
     const color = this.config.favoritesIconTitleColor;
     const bgColor = this.config.favoritesIconTitleBackgroundColor;
+    const border = this.config.favoritesIconBorder;
     return html`
       <style>
         .title {
           ${color ? `color: ${color};` : ''}
           ${bgColor ? `background-color: ${bgColor};` : ''}
+        }
+        ha-control-button {
+          ${border ? `border: ${border};` : ''}
         }
       </style>
       <div class="icons">

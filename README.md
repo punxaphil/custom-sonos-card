@@ -288,6 +288,7 @@ favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
 favoritesHideTitleForThumbnailIcons: true # default is false. Only makes a difference if favoritesItemsPerRow > 1. Will hide title for thumbnail artworks.
 favoritesIconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
 favoritesIconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
+favoritesIconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
 customFavoriteThumbnails:
   Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
 customFavoriteThumbnailsIfMissing:
@@ -635,17 +636,6 @@ card_mod:
       .controls {
         display: none;
       }
-```
-
-#### Example 12 - Style the favorite section
-```yaml
-card_mod:
-  style:
-    sonos-media-browser$ sonos-media-browser-icons$: |
-      div {            
-        border: 1px solid white;
-        color: red !important;
-      }  
 ```
 
 #### Example 19 - Artwork position

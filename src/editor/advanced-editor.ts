@@ -75,6 +75,11 @@ export const ADVANCED_SCHEMA = [
     help: 'Background color for favorites icon titles',
   },
   {
+    name: 'favoritesIconBorder',
+    type: 'string',
+    help: 'Border for favorites icons (e.g., 1px solid white)',
+  },
+  {
     name: 'topFavorites',
     type: 'string',
   },
