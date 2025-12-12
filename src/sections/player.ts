@@ -26,10 +26,11 @@ export class Player extends LitElement {
     const blurAmount = this.config.artworkAsBackgroundBlur ?? 0;
     const artworkAsBackground = this.config.artworkAsBackground || blurAmount > 0;
     const backgroundOpacity = this.config.playerControlsAndHeaderBackgroundOpacity ?? 0.9;
+    const backgroundOverlayColor = this.config.playerBackgroundOverlayColor;
     const containerStyle = artworkAsBackground
       ? blurAmount > 0
-        ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px; --background-opacity: ${backgroundOpacity}`
-        : `${this.getBackgroundImage()}; --background-opacity: ${backgroundOpacity}`
+        ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px; --background-opacity: ${backgroundOpacity}${backgroundOverlayColor ? `; --background-overlay-color: ${backgroundOverlayColor}` : ''}`
+        : `${this.getBackgroundImage()}; --background-opacity: ${backgroundOpacity}${backgroundOverlayColor ? `; --background-overlay-color: ${backgroundOverlayColor}` : ''}`
       : '';
     return html`
       <div class="container ${blurAmount > 0 ? 'blurred-background' : ''}" style=${containerStyle || nothing}>
@@ -79,9 +80,8 @@ export class Player extends LitElement {
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
     if (image) {
-      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${
-        image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
-      }`;
+      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
+        }`;
     } else {
       return `background-image: ${fallbackBackgroundUrl}`;
     }
@@ -225,7 +225,10 @@ export class Player extends LitElement {
       }
 
       *[background] {
-        background-color: rgba(var(--rgb-card-background-color), var(--background-opacity, 0.9));
+        background-color: var(
+          --background-overlay-color,
+          rgba(var(--rgb-card-background-color), var(--background-opacity, 0.9))
+        );
         border-radius: 10px;
       }
     `;

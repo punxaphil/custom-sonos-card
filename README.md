@@ -276,6 +276,7 @@ stopInsteadOfPause: true # default is false. Will show the stop button instead o
 hidePlayerArtwork: true # default is false. Hides the artwork in the player section.
 playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
 playerControlsColor: pink # default is theme color. Use this to change the color of player control icons.
+playerBackgroundOverlayColor: 'rgba(0,0,0, 0.3)' # When artworkAsBackground is true, this sets the background overlay color for controls and header.
 playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
 playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
 playerHideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
@@ -607,33 +608,6 @@ card_mod:
   style:
     "sonos-player$ sonos-player-controls$": |
       sonos-volume {
-        display: none;
-      }
-```
-
-#### Example 10 - Modify transparency of background from controls when artwork is shown as background
-```yaml
-artworkAsBackground: true
-card_mod:
-  style: 
-    sonos-player$: |
-      [background] {
-        background-color: rgba(0,0,0, 0.3) !important;
-      }
-```
-
-#### Example 11 - Show only player and now playing text information
-```yaml
-heightPercentage: auto
-sections:
-  - player
-card_mod:
-  style:
-    sonos-player$: |
-      .artwork {
-        display: none;
-      }
-      .controls {
         display: none;
       }
 ```

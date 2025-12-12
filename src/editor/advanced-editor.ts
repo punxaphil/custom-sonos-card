@@ -234,6 +234,11 @@ export const ADVANCED_SCHEMA = [
     help: 'Color for player control icons (e.g., pink, #ff69b4)',
   },
   {
+    name: 'playerBackgroundOverlayColor',
+    type: 'string',
+    help: 'Background overlay color when artworkAsBackground is true (e.g., rgba(0,0,0, 0.3))',
+  },
+  {
     name: 'playerHideHeader',
     selector: { boolean: {} },
   },
