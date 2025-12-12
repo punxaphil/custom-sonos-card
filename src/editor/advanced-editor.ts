@@ -229,6 +229,46 @@ export const ADVANCED_SCHEMA = [
     name: 'playerHideVolumeMuteButton',
     selector: { boolean: {} },
   },
+  {
+    name: 'playerHeaderEntityFontSize',
+    type: 'float',
+    help: 'Font size for entity name in player header (rem)',
+    valueMin: 0.1,
+  },
+  {
+    name: 'playerHeaderSongFontSize',
+    type: 'float',
+    help: 'Font size for song title in player header (rem)',
+    valueMin: 0.1,
+  },
+  {
+    name: 'sectionButtonIconSize',
+    type: 'float',
+    help: 'Size of section button icons (rem)',
+    valueMin: 0.1,
+  },
+  {
+    name: 'baseFontSize',
+    type: 'float',
+    help: 'Base font size for the entire card (rem)',
+    valueMin: 0.1,
+  },
+  {
+    name: 'minWidth',
+    type: 'integer',
+    help: 'Minimum width of the card (rem)',
+    valueMin: 1,
+  },
+  {
+    name: 'groupButtonWidth',
+    type: 'integer',
+    help: 'Width of group buttons (rem)',
+    valueMin: 1,
+  },
+  {
+    name: 'hideGroupUngroupAllButtons',
+    selector: { boolean: {} },
+  },
 ];
 
 class AdvancedEditor extends BaseEditor {
