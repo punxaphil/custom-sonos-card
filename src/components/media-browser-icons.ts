@@ -21,6 +21,7 @@ export class MediaBrowserIcons extends LitElement {
     const color = this.config.favoritesIconTitleColor;
     const bgColor = this.config.favoritesIconTitleBackgroundColor;
     const border = this.config.favoritesIconBorder;
+    const padding = this.config.favoritesIconPadding;
     return html`
       <style>
         .title {
@@ -29,6 +30,7 @@ export class MediaBrowserIcons extends LitElement {
         }
         ha-control-button {
           ${border ? `border: ${border};` : ''}
+          ${padding !== undefined ? `--control-button-padding: ${padding}rem;` : ''}
         }
       </style>
       <div class="icons">

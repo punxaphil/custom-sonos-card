@@ -134,6 +134,7 @@ export interface CardConfig extends LovelaceCardConfig {
   favoritesIconTitleColor?: string;
   favoritesIconTitleBackgroundColor?: string;
   favoritesIconBorder?: string;
+  favoritesIconPadding?: number;
   baseFontSize?: number;
   groupButtonWidth?: number;
 }

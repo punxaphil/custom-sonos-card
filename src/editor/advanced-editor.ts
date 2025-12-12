@@ -80,6 +80,12 @@ export const ADVANCED_SCHEMA = [
     help: 'Border for favorites icons (e.g., 1px solid white)',
   },
   {
+    name: 'favoritesIconPadding',
+    type: 'float',
+    help: 'Padding around favorites icon artwork (rem)',
+    valueMin: 0,
+  },
+  {
     name: 'topFavorites',
     type: 'string',
   },

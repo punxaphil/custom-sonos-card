@@ -291,6 +291,7 @@ favoritesHideTitleForThumbnailIcons: true # default is false. Only makes a diffe
 favoritesIconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
 favoritesIconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
 favoritesIconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
+favoritesIconPadding: 0.25 # default is 0.75. Unit is 'rem'. Use this to change the padding around favorites icon artwork.
 customFavoriteThumbnails:
   Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
 customFavoriteThumbnailsIfMissing:
@@ -580,26 +581,6 @@ card_mod:
       }
       sonos-player-header {
         background-color: rgba(var(--rgb-card-background-color), 0.4) !important;
-      }
-```
-
-#### Example 7 - Make the padding smaller around the artwork of the thumbnails in the favorites section
-```yaml
-card_mod:
-  style:
-    sonos-media-browser$ sonos-media-browser-icons$: |
-      ha-control-button {
-        --control-button-padding: 4px;
-      }  
-```
-
-#### Example 8 - Remove artwork in player section
-```yaml
-card_mod:
-  style:
-    sonos-player$: |
-      .artwork {
-        display: none !important;
       }
 ```
 
