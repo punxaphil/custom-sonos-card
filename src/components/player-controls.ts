@@ -65,7 +65,7 @@ class PlayerControls extends LitElement {
           <ha-icon-button hide=${noBrowse} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
         </div>
         <sonos-volume .store=${this.store} .player=${this.volumePlayer}
-                      .updateMembers=${this.updateMemberVolumes}></sonos-volume>
+                      .updateMembers=${this.updateMemberVolumes} .isPlayer=${true}></sonos-volume>
         <div class="icons">
           <ha-icon-button hide=${this.store.hidePower(true)} @click=${this.togglePower}></ha-icon-button>
         </div">

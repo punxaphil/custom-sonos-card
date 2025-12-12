@@ -277,6 +277,8 @@ hidePlayerArtwork: true # default is false. Hides the artwork in the player sect
 playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
 playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
 playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
+playerHideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
+playerHideVolumeMuteButton: true # default is false. Hides the mute/unmute button in the player.
 
 # media browser specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
@@ -681,18 +683,6 @@ card_mod:
         display: none;
       }
 ```
-
-#### Example 17 - Hide the volume button and percentage
-```yaml
-card_mod:
-  style:
-    sonos-player$ sonos-player-controls$ sonos-volume$: |
-      .volume-level, ha-icon-button {
-        display:none !important;
-      }
-```
-
-![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_2.png)
 
 #### Example 19 - Artwork position
 ```yaml

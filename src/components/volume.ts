@@ -14,6 +14,7 @@ class Volume extends LitElement {
   @property({ type: Boolean }) updateMembers = true;
   @property() volumeClicked?: () => void;
   @property() slim: boolean = false;
+  @property() isPlayer: boolean = false;
   @state() private sliderMoving: boolean = false;
   @state() private startVolumeSliderMoving: number = 0;
   private togglePower = async () => await this.mediaControlService.togglePower(this.player);
@@ -31,7 +32,13 @@ class Volume extends LitElement {
 
     return html`
       <div class="volume" slim=${this.slim || nothing}>
-        <ha-icon-button .disabled=${disabled} @click=${this.mute} .path=${muteIcon}> </ha-icon-button>
+        <ha-icon-button
+          .disabled=${disabled}
+          @click=${this.mute}
+          .path=${muteIcon}
+          hide=${(this.isPlayer && this.config.playerHideVolumeMuteButton) || nothing}
+        >
+        </ha-icon-button>
         <div class="volume-slider">
           <ha-control-slider
             .value=${volume}
@@ -41,7 +48,7 @@ class Volume extends LitElement {
             .disabled=${disabled}
             class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
           ></ha-control-slider>
-          <div class="volume-level">
+          <div class="volume-level" hide=${(this.isPlayer && this.config.playerHideVolumePercentage) || nothing}>
             <div style="flex: ${volume}">${volume > 0 ? '0%' : ''}</div>
             <div class="percentage">${volume}%</div>
             <div style="flex: ${max - volume};text-align: right">${volume < max ? `${max}%` : ''}</div>
