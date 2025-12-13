@@ -1,8 +1,8 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import '../components/media-browser-list';
-import '../components/media-browser-icons';
-import '../components/media-browser-header';
+import '../components/favorites-list';
+import '../components/favorites-icons';
+import '../components/favorites-header';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
@@ -10,10 +10,10 @@ import { customEvent } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import MediaBrowseService from '../services/media-browse-service';
-import { indexOfWithoutSpecialChars } from '../utils/media-browser-utils';
+import { indexOfWithoutSpecialChars } from '../utils/favorites-utils';
 import { MEDIA_ITEM_SELECTED } from '../constants';
 
-export class MediaBrowser extends LitElement {
+export class Favorites extends LitElement {
   @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
   private activePlayer!: MediaPlayer;
@@ -27,7 +27,7 @@ export class MediaBrowser extends LitElement {
     this.mediaControlService = this.store.mediaControlService;
 
     return html`
-      <sonos-media-browser-header .store=${this.store}></sonos-media-browser-header>
+      <sonos-favorites-header .store=${this.store}></sonos-favorites-header>
 
       ${this.activePlayer &&
       until(
@@ -37,19 +37,19 @@ export class MediaBrowser extends LitElement {
               const itemsPerRow = this.config.favoritesItemsPerRow || 4;
               if (itemsPerRow > 1) {
                 return html`
-                  <sonos-media-browser-icons
+                  <sonos-favorites-icons
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onMediaItemSelected}
-                  ></sonos-media-browser-icons>
+                  ></sonos-favorites-icons>
                 `;
               } else {
                 return html`
-                  <sonos-media-browser-list
+                  <sonos-favorites-list
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onMediaItemSelected}
-                  ></sonos-media-browser-list>
+                  ></sonos-favorites-list>
                 `;
               }
             } else {
@@ -82,8 +82,8 @@ export class MediaBrowser extends LitElement {
     let favorites = await this.mediaBrowseService.getFavorites(player);
     favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
     favorites = [
-      ...(this.config.customFavorites?.[this.activePlayer.id]?.map(MediaBrowser.createFavorite) || []),
-      ...(this.config.customFavorites?.all?.map(MediaBrowser.createFavorite) || []),
+      ...(this.config.customFavorites?.[this.activePlayer.id]?.map(Favorites.createFavorite) || []),
+      ...(this.config.customFavorites?.all?.map(Favorites.createFavorite) || []),
       ...favorites,
     ];
     return this.config.numberOfFavoritesToShow ? favorites.slice(0, this.config.numberOfFavoritesToShow) : favorites;

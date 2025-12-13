@@ -1,7 +1,7 @@
 import { CardConfig, MediaPlayerItem } from '../types';
 import HassService from './hass-service';
 import { MediaPlayer } from '../model/media-player';
-import { stringContainsAnyItemInArray } from '../utils/media-browser-utils';
+import { stringContainsAnyItemInArray } from '../utils/favorites-utils';
 import { customEvent } from '../utils/utils';
 import { HASS_MORE_INFO } from '../constants';
 

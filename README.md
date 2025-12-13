@@ -14,7 +14,7 @@ This card, Maxi Media Player, is a generalisation of the [Sonos Card](https://gi
 * Group/Ungroup speakers
 * Control multiple speakers
 * Play favorites from list
-* Media browser button
+* Favorites section
 * Control individual volumes in a group
 * Artwork background
 * Possibility to override artwork
@@ -29,7 +29,7 @@ This card, Maxi Media Player, is a generalisation of the [Sonos Card](https://gi
 and more!
 
 ![player.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/player.png)
-![media_browser.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/media_browser.png)
+![favorites.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/favorites.png)
 ![groups.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/groups.png)
 ![grouping.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/grouping.png)
 ![volumes.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/volumes.png)
@@ -74,7 +74,7 @@ sections: # Choose which sections to show in the card. Available sections are:
   - volumes
   - groups
   - grouping
-  - media browser
+  - favorites
   - player
   - queue
 ```
@@ -85,7 +85,7 @@ sections: # Choose which sections to show in the card. Available sections are:
   - volumes
   - groups
   - grouping
-  - media browser
+  - favorites
   - player
 ```
 --> <!-- //#ONLY_SONOS_CARD -->
@@ -127,7 +127,7 @@ All settings below are optional
 # common for all sections
 title: ''
 sections: # see explanation further up
-  - media browser
+  - favorites
   - player
 startSection: groups # default is player. Use this to set the default section to show. 
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
@@ -142,7 +142,7 @@ volumeStepSize: 1 # Use this to change the step size when using volume up/down. 
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.
 sectionButtonIcons: # customize icons for the section buttons
   player: mdi:ab-testing
-  mediaBrowser: mdi:star-box-multiple
+  favorites: mdi:star-box-multiple
   groups: mdi:multicast
   grouping: mdi:group
   volumes: mdi:volume-high
@@ -156,7 +156,7 @@ changeVolumeOnSlide: true # default is false. If set to true, volume will be cha
   
 # groups specific
 groupsTitle: ''
-hideGroupCurrentTrack: true # default is false, which means song/track info for groups will be shown
+groupsHideCurrentTrack: true # default is false, which means song/track info for groups will be shown
 compactGroups: true # default is false. Makes the groups section more compact.
 groupButtonWidth: 10 # default is full width. Unit is 'rem'. Use this to change the width of the groups list.
 groupsItemMargin: '5px' # default is '1rem'. Use this to change the margin around groups list items.
@@ -214,14 +214,14 @@ groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
 groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
 compactGrouping: true # default is false. Makes the grouping section more compact.
 groupingDisableMainSpeakers: true # default is false. Disables (greys out) any speaker that is currently the main speaker of a multi-speaker group.
-hideGroupUngroupAllButtons: true # default is false. Hides the join all/unjoin all buttons in the grouping section.
+groupingHideUngroupAllButtons: true # default is false. Hides the join all/unjoin all buttons in the grouping section.
 
 # player specific
-hidePlayerControlNextTrackButton: true # default is false, hides player control next track button.
-hidePlayerControlPrevTrackButton: true # default is false, hides player control previous track button.
-hidePlayerControlRepeatButton: true # default is false, hides player control track repeat mode button.
-hidePlayerControlShuffleButton: true # default is false, hides player control track shuffle mode button.
-hidePlayerControlPowerButton: true # default is false, hides player control power button if media player TURN_ON feature is enabled.  This setting does nothing if media player TURN_ON feature is not supported.
+playerHideControlNextTrackButton: true # default is false, hides player control next track button.
+playerHideControlPrevTrackButton: true # default is false, hides player control previous track button.
+playerHideControlRepeatButton: true # default is false, hides player control track repeat mode button.
+playerHideControlShuffleButton: true # default is false, hides player control track shuffle mode button.
+playerHideControlPowerButton: true # default is false, hides player control power button if media player TURN_ON feature is enabled.  This setting does nothing if media player TURN_ON feature is not supported.
 showVolumeUpAndDownButtons: true # default is false, shows buttons for increasing and decreasing volume
 showFastForwardAndRewindButtons: true # default is false, shows fast forward and rewind buttons
 fastForwardAndRewindStepSizeSeconds: 60 # default is 15 seconds
@@ -274,7 +274,7 @@ allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the p
 showSourceInPlayer: true # default is false. Will show the source (if available) in the player section.
 showBrowseMediaInPlayerSection: true # default is false. Will show the browse media button in the player section.
 showChannelInPlayer: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
-hidePlaylistInPlayer: true # default is false. Will hide the playlist name in the player section.
+playerHidePlaylist: true # default is false. Will hide the playlist name in the player section.
 stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
 hidePlayerArtwork: true # default is false. Hides the artwork in the player section.
 playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
@@ -293,7 +293,7 @@ playerControlsMargin: '0 3rem' # default is '0.25rem'. Use this to change the ma
 playerVolumeSliderHeight: 0.5 # default is 1.5. Unit is 'rem'. Use this to change the height of the volume slider in the player.
 playerVolumeMuteButtonSize: 2 # default is 2.5. Unit is 'rem'. Use this to change the size of the mute button in the player.
 
-# media browser specific
+# favorites specific
 favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
 favoritesHideTitleForThumbnailIcons: true # default is false. Only makes a difference if favoritesItemsPerRow > 1. Will hide title for thumbnail artworks.
 favoritesIconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
@@ -315,14 +315,14 @@ topFavorites: # Show these favorites at the top of the list
   - Country Rocks
   - Kacey Musgraves Radio
 numberOfFavoritesToShow: 10 # Use this to limit the amount of favorites to show
-hideBrowseMediaButton: true # default is false. Hides the button to open the media browser.
+favoritesHideBrowseMediaButton: true # default is false. Hides the button to browse more media in Home Assistant.
 replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
 sortFavoritesByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
-mediaBrowserTitle: My favorites # default is 'All favorites'. Use this to change the title for the media browser/favorites section.
-hideMediaBrowserHeader: true # default is false. Hides the header of the media browser section (title and browse media button).
+favoritesTitle: My favorites # default is 'All favorites'. Use this to change the title for the favorites section.
+favoritesHideHeader: true # default is false. Hides the header of the favorites section (title and browse media button).
 
 # volumes specific
-hideVolumeCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
+volumesHideCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
 ```
 
 <!-- //#ONLY_SONOS_CARD_START -->
@@ -352,7 +352,7 @@ cards:
   - type: custom:sonos-card
     sections:
       - grouping
-      - media browser
+      - favorites
 ```
 
 ## Theme variables
@@ -389,7 +389,7 @@ heightPercentage: 60
 showVolumeUpAndDownButtons: true
 favoritesItemsPerRow: 6
 footerHeight: 3.5
-hideMediaBrowserHeader: true
+favoritesHideHeader: true
 compactGroups: true
 compactGrouping: true
 hidePlayerArtwork: true
@@ -397,18 +397,19 @@ playerControlsLargeIcons: true
 ```
 
 ![slim.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/slim.png)
+![slim_2.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/slim_2.png)
 
 ## Custom Favorites
 
 You can add your own buttons to the Favorites section. This can be useful if you want to quickly start a specific radio station or playlist.
 
 To determine what to configure for a button do the following:
-1. Start playing the radio station or playlist you want to add. This can for instance be done in this card's media browser or in the built-in Home Assistant Media page.
+1. Start playing the radio station or playlist you want to add. This can for instance be done in this card's favorites section or in the built-in Home Assistant Media page.
 2. Open the Developer Tools in Home Assistant.
 3. Go to the States tab.
 4. Find the media player entity that is playing the radio station or playlist.
 5. Look for the `media_content_id` and `media_content_type` attributes.
-6. For the thumbnail, you can inspect the HTML to see what image the media browser is using, or you can also use a local URL if you have the image stored locally.
+6. For the thumbnail, you can inspect the HTML to see what image the favorites section is using, or you can also use a local URL if you have the image stored locally.
 7. Use these values to configure the custom favorite.
 
 Example:
@@ -511,7 +512,7 @@ card_mod:
 
 The above YAML renders the following:
 
-![styling.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/styling.png)
+![styling.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_1.png)
 
 Here is another example of changing the position of the artwork in the player section:
 
@@ -528,5 +529,5 @@ card_mod:
       }
 ```
 
-![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_3.png)
+![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_2.png)
 

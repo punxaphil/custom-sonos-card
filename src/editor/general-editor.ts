@@ -3,7 +3,7 @@ import { BaseEditor } from './base-editor';
 
 const options = {
   player: 'Player',
-  'media browser': 'Media Browser',
+  favorites: 'Favorites',
   groups: 'Groups',
   grouping: 'Grouping',
   volumes: 'Volumes',
@@ -47,23 +47,23 @@ export const GENERAL_SCHEMA = [
     required: true,
   },
   {
-    name: 'hidePlayerControlPowerButton',
+    name: 'playerHideControlPowerButton',
     selector: { boolean: {} },
   },
   {
-    name: 'hidePlayerControlShuffleButton',
+    name: 'playerHideControlShuffleButton',
     selector: { boolean: {} },
   },
   {
-    name: 'hidePlayerControlPrevTrackButton',
+    name: 'playerHideControlPrevTrackButton',
     selector: { boolean: {} },
   },
   {
-    name: 'hidePlayerControlNextTrackButton',
+    name: 'playerHideControlNextTrackButton',
     selector: { boolean: {} },
   },
   {
-    name: 'hidePlayerControlRepeatButton',
+    name: 'playerHideControlRepeatButton',
     selector: { boolean: {} },
   },
   {

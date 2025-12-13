@@ -9,7 +9,7 @@ declare global {
 }
 
 export enum Section {
-  MEDIA_BROWSER = 'media browser',
+  FAVORITES = 'favorites',
   GROUPS = 'groups',
   PLAYER = 'player',
   GROUPING = 'grouping',
@@ -29,7 +29,7 @@ export interface GroupingButtonIcons {
 
 interface SectionButtonIcons {
   player?: string;
-  mediaBrowser?: string;
+  favorites?: string;
   groups?: string;
   grouping?: string;
   volumes?: string;
@@ -44,11 +44,11 @@ export interface CardConfig extends LovelaceCardConfig {
   style?: StyleConfig;
   sections?: Section[];
   startSection?: Section;
-  hidePlayerControlRepeatButton?: boolean;
-  hidePlayerControlShuffleButton?: boolean;
-  hidePlayerControlNextTrackButton?: boolean;
-  hidePlayerControlPrevTrackButton?: boolean;
-  hidePlayerControlPowerButton?: boolean;
+  playerHideControlRepeatButton?: boolean;
+  playerHideControlShuffleButton?: boolean;
+  playerHideControlNextTrackButton?: boolean;
+  playerHideControlPrevTrackButton?: boolean;
+  playerHideControlPowerButton?: boolean;
   showVolumeUpAndDownButtons?: boolean;
   entityId?: string;
   entities?: string[];
@@ -62,7 +62,7 @@ export interface CardConfig extends LovelaceCardConfig {
   artworkHostname?: string;
   widthPercentage?: number;
   heightPercentage?: number;
-  hideGroupCurrentTrack?: boolean;
+  groupsHideCurrentTrack?: boolean;
   dynamicVolumeSlider?: boolean;
   mediaArtworkOverrides?: MediaArtworkOverride[];
   customFavorites?: CustomFavorites;
@@ -73,7 +73,7 @@ export interface CardConfig extends LovelaceCardConfig {
   favoritesHideTitleForThumbnailIcons?: boolean;
   topFavorites?: string[];
   numberOfFavoritesToShow?: number;
-  hideBrowseMediaButton?: boolean;
+  favoritesHideBrowseMediaButton?: boolean;
   showAudioInputFormat?: boolean;
   entityPlatform?: string;
   showNonSonosPlayers?: boolean;
@@ -81,11 +81,11 @@ export interface CardConfig extends LovelaceCardConfig {
   entitiesToIgnoreVolumeLevelFor?: string[];
   replaceHttpWithHttpsForThumbnails?: boolean;
   volumeStepSize?: number;
-  mediaBrowserTitle?: string;
+  favoritesTitle?: string;
   queueTitle?: string;
   adjustVolumeRelativeToMainPlayer?: boolean;
   skipApplyButtonWhenGrouping?: boolean;
-  hideVolumeCogwheel?: boolean;
+  volumesHideCogwheel?: boolean;
   dynamicVolumeSliderThreshold?: number;
   dynamicVolumeSliderMax?: number;
   artworkMinHeight?: number;
@@ -98,7 +98,7 @@ export interface CardConfig extends LovelaceCardConfig {
   showSourceInPlayer?: boolean;
   showBrowseMediaInPlayerSection?: boolean;
   showChannelInPlayer?: boolean;
-  hidePlaylistInPlayer?: boolean;
+  playerHidePlaylist?: boolean;
   showFastForwardAndRewindButtons?: boolean;
   fastForwardAndRewindStepSizeSeconds?: number;
   groupingButtonIcons?: GroupingButtonIcons;
@@ -113,7 +113,7 @@ export interface CardConfig extends LovelaceCardConfig {
   doNotRememberSelectedPlayer?: boolean;
   groupingDontSortMembersOnTop?: boolean;
   changeVolumeOnSlide?: boolean;
-  hideMediaBrowserHeader?: boolean;
+  favoritesHideHeader?: boolean;
   compactGroups?: boolean;
   compactGrouping?: boolean;
   groupingDisableMainSpeakers?: boolean;
@@ -121,7 +121,7 @@ export interface CardConfig extends LovelaceCardConfig {
   playerControlsLargeIcons?: boolean;
   sectionButtonIconSize?: number;
   minWidth?: number;
-  hideGroupUngroupAllButtons?: boolean;
+  groupingHideUngroupAllButtons?: boolean;
   playerHeaderEntityFontSize?: number;
   playerHeaderSongFontSize?: number;
   playerHideVolumePercentage?: boolean;

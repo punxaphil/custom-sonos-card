@@ -3,17 +3,17 @@ import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { mdiPlayBoxMultiple } from '@mdi/js';
 
-class MediaBrowserHeader extends LitElement {
+class FavoritesHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
 
   render() {
-    if (this.store.config.hideMediaBrowserHeader) {
+    if (this.store.config.favoritesHideHeader) {
       return nothing;
     }
     return html`
-      <div class="title">${this.store.config.mediaBrowserTitle ?? 'All Favorites'}</div>
+      <div class="title">${this.store.config.favoritesTitle ?? 'All Favorites'}</div>
       <ha-icon-button
-        hide=${this.store.config.hideBrowseMediaButton || nothing}
+        hide=${this.store.config.favoritesHideBrowseMediaButton || nothing}
         @click=${() => this.store.mediaBrowseService.showBrowseMedia(this.store.activePlayer, this)}
         .path=${mdiPlayBoxMultiple}
       ></ha-icon-button>
@@ -44,4 +44,4 @@ class MediaBrowserHeader extends LitElement {
   }
 }
 
-customElements.define('sonos-media-browser-header', MediaBrowserHeader);
+customElements.define('sonos-favorites-header', FavoritesHeader);

@@ -19,7 +19,7 @@ class Group extends LitElement {
   };
 
   render() {
-    const currentTrack = this.store.config.hideGroupCurrentTrack ? '' : this.player.getCurrentTrack();
+    const currentTrack = this.store.config.groupsHideCurrentTrack ? '' : this.player.getCurrentTrack();
     const speakerList = getSpeakerList(this.player, this.store.predefinedGroups);
     const icons = this.player.members.map((member) => member.attributes.icon).filter((icon) => icon);
     const itemMargin = this.store.config.groupsItemMargin;

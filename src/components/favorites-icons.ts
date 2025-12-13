@@ -4,10 +4,10 @@ import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../constants';
-import { itemsWithFallbacks, renderMediaBrowserItem } from '../utils/media-browser-utils';
+import { itemsWithFallbacks, renderFavoritesItem } from '../utils/favorites-utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
-export class MediaBrowserIcons extends LitElement {
+export class FavoritesIcons extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ attribute: false }) items!: MediaPlayerItem[];
   private config!: CardConfig;
@@ -42,7 +42,7 @@ export class MediaBrowserIcons extends LitElement {
               style=${this.buttonStyle(this.config.favoritesItemsPerRow || 4)}
               @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
             >
-              ${renderMediaBrowserItem(item, !item.thumbnail || !this.config.favoritesHideTitleForThumbnailIcons)}
+              ${renderFavoritesItem(item, !item.thumbnail || !this.config.favoritesHideTitleForThumbnailIcons)}
             </ha-control-button>
           `;
           prevType = item.favoriteType;
@@ -113,4 +113,4 @@ export class MediaBrowserIcons extends LitElement {
   }
 }
 
-customElements.define('sonos-media-browser-icons', MediaBrowserIcons);
+customElements.define('sonos-favorites-icons', FavoritesIcons);

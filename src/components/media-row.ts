@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { MediaPlayerItem } from '../types';
 import { mediaItemTitleStyle } from '../constants';
-import { renderMediaBrowserItem } from '../utils/media-browser-utils';
+import { renderFavoritesItem } from '../utils/favorites-utils';
 
 class MediaRow extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -13,7 +13,7 @@ class MediaRow extends LitElement {
   render() {
     return html`
       <mwc-list-item hasMeta ?selected=${this.selected} ?activated=${this.selected} class="button">
-        <div class="row">${renderMediaBrowserItem(this.item)}</div>
+        <div class="row">${renderFavoritesItem(this.item)}</div>
         <slot slot="meta"></slot>
       </mwc-list-item>
     `;

@@ -48,7 +48,7 @@ class PlayerHeader extends LitElement {
     let album = this.activePlayer.attributes.media_album_name;
     if (this.config.showChannelInPlayer && this.activePlayer.attributes.media_channel) {
       album = this.activePlayer.attributes.media_channel;
-    } else if (!this.config.hidePlaylistInPlayer && this.activePlayer.attributes.media_playlist) {
+    } else if (!this.config.playerHidePlaylist && this.activePlayer.attributes.media_playlist) {
       album = `${this.activePlayer.attributes.media_playlist} - ${album}`;
     }
     return album;

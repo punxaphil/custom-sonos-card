@@ -19,7 +19,7 @@ class CardEditor extends BaseEditor {
 
   protected render(): TemplateResult {
     if (!this.config.sections || this.config.sections.length === 0) {
-      this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.MEDIA_BROWSER];
+      this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.FAVORITES];
       if (isSonosCard(this.config)) {
         this.config.sections.push(Section.QUEUE);
       }

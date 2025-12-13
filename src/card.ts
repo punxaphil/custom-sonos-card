@@ -14,7 +14,7 @@ import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { cardDoesNotContainAllSections, getHeight, getWidth, isSonosCard } from './utils/utils';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
+const { GROUPING, GROUPS, FAVORITES, PLAYER, VOLUMES, QUEUE } = Section;
 const TITLE_HEIGHT = 2;
 const FOOTER_HEIGHT = 5;
 
@@ -69,12 +69,12 @@ export class Card extends LitElement {
                       ></sonos-grouping>`,
                   ],
                   [
-                    MEDIA_BROWSER,
+                    FAVORITES,
                     () => html`
-                      <sonos-media-browser
+                      <sonos-favorites
                         .store=${this.store}
                         @item-selected=${this.onMediaItemSelected}
-                      ></sonos-media-browser>
+                      ></sonos-favorites>
                     `,
                   ],
                   [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
@@ -233,8 +233,8 @@ export class Card extends LitElement {
     } else if (sections) {
       this.section = sections.includes(PLAYER)
         ? PLAYER
-        : sections.includes(MEDIA_BROWSER)
-          ? MEDIA_BROWSER
+        : sections.includes(FAVORITES)
+          ? FAVORITES
           : sections.includes(GROUPS)
             ? GROUPS
             : sections.includes(GROUPING)
@@ -256,19 +256,6 @@ export class Card extends LitElement {
       if (newConfig.showNonSonosPlayers) {
         newConfig.entityPlatform = undefined;
       }
-    }
-    // handle deprecated config
-    if (newConfig.customSources) {
-      newConfig.customFavorites = newConfig.customSources;
-    }
-    if (newConfig.customThumbnail) {
-      newConfig.customFavoriteThumbnails = newConfig.customThumbnail;
-    }
-    if (newConfig.customThumbnailIfMissing) {
-      newConfig.customFavoriteThumbnailsIfMissing = newConfig.customThumbnailIfMissing;
-    }
-    if (newConfig.mediaBrowserItemsPerRow) {
-      newConfig.favoritesItemsPerRow = newConfig.mediaBrowserItemsPerRow;
     }
     this.config = newConfig;
   }

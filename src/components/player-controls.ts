@@ -35,10 +35,10 @@ class PlayerControls extends LitElement {
     this.mediaBrowseService = this.store.mediaBrowseService;
     const noUpDown = !!this.config.showVolumeUpAndDownButtons && nothing;
     const noFastForwardAndRewind = !!this.config.showFastForwardAndRewindButtons && nothing;
-    const noShuffle = !this.config.hidePlayerControlShuffleButton && nothing;
-    const noPrev = !this.config.hidePlayerControlPrevTrackButton && nothing;
-    const noNext = !this.config.hidePlayerControlNextTrackButton && nothing;
-    const noRepeat = !this.config.hidePlayerControlRepeatButton && nothing;
+    const noShuffle = !this.config.playerHideControlShuffleButton && nothing;
+    const noPrev = !this.config.playerHideControlPrevTrackButton && nothing;
+    const noNext = !this.config.playerHideControlNextTrackButton && nothing;
+    const noRepeat = !this.config.playerHideControlRepeatButton && nothing;
     const noBrowse = !!this.config.showBrowseMediaInPlayerSection && nothing;
 
     this.volumePlayer = this.getVolumePlayer();

@@ -4,9 +4,9 @@ import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { listStyle, MEDIA_ITEM_SELECTED } from '../constants';
-import { itemsWithFallbacks } from '../utils/media-browser-utils';
+import { itemsWithFallbacks } from '../utils/favorites-utils';
 
-export class MediaBrowserList extends LitElement {
+export class FavoritesList extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ type: Array }) items!: MediaPlayerItem[];
   private config!: CardConfig;
@@ -33,4 +33,4 @@ export class MediaBrowserList extends LitElement {
   }
 }
 
-customElements.define('sonos-media-browser-list', MediaBrowserList);
+customElements.define('sonos-favorites-list', FavoritesList);

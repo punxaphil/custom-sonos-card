@@ -3,7 +3,7 @@ import { BaseEditor } from './base-editor';
 
 export const ADVANCED_SCHEMA = [
   {
-    name: 'hideGroupCurrentTrack',
+    name: 'groupsHideCurrentTrack',
     selector: { boolean: {} },
   },
   {
@@ -35,7 +35,7 @@ export const ADVANCED_SCHEMA = [
     valueMin: 0,
   },
   {
-    name: 'hideBrowseMediaButton',
+    name: 'favoritesHideBrowseMediaButton',
     selector: { boolean: {} },
   },
 
@@ -48,7 +48,7 @@ export const ADVANCED_SCHEMA = [
     type: 'string',
   },
   {
-    name: 'mediaBrowserTitle',
+    name: 'favoritesTitle',
     type: 'string',
   },
   {
@@ -107,7 +107,7 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
-    name: 'hideVolumeCogwheel',
+    name: 'volumesHideCogwheel',
     selector: { boolean: {} },
   },
   {
@@ -143,7 +143,7 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
-    name: 'hidePlaylistInPlayer',
+    name: 'playerHidePlaylist',
     selector: { boolean: {} },
   },
   {
@@ -211,7 +211,7 @@ export const ADVANCED_SCHEMA = [
     selector: { boolean: {} },
   },
   {
-    name: 'hideMediaBrowserHeader',
+    name: 'favoritesHideHeader',
     selector: { boolean: {} },
   },
   {
@@ -319,7 +319,7 @@ export const ADVANCED_SCHEMA = [
     help: 'Margin around groups list items (e.g., 5px, 0.5rem)',
   },
   {
-    name: 'hideGroupUngroupAllButtons',
+    name: 'groupingHideUngroupAllButtons',
     selector: { boolean: {} },
   },
   {

@@ -4,7 +4,7 @@ import { CardConfig, Section } from '../types';
 import './section-button';
 import { isSonosCard } from '../utils/utils';
 
-const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
+const { GROUPING, GROUPS, FAVORITES, PLAYER, VOLUMES, QUEUE } = Section;
 
 class Footer extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
@@ -14,7 +14,7 @@ class Footer extends LitElement {
     const icons = this.config.sectionButtonIcons;
     let sections: [Section, string][] = [
       [PLAYER, icons?.player ?? 'mdi:home'],
-      [MEDIA_BROWSER, icons?.mediaBrowser ?? 'mdi:star-outline'],
+      [FAVORITES, icons?.favorites ?? 'mdi:star-outline'],
       [GROUPS, icons?.groups ?? 'mdi:speaker-multiple'],
       [GROUPING, icons?.grouping ?? 'mdi:checkbox-multiple-marked-circle-outline'],
       [QUEUE, icons?.queue ?? 'mdi:queue-first-in-last-out'],
