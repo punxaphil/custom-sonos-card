@@ -26,6 +26,9 @@
 - In each schema file, configs should be sorted alphabetically by name.
 - Exception: "title" config (e.g., `groupsTitle`, `favoritesTitle`) should always be first in its section's schema.
 
+# README
+- In the README, each section's YAML config block should have the "title" config on top (e.g., `queueTitle`, `groupsTitle`).
+
 # Sonos specific
 - This card is built into two variants: Sonos Card and Maxi Media Player. 
 - If adding Sonos specific functionality, make sure to use the isSonosCard utility function to differentiate between the two card types. 

@@ -1,4 +1,4 @@
-import { css, html, LitElement, PropertyValues } from 'lit';
+import { css, html, LitElement, nothing, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { MediaPlayerItem } from '../types';
@@ -11,8 +11,14 @@ class MediaRow extends LitElement {
   @property({ type: Boolean }) selected = false;
 
   render() {
+    const bgColor = this.store?.config?.queueItemBackgroundColor;
+    const textColor = this.store?.config?.queueItemTextColor;
+    const customStyle =
+      bgColor || textColor
+        ? `${bgColor ? `background: ${bgColor};` : ''}${textColor ? `color: ${textColor};` : ''}`
+        : nothing;
     return html`
-      <mwc-list-item hasMeta ?selected=${this.selected} ?activated=${this.selected} class="button">
+      <mwc-list-item hasMeta ?selected=${this.selected} ?activated=${this.selected} class="button" style=${customStyle}>
         <div class="row">${renderFavoritesItem(this.item)}</div>
         <slot slot="meta"></slot>
       </mwc-list-item>

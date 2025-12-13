@@ -152,6 +152,8 @@ export interface CardConfig extends LovelaceCardConfig {
   volumesLabelForAllSlider?: string;
   volumeStepSize?: number;
   // Queue
+  queueItemBackgroundColor?: string;
+  queueItemTextColor?: string;
   queueTitle?: string;
 }
 

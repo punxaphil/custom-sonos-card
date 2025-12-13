@@ -34,16 +34,16 @@ class PredefinedGroupEditor extends BaseEditor {
       <div>
         <h3>Volumes - will be set when players are grouped</h3>
         ${this.predefinedGroup.entities.map(({ player, volume }) => {
-      const schema = [
-        {
-          type: 'integer',
-          name: 'volume',
-          label: `${this.hass.states[player]?.attributes.friendly_name ?? ''}${volume !== undefined ? `: ${volume}` : ''}`,
-          valueMin: 0,
-          valueMax: 100,
-        },
-      ];
-      return html`
+          const schema = [
+            {
+              type: 'integer',
+              name: 'volume',
+              label: `${this.hass.states[player]?.attributes.friendly_name ?? ''}${volume !== undefined ? `: ${volume}` : ''}`,
+              valueMin: 0,
+              valueMax: 100,
+            },
+          ];
+          return html`
             <sonos-card-editor-form
               .data=${{ volume }}
               .schema=${schema}
@@ -52,7 +52,7 @@ class PredefinedGroupEditor extends BaseEditor {
               .changed=${(ev: CustomEvent) => this.volumeChanged(ev, player)}
             ></sonos-card-editor-form>
           `;
-    })}
+        })}
       </div>
       <ha-control-button-group>
         <ha-control-button @click=${this.savePredefinedGroup}>
