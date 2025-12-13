@@ -7,7 +7,7 @@ class ArtworkOverridesEditor extends BaseEditor {
   @state() editItem!: number;
 
   protected render(): TemplateResult {
-    const items = this.config.mediaArtworkOverrides;
+    const items = this.config.playerMediaArtworkOverrides;
 
     return this.editItem > -1
       ? html`<sonos-card-artwork-override-editor

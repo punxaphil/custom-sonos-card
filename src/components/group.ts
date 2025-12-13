@@ -26,7 +26,7 @@ class Group extends LitElement {
     return html`
       <mwc-list-item
         hasMeta
-        class=${this.store.config.compactGroups ? 'compact' : ''}
+        class=${this.store.config.groupsCompact ? 'compact' : ''}
         ?selected=${this.selected}
         ?activated=${this.selected}
         @click=${() => this.handleGroupClicked()}

@@ -31,7 +31,7 @@ export class Grouping extends LitElement {
     this.notJoinedPlayers = this.getNotJoinedPlayers();
     this.joinedPlayers = this.getJoinedPlayers();
 
-    if (this.config.skipApplyButtonWhenGrouping && (this.modifiedItems.length > 0 || this.selectedPredefinedGroup)) {
+    if (this.config.groupingSkipApplyButton && (this.modifiedItems.length > 0 || this.selectedPredefinedGroup)) {
       this.applyGrouping();
     }
 
@@ -45,7 +45,7 @@ export class Grouping extends LitElement {
         }
       </style>
       <div class="wrapper">
-        <div class="predefined-groups" compact=${this.config.compactGrouping || nothing}>
+        <div class="predefined-groups" compact=${this.config.groupingCompact || nothing}>
           ${this.config.groupingHideUngroupAllButtons
             ? nothing
             : html`${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}`}
@@ -58,7 +58,7 @@ export class Grouping extends LitElement {
                 class="item"
                 modified=${item.isModified || nothing}
                 disabled=${item.isDisabled || nothing}
-                compact=${this.config.compactGrouping || nothing}
+                compact=${this.config.groupingCompact || nothing}
               >
                 <ha-icon
                   class="icon"
@@ -83,7 +83,7 @@ export class Grouping extends LitElement {
         <ha-control-button-group
           class="buttons"
           hide=${(this.modifiedItems.length === 0 && !this.selectedPredefinedGroup) ||
-          this.config.skipApplyButtonWhenGrouping ||
+          this.config.groupingSkipApplyButton ||
           nothing}
         >
           <ha-control-button class="apply" @click=${this.applyGrouping}> Apply</ha-control-button>
@@ -217,10 +217,10 @@ export class Grouping extends LitElement {
       await this.mediaControlService.activatePredefinedGroup(selectedPredefinedGroup);
     }
 
-    if (newMainPlayer !== activePlayerId && !this.config.dontSwitchPlayerWhenGrouping) {
+    if (newMainPlayer !== activePlayerId && !this.config.groupingDontSwitchPlayer) {
       dispatchActivePlayerId(newMainPlayer, this.config, this);
     }
-    if (this.config.entityId && unJoin.includes(this.config.entityId) && this.config.dontSwitchPlayerWhenGrouping) {
+    if (this.config.entityId && unJoin.includes(this.config.entityId) && this.config.groupingDontSwitchPlayer) {
       dispatchActivePlayerId(this.config.entityId, this.config, this);
     }
   }
@@ -308,7 +308,7 @@ export class Grouping extends LitElement {
     });
     this.selectedPredefinedGroup = predefinedGroup;
 
-    if (!hasGroupingChanges && this.config.skipApplyButtonWhenGrouping) {
+    if (!hasGroupingChanges && this.config.groupingSkipApplyButton) {
       await this.mediaControlService.activatePredefinedGroup(predefinedGroup);
       this.selectedPredefinedGroup = undefined;
     }

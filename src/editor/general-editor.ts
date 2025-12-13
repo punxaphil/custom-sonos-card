@@ -33,15 +33,15 @@ export const GENERAL_SCHEMA = [
     name: 'title',
   },
   {
-    name: 'showVolumeUpAndDownButtons',
+    name: 'playerShowVolumeUpAndDownButtons',
     selector: { boolean: {} },
   },
   {
-    name: 'showFastForwardAndRewindButtons',
+    name: 'playerShowFastForwardAndRewindButtons',
     selector: { boolean: {} },
   },
   {
-    name: 'fastForwardAndRewindStepSizeSeconds',
+    name: 'playerFastForwardAndRewindStepSizeSeconds',
     type: 'integer',
     default: 15,
     required: true,

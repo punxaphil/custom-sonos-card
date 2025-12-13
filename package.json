@@ -32,7 +32,8 @@
     "build": "npm run lint -- --fix && vite build && bash create-dist-maxi-media-player.sh",
     "local-deploy": "npm run build && cp dist/custom-sonos-card.js ~/homeassistant/www/community/custom-sonos-card/custom-sonos-card.js",
     "lint": "eslint src test",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "test:ci": "vitest run"
   }
 }

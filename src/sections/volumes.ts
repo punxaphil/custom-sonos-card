@@ -33,10 +33,10 @@ export class Volumes extends LitElement {
   }
 
   private volumeWithName(player: MediaPlayer, updateMembers = true) {
-    const name = updateMembers ? (this.config.labelForTheAllVolumesSlider ?? 'All') : player.name;
+    const name = updateMembers ? (this.config.volumesLabelForAllSlider ?? 'All') : player.name;
     const volDown = async () => await this.mediaControlService.volumeDown(player, updateMembers);
     const volUp = async () => await this.mediaControlService.volumeUp(player, updateMembers);
-    const noUpDown = !!this.config.showVolumeUpAndDownButtons && nothing;
+    const noUpDown = !!this.config.playerShowVolumeUpAndDownButtons && nothing;
     const hideSwitches = updateMembers || !this.showSwitches[player.id];
     return html` <div class="row">
       <div class="volume-name">

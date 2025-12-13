@@ -35,7 +35,7 @@ export class FavoritesIcons extends LitElement {
       </style>
       <div class="icons">
         ${items.map((item) => {
-          const showFavoriteType = (this.config.sortFavoritesByType && item.favoriteType !== prevType) || nothing;
+          const showFavoriteType = (this.config.favoritesSortByType && item.favoriteType !== prevType) || nothing;
           const toRender = html`
             <div class="favorite-type" show=${showFavoriteType}>${item.favoriteType}</div>
             <ha-control-button
@@ -53,7 +53,7 @@ export class FavoritesIcons extends LitElement {
   }
 
   private sortItemsByFavoriteTypeIfConfigured(items: MediaPlayerItem[]) {
-    if (this.config.sortFavoritesByType) {
+    if (this.config.favoritesSortByType) {
       items.sort((a, b) => {
         return a.favoriteType?.localeCompare(b.favoriteType ?? '') || a.title.localeCompare(b.title);
       });

@@ -14,8 +14,8 @@ export class Groups extends LitElement {
   render() {
     this.activePlayer = this.store.activePlayer;
     this.groups = this.store.allGroups;
-    const listStyle = this.store.config.groupButtonWidth
-      ? styleMap({ width: `${this.store.config.groupButtonWidth}rem` })
+    const listStyle = this.store.config.groupsButtonWidth
+      ? styleMap({ width: `${this.store.config.groupsButtonWidth}rem` })
       : '';
 
     return html`

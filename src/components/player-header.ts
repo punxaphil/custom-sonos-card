@@ -29,7 +29,7 @@ class PlayerHeader extends LitElement {
       </div>
       <div class="song" style=${styleMap(songStyle)}>${this.getSong()}</div>
       <div class="artist-album" hide=${this.config.playerHideArtistAlbum || nothing}>
-        ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
+        ${this.getAlbum()} ${when(this.config.playerShowAudioInputFormat, () => until(this.getAudioInputFormat()))}
       </div>
       <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
@@ -37,8 +37,8 @@ class PlayerHeader extends LitElement {
 
   private getSong() {
     let song = this.activePlayer.getCurrentTrack();
-    song = song || this.config.labelWhenNoMediaIsSelected || 'No media selected';
-    if (this.config.showSourceInPlayer && this.activePlayer.attributes.source) {
+    song = song || this.config.playerLabelWhenNoMediaIsSelected || 'No media selected';
+    if (this.config.playerShowSource && this.activePlayer.attributes.source) {
       song = `${song} (${this.activePlayer.attributes.source})`;
     }
     return song;
@@ -46,7 +46,7 @@ class PlayerHeader extends LitElement {
 
   private getAlbum() {
     let album = this.activePlayer.attributes.media_album_name;
-    if (this.config.showChannelInPlayer && this.activePlayer.attributes.media_channel) {
+    if (this.config.playerShowChannel && this.activePlayer.attributes.media_channel) {
       album = this.activePlayer.attributes.media_channel;
     } else if (!this.config.playerHidePlaylist && this.activePlayer.attributes.media_playlist) {
       album = `${this.activePlayer.attributes.media_playlist} - ${album}`;

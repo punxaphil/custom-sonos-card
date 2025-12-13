@@ -23,11 +23,11 @@ export class Player extends LitElement {
     this.activePlayer = this.store.activePlayer;
 
     this.resolveTemplateImageUrlIfNeeded();
-    const blurAmount = this.config.artworkAsBackgroundBlur ?? 0;
-    const artworkAsBackground = this.config.artworkAsBackground || blurAmount > 0;
+    const blurAmount = this.config.playerArtworkAsBackgroundBlur ?? 0;
+    const playerArtworkAsBackground = this.config.playerArtworkAsBackground || blurAmount > 0;
     const backgroundOpacity = this.config.playerControlsAndHeaderBackgroundOpacity ?? 0.9;
     const backgroundOverlayColor = this.config.playerBackgroundOverlayColor;
-    const containerStyle = artworkAsBackground
+    const containerStyle = playerArtworkAsBackground
       ? blurAmount > 0
         ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px; --background-opacity: ${backgroundOpacity}${backgroundOverlayColor ? `; --background-overlay-color: ${backgroundOverlayColor}` : ''}`
         : `${this.getBackgroundImage()}; --background-opacity: ${backgroundOpacity}${backgroundOverlayColor ? `; --background-overlay-color: ${backgroundOverlayColor}` : ''}`
@@ -36,18 +36,18 @@ export class Player extends LitElement {
       <div class="container ${blurAmount > 0 ? 'blurred-background' : ''}" style=${containerStyle || nothing}>
         <sonos-player-header
           class="header"
-          background=${artworkAsBackground || nothing}
+          background=${playerArtworkAsBackground || nothing}
           .store=${this.store}
           hide=${this.config.playerHideHeader || nothing}
         ></sonos-player-header>
         <div
           class="artwork"
-          hide=${(artworkAsBackground && !blurAmount) || this.config.hidePlayerArtwork || nothing}
+          hide=${(playerArtworkAsBackground && !blurAmount) || this.config.playerHideArtwork || nothing}
           style=${this.artworkStyle()}
         ></div>
         <sonos-player-controls
           class="controls"
-          background=${artworkAsBackground || nothing}
+          background=${playerArtworkAsBackground || nothing}
           .store=${this.store}
           hide=${this.config.playerHideControls || nothing}
           style=${this.config.playerControlsMargin ? `margin: ${this.config.playerControlsMargin}` : nothing}
@@ -57,13 +57,13 @@ export class Player extends LitElement {
   }
 
   private artworkStyle() {
-    const minHeight = this.config.artworkMinHeight ?? 5;
+    const minHeight = this.config.playerArtworkMinHeight ?? 5;
     return `${this.getBackgroundImage()}; min-height: ${minHeight}rem`;
   }
 
   private getBackgroundImageUrl() {
     const fallbackImage =
-      this.config.fallbackArtwork ??
+      this.config.playerFallbackArtwork ??
       (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
@@ -76,7 +76,7 @@ export class Player extends LitElement {
 
   private getBackgroundImage() {
     const fallbackImage =
-      this.config.fallbackArtwork ??
+      this.config.playerFallbackArtwork ??
       (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
@@ -90,7 +90,7 @@ export class Player extends LitElement {
   }
 
   private getMatchingOverride(entityImage?: string) {
-    const overrides = this.config.mediaArtworkOverrides;
+    const overrides = this.config.playerMediaArtworkOverrides;
     if (!overrides) return undefined;
 
     const { media_title, media_artist, media_album_name, media_content_id, media_channel } =
@@ -111,7 +111,7 @@ export class Player extends LitElement {
   }
 
   private getArtworkImage() {
-    const prefix = this.config.artworkHostname || '';
+    const prefix = this.config.playerArtworkHostname || '';
     const { entity_picture, entity_picture_local, app_id } = this.activePlayer.attributes;
     let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
     if (app_id === 'music_assistant') {

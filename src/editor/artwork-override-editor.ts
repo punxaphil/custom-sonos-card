@@ -7,7 +7,7 @@ const newOverride = { ifMissing: false };
 class ArtworkOverrideEditor extends BaseEditor {
   @property({ type: Number }) index!: number;
   protected render(): TemplateResult {
-    const artworkOverride = this.config.mediaArtworkOverrides?.[this.index || 0];
+    const artworkOverride = this.config.playerMediaArtworkOverrides?.[this.index || 0];
     const schema = [
       { name: 'ifMissing', selector: { boolean: {} } },
       {
@@ -59,7 +59,7 @@ class ArtworkOverrideEditor extends BaseEditor {
         ${artworkOverride
           ? html`<ha-control-button
               @click="${() => {
-                this.config.mediaArtworkOverrides = this.config.mediaArtworkOverrides?.filter(
+                this.config.playerMediaArtworkOverrides = this.config.playerMediaArtworkOverrides?.filter(
                   (_, index) => index !== this.index,
                 );
                 this.index = -1;
@@ -76,7 +76,7 @@ class ArtworkOverrideEditor extends BaseEditor {
 
   private changed(ev: CustomEvent, index: number): void {
     const changed = ev.detail.value;
-    let overrides = this.config.mediaArtworkOverrides;
+    let overrides = this.config.playerMediaArtworkOverrides;
     if (!Array.isArray(overrides)) {
       overrides = [];
     }
@@ -85,7 +85,7 @@ class ArtworkOverrideEditor extends BaseEditor {
     } else {
       overrides = [...overrides, changed];
     }
-    this.config.mediaArtworkOverrides = overrides;
+    this.config.playerMediaArtworkOverrides = overrides;
     this.configChanged();
   }
 }

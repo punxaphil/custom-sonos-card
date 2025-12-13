@@ -20,6 +20,12 @@
 - Make sure to use latest, stable versions of dependencies unless there is a specific reason not to. Those reasons must be documented in an ADR.md file.
 - Keep types clean in normal code, extract type definitions to a types.ts if they are complex or used in multiple places.
 
+# Editor Schema
+- Config options in the advanced editor are organized by section (Common, Player, Favorites, Groups, Grouping, Volumes, Queue).
+- Section-specific config options should be prefixed with the section name (e.g., `playerHideHeader`, `favoritesTitle`).
+- In each schema file, configs should be sorted alphabetically by name.
+- Exception: "title" config (e.g., `groupsTitle`, `favoritesTitle`) should always be first in its section's schema.
+
 # Sonos specific
 - This card is built into two variants: Sonos Card and Maxi Media Player. 
 - If adding Sonos specific functionality, make sure to use the isSonosCard utility function to differentiate between the two card types. 

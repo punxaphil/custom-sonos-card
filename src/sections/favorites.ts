@@ -82,17 +82,17 @@ export class Favorites extends LitElement {
     let favorites = await this.mediaBrowseService.getFavorites(player);
     favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
     favorites = [
-      ...(this.config.customFavorites?.[this.activePlayer.id]?.map(Favorites.createFavorite) || []),
-      ...(this.config.customFavorites?.all?.map(Favorites.createFavorite) || []),
+      ...(this.config.favoritesCustomFavorites?.[this.activePlayer.id]?.map(Favorites.createFavorite) || []),
+      ...(this.config.favoritesCustomFavorites?.all?.map(Favorites.createFavorite) || []),
       ...favorites,
     ];
-    return this.config.numberOfFavoritesToShow ? favorites.slice(0, this.config.numberOfFavoritesToShow) : favorites;
+    return this.config.favoritesNumberToShow ? favorites.slice(0, this.config.favoritesNumberToShow) : favorites;
   }
 
   private sortOnTopFavoritesThenAlphabetically(a: string, b: string) {
-    const topFavorites = this.config.topFavorites ?? [];
-    const aIndex = indexOfWithoutSpecialChars(topFavorites, a);
-    const bIndex = indexOfWithoutSpecialChars(topFavorites, b);
+    const favoritesTopItems = this.config.favoritesTopItems ?? [];
+    const aIndex = indexOfWithoutSpecialChars(favoritesTopItems, a);
+    const bIndex = indexOfWithoutSpecialChars(favoritesTopItems, b);
     if (aIndex > -1 && bIndex > -1) {
       return aIndex - bIndex;
     } else {

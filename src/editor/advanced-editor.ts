@@ -1,385 +1,144 @@
-import { html, TemplateResult } from 'lit';
+import { css, html, nothing, TemplateResult } from 'lit';
+import { state } from 'lit/decorators.js';
+import { choose } from 'lit/directives/choose.js';
 import { BaseEditor } from './base-editor';
+import { COMMON_SCHEMA } from './schema/common-schema';
+import { PLAYER_SCHEMA } from './schema/player-schema';
+import { FAVORITES_SCHEMA } from './schema/favorites-schema';
+import { GROUPS_SCHEMA } from './schema/groups-schema';
+import { GROUPING_SCHEMA } from './schema/grouping-schema';
+import { VOLUMES_SCHEMA } from './schema/volumes-schema';
+import { QUEUE_SCHEMA } from './schema/queue-schema';
+import { isSonosCard } from '../utils/utils';
 
-export const ADVANCED_SCHEMA = [
-  {
-    name: 'groupsHideCurrentTrack',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'dynamicVolumeSlider',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'dynamicVolumeSliderThreshold',
-    type: 'integer',
-    default: 20,
-    required: true,
-    valueMin: 1,
-    valueMax: 100,
-  },
-  {
-    name: 'dynamicVolumeSliderMax',
-    type: 'integer',
-    default: 30,
-    required: true,
-    valueMin: 1,
-    valueMax: 100,
-  },
-  {
-    name: 'artworkMinHeight',
-    type: 'integer',
-    help: 'Minimum height of the artwork in rem',
-    default: 5,
-    required: true,
-    valueMin: 0,
-  },
-  {
-    name: 'favoritesHideBrowseMediaButton',
-    selector: { boolean: {} },
-  },
-
-  {
-    name: 'labelWhenNoMediaIsSelected',
-    type: 'string',
-  },
-  {
-    name: 'labelForTheAllVolumesSlider',
-    type: 'string',
-  },
-  {
-    name: 'favoritesTitle',
-    type: 'string',
-  },
-  {
-    name: 'queueTitle',
-    type: 'string',
-    cardType: 'sonos',
-  },
-  {
-    name: 'artworkHostname',
-    type: 'string',
-  },
-  {
-    name: 'favoritesHideTitleForThumbnailIcons',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'favoritesIconTitleColor',
-    type: 'string',
-    help: 'Color for favorites icon titles (e.g., red, #ff0000)',
-  },
-  {
-    name: 'favoritesIconTitleBackgroundColor',
-    type: 'string',
-    help: 'Background color for favorites icon titles',
-  },
-  {
-    name: 'favoritesIconBorder',
-    type: 'string',
-    help: 'Border for favorites icons (e.g., 1px solid white)',
-  },
-  {
-    name: 'favoritesIconPadding',
-    type: 'float',
-    help: 'Padding around favorites icon artwork (rem)',
-    valueMin: 0,
-  },
-  {
-    name: 'topFavorites',
-    type: 'string',
-  },
-  {
-    name: 'numberOfFavoritesToShow',
-    type: 'integer',
-    valueMin: 1,
-  },
-  {
-    name: 'showAudioInputFormat',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'adjustVolumeRelativeToMainPlayer',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'skipApplyButtonWhenGrouping',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'volumesHideCogwheel',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'artworkAsBackground',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'artworkAsBackgroundBlur',
-    selector: { number: { min: 0, max: 100, step: 1 } },
-  },
-  {
-    name: 'playerControlsAndHeaderBackgroundOpacity',
-    selector: { number: { min: 0, max: 1, step: 0.1 } },
-  },
-  {
-    name: 'playerVolumeEntityId',
-    selector: { entity: { multiple: false, filter: { domain: 'media_player' } } },
-  },
-  {
-    name: 'allowPlayerVolumeEntityOutsideOfGroup',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'dontSwitchPlayerWhenGrouping',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'showSourceInPlayer',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'showChannelInPlayer',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHidePlaylist',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'fallbackArtwork',
-    type: 'string',
-    help: 'Override default fallback artwork image if artwork is missing for the currently selected media',
-  },
-  {
-    name: 'entitiesToIgnoreVolumeLevelFor',
-    help: 'If you want to ignore volume level for certain players in the player section',
-    selector: { entity: { multiple: true, filter: { domain: 'media_player' } } },
-  },
-  {
-    name: 'replaceHttpWithHttpsForThumbnails',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'volumeStepSize',
-    type: 'integer',
-    valueMin: 1,
-  },
-  {
-    name: 'showBrowseMediaInPlayerSection',
-    selector: { boolean: {} },
-  },
-  {
-    type: 'string',
-    name: 'mediaTitleRegexToReplace',
-  },
-  {
-    type: 'string',
-    name: 'mediaTitleReplacement',
-  },
-  {
-    name: 'footerHeight',
-    type: 'integer',
-    valueMin: 0,
-  },
-  {
-    name: 'stopInsteadOfPause',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'inverseGroupMuteState',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'sortFavoritesByType',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'storePlayerInSessionStorage',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'doNotRememberSelectedPlayer',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'groupingDontSortMembersOnTop',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'changeVolumeOnSlide',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'favoritesHideHeader',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'compactGroups',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'compactGrouping',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'groupingDisableMainSpeakers',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'hidePlayerArtwork',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerControlsLargeIcons',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerControlsColor',
-    type: 'string',
-    help: 'Color for player control icons (e.g., pink, #ff69b4)',
-  },
-  {
-    name: 'playerBackgroundOverlayColor',
-    type: 'string',
-    help: 'Background overlay color when artworkAsBackground is true (e.g., rgba(0,0,0, 0.3))',
-  },
-  {
-    name: 'playerHideHeader',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHideEntityName',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHideArtistAlbum',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHideControls',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerControlsMargin',
-    type: 'string',
-    help: 'Margin around player controls (e.g., 0 3rem)',
-  },
-  {
-    name: 'playerHideVolumePercentage',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHideVolumeMuteButton',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHideVolume',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'playerHeaderEntityFontSize',
-    type: 'float',
-    help: 'Font size for entity name in player header (rem)',
-    valueMin: 0.1,
-  },
-  {
-    name: 'playerHeaderSongFontSize',
-    type: 'float',
-    help: 'Font size for song title in player header (rem)',
-    valueMin: 0.1,
-  },
-  {
-    name: 'sectionButtonIconSize',
-    type: 'float',
-    help: 'Size of section button icons (rem)',
-    valueMin: 0.1,
-  },
-  {
-    name: 'baseFontSize',
-    type: 'float',
-    help: 'Base font size for the entire card (rem)',
-    valueMin: 0.1,
-  },
-  {
-    name: 'minWidth',
-    type: 'integer',
-    help: 'Minimum width of the card (rem)',
-    valueMin: 1,
-  },
-  {
-    name: 'groupButtonWidth',
-    type: 'integer',
-    help: 'Width of group buttons (rem)',
-    valueMin: 1,
-  },
-  {
-    name: 'groupsItemMargin',
-    type: 'string',
-    help: 'Margin around groups list items (e.g., 5px, 0.5rem)',
-  },
-  {
-    name: 'groupingHideUngroupAllButtons',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'groupingButtonColor',
-    type: 'string',
-    help: 'Background/accent color for grouping buttons',
-  },
-  {
-    name: 'groupingButtonFontSize',
-    type: 'float',
-    help: 'Font size for grouping buttons (rem)',
-    valueMin: 0.1,
-  },
-  {
-    name: 'playerVolumeSliderHeight',
-    type: 'float',
-    help: 'Height of volume slider in player (rem)',
-    valueMin: 0.1,
-  },
-  {
-    name: 'playerVolumeMuteButtonSize',
-    type: 'float',
-    help: 'Size of mute button in player (rem)',
-    valueMin: 0.1,
-  },
-];
+enum AdvancedTab {
+  COMMON = 'Common',
+  PLAYER = 'Player',
+  FAVORITES = 'Favorites',
+  GROUPS = 'Groups',
+  GROUPING = 'Grouping',
+  VOLUMES = 'Volumes',
+  QUEUE = 'Queue',
+}
 
 class AdvancedEditor extends BaseEditor {
+  @state() private activeTab = AdvancedTab.COMMON;
+
   protected render(): TemplateResult {
-    const topFavorites = this.config.topFavorites ?? [];
-    const data = { ...this.config, topFavorites: topFavorites.join(', ') };
+    const tabs = Object.values(AdvancedTab).filter((tab) => tab !== AdvancedTab.QUEUE || isSonosCard(this.config));
+    return html`
+      <div class="tabs-container">
+        <ha-control-button-group>
+          ${tabs.map(
+            (tab) => html`
+              <ha-control-button selected=${this.activeTab === tab || nothing} @click=${() => (this.activeTab = tab)}>
+                ${tab}
+              </ha-control-button>
+            `,
+          )}
+        </ha-control-button-group>
+      </div>
+
+      ${this.renderTabContent()}
+    `;
+  }
+
+  private renderTabContent() {
+    return choose(this.activeTab, [
+      [AdvancedTab.COMMON, () => this.renderForm(COMMON_SCHEMA)],
+      [AdvancedTab.PLAYER, () => this.renderForm(PLAYER_SCHEMA, 'player')],
+      [AdvancedTab.FAVORITES, () => this.renderFavoritesForm()],
+      [AdvancedTab.GROUPS, () => this.renderForm(GROUPS_SCHEMA, 'groups')],
+      [AdvancedTab.GROUPING, () => this.renderForm(GROUPING_SCHEMA, 'grouping')],
+      [AdvancedTab.VOLUMES, () => this.renderForm(VOLUMES_SCHEMA, 'volumes')],
+      [AdvancedTab.QUEUE, () => this.renderForm(QUEUE_SCHEMA, 'queue')],
+    ]);
+  }
+
+  private renderForm(schema: unknown[], labelPrefix?: string) {
     return html`
       <sonos-card-editor-form
-        .schema=${ADVANCED_SCHEMA}
+        .schema=${schema}
+        .config=${this.config}
+        .hass=${this.hass}
+        .data=${this.config}
+        .changed=${this.simpleChanged}
+        .labelPrefix=${labelPrefix}
+      ></sonos-card-editor-form>
+    `;
+  }
+
+  private renderFavoritesForm() {
+    const favoritesTopItems = this.config.favoritesTopItems ?? [];
+    const data = { ...this.config, favoritesTopItems: favoritesTopItems.join(', ') };
+    return html`
+      <sonos-card-editor-form
+        .schema=${FAVORITES_SCHEMA}
         .config=${this.config}
         .hass=${this.hass}
         .data=${data}
-        .changed=${this.changed}
+        .changed=${this.favoritesChanged}
+        .labelPrefix=${'favorites'}
       ></sonos-card-editor-form>
-      <div>
+      <div class="yaml-note">
         The following needs to be configured using code (YAML):
         <ul>
-          <li>customFavorites</li>
-          <li>customFavoriteThumbnails</li>
-          <li>customFavoriteThumbnailsIfMissing</li>
+          <li>favoritesCustomFavorites</li>
+          <li>favoritesCustomThumbnails</li>
+          <li>favoritesCustomThumbnailsIfMissing</li>
           <li>favoritesToIgnore</li>
-          <li>groupingButtonIcons</li>
-          <li>sectionButtonIcons</li>
         </ul>
       </div>
     `;
   }
-  protected changed(ev: CustomEvent): void {
+
+  protected simpleChanged(ev: CustomEvent): void {
+    this.config = { ...this.config, ...ev.detail.value };
+    this.configChanged();
+  }
+
+  protected favoritesChanged(ev: CustomEvent): void {
     const changed = ev.detail.value;
     this.config = {
       ...this.config,
       ...changed,
-      topFavorites: changed.topFavorites.split(/ *, */),
+      favoritesTopItems: changed.favoritesTopItems?.split(/ *, */).filter(Boolean) ?? [],
     };
     this.configChanged();
+  }
+
+  static get styles() {
+    return css`
+      .tabs-container {
+        position: relative;
+      }
+      .tabs-container::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to right, transparent, var(--card-background-color, #fff));
+        pointer-events: none;
+      }
+      ha-control-button[selected] {
+        --control-button-background-color: var(--primary-color);
+      }
+      ha-control-button {
+        white-space: nowrap;
+      }
+      ha-control-button-group {
+        margin: 5px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-right: 25px;
+      }
+      .yaml-note {
+        margin-top: 20px;
+      }
+    `;
   }
 }
 

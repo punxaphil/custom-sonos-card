@@ -33,17 +33,17 @@ class PlayerControls extends LitElement {
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
     this.mediaBrowseService = this.store.mediaBrowseService;
-    const noUpDown = !!this.config.showVolumeUpAndDownButtons && nothing;
-    const noFastForwardAndRewind = !!this.config.showFastForwardAndRewindButtons && nothing;
+    const noUpDown = !!this.config.playerShowVolumeUpAndDownButtons && nothing;
+    const noFastForwardAndRewind = !!this.config.playerShowFastForwardAndRewindButtons && nothing;
     const noShuffle = !this.config.playerHideControlShuffleButton && nothing;
     const noPrev = !this.config.playerHideControlPrevTrackButton && nothing;
     const noNext = !this.config.playerHideControlNextTrackButton && nothing;
     const noRepeat = !this.config.playerHideControlRepeatButton && nothing;
-    const noBrowse = !!this.config.showBrowseMediaInPlayerSection && nothing;
+    const noBrowse = !!this.config.playerShowBrowseMediaButton && nothing;
 
     this.volumePlayer = this.getVolumePlayer();
     this.updateMemberVolumes = !this.config.playerVolumeEntityId;
-    const pauseOrStop = this.config.stopInsteadOfPause ? mdiStopCircle : mdiPauseCircle;
+    const pauseOrStop = this.config.playerStopInsteadOfPause ? mdiStopCircle : mdiPauseCircle;
     const playing = this.activePlayer.isPlaying();
     return html`
       <style>
@@ -82,7 +82,7 @@ class PlayerControls extends LitElement {
   private prev = async () => await this.mediaControlService.prev(this.activePlayer);
   private play = async () => await this.mediaControlService.play(this.activePlayer);
   private pauseOrStop = async () => {
-    return this.config.stopInsteadOfPause
+    return this.config.playerStopInsteadOfPause
       ? await this.mediaControlService.stop(this.activePlayer)
       : await this.mediaControlService.pause(this.activePlayer);
   };
@@ -108,12 +108,12 @@ class PlayerControls extends LitElement {
   private rewind = async () =>
     await this.mediaControlService.seek(
       this.activePlayer,
-      this.activePlayer.attributes.media_position - (this.config.fastForwardAndRewindStepSizeSeconds || 15),
+      this.activePlayer.attributes.media_position - (this.config.playerFastForwardAndRewindStepSizeSeconds || 15),
     );
   private fastForward = async () =>
     await this.mediaControlService.seek(
       this.activePlayer,
-      this.activePlayer.attributes.media_position + (this.config.fastForwardAndRewindStepSizeSeconds || 15),
+      this.activePlayer.attributes.media_position + (this.config.playerFastForwardAndRewindStepSizeSeconds || 15),
     );
 
   static get styles() {

@@ -22,11 +22,11 @@ function getValueFromKeyIgnoreSpecialChars(
 
 function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
   let thumbnail =
-    getValueFromKeyIgnoreSpecialChars(config.customFavoriteThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
+    getValueFromKeyIgnoreSpecialChars(config.favoritesCustomThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
   if (!thumbnail) {
-    thumbnail = getValueFromKeyIgnoreSpecialChars(config.customFavoriteThumbnailsIfMissing, mediaItem.title);
+    thumbnail = getValueFromKeyIgnoreSpecialChars(config.favoritesCustomThumbnailsIfMissing, mediaItem.title);
     if (itemsWithImage && !thumbnail) {
-      thumbnail = config.customFavoriteThumbnailsIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
+      thumbnail = config.favoritesCustomThumbnailsIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
     }
   } else if (thumbnail?.match(/https:\/\/brands\.home-assistant\.io\/.+\/logo.png/)) {
     thumbnail = thumbnail?.replace('logo.png', 'icon.png');

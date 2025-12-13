@@ -76,12 +76,12 @@ class EntitiesEditor extends BaseEditor {
             Predefined Groups
             <ha-control-button-group>
               ${predefinedGroups?.map(
-                (pg, index) => html`
+        (pg, index) => html`
                   <ha-control-button @click=${() => (this.editGroup = index)}>
                     ${pg.name}<ha-svg-icon .path=${mdiPen} label="Edit Group"></ha-svg-icon>
                   </ha-control-button>
                 `,
-              )}
+      )}
               <ha-control-button @click=${() => (this.editGroup = predefinedGroups ? predefinedGroups.length : 0)}>
                 Add group<ha-svg-icon .path=${mdiPlus} label="Add Group"></ha-svg-icon>
               </ha-control-button>
