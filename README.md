@@ -149,22 +149,62 @@ sectionButtonIcons: # customize icons for the section buttons
 startSection: groups # default is player. Use this to set the default section to show. 
 storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
+allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the playerVolumeEntityId to be outside the group of the selected player.
+dynamicVolumeSlider: true # default is false. See more in section further down.
+dynamicVolumeSliderMax: 40 # default is 30. Use this to change the max value for the dynamic volume slider.
+dynamicVolumeSliderThreshold: 30 # default is 20. Use this to change the threshold for the dynamic volume slider.
+entitiesToIgnoreVolumeLevelFor: # default is empty. Use this if you want to ignore volume level for certain players in the player section. Useful if you have a main device with fixed volume.
+  - media_player.my_sonos_port_device
+predefinedGroups: # defaults to empty. More advanced features in separate section further down.
+  - name: Inside
+    volume: 15 # If you want to set the volume of all speakers when grouping
+    unmuteWhenGrouped: true # If you want to unmute all speakers when grouping
+    entities:
+      - media_player.bedroom
+      - media_player.hall
+  - name: Kitchen&Hall
+    media: Legendary # If you want to start playing a specific favorite when grouping 
+    entities: # Use below format if you want to set the volume of the speakers when grouping
+      - player: media_player.kitchen
+        volume: 10
+      - player: media_player.hall
+        volume: 5
+  - name: All (except TV)
+    excludeItemsInEntitiesList: true # Invert entities selection, so that all players will be grouped except those in the entities list
+    entities:
+      - media_player.tv
+  # below advanced settings for predefined groups fully depend on what features your device supports
+  - name: Party Mode # Example with device-specific settings 
+    bass: 10 # Set bass level (-10 to 10) 
+    treble: -2 # Set treble level (-10 to 10) 
+    loudness: true # Enable/disable loudness 
+    entities:
+      - media_player.living_room
+      - media_player.kitchen
+  - name: Podcast Mode
+    bass: -5
+    loudness: false
+    speechEnhancement: true # Enable speech enhancement (soundbars only) 
+    nightSound: true # Enable night sound mode (soundbars only) 
+    entities:
+      - media_player.living_room
+  - name: All with Crossfade
+    crossfade: true # Enable/disable crossfade between tracks 
+    touchControls: true # Enable/disable touch controls 
+    statusLight: false # Enable/disable status light 
+    entities:
+      - media_player.bedroom
+      - media_player.hall
 ```
 
 ### Player Configuration
 
 ```yaml
 playerHideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
-allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the playerVolumeEntityId to be outside the group of the selected player.
 playerArtworkAsBackground: true # default is false. Will show the artwork as background for the player section.
 playerArtworkAsBackgroundBlur: 10 # default is 0 (no blur). Adds a blur effect to the background artwork and shows the normal artwork on top. Higher values = more blur. Creates a modern look similar to Apple Music. Implies playerArtworkAsBackground.
 playerArtworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, but depending on your setup your device might not be able to access the artwork on the default host. One example where it could be needed is if you cast the dashboard with Google Cast.
 playerArtworkMinHeight: 10 # default is 5. Use this to change the minimum height of the artwork in the player section. Unit is in rem.
-dynamicVolumeSlider: true # default is false. See more in section further down.
-dynamicVolumeSliderMax: 40 # default is 30. Use this to change the max value for the dynamic volume slider.
-dynamicVolumeSliderThreshold: 30 # default is 20. Use this to change the threshold for the dynamic volume slider.
-entitiesToIgnoreVolumeLevelFor: # default is empty. Use this if you want to ignore volume level for certain players in the player section. Useful if you have a main device with fixed volume.
-  - media_player.my_sonos_port_device
 playerFallbackArtwork: https://cdn-icons-png.flaticon.com/512/651/651717.png # Override default fallback artwork image if artwork is missing for the currently selected media.
 playerFastForwardAndRewindStepSizeSeconds: 60 # default is 15 seconds
 playerHideArtwork: true # default is false. Hides the artwork in the player section.
@@ -286,46 +326,6 @@ groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
 groupingDisableMainSpeakers: true # default is false. Disables (greys out) any speaker that is currently the main speaker of a multi-speaker group.
 groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
 groupingHideUngroupAllButtons: true # default is false. Hides the join all/unjoin all buttons in the grouping section.
-predefinedGroups: # defaults to empty. More advanced features in separate section further down.
-  - name: Inside
-    volume: 15 # If you want to set the volume of all speakers when grouping
-    unmuteWhenGrouped: true # If you want to unmute all speakers when grouping
-    entities:
-      - media_player.bedroom
-      - media_player.hall
-  - name: Kitchen&Hall
-    media: Legendary # If you want to start playing a specific favorite when grouping 
-    entities: # Use below format if you want to set the volume of the speakers when grouping
-      - player: media_player.kitchen
-        volume: 10
-      - player: media_player.hall
-        volume: 5
-  - name: All (except TV)
-    excludeItemsInEntitiesList: true # Invert entities selection, so that all players will be grouped except those in the entities list
-    entities:
-      - media_player.tv
-# below advanced settings for predefined groups fully depend on what features your device supports
-  - name: Party Mode # Example with device-specific settings 
-    bass: 10 # Set bass level (-10 to 10) 
-    treble: -2 # Set treble level (-10 to 10) 
-    loudness: true # Enable/disable loudness 
-    entities:
-      - media_player.living_room
-      - media_player.kitchen
-  - name: Podcast Mode
-    bass: -5
-    loudness: false
-    speechEnhancement: true # Enable speech enhancement (soundbars only) 
-    nightSound: true # Enable night sound mode (soundbars only) 
-    entities:
-      - media_player.living_room
-  - name: All with Crossfade
-    crossfade: true # Enable/disable crossfade between tracks 
-    touchControls: true # Enable/disable touch controls 
-    statusLight: false # Enable/disable status light 
-    entities:
-      - media_player.bedroom
-      - media_player.hall
 groupingSkipApplyButton: true # default is false. Will skip the apply button when grouping.
 ```
 
