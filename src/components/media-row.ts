@@ -11,8 +11,9 @@ class MediaRow extends LitElement {
   @property({ type: Boolean }) selected = false;
 
   render() {
-    const bgColor = this.store?.config?.queueItemBackgroundColor;
-    const textColor = this.store?.config?.queueItemTextColor;
+    const queueConfig = this.store?.config?.queue ?? {};
+    const bgColor = queueConfig.itemBackgroundColor;
+    const textColor = queueConfig.itemTextColor;
     const customStyle =
       bgColor || textColor
         ? `${bgColor ? `background: ${bgColor};` : ''}${textColor ? `color: ${textColor};` : ''}`

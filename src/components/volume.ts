@@ -2,13 +2,14 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
-import { CardConfig } from '../types';
+import { CardConfig, PlayerConfig } from '../types';
 import { mdiPower, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
 
 class Volume extends LitElement {
   @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
+  private playerConfig!: PlayerConfig;
   private mediaControlService!: MediaControlService;
   @property({ attribute: false }) player!: MediaPlayer;
   @property({ type: Boolean }) updateMembers = true;
@@ -21,6 +22,7 @@ class Volume extends LitElement {
 
   render() {
     this.config = this.store.config;
+    this.playerConfig = this.config.player ?? {};
     this.mediaControlService = this.store.mediaControlService;
 
     const volume = this.player.getVolume();
@@ -30,8 +32,8 @@ class Volume extends LitElement {
     const muteIcon = isMuted ? mdiVolumeMute : mdiVolumeHigh;
     const disabled = this.player.ignoreVolume;
 
-    const sliderHeight = this.isPlayer && this.config.playerVolumeSliderHeight;
-    const muteButtonSize = this.isPlayer && this.config.playerVolumeMuteButtonSize;
+    const sliderHeight = this.isPlayer && this.playerConfig.volumeSliderHeight;
+    const muteButtonSize = this.isPlayer && this.playerConfig.volumeMuteButtonSize;
     return html`
       <style>
         :host {
@@ -46,7 +48,7 @@ class Volume extends LitElement {
           .disabled=${disabled}
           @click=${this.mute}
           .path=${muteIcon}
-          hide=${(this.isPlayer && this.config.playerHideVolumeMuteButton) || nothing}
+          hide=${(this.isPlayer && this.playerConfig.hideVolumeMuteButton) || nothing}
         >
         </ha-icon-button>
         <div class="volume-slider">
@@ -58,7 +60,7 @@ class Volume extends LitElement {
             .disabled=${disabled}
             class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
           ></ha-control-slider>
-          <div class="volume-level" hide=${(this.isPlayer && this.config.playerHideVolumePercentage) || nothing}>
+          <div class="volume-level" hide=${(this.isPlayer && this.playerConfig.hideVolumePercentage) || nothing}>
             <div style="flex: ${volume}">${volume > 0 ? '0%' : ''}</div>
             <div class="percentage">${volume}%</div>
             <div style="flex: ${max - volume};text-align: right">${volume < max ? `${max}%` : ''}</div>

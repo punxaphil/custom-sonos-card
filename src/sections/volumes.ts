@@ -33,10 +33,12 @@ export class Volumes extends LitElement {
   }
 
   private volumeWithName(player: MediaPlayer, updateMembers = true) {
-    const name = updateMembers ? (this.config.volumesLabelForAllSlider ?? 'All') : player.name;
+    const volumesConfig = this.config.volumes ?? {};
+    const playerConfig = this.config.player ?? {};
+    const name = updateMembers ? (volumesConfig.labelForAllSlider ?? 'All') : player.name;
     const volDown = async () => await this.mediaControlService.volumeDown(player, updateMembers);
     const volUp = async () => await this.mediaControlService.volumeUp(player, updateMembers);
-    const noUpDown = !!this.config.playerShowVolumeUpAndDownButtons && nothing;
+    const noUpDown = !!playerConfig.showVolumeUpAndDownButtons && nothing;
     const hideSwitches = updateMembers || !this.showSwitches[player.id];
     return html` <div class="row">
       <div class="volume-name">
@@ -57,7 +59,7 @@ export class Volumes extends LitElement {
           .path=${mdiVolumePlus}
         ></ha-icon-button>
         <ha-icon-button
-          hide=${updateMembers || this.config.volumesHideCogwheel || nothing}
+          hide=${updateMembers || volumesConfig.hideCogwheel || nothing}
           @click=${() => this.toggleShowSwitches(player)}
           .path=${mdiCog}
           show-switches=${this.showSwitches[player.id] || nothing}

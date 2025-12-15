@@ -1,31 +1,14 @@
 export const VOLUMES_SCHEMA = [
   {
-    name: 'volumesTitle',
+    name: 'title',
     type: 'string',
   },
   {
-    name: 'adjustVolumeRelativeToMainPlayer',
+    name: 'hideCogwheel',
     selector: { boolean: {} },
   },
   {
-    name: 'changeVolumeOnSlide',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'volumesHideCogwheel',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'inverseGroupMuteState',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'volumesLabelForAllSlider',
+    name: 'labelForAllSlider',
     type: 'string',
-  },
-  {
-    name: 'volumeStepSize',
-    type: 'integer',
-    valueMin: 1,
   },
 ];

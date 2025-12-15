@@ -198,7 +198,7 @@ export default class Store {
   }
 
   hidePower(hideIfOn = false) {
-    if (this.config.playerHideControlPowerButton) {
+    if (this.config.player?.hideControlPowerButton) {
       return true;
     } else if (!supportsTurnOn(this.activePlayer)) {
       return true;

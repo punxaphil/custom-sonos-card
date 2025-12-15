@@ -7,13 +7,14 @@ class FavoritesHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
 
   render() {
-    if (this.store.config.favoritesHideHeader) {
+    const favoritesConfig = this.store.config.favorites ?? {};
+    if (favoritesConfig.hideHeader) {
       return nothing;
     }
     return html`
-      <div class="title">${this.store.config.favoritesTitle ?? 'All Favorites'}</div>
+      <div class="title">${favoritesConfig.title ?? 'All Favorites'}</div>
       <ha-icon-button
-        hide=${this.store.config.favoritesHideBrowseMediaButton || nothing}
+        hide=${favoritesConfig.hideBrowseMediaButton || nothing}
         @click=${() => this.store.mediaBrowseService.showBrowseMedia(this.store.activePlayer, this)}
         .path=${mdiPlayBoxMultiple}
       ></ha-icon-button>

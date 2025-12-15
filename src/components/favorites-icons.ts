@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
-import { CardConfig, MediaPlayerItem } from '../types';
+import { FavoritesConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../constants';
 import { itemsWithFallbacks, renderFavoritesItem } from '../utils/favorites-utils';
@@ -10,18 +10,18 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 export class FavoritesIcons extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ attribute: false }) items!: MediaPlayerItem[];
-  private config!: CardConfig;
+  private config!: FavoritesConfig;
 
   render() {
-    this.config = this.store.config;
+    this.config = this.store.config.favorites ?? {};
 
-    const items = itemsWithFallbacks(this.items, this.config);
+    const items = itemsWithFallbacks(this.items, this.store.config);
     let prevType: string | undefined = '';
     this.sortItemsByFavoriteTypeIfConfigured(items);
-    const color = this.config.favoritesIconTitleColor;
-    const bgColor = this.config.favoritesIconTitleBackgroundColor;
-    const border = this.config.favoritesIconBorder;
-    const padding = this.config.favoritesIconPadding;
+    const color = this.config.iconTitleColor;
+    const bgColor = this.config.iconTitleBackgroundColor;
+    const border = this.config.iconBorder;
+    const padding = this.config.iconPadding;
     return html`
       <style>
         .title {
@@ -35,14 +35,14 @@ export class FavoritesIcons extends LitElement {
       </style>
       <div class="icons">
         ${items.map((item) => {
-          const showFavoriteType = (this.config.favoritesSortByType && item.favoriteType !== prevType) || nothing;
+          const showFavoriteType = (this.config.sortByType && item.favoriteType !== prevType) || nothing;
           const toRender = html`
             <div class="favorite-type" show=${showFavoriteType}>${item.favoriteType}</div>
             <ha-control-button
-              style=${this.buttonStyle(this.config.favoritesItemsPerRow || 4)}
+              style=${this.buttonStyle(this.config.itemsPerRow || 4)}
               @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
             >
-              ${renderFavoritesItem(item, !item.thumbnail || !this.config.favoritesHideTitleForThumbnailIcons)}
+              ${renderFavoritesItem(item, !item.thumbnail || !this.config.hideTitleForThumbnailIcons)}
             </ha-control-button>
           `;
           prevType = item.favoriteType;
@@ -53,7 +53,7 @@ export class FavoritesIcons extends LitElement {
   }
 
   private sortItemsByFavoriteTypeIfConfigured(items: MediaPlayerItem[]) {
-    if (this.config.favoritesSortByType) {
+    if (this.config.sortByType) {
       items.sort((a, b) => {
         return a.favoriteType?.localeCompare(b.favoriteType ?? '') || a.title.localeCompare(b.title);
       });

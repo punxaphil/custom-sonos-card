@@ -2,90 +2,21 @@
 
 ## Release v10
 
-This release includes a major refactoring of configuration property names to improve consistency and organization. All section-specific configuration options now use a consistent naming convention with section prefixes.
+This release includes a major refactoring to use **nested YAML configuration**. Section-specific options are now organized under their respective section keys for a cleaner, more intuitive configuration structure.
 
 ### ⚠️ Configuration Migration Required
 
-If you have existing card configurations, you will need to update the following property names:
+All section-specific configuration options now live under nested section keys (`player`, `favorites`, `groups`, `grouping`, `volumes`, `queue`).
 
 #### Media Browser → Favorites (Section Rename)
 
 The "Media Browser" section has been renamed to "Favorites" throughout the codebase and configuration.
 
-#### Player Section
+### New Nested Structure
 
-| Old Name | New Name |
-|----------|----------|
-| `hidePlayerArtwork` | `playerHideArtwork` |
-| `artworkMinHeight` | `playerArtworkMinHeight` |
-| `artworkAsBackground` | `playerArtworkAsBackground` |
-| `artworkAsBackgroundBlur` | `playerArtworkAsBackgroundBlur` |
-| `artworkHostname` | `playerArtworkHostname` |
-| `fallbackArtwork` | `playerFallbackArtwork` |
-| `mediaArtworkOverrides` | `playerMediaArtworkOverrides` |
-| `labelWhenNoMediaIsSelected` | `playerLabelWhenNoMediaIsSelected` |
-| `showVolumeUpAndDownButtons` | `playerShowVolumeUpAndDownButtons` |
-| `showFastForwardAndRewindButtons` | `playerShowFastForwardAndRewindButtons` |
-| `fastForwardAndRewindStepSizeSeconds` | `playerFastForwardAndRewindStepSizeSeconds` |
-| `showAudioInputFormat` | `playerShowAudioInputFormat` |
-| `showSourceInPlayer` | `playerShowSource` |
-| `showChannelInPlayer` | `playerShowChannel` |
-| `showBrowseMediaInPlayerSection` | `playerShowBrowseMediaButton` |
-| `stopInsteadOfPause` | `playerStopInsteadOfPause` |
+Instead of flat configuration with prefixes, options are now organized under their section:
 
-#### Favorites Section
-
-| Old Name | New Name |
-|----------|----------|
-| `customFavorites` | `favoritesCustomFavorites` |
-| `customFavoriteThumbnails` | `favoritesCustomThumbnails` |
-| `customFavoriteThumbnailsIfMissing` | `favoritesCustomThumbnailsIfMissing` |
-| `topFavorites` | `favoritesTopItems` |
-| `numberOfFavoritesToShow` | `favoritesNumberToShow` |
-| `sortFavoritesByType` | `favoritesSortByType` |
-| `replaceHttpWithHttpsForThumbnails` | `favoritesReplaceHttpWithHttpsForThumbnails` |
-
-#### Groups Section
-
-| Old Name | New Name |
-|----------|----------|
-| `compactGroups` | `groupsCompact` |
-| `groupButtonWidth` | `groupsButtonWidth` |
-
-#### Grouping Section
-
-| Old Name | New Name |
-|----------|----------|
-| `compactGrouping` | `groupingCompact` |
-| `skipApplyButtonWhenGrouping` | `groupingSkipApplyButton` |
-| `dontSwitchPlayerWhenGrouping` | `groupingDontSwitchPlayer` |
-
-#### Volumes Section
-
-| Old Name | New Name |
-|----------|----------|
-| `labelForTheAllVolumesSlider` | `volumesLabelForAllSlider` |
-
-### New Features
-
-- **Tabbed Advanced Editor**: The advanced editor now organizes configuration options into tabs by section (Common, Player, Favorites, Groups, Grouping, Volumes, Queue) for easier navigation.
-- **Consistent Naming Convention**: All section-specific options now follow a consistent `{section}{PropertyName}` pattern, making it clearer which section each option affects.
-
-### Migration Example
-
-**Before:**
-```yaml
-type: custom:sonos-card
-artworkAsBackground: true
-artworkMinHeight: 10
-hidePlayerArtwork: false
-compactGroups: true
-topFavorites:
-  - My Playlist
-  - Radio Station
-```
-
-**After:**
+**Before (v9):**
 ```yaml
 type: custom:sonos-card
 playerArtworkAsBackground: true
@@ -96,3 +27,165 @@ favoritesTopItems:
   - My Playlist
   - Radio Station
 ```
+
+**After (v10):**
+```yaml
+type: custom:sonos-card
+player:
+  artworkAsBackground: true
+  artworkMinHeight: 10
+  hideArtwork: false
+groups:
+  compact: true
+favorites:
+  topItems:
+    - My Playlist
+    - Radio Station
+```
+
+### Section Configuration Reference
+
+#### Player Section (`player:`)
+
+| Property | Description |
+|----------|-------------|
+| `artworkAsBackground` | Use artwork as background |
+| `artworkAsBackgroundBlur` | Blur amount for artwork background |
+| `artworkHostname` | Override hostname for artwork URLs |
+| `artworkMinHeight` | Minimum height of artwork (rem) |
+| `backgroundOverlayColor` | Background overlay color (e.g., `rgba(0,0,0,0.3)`) |
+| `controlsAndHeaderBackgroundOpacity` | Opacity for controls and header background |
+| `controlsColor` | Color for control icons |
+| `controlsLargeIcons` | Use large control icons |
+| `controlsMargin` | Margin around controls |
+| `fallbackArtwork` | Fallback artwork URL |
+| `fastForwardAndRewindStepSizeSeconds` | Step size for fast forward/rewind |
+| `headerEntityFontSize` | Font size for entity name |
+| `headerSongFontSize` | Font size for song title |
+| `hideArtistAlbum` | Hide artist and album |
+| `hideArtwork` | Hide artwork |
+| `hideControls` | Hide all controls |
+| `hideControlNextTrackButton` | Hide next track button |
+| `hideControlPowerButton` | Hide power button |
+| `hideControlPrevTrackButton` | Hide previous track button |
+| `hideControlRepeatButton` | Hide repeat button |
+| `hideControlShuffleButton` | Hide shuffle button |
+| `hideEntityName` | Hide entity name |
+| `hideHeader` | Hide player header |
+| `hidePlaylist` | Hide playlist |
+| `hideVolume` | Hide volume control |
+| `hideVolumeMuteButton` | Hide mute button |
+| `hideVolumePercentage` | Hide volume percentage |
+| `labelWhenNoMediaIsSelected` | Label when no media is playing |
+| `mediaArtworkOverrides` | Array of artwork override rules |
+| `showAudioInputFormat` | Show audio input format |
+| `showBrowseMediaButton` | Show browse media button |
+| `showChannel` | Show channel |
+| `showFastForwardAndRewindButtons` | Show fast forward/rewind buttons |
+| `showSource` | Show source |
+| `showVolumeUpAndDownButtons` | Show volume up/down buttons |
+| `stopInsteadOfPause` | Stop instead of pause |
+| `volumeEntityId` | Entity ID for volume control |
+| `volumeMuteButtonSize` | Size of mute button (rem) |
+| `volumeSliderHeight` | Height of volume slider (rem) |
+
+#### Favorites Section (`favorites:`)
+
+| Property | Description |
+|----------|-------------|
+| `customFavorites` | Custom favorites configuration |
+| `customThumbnails` | Custom thumbnail URLs |
+| `customThumbnailsIfMissing` | Custom thumbnails when missing |
+| `hideBrowseMediaButton` | Hide browse media button |
+| `hideHeader` | Hide favorites header |
+| `hideTitleForThumbnailIcons` | Hide titles for thumbnail icons |
+| `iconBorder` | Border for icons (e.g., `1px solid white`) |
+| `iconPadding` | Padding around icons (rem) |
+| `iconTitleBackgroundColor` | Background color for icon titles |
+| `iconTitleColor` | Color for icon titles |
+| `itemsPerRow` | Number of items per row |
+| `numberToShow` | Number of favorites to show |
+| `replaceHttpWithHttpsForThumbnails` | Replace HTTP with HTTPS |
+| `sortByType` | Sort favorites by type |
+| `title` | Custom title for section |
+| `exclude` | Array of favorites to exclude (matched against title and media_content_id) |
+| `topItems` | Array of favorites to show first |
+
+#### Groups Section (`groups:`)
+
+| Property | Description |
+|----------|-------------|
+| `buttonWidth` | Width of group buttons (rem) |
+| `compact` | Compact mode |
+| `hideCurrentTrack` | Hide current track info |
+| `itemMargin` | Margin around items |
+| `title` | Custom title for section |
+
+#### Grouping Section (`grouping:`)
+
+| Property | Description |
+|----------|-------------|
+| `buttonColor` | Button background color |
+| `buttonFontSize` | Button font size (rem) |
+| `buttonIcons` | Custom button icons |
+| `compact` | Compact mode |
+| `disableMainSpeakers` | Disable main speakers |
+| `dontSortMembersOnTop` | Don't sort members on top |
+| `dontSwitchPlayer` | Don't switch player when grouping |
+| `hideUngroupAllButtons` | Hide ungroup all buttons |
+| `skipApplyButton` | Skip apply button |
+| `title` | Custom title for section |
+
+#### Volumes Section (`volumes:`)
+
+| Property | Description |
+|----------|-------------|
+| `hideCogwheel` | Hide cogwheel button |
+| `labelForAllSlider` | Label for "all" volume slider |
+| `title` | Custom title for section |
+
+#### Queue Section (`queue:`) - Sonos Card only
+
+| Property | Description |
+|----------|-------------|
+| `itemBackgroundColor` | Background color for queue items |
+| `itemTextColor` | Text color for queue items |
+| `title` | Custom title for section |
+
+### Cross-Section Options (Root Level)
+
+These options remain at the root level as they affect multiple sections:
+
+| Property | Description |
+|----------|-------------|
+| `adjustVolumeRelativeToMainPlayer` | Adjust volume relative to main player |
+| `allowPlayerVolumeEntityOutsideOfGroup` | Allow volume entity outside of group |
+| `baseFontSize` | Base font size (rem) |
+| `changeVolumeOnSlide` | Change volume while sliding |
+| `doNotRememberSelectedPlayer` | Don't remember selected player |
+| `dynamicVolumeSlider` | Enable dynamic volume slider |
+| `dynamicVolumeSliderMax` | Maximum for dynamic slider |
+| `dynamicVolumeSliderThreshold` | Threshold for dynamic slider |
+| `entities` | Array of entity IDs |
+| `entitiesToIgnoreVolumeLevelFor` | Entities to ignore volume level for |
+| `entityId` | Force selected entity |
+| `entityNameRegexToReplace` | Regex for entity name replacement |
+| `entityNameReplacement` | Replacement for entity name |
+| `entityPlatform` | Entity platform filter |
+| `excludeItemsInEntitiesList` | Exclude items in entities list |
+| `footerHeight` | Footer height |
+| `heightPercentage` | Height percentage |
+| `inverseGroupMuteState` | Inverse group mute state |
+| `mediaTitleRegexToReplace` | Regex for media title replacement |
+| `mediaTitleReplacement` | Replacement for media title |
+| `minWidth` | Minimum width (rem) |
+| `predefinedGroups` | Array of predefined groups |
+| `sectionButtonIconSize` | Section button icon size |
+| `sectionButtonIcons` | Custom section button icons |
+| `sections` | Array of sections to show |
+| `showNonSonosPlayers` | Show non-Sonos players |
+| `startSection` | Section to show on start |
+| `storePlayerInSessionStorage` | Store player in session storage |
+| `title` | Card title |
+| `volumeStepSize` | Volume step size |
+| `widthPercentage` | Width percentage |

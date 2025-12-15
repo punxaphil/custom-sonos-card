@@ -1,7 +1,7 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
-import { CardConfig } from '../types';
+import { PlayerConfig } from '../types';
 import { getSpeakerList } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
@@ -10,26 +10,22 @@ import { styleMap } from 'lit/directives/style-map.js';
 
 class PlayerHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
-  private config!: CardConfig;
+  private config!: PlayerConfig;
   private activePlayer!: MediaPlayer;
 
   render() {
-    this.config = this.store.config;
+    this.config = this.store.config.player ?? {};
     this.activePlayer = this.store.activePlayer;
-    const entityStyle = this.config.playerHeaderEntityFontSize
-      ? { fontSize: `${this.config.playerHeaderEntityFontSize}rem` }
-      : {};
-    const songStyle = this.config.playerHeaderSongFontSize
-      ? { fontSize: `${this.config.playerHeaderSongFontSize}rem` }
-      : {};
+    const entityStyle = this.config.headerEntityFontSize ? { fontSize: `${this.config.headerEntityFontSize}rem` } : {};
+    const songStyle = this.config.headerSongFontSize ? { fontSize: `${this.config.headerSongFontSize}rem` } : {};
 
     return html` <div class="info">
-      <div class="entity" style=${styleMap(entityStyle)} hide=${this.config.playerHideEntityName || nothing}>
+      <div class="entity" style=${styleMap(entityStyle)} hide=${this.config.hideEntityName || nothing}>
         ${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}
       </div>
       <div class="song" style=${styleMap(songStyle)}>${this.getSong()}</div>
-      <div class="artist-album" hide=${this.config.playerHideArtistAlbum || nothing}>
-        ${this.getAlbum()} ${when(this.config.playerShowAudioInputFormat, () => until(this.getAudioInputFormat()))}
+      <div class="artist-album" hide=${this.config.hideArtistAlbum || nothing}>
+        ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
       </div>
       <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
@@ -37,8 +33,8 @@ class PlayerHeader extends LitElement {
 
   private getSong() {
     let song = this.activePlayer.getCurrentTrack();
-    song = song || this.config.playerLabelWhenNoMediaIsSelected || 'No media selected';
-    if (this.config.playerShowSource && this.activePlayer.attributes.source) {
+    song = song || this.config.labelWhenNoMediaIsSelected || 'No media selected';
+    if (this.config.showSource && this.activePlayer.attributes.source) {
       song = `${song} (${this.activePlayer.attributes.source})`;
     }
     return song;
@@ -46,9 +42,9 @@ class PlayerHeader extends LitElement {
 
   private getAlbum() {
     let album = this.activePlayer.attributes.media_album_name;
-    if (this.config.playerShowChannel && this.activePlayer.attributes.media_channel) {
+    if (this.config.showChannel && this.activePlayer.attributes.media_channel) {
       album = this.activePlayer.attributes.media_channel;
-    } else if (!this.config.playerHidePlaylist && this.activePlayer.attributes.media_playlist) {
+    } else if (!this.config.hidePlaylist && this.activePlayer.attributes.media_playlist) {
       album = `${this.activePlayer.attributes.media_playlist} - ${album}`;
     }
     return album;

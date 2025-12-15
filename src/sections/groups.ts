@@ -14,12 +14,11 @@ export class Groups extends LitElement {
   render() {
     this.activePlayer = this.store.activePlayer;
     this.groups = this.store.allGroups;
-    const listStyle = this.store.config.groupsButtonWidth
-      ? styleMap({ width: `${this.store.config.groupsButtonWidth}rem` })
-      : '';
+    const groupsConfig = this.store.config.groups ?? {};
+    const listStyleMap = groupsConfig.buttonWidth ? styleMap({ width: `${groupsConfig.buttonWidth}rem` }) : '';
 
     return html`
-      <mwc-list activatable class="list" style=${listStyle}>
+      <mwc-list activatable class="list" style=${listStyleMap}>
         ${this.groups.map((group) => {
           const selected = this.activePlayer.id === group.id;
           return html` <sonos-group .store=${this.store} .player=${group} .selected=${selected}></sonos-group> `;

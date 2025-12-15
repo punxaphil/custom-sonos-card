@@ -1,0 +1,1094 @@
+decluttering_templates:
+  my_first_template:
+    card:
+      type: todo-list
+      entity: todo.gor_det_nu
+      title: '[[title]]'
+views:
+  - title: general
+    path: general
+    type: custom:horizontal-layout
+    badges: []
+    cards:
+      - type: custom:sonos-card
+        favorites:
+          customFavorites:
+            media_player.tv:
+              - title: TV
+                thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
+          topItems:
+            - ''
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        widthPercentage: 100
+        heightPercentage: 160
+        footerHeight: 10
+        title: heightPercentage, mediaTitleNameRegexToReplace, footerHeight
+        mediaTitleRegexToReplace: Malm
+        mediaTitleReplacement: MALMEEUUÅ
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        heightPercentage: auto
+        favorites:
+          topItems:
+            - ''
+        player:
+          artworkMinHeight: 3
+        title: auto height
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        favorites:
+          topItems:
+            - ''
+        dynamicVolumeSlider: true
+        dynamicVolumeSliderMax: 50
+        dynamicVolumeSliderThreshold: 50
+        title: dynamic volume change max, section icons
+        sectionButtonIcons:
+          player: mdi:ab-testing
+          favorites: mdi:star-box-multiple
+          groups: mdi:multicast
+          grouping: mdi:group
+          volumes: mdi:volume-high
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+        entityId: media_player.kok
+        title: entityId
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        entities:
+          - media_player.biljardrum
+          - media_player.master_suite
+          - media_player.lounge
+        predefinedGroups:
+          - name: biljardrum o lounge
+            media: ''
+            entities:
+              - player: media_player.biljardrum
+              - player: media_player.lounge
+          - name: HALLOBILJARDRUM
+            media: ''
+            entities:
+              - player: media_player.hall
+              - player: media_player.biljardrum
+          - name: msObiljard
+            media: ''
+            entities:
+              - player: media_player.master_suite
+              - player: media_player.biljardrum
+          - name: ms&lounge
+            media: ''
+            entities:
+              - player: media_player.master_suite
+              - player: media_player.lounge
+        favorites:
+          topItems:
+            - ''
+        volumes:
+          labelForAllSlider: ' '
+        title: entities
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+        title: test card
+        entityId: media_player.badrum_nere
+        entities:
+          - media_player.badrum_nere
+          - media_player.kontor
+  - title: mediaBrowser
+    path: mediaBrowser
+    badges: []
+    cards:
+      - type: custom:sonos-card
+        startSection: media browser
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        title: Items per row1, customFavorites
+        favorites:
+          itemsPerRow: 1
+          customFavorites:
+            media_player.tv:
+              - title: TV
+                thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
+            all:
+              - title: BBC
+                media_content_id: >-
+                  media-source://radio_browser/98adecf7-2683-4408-9be7-02d3f9098eb8
+                media_content_type: music
+                thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+      - type: custom:sonos-card
+        startSection: media browser
+        favorites:
+          topItems:
+            - VimpelJul
+            - Slow
+            - Soft
+            - '"Johan''s hits"'
+          exclude:
+            - 65
+            - 53
+            - Cykeln
+        groups:
+          hideCurrentTrack: true
+        dynamicVolumeSlider: true
+        player:
+          showVolumeUpAndDownButtons: true
+        predefinedGroups:
+          - name: kk
+            entities:
+              - player: media_player.badrum_nere
+                volume: 0
+              - player: media_player.hall
+                volume: 4
+              - player: media_player.vitrinskap
+            media: ''
+          - name: ok
+            media: ''
+            entities:
+              - player: media_player.biljardrum
+              - player: media_player.matsal_lampa
+                volume: 0
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        title: top favorites, ignoreFavorites
+      - type: custom:sonos-card
+        startSection: media browser
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        favorites:
+          topItems:
+            - ''
+          replaceHttpWithHttpsForThumbnails: false
+          hideTitleForThumbnailIcons: true
+        title: dontReplaceHttpWithHttpsForThumbnails hideTitle
+  - type: sections
+    max_columns: 4
+    title: mediabrowser2
+    path: mediabrowser2
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: New section
+          - type: custom:sonos-card
+            startSection: media browser
+            sections:
+              - player
+              - volumes
+              - groups
+              - grouping
+              - media browser
+            title: Items per row 5, sortFavoritesByType
+            favorites:
+              itemsPerRow: 5
+              sortByType: true
+    cards: []
+  - title: grouping
+    path: grouping
+    badges: []
+    cards:
+      - type: custom:sonos-card
+        grouping:
+          skipApplyButton: true
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        predefinedGroups:
+          - name: mastersuite+biljardrum
+            media: ''
+            volume: 13
+            entities:
+              - player: media_player.master_suite
+              - player: media_player.biljardrum
+          - name: mastersuite+biljardrum vol2
+            media: ''
+            volume: 27
+            entities:
+              - player: media_player.biljardrum
+              - player: media_player.master_suite
+        title: skip apply, vol groups
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        title: dontSwitchPlayer, DontSortMembersOnTop
+        grouping:
+          dontSwitchPlayer: true
+          dontSortMembersOnTop: true
+        favorites:
+          topItems:
+            - ''
+      - type: custom:sonos-card
+        grouping:
+          skipApplyButton: false
+          buttonIcons:
+            predefinedGroup: mdi:ab-testing
+            joinAll: mdi:account-multiple
+            unJoinAll: mdi:account-remove
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        predefinedGroups:
+          - name: msk
+            media: ''
+            volume: 13
+            entities:
+              - player: media_player.master_suite
+              - player: media_player.biljardrum
+          - name: msk vol2
+            media: ''
+            volume: 27
+            entities:
+              - player: media_player.biljardrum
+              - player: media_player.master_suite
+        title: vol groups, grouping icons
+        favorites:
+          topItems:
+            - ''
+      - type: custom:sonos-card
+        title: no group all buttons
+        card_mod:
+          style:
+            sonos-grouping$: |
+              .predefined-groups {            
+                display: none;
+              }  
+      - type: custom:sonos-card
+        title: predefined groups with media
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        predefinedGroups:
+          - name: slow
+            media: Slow
+            entities:
+              - player: media_player.badrum_nere
+              - player: media_player.kontor
+          - name: soft
+            media: Soft
+            entities:
+              - player: media_player.badrum_nere
+              - player: media_player.kontor
+          - name: danne
+            media: Cykeln E Nyckelen
+            entities:
+              - player: media_player.badrum_nere
+              - player: media_player.kontor
+          - name: 'on'
+            treble: 5
+            entities:
+              - player: media_player.biljardrum
+              - player: media_player.master_suite
+          - name: 'off'
+            treble: 0
+            entities:
+              - player: media_player.biljardrum
+              - player: media_player.master_suite
+        card_mod:
+          style:
+            sonos-grouping$: |
+              .predefined-groups {            
+                display: none;
+              }  
+      - type: custom:sonos-card
+        title: Disable Main Speakers
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+        grouping:
+          disableMainSpeakers: true
+  - title: groups
+    path: groups
+    cards:
+      - type: custom:sonos-card
+        sections:
+          - volumes
+          - groups
+          - grouping
+        entities:
+          - media_player.tv
+          - media_player.kok
+          - media_player.biljardrum
+          - media_player.hall
+        title: Order entities
+  - title: Volumes
+    path: volumes
+    badges: []
+    cards:
+      - type: custom:sonos-card
+        entitiesToIgnoreVolumeLevelFor:
+          - media_player.biljardrum
+        player:
+          showVolumeUpAndDownButtons: true
+        volumeStepSize: 0
+        adjustVolumeRelativeToMainPlayer: true
+        volumes:
+          hideCogwheel: true
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        title: >-
+          hideVolumeCogwheel adjustVolumeRelativeToMainPlayer
+          showVolumeUpAndDownButtons entitiesToIgnoreVolumeLevelFor
+        heightPercentage: auto
+        startSection: volumes
+      - type: custom:sonos-card
+        startSection: volumes
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+        entities:
+          - media_player.biljardrum
+  - title: player
+    path: player
+    type: custom:horizontal-layout
+    badges: []
+    cards:
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+        favorites:
+          topItems:
+            - ''
+        title: Player Volume Entity ID hall
+        player:
+          volumeEntityId: media_player.hall
+          showVolumeUpAndDownButtons: true
+        volumeStepSize: 1
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+        favorites:
+          topItems:
+            - ''
+        title: Player Volume Entity outside group hall
+        player:
+          volumeEntityId: media_player.hall
+        allowPlayerVolumeEntityOutsideOfGroup: true
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        favorites:
+          topItems:
+            - ''
+        title: show source,audio
+        player:
+          showSource: false
+          showChannel: false
+          showAudioInputFormat: true
+          showVolumeUpAndDownButtons: true
+      - type: custom:sonos-card
+        player:
+          showBrowseMediaButton: true
+        title: showBrowseMediaInPlayerSection
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        player:
+          showFastForwardAndRewindButtons: true
+          fastForwardAndRewindStepSizeSeconds: 60
+        title: fast forward and rewind
+      - type: custom:sonos-card
+        sections:
+          - player
+        player:
+          showVolumeUpAndDownButtons: true
+          showFastForwardAndRewindButtons: false
+          hideControlPowerButton: true
+          hideControlShuffleButton: true
+          hideControlRepeatButton: true
+          volumeEntityId: media_player.kok
+        showNonSonosPlayers: false
+        favorites:
+          topItems:
+            - ''
+        dynamicVolumeSlider: false
+        entities:
+          - media_player.kok
+        entityId: media_player.kok
+        adjustVolumeRelativeToMainPlayer: false
+        volumes:
+          hideCogwheel: true
+        title: volUpAndDown
+        card_mod:
+          style:
+            sonos-player$ sonos-player-controls$: |
+              sonos-volume {
+                display: none;
+              }
+      - type: custom:sonos-card
+        player:
+          stopInsteadOfPause: true
+        title: stopInsteadOfPause
+      - type: custom:sonos-card
+        player:
+          stopInsteadOfPause: true
+          mediaArtworkOverrides:
+            - mediaTitleEquals: TV
+              imageUrl: '{{ states("input_text.test_sonos_artwork_override") }}'
+              sizePercentage: 40
+        title: mediaArtworkOverrides
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+          - queue
+  - title: artwork
+    path: artwork
+    badges: []
+    cards:
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        favorites:
+          topItems:
+            - ''
+        player:
+          artworkAsBackground: true
+        title: Artwork as background
+      - type: custom:sonos-card
+        player:
+          artworkAsBackground: true
+        title: no control background
+        card_mod:
+          style: |
+            ha-card {
+              --rgb-card-background-color: false;
+            }
+      - type: custom:sonos-card
+        sections:
+          - player
+          - volumes
+          - groups
+          - grouping
+          - media browser
+        favorites:
+          topItems:
+            - ''
+        player:
+          artworkAsBackgroundBlur: 10
+          controlsAndHeaderBackgroundOpacity: 0.4
+        title: Artwork as background (blur)
+        entityId: media_player.master_suite
+  - type: sections
+    max_columns: 4
+    title: sonos_popup
+    path: sonos-popup
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: New section
+          - show_name: true
+            show_icon: true
+            type: button
+            entity: media_player.hall
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Kök Sonos
+                  content:
+                    type: custom:sonos-card
+                    sections:
+                      - player
+                      - volumes
+                      - groups
+                      - grouping
+                      - media browser
+                      - queue
+                    startSection: player
+                    entityId: media_player.hall
+                    doNotRememberSelectedPlayer: true
+          - show_name: true
+            show_icon: true
+            type: button
+            entity: media_player.lounge
+            tap_action:
+              action: fire-dom-event
+              browser_mod:
+                service: browser_mod.popup
+                data:
+                  title: Lounge
+                  content:
+                    type: custom:sonos-card
+                    sections:
+                      - player
+                      - volumes
+                      - groups
+                      - grouping
+                      - media browser
+                      - queue
+                    startSection: player
+                    entityId: media_player.lounge
+                    doNotRememberSelectedPlayer: true
+  - title: Annat
+    path: annat
+    badges: []
+    cards:
+      - entity: input_button.same_volume_for_all_players_in_kitchen_group
+        type: custom:mushroom-entity-card
+        tap_action:
+          action: toggle
+        icon_color: accent
+      - type: horizontal-stack
+        cards:
+          - entity: input_button.mute_kitchen
+            type: custom:mushroom-entity-card
+            layout: vertical
+            tap_action:
+              action: toggle
+            icon_color: red
+          - entity: input_button.unmute_kitchen
+            type: custom:mushroom-entity-card
+            layout: vertical
+            tap_action:
+              action: toggle
+            icon_color: green
+      - type: horizontal-stack
+        cards:
+          - entity: input_button.volume_up_all
+            type: custom:mushroom-entity-card
+            name: Alla spelare
+            layout: vertical
+            tap_action:
+              action: toggle
+            icon_color: green
+          - entity: input_button.volume_down_all
+            type: custom:mushroom-entity-card
+            name: Alla spelare
+            layout: vertical
+            tap_action:
+              action: toggle
+            icon_color: red
+      - type: custom:clock-weather-card
+        entity: weather.forecast_home
+      - type: custom:mushroom-media-player-card
+        entity: media_player.kok
+        fill_container: true
+        use_media_info: false
+        show_volume_level: false
+        volume_controls:
+          - volume_set
+        media_controls: []
+        primary_info: none
+        secondary_info: none
+      - type: custom:mini-media-player
+        entity: media_player.master_suite
+        info: short
+        group: true
+        source: full
+        sound_mode: full
+        artwork: full-cover
+      - show_current: false
+        show_forecast: true
+        type: weather-forecast
+        entity: weather.smhi_home
+        forecast_type: hourly
+      - type: custom:hourly-weather
+        entity: weather.smhi_home
+        label_spacing: '2'
+        icons: true
+        show_wind: 'false'
+        show_date: boundary
+        show_precipitation_amounts: true
+        show_precipitation_probability: false
+      - type: markdown
+        content: >-
+          [kök](https://ha.tipitapi.top/dashboard-mushroom/music#media_player.kok)
+
+
+          [kontor](https://ha.tipitapi.top/dashboard-mushroom/music#media_player.kontor)
+
+
+          # Temperatur ute, söder (AC, sovrum):
+
+          ##
+          {{states('sensor.varmeflakt_ovanvaning_climatecontrol_outdoor_temperature')}}
+
+          {{-state_attr('sensor.varmeflakt_ovanvaning_climatecontrol_outdoor_temperature','unit_of_measurement')}}
+
+          **Temperatur ute, söder (AC, TV-rum):**
+          {{states('sensor.varmeflakt_tv_rum_climatecontrol_outdoor_temperature')}}
+
+          {{-state_attr('sensor.varmeflakt_tv_rum_climatecontrol_outdoor_temperature','unit_of_measurement')}}
+
+          **Temperatur, växthus:**
+          {{states('sensor.weather_station_weather_station_weather_station_outdoor_module_temperature')}}
+
+          {{-state_attr('sensor.weather_station_weather_station_weather_station_outdoor_module_temperature','unit_of_measurement')}}
+
+          **Koldioxid, inne:** {{states('sensor.weather_station_co2')}}
+
+          {{-state_attr('sensor.weather_station_co2','unit_of_measurement')}}
+                    
+      - display_order: none
+        type: todo-list
+        entity: todo.forbidden_artists
+      - display_order: none
+        type: todo-list
+        entity: todo.forbidden_songs
+  - type: masonry
+    path: ultra
+    title: volvo
+    cards:
+      - vehicle_image_type: default
+        status_image_type: none
+        layout_type: single
+        formatted_entities: false
+        show_location: true
+        show_mileage: true
+        show_car_state: true
+        show_info_icons: true
+        help_highlight: true
+        sections_order:
+          - title
+          - image
+          - info
+          - icon_row_iu4yv12
+          - icon_row_l9lfljm
+          - bar_0
+        bars:
+          - right_title: Laddtid
+            right_entity: sensor.volvo_xc90_estimated_charging_time
+            bar_color: var(--info-color)
+            background_color: 'var(--card-background-color, #121212)'
+            border_color: 'var(--divider-color, #555555)'
+            left_title_color: 'var(--secondary-text-color, #999999)'
+            left_text_color: 'var(--primary-text-color, #ffffff)'
+            right_title_color: 'var(--secondary-text-color, #999999)'
+            right_text_color: 'var(--primary-text-color, #ffffff)'
+            limit_indicator_color: 'var(--error-color, #ff0000)'
+            percentage_text_size: 11
+            show_percentage: true
+            alignment: center
+            animation_entity: sensor.volvo_xc90_charging_connection_status
+            animation_state: connected
+            animation_type: pulse
+            entity: sensor.volvo_xc90_battery
+            bar_name: Batteri
+            right_condition:
+              type: show
+              entity: sensor.volvo_xc90_charging_status
+              state: charging
+            right_template_mode: true
+            right_template: >-
+              {% set mins = states('sensor.volvo_xc90_estimated_charging_time')
+              | int %}
+                        {% set h = (mins // 60) %}
+                        {% set m = (mins % 60) %}
+                        {% if h > 0 and m > 0 %}
+                          {{ h }}h{{ m }}m
+                        {% elif h > 0 %}
+                          {{ h }}h
+                        {% else %}
+                          {{ m }}m
+                        {% endif %}
+            use_gradient: false
+            show_left: true
+            show_right: true
+            percentage_type: entity
+            percentage_amount_entity: ''
+            percentage_total_entity: ''
+            percentage_attribute: ''
+            percentage_template: ''
+            show_left_title: true
+            show_left_value: true
+            show_right_title: true
+            show_right_value: true
+            action_animation_entity: sensor.volvo_xc90_charging_power
+            action_animation_state: '0'
+            action_animation: none
+        icon_rows:
+          - id: iu4yv12
+            icons:
+              - entity: sensor.volvo_xc90_charging_connection_status
+                icon_inactive: mdi:alert-circle-outline
+                icon_active: mdi:alert-circle-outline
+                name: Laddning
+                text_position: left
+                dynamic_icon_template_mode: true
+                dynamic_icon_template: >-
+                  {% if states('sensor.volvo_xc90_charging_power') |int > 0 %}
+                  mdi:battery-charging {% else %} mdi:battery {% endif %}
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+                  {% if states('sensor.volvo_xc90_charging_power') |int > 0
+                  %}var(--warning-color){% else %}var(--disabled-color){% endif
+                  %} 
+                active_animation: pulse
+                show_state_active: false
+              - entity: binary_sensor.volvo_xc90_brake_fluid
+                icon_inactive: mdi:alert-circle-outline
+                icon_active: mdi:alert-circle-outline
+                show_state_inactive: false
+                name: Bromsvätska
+                text_position: left
+                dynamic_icon_template_mode: true
+                dynamic_icon_template: >-
+                  {% if states('binary_sensor.volvo_xc90_brake_fluid') == 'off'
+                  %}
+
+                  mdi:check
+
+                  {% else %}
+
+                  mdi:alert{% endif %}
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+                  {% if is_state('binary_sensor.volvo_xc90_brake_fluid', 'off')
+                  %}var(--success-color){% else %}var(--error-color){% endif
+                  %}      
+              - entity: binary_sensor.volvo_xc90_sunroof
+                icon_inactive: mdi:alert-circle-outline
+                icon_active: mdi:alert-circle-outline
+                show_state_inactive: false
+                name: Panorama
+                text_position: left
+                dynamic_icon_template_mode: true
+                dynamic_icon_template: |-
+                  {% if states('binary_sensor.volvo_xc90_sunroof') == 'off' %}
+                  mdi:window-shutter
+                  {% else %}
+                  mdi:window-shutter-alert{% endif %}
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+                  {% if is_state('binary_sensor.volvo_xc90_sunroof', 'off')
+                  %}var(--success-color){% else %}var(--error-color){% endif
+                  %}      
+              - entity: binary_sensor.volvo_xc90_oil_level
+                icon_inactive: mdi:alert-circle-outline
+                icon_active: mdi:alert-circle-outline
+                show_state_inactive: false
+                name: Olja
+                text_position: left
+                dynamic_icon_template_mode: true
+                dynamic_icon_template: |-
+                  {% if states('binary_sensor.volvo_xc90_oil_level') == 'off' %}
+                  mdi:check
+                  {% else %}
+                  mdi:alert{% endif %}
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+                  {% if is_state('binary_sensor.volvo_xc90_oil_level', 'off')
+                  %}var(--success-color){% else %}var(--error-color){% endif
+                  %}      
+          - id: l9lfljm
+            width: '100'
+            alignment: center
+            vertical_alignment: center
+            spacing: none
+            columns: 0
+            icons:
+              - entity: binary_sensor.volvo_xc90_washer_fluid
+                icon_inactive: mdi:alert-circle-outline
+                icon_active: mdi:alert-circle-outline
+                show_state_inactive: false
+                name: Spolarvätska
+                text_position: left
+                dynamic_icon_template_mode: true
+                dynamic_icon_template: >-
+                  {% if states('binary_sensor.volvo_xc90_washer_fluid') == 'off'
+                  %}
+
+                  mdi:check
+
+                  {% else %}
+
+                  mdi:alert{% endif %}
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+                  {% if is_state('binary_sensor.volvo_xc90_washer_fluid', 'off')
+                  %}var(--success-color){% else %}var(--error-color){% endif
+                  %}    
+            confirmation_mode: false
+        type: custom:ultra-vehicle-card
+        title: Volvo XC90
+        title_size: 24
+        images:
+          - name: Vehicle Image
+            image_type: upload
+            priority: 0
+            id: oh56ly9
+            image: /api/image/serve/ead9e8f5706c833ce9ed3b07dc45e966
+        vehicle_image_width: 100
+        action_image_width: 100
+        info_rows:
+          - id: kp7nsh1
+            width: '100'
+            alignment: center
+            vertical_alignment: center
+            spacing: medium
+            columns: 0
+            allow_wrap: false
+            info_entities:
+              - id: c38080rd
+                entity: sensor.volvo_xc90_distance_to_empty_battery
+                name: Batteri
+                icon: mdi:gauge
+                show_icon: true
+                show_name: true
+                text_size: 14
+                name_size: 14
+                icon_size: 24
+                icon_color: '#0198cb'
+                text_color: '#44a047'
+                on_click_action: more-info
+                dynamic_icon_template_mode: false
+                dynamic_icon_template: ''
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+
+                  {% if states('sensor.volvo_xc90_distance_to_empty_battery') |
+                  int > 10 %}var(--info-color){% else %}var(--error-color){%
+                  endif %}
+              - id: c38080r
+                entity: sensor.volvo_xc90_distance_to_empty_tank
+                name: Bensin
+                icon: mdi:gauge
+                show_icon: true
+                show_name: true
+                text_size: 14
+                name_size: 14
+                icon_size: 24
+                icon_color: '#0198cb'
+                text_color: '#44a047'
+                on_click_action: more-info
+                dynamic_icon_template_mode: false
+                dynamic_icon_template: ''
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+
+                  {% if states('sensor.volvo_xc90_distance_to_empty_tank') | int
+                  > 100 %}var(--info-color){% else %}var(--error-color){% endif
+                  %}
+              - id: 3242s1f
+                entity: sensor.volvo_xc90_distance_to_service
+                name: Nästa service
+                icon: mdi:gauge
+                show_icon: true
+                show_name: true
+                text_size: 14
+                name_size: 14
+                icon_size: 24
+                icon_color: '#019ac7'
+                text_color: '#44a047'
+                on_click_action: more-info
+                dynamic_icon_template_mode: false
+                dynamic_icon_template: ''
+                dynamic_color_template_mode: true
+                dynamic_color_template: >-
+
+                  {% if states('sensor.volvo_xc90_distance_to_service') | int >
+                  1000 %}var(--info-color){% else %}var(--error-color){% endif
+                  %}
+  - title: Att göra
+    path: att-gora
+    badges: []
+    cards:
+      - type: todo-list
+        entity: todo.felicia
+        title: Felicia
+        card_mod:
+          style:
+            $: |
+              h1 {
+                background: url(https://lh3.googleusercontent.com/pw/ABLVV86NCNUtwNYv9laKGgyTc2T4ZhRyGc12SwjsQH75B6J-jn1x6NH7YcYbeBmVrI7pEZ0R4sowNQKPhjy2eAlOofs3t3mrJmlaWhG9D9gHIXv2M9Xof3WkXBj1zYAqsx2XZYsCyJnsyoXG2JhPikmb4B7-7g=w1914-h1916-s-no-gm);
+                background-size: cover;
+                margin: 1rem !important;
+                border-radius: 15%;
+                color: #00000000 !important;
+                width: 10%;
+                margin-left: 40% !important;
+              }
+            .: |
+              ha-card {
+                background: hotpink;
+                --mdc-checkbox-checked-color: pink;
+                --mdc-checkbox-touch-target-size: 60px;
+
+              } 
+              div.addRow,.empty,.header {
+                display: none !important;
+              }
+            mwc-list:
+              ha-check-list-item:
+                .: |
+                  .summary {
+                    font-weight: bold;
+                    font-size: 25px;
+                    color: white;
+                  }
+                $: |
+                  mdc-checkbox__background {
+                    top: 10px important;
+                  }
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: input_text.todo_image
+            state: happyImages
+        card:
+          type: iframe
+          url: /local/happy/index.html
+          aspect_ratio: 100%
+      - type: todo-list
+        entity: todo.jonathan
+        title: Jonathan
+        card_mod:
+          style:
+            $: |
+              h1 {
+                background: url(https://lh3.googleusercontent.com/pw/ABLVV87CdCcV1qtzEJsT19xM0EYzEqoDM4GsALFsoiSEDV8xe8G_XA_8n34WM2l2zAX33e5VvTsR4Tv3b65wTw-wglXUVw_Zfcti5JgH9wGq_C8Q3GiWOHnTFormXAqoYW4Ot-HeeFKsTzaa7SAAEdM93Kd96Q=w1916-h1916-s-no-gm);
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position-x: right;
+                margin: 1rem !important;
+              }
+            .: |
+              ha-card {
+                background: darkorange;
+                --mdc-checkbox-checked-color: yellow;
+                --mdc-checkbox-touch-target-size: 60px;
+              } 
+              div.addRow,.empty,.header {
+                display: none !important;
+              }
+            mwc-list:
+              ha-check-list-item:
+                .: |
+                  .summary {
+                    font-weight: bold;
+                    font-size: 25px;
+                    color: white;
+                  }
+      - type: todo-list
+        entity: todo.gor_det_nu
+        title: Alla
+        card_mod:
+          style:
+            $: |
+              h1 {
+                background: url(https://lh3.googleusercontent.com/pw/ABLVV87e2Pglv8_vBCQxWvchHLFHvG6D5GtT65bo4zrzH6GIeimPKb5i_GFAghI8ua_YP9PgGtoqbJbHXRAeBKXgTcWteU3LtSRQFcyDrcTyxWNuwzNVyLhlJAw-3aqhqpKrGpmp7QESWEytXb4OVkS0dGmuog=w1916-h1916-s-no-gm);
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position-x: right;
+                margin: 1rem !important;
+              }
+            .: |
+              ha-card {
+                background: seagreen;
+              } 
+      - type: custom:decluttering-card
+        template: my_first_template
+        variables:
+          - title: Test Button
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: input_text.todo_image
+            state: sadImages
+        card:
+          type: iframe
+          url: /local/sad/index.html
+          aspect_ratio: 100%
+  - title: Mallar till att-göra
+    path: mallar-till-att-gora
+    badges: []
+    cards:
+      - type: todo-list
+        entity: todo.felicia_mall
+        title: Felicia (Mall)
+      - type: todo-list
+        entity: todo.jonathan_mall
+        title: Jonathan (Mall)

@@ -1,61 +1,65 @@
 export const FAVORITES_SCHEMA = [
   {
-    name: 'favoritesTitle',
+    name: 'title',
     type: 'string',
   },
   {
-    name: 'favoritesHideBrowseMediaButton',
+    name: 'hideBrowseMediaButton',
     selector: { boolean: {} },
   },
   {
-    name: 'favoritesHideHeader',
+    name: 'hideHeader',
     selector: { boolean: {} },
   },
   {
-    name: 'favoritesHideTitleForThumbnailIcons',
+    name: 'hideTitleForThumbnailIcons',
     selector: { boolean: {} },
   },
   {
-    name: 'favoritesIconBorder',
+    name: 'iconBorder',
     type: 'string',
     help: 'Border for favorites icons (e.g., 1px solid white)',
   },
   {
-    name: 'favoritesIconPadding',
+    name: 'iconPadding',
     type: 'float',
     help: 'Padding around favorites icon artwork (rem)',
     valueMin: 0,
   },
   {
-    name: 'favoritesIconTitleBackgroundColor',
+    name: 'iconTitleBackgroundColor',
     type: 'string',
     help: 'Background color for favorites icon titles',
   },
   {
-    name: 'favoritesIconTitleColor',
+    name: 'iconTitleColor',
     type: 'string',
     help: 'Color for favorites icon titles (e.g., red, #ff0000)',
   },
   {
-    name: 'favoritesItemsPerRow',
+    name: 'itemsPerRow',
     type: 'integer',
     valueMin: 1,
   },
   {
-    name: 'favoritesNumberToShow',
+    name: 'numberToShow',
     type: 'integer',
     valueMin: 1,
   },
   {
-    name: 'favoritesReplaceHttpWithHttpsForThumbnails',
+    name: 'replaceHttpWithHttpsForThumbnails',
     selector: { boolean: {} },
   },
   {
-    name: 'favoritesSortByType',
+    name: 'sortByType',
     selector: { boolean: {} },
   },
   {
-    name: 'favoritesTopItems',
+    name: 'topItems',
+    type: 'string',
+  },
+  {
+    name: 'exclude',
     type: 'string',
   },
 ];

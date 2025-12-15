@@ -7,7 +7,7 @@ import { dispatchActivePlayerId, getGroupingChanges } from '../utils/utils';
 import { listStyle } from '../constants';
 import { MediaPlayer } from '../model/media-player';
 import '../components/grouping-button';
-import { CardConfig, PredefinedGroup } from '../types';
+import { CardConfig, GroupingConfig, PredefinedGroup } from '../types';
 import { GroupingItem } from '../model/grouping-item';
 
 export class Grouping extends LitElement {
@@ -21,9 +21,11 @@ export class Grouping extends LitElement {
   @state() modifiedItems: string[] = [];
   @state() selectedPredefinedGroup?: PredefinedGroup;
   private config!: CardConfig;
+  private groupingConfig!: GroupingConfig;
 
   render() {
     this.config = this.store.config;
+    this.groupingConfig = this.config.grouping ?? {};
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
     this.mediaPlayerIds = this.store.allMediaPlayers.map((player) => player.id);
@@ -31,12 +33,12 @@ export class Grouping extends LitElement {
     this.notJoinedPlayers = this.getNotJoinedPlayers();
     this.joinedPlayers = this.getJoinedPlayers();
 
-    if (this.config.groupingSkipApplyButton && (this.modifiedItems.length > 0 || this.selectedPredefinedGroup)) {
+    if (this.groupingConfig.skipApplyButton && (this.modifiedItems.length > 0 || this.selectedPredefinedGroup)) {
       this.applyGrouping();
     }
 
-    const buttonColor = this.config.groupingButtonColor;
-    const buttonFontSize = this.config.groupingButtonFontSize;
+    const buttonColor = this.groupingConfig.buttonColor;
+    const buttonFontSize = this.groupingConfig.buttonFontSize;
     return html`
       <style>
         sonos-grouping-button {
@@ -45,8 +47,8 @@ export class Grouping extends LitElement {
         }
       </style>
       <div class="wrapper">
-        <div class="predefined-groups" compact=${this.config.groupingCompact || nothing}>
-          ${this.config.groupingHideUngroupAllButtons
+        <div class="predefined-groups" compact=${this.groupingConfig.compact || nothing}>
+          ${this.groupingConfig.hideUngroupAllButtons
             ? nothing
             : html`${this.renderJoinAllButton()} ${this.renderUnJoinAllButton()}`}
           ${when(this.store.predefinedGroups, () => this.renderPredefinedGroups())}
@@ -58,7 +60,7 @@ export class Grouping extends LitElement {
                 class="item"
                 modified=${item.isModified || nothing}
                 disabled=${item.isDisabled || nothing}
-                compact=${this.config.groupingCompact || nothing}
+                compact=${this.groupingConfig.compact || nothing}
               >
                 <ha-icon
                   class="icon"
@@ -83,7 +85,7 @@ export class Grouping extends LitElement {
         <ha-control-button-group
           class="buttons"
           hide=${(this.modifiedItems.length === 0 && !this.selectedPredefinedGroup) ||
-          this.config.groupingSkipApplyButton ||
+          this.groupingConfig.skipApplyButton ||
           nothing}
         >
           <ha-control-button class="apply" @click=${this.applyGrouping}> Apply</ha-control-button>
@@ -217,10 +219,10 @@ export class Grouping extends LitElement {
       await this.mediaControlService.activatePredefinedGroup(selectedPredefinedGroup);
     }
 
-    if (newMainPlayer !== activePlayerId && !this.config.groupingDontSwitchPlayer) {
+    if (newMainPlayer !== activePlayerId && !this.groupingConfig.dontSwitchPlayer) {
       dispatchActivePlayerId(newMainPlayer, this.config, this);
     }
-    if (this.config.entityId && unJoin.includes(this.config.entityId) && this.config.groupingDontSwitchPlayer) {
+    if (this.config.entityId && unJoin.includes(this.config.entityId) && this.groupingConfig.dontSwitchPlayer) {
       dispatchActivePlayerId(this.config.entityId, this.config, this);
     }
   }
@@ -237,7 +239,7 @@ export class Grouping extends LitElement {
     if (selectedItems.length === 1) {
       selectedItems[0].isDisabled = true;
     }
-    if (this.config.groupingDisableMainSpeakers) {
+    if (this.groupingConfig.disableMainSpeakers) {
       const mainSpeakerIds = this.store.allGroups
         .filter((player) => player.members.length > 1)
         .map((player) => player.id);
@@ -247,7 +249,7 @@ export class Grouping extends LitElement {
         }
       });
     }
-    if (!this.config.groupingDontSortMembersOnTop) {
+    if (!this.groupingConfig.dontSortMembersOnTop) {
       groupingItems.sort((a, b) => {
         if ((a.isMain && !b.isMain) || (a.isSelected && !a.isModified && !b.isSelected)) {
           return -1;
@@ -259,7 +261,7 @@ export class Grouping extends LitElement {
   }
 
   private renderJoinAllButton() {
-    const icon = this.config.groupingButtonIcons?.joinAll ?? 'mdi:checkbox-multiple-marked-outline';
+    const icon = this.groupingConfig.buttonIcons?.joinAll ?? 'mdi:checkbox-multiple-marked-outline';
     return when(this.notJoinedPlayers.length, () => this.groupingButton(icon, this.selectAll));
   }
 
@@ -274,7 +276,7 @@ export class Grouping extends LitElement {
   }
 
   private renderUnJoinAllButton() {
-    const icon = this.config.groupingButtonIcons?.unJoinAll ?? 'mdi:minus-box-multiple-outline';
+    const icon = this.groupingConfig.buttonIcons?.unJoinAll ?? 'mdi:minus-box-multiple-outline';
     return when(this.joinedPlayers.length, () => this.groupingButton(icon, this.deSelectAll));
   }
 
@@ -289,7 +291,7 @@ export class Grouping extends LitElement {
       return html`
         <sonos-grouping-button
           @click=${async () => this.selectPredefinedGroup(predefinedGroup)}
-          .icon=${this.config.groupingButtonIcons?.predefinedGroup ?? 'mdi:speaker-multiple'}
+          .icon=${this.groupingConfig.buttonIcons?.predefinedGroup ?? 'mdi:speaker-multiple'}
           .name=${predefinedGroup.name}
           .selected=${this.selectedPredefinedGroup?.name === predefinedGroup.name}
         ></sonos-grouping-button>
@@ -308,7 +310,7 @@ export class Grouping extends LitElement {
     });
     this.selectedPredefinedGroup = predefinedGroup;
 
-    if (!hasGroupingChanges && this.config.groupingSkipApplyButton) {
+    if (!hasGroupingChanges && this.groupingConfig.skipApplyButton) {
       await this.mediaControlService.activatePredefinedGroup(predefinedGroup);
       this.selectedPredefinedGroup = undefined;
     }

@@ -1,16 +1,16 @@
 export const QUEUE_SCHEMA = [
   {
-    name: 'queueTitle',
+    name: 'title',
     type: 'string',
     cardType: 'sonos',
   },
   {
-    name: 'queueItemBackgroundColor',
+    name: 'itemBackgroundColor',
     type: 'string',
     cardType: 'sonos',
   },
   {
-    name: 'queueItemTextColor',
+    name: 'itemTextColor',
     type: 'string',
     cardType: 'sonos',
   },

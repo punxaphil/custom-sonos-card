@@ -22,10 +22,10 @@ export default class MediaBrowseService {
     favorites = favorites.flatMap((f) => f);
     favorites = this.removeDuplicates(favorites);
     favorites = favorites.length ? favorites : this.getFavoritesFromStates(player);
-    const favoritesToIgnore = this.config.favoritesToIgnore ?? [];
+    const exclude = this.config.favorites?.exclude ?? [];
     return favorites.filter((item) => {
-      const titleNotIgnored = !stringContainsAnyItemInArray(favoritesToIgnore, item.title);
-      const contentIdNotIgnored = !stringContainsAnyItemInArray(favoritesToIgnore, item.media_content_id ?? '');
+      const titleNotIgnored = !stringContainsAnyItemInArray(exclude, item.title);
+      const contentIdNotIgnored = !stringContainsAnyItemInArray(exclude, item.media_content_id ?? '');
       return titleNotIgnored && contentIdNotIgnored;
     });
   }

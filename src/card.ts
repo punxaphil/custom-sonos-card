@@ -246,7 +246,8 @@ export class Card extends LitElement {
       this.section = PLAYER;
     }
 
-    newConfig.favoritesItemsPerRow = newConfig.favoritesItemsPerRow || 4;
+    newConfig.favorites = newConfig.favorites ?? {};
+    newConfig.favorites.itemsPerRow = newConfig.favorites.itemsPerRow || 4;
     // support custom:auto-entities
     if (newConfig.entities?.length && newConfig.entities[0].entity) {
       newConfig.entities = newConfig.entities.map((entity: { entity: string }) => entity.entity);

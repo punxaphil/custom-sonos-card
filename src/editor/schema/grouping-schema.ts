@@ -1,41 +1,41 @@
 export const GROUPING_SCHEMA = [
   {
-    name: 'groupingTitle',
+    name: 'title',
     type: 'string',
   },
   {
-    name: 'groupingButtonColor',
+    name: 'buttonColor',
     type: 'string',
     help: 'Background/accent color for grouping buttons',
   },
   {
-    name: 'groupingButtonFontSize',
+    name: 'buttonFontSize',
     type: 'float',
     help: 'Font size for grouping buttons (rem)',
     valueMin: 0.1,
   },
   {
-    name: 'groupingCompact',
+    name: 'compact',
     selector: { boolean: {} },
   },
   {
-    name: 'groupingDisableMainSpeakers',
+    name: 'disableMainSpeakers',
     selector: { boolean: {} },
   },
   {
-    name: 'groupingDontSortMembersOnTop',
+    name: 'dontSortMembersOnTop',
     selector: { boolean: {} },
   },
   {
-    name: 'groupingDontSwitchPlayer',
+    name: 'dontSwitchPlayer',
     selector: { boolean: {} },
   },
   {
-    name: 'groupingHideUngroupAllButtons',
+    name: 'hideUngroupAllButtons',
     selector: { boolean: {} },
   },
   {
-    name: 'groupingSkipApplyButton',
+    name: 'skipApplyButton',
     selector: { boolean: {} },
   },
 ];

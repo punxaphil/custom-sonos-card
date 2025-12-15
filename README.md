@@ -200,144 +200,149 @@ predefinedGroups: # defaults to empty. More advanced features in separate sectio
 ### Player Configuration
 
 ```yaml
-playerHideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
-playerArtworkAsBackground: true # default is false. Will show the artwork as background for the player section.
-playerArtworkAsBackgroundBlur: 10 # default is 0 (no blur). Adds a blur effect to the background artwork and shows the normal artwork on top. Higher values = more blur. Creates a modern look similar to Apple Music. Implies playerArtworkAsBackground.
-playerArtworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, but depending on your setup your device might not be able to access the artwork on the default host. One example where it could be needed is if you cast the dashboard with Google Cast.
-playerArtworkMinHeight: 10 # default is 5. Use this to change the minimum height of the artwork in the player section. Unit is in rem.
-playerFallbackArtwork: https://cdn-icons-png.flaticon.com/512/651/651717.png # Override default fallback artwork image if artwork is missing for the currently selected media.
-playerFastForwardAndRewindStepSizeSeconds: 60 # default is 15 seconds
-playerHideArtwork: true # default is false. Hides the artwork in the player section.
-playerLabelWhenNoMediaIsSelected: 'No media selected'
-playerMediaArtworkOverrides: # Show your own selected artwork if certain rules match
-  - mediaTitleEquals: TV
-    imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
-    sizePercentage: 40
-  - mediaContentIdEquals: "x-htastream:RINCON_949F3EC2E15B01400:spdif"
-    imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108783.png
-  - mediaTitleEquals: p4malmo-aac-192
-    imageUrl: >-
-      https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
-  - mediaArtistEquals: Metallica
-    imageUrl: >-
-      https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
-  - mediaAlbumNameEquals: "Master of Puppets"
-    imageUrl: >-
-      https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
-  - mediaChannelEquals: "Sky Radio Smooth Hits"
-    imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108794.png
-  - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
-    imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
-  - mediaTitleEquals: "My Radio Station" # imageUrl supports templates
-    imageUrl: '{{ states("sensor.my_cover_image_entity") }}'
-playerBackgroundOverlayColor: 'rgba(0,0,0, 0.3)' # When playerArtworkAsBackground is true, this sets the background overlay color for controls and header.
-playerControlsAndHeaderBackgroundOpacity: 0.7 # default is 0.9. Adjusts the opacity of the header and controls background when playerArtworkAsBackground is enabled. Range 0-1.
-playerControlsColor: pink # default is theme color. Use this to change the color of player control icons.
-playerControlsLargeIcons: true # default is false. Makes the player control icons larger.
-playerControlsMargin: '0 3rem' # default is '0.25rem'. Use this to change the margin around the player controls area.
-playerHeaderEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
-playerHeaderSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
-playerHideArtistAlbum: true # default is false. Hides the artist/album text in the player header.
-playerHideControlNextTrackButton: true # default is false, hides player control next track button.
-playerHideControlPowerButton: true # default is false, hides player control power button if media player TURN_ON feature is enabled.  This setting does nothing if media player TURN_ON feature is not supported.
-playerHideControlPrevTrackButton: true # default is false, hides player control previous track button.
-playerHideControlRepeatButton: true # default is false, hides player control track repeat mode button.
-playerHideControlShuffleButton: true # default is false, hides player control track shuffle mode button.
-playerHideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
-playerHideEntityName: true # default is false. Hides the entity/group name in the player header.
-playerHidePlaylist: true # default is false. Will hide the playlist name in the player section.
-playerHideVolume: true # default is false. Hides the entire volume component in the player.
-playerHideVolumeMuteButton: true # default is false. Hides the mute/unmute button in the player.
-playerHideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
-playerVolumeMuteButtonSize: 2 # default is 2.5. Unit is 'rem'. Use this to change the size of the mute button in the player.
-playerVolumeSliderHeight: 0.5 # default is 1.5. Unit is 'rem'. Use this to change the height of the volume slider in the player.
-playerVolumeEntityId: media_player.bedroom # default is empty. Use this to control the volume of another player in the player section. Entity ID must the selected player or part of the selected player's group, otherwise it will not be controlled.
-playerShowAudioInputFormat: true # default is false. Will show the audio input format (e.g. Dolby Digital) in the player section if available. By default, it will only show if the input format in the volumes section.
-playerShowBrowseMediaButton: true # default is false. Will show the browse media button in the player section.
-playerShowChannel: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
-playerShowFastForwardAndRewindButtons: true # default is false, shows fast forward and rewind buttons
-playerShowSource: true # default is false. Will show the source (if available) in the player section.
-playerShowVolumeUpAndDownButtons: true # default is false, shows buttons for increasing and decreasing volume
-playerStopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
+player:
+  hideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
+  artworkAsBackground: true # default is false. Will show the artwork as background for the player section.
+  artworkAsBackgroundBlur: 10 # default is 0 (no blur). Adds a blur effect to the background artwork and shows the normal artwork on top. Higher values = more blur. Creates a modern look similar to Apple Music. Implies artworkAsBackground.
+  artworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, but depending on your setup your device might not be able to access the artwork on the default host. One example where it could be needed is if you cast the dashboard with Google Cast.
+  artworkMinHeight: 10 # default is 5. Use this to change the minimum height of the artwork in the player section. Unit is in rem.
+  fallbackArtwork: https://cdn-icons-png.flaticon.com/512/651/651717.png # Override default fallback artwork image if artwork is missing for the currently selected media.
+  fastForwardAndRewindStepSizeSeconds: 60 # default is 15 seconds
+  hideArtwork: true # default is false. Hides the artwork in the player section.
+  labelWhenNoMediaIsSelected: 'No media selected'
+  mediaArtworkOverrides: # Show your own selected artwork if certain rules match
+    - mediaTitleEquals: TV
+      imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
+      sizePercentage: 40
+    - mediaContentIdEquals: "x-htastream:RINCON_949F3EC2E15B01400:spdif"
+      imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108783.png
+    - mediaTitleEquals: p4malmo-aac-192
+      imageUrl: >-
+        https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
+    - mediaArtistEquals: Metallica
+      imageUrl: >-
+        https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
+    - mediaAlbumNameEquals: "Master of Puppets"
+      imageUrl: >-
+        https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
+    - mediaChannelEquals: "Sky Radio Smooth Hits"
+      imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108794.png
+    - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
+      imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
+    - mediaTitleEquals: "My Radio Station" # imageUrl supports templates
+      imageUrl: '{{ states("sensor.my_cover_image_entity") }}'
+  backgroundOverlayColor: 'rgba(0,0,0, 0.3)' # When artworkAsBackground is true, this sets the background overlay color for controls and header.
+  controlsAndHeaderBackgroundOpacity: 0.7 # default is 0.9. Adjusts the opacity of the header and controls background when artworkAsBackground is enabled. Range 0-1.
+  controlsColor: pink # default is theme color. Use this to change the color of player control icons.
+  controlsLargeIcons: true # default is false. Makes the player control icons larger.
+  controlsMargin: '0 3rem' # default is '0.25rem'. Use this to change the margin around the player controls area.
+  headerEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
+  headerSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
+  hideArtistAlbum: true # default is false. Hides the artist/album text in the player header.
+  hideControlNextTrackButton: true # default is false, hides player control next track button.
+  hideControlPowerButton: true # default is false, hides player control power button if media player TURN_ON feature is enabled.  This setting does nothing if media player TURN_ON feature is not supported.
+  hideControlPrevTrackButton: true # default is false, hides player control previous track button.
+  hideControlRepeatButton: true # default is false, hides player control track repeat mode button.
+  hideControlShuffleButton: true # default is false, hides player control track shuffle mode button.
+  hideControls: true # default is false. Hides the player controls (play/pause, next, prev, volume, etc.).
+  hideEntityName: true # default is false. Hides the entity/group name in the player header.
+  hidePlaylist: true # default is false. Will hide the playlist name in the player section.
+  hideVolume: true # default is false. Hides the entire volume component in the player.
+  hideVolumeMuteButton: true # default is false. Hides the mute/unmute button in the player.
+  hideVolumePercentage: true # default is false. Hides the volume percentage display in the player.
+  volumeMuteButtonSize: 2 # default is 2.5. Unit is 'rem'. Use this to change the size of the mute button in the player.
+  volumeSliderHeight: 0.5 # default is 1.5. Unit is 'rem'. Use this to change the height of the volume slider in the player.
+  volumeEntityId: media_player.bedroom # default is empty. Use this to control the volume of another player in the player section. Entity ID must the selected player or part of the selected player's group, otherwise it will not be controlled.
+  showAudioInputFormat: true # default is false. Will show the audio input format (e.g. Dolby Digital) in the player section if available. By default, it will only show if the input format in the volumes section.
+  showBrowseMediaButton: true # default is false. Will show the browse media button in the player section.
+  showChannel: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
+  showFastForwardAndRewindButtons: true # default is false, shows fast forward and rewind buttons
+  showSource: true # default is false. Will show the source (if available) in the player section.
+  showVolumeUpAndDownButtons: true # default is false, shows buttons for increasing and decreasing volume
+  stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
 ```
 
 ### Favorites Configuration
 
 ```yaml
-favoritesTitle: My favorites # default is 'All favorites'. Use this to change the title for the favorites section.
-favoritesCustomFavorites: # Read more in 'Custom Favorites' section below
-  media_player.tv: # set this to 'all' to show the custom favorite for all players
-    - title: TV # Must match the name of the source (unless you specify media_content_id/type as shown below)
-      thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
-  all:
-    - title: BBC
-      media_content_id: media-source://radio_browser/98adecf7-2683-4408-9be7-02d3f9098eb8
-      media_content_type: music
-      thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
-favoritesCustomThumbnails:
-  Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-favoritesCustomThumbnailsIfMissing:
-  Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
-  Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-  fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to image of music notes.
-favoritesHideBrowseMediaButton: true # default is false. Hides the button to browse more media in Home Assistant.
-favoritesHideHeader: true # default is false. Hides the header of the favorites section (title and browse media button).
-favoritesHideTitleForThumbnailIcons: true # default is false. Only makes a difference if favoritesItemsPerRow > 1. Will hide title for thumbnail artworks.
-favoritesIconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
-favoritesIconPadding: 0.25 # default is 0.75. Unit is 'rem'. Use this to change the padding around favorites icon artwork.
-favoritesIconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
-favoritesIconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
-favoritesItemsPerRow: 1 # default is 4. Use this to show items as list.
-favoritesToIgnore: # will compare both against title and media_content_id
-  - My Favorite Album # Hide specific title
-  - Christmas # Hide any titles matching 'Christmas'
-  - radio_browser # Hide any radio stations from radio_browser (since their media_content_id contains this string)
-favoritesNumberToShow: 10 # Use this to limit the amount of favorites to show
-favoritesReplaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
-favoritesSortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
-favoritesTopItems: # Show these favorites at the top of the list
-  - Legendary
-  - Country Rocks
-  - Kacey Musgraves Radio
+favorites:
+  title: My favorites # default is 'All favorites'. Use this to change the title for the favorites section.
+  customFavorites: # Read more in 'Custom Favorites' section below
+    media_player.tv: # set this to 'all' to show the custom favorite for all players
+      - title: TV # Must match the name of the source (unless you specify media_content_id/type as shown below)
+        thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
+    all:
+      - title: BBC
+        media_content_id: media-source://radio_browser/98adecf7-2683-4408-9be7-02d3f9098eb8
+        media_content_type: music
+        thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+  customThumbnails:
+    Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
+  customThumbnailsIfMissing:
+    Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
+    Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
+    fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to image of music notes.
+  hideBrowseMediaButton: true # default is false. Hides the button to browse more media in Home Assistant.
+  hideHeader: true # default is false. Hides the header of the favorites section (title and browse media button).
+  hideTitleForThumbnailIcons: true # default is false. Only makes a difference if itemsPerRow > 1. Will hide title for thumbnail artworks.
+  iconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
+  iconPadding: 0.25 # default is 0.75. Unit is 'rem'. Use this to change the padding around favorites icon artwork.
+  iconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
+  iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
+  itemsPerRow: 1 # default is 4. Use this to show items as list.
+  exclude: # will compare both against title and media_content_id
+    - My Favorite Album # Hide specific title
+    - Christmas # Hide any titles matching 'Christmas'
+    - radio_browser # Hide any radio stations from radio_browser (since their media_content_id contains this string)
+  numberToShow: 10 # Use this to limit the amount of favorites to show
+  replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
+  sortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
+  topItems: # Show these favorites at the top of the list
+    - Legendary
+    - Country Rocks
+    - Kacey Musgraves Radio
 ```
 
 ### Groups Configuration
 
 ```yaml
-groupsTitle: ''
-groupsCompact: true # default is false. Makes the groups section more compact.
-groupsButtonWidth: 10 # default is full width. Unit is 'rem'. Use this to change the width of the groups list.
-groupsHideCurrentTrack: true # default is false, which means song/track info for groups will be shown
-groupsItemMargin: '5px' # default is '1rem'. Use this to change the margin around groups list items.
+groups:
+  title: ''
+  compact: true # default is false. Makes the groups section more compact.
+  buttonWidth: 10 # default is full width. Unit is 'rem'. Use this to change the width of the groups list.
+  hideCurrentTrack: true # default is false, which means song/track info for groups will be shown
+  itemMargin: '5px' # default is '1rem'. Use this to change the margin around groups list items.
 ```
 
 ### Grouping Configuration
 
 ```yaml
-groupingTitle: ''
-groupingCompact: true # default is false. Makes the grouping section more compact.
-groupingDontSwitchPlayer: true # default is false. Will not switch to another player if main player is ungrouped.
-groupingButtonColor: black # default is theme accent color. Use this to change the background/accent color of grouping buttons.
-groupingButtonFontSize: 1.2 # default is 1. Unit is 'rem'. Use this to change the font size of grouping buttons.
-groupingButtonIcons: # Use this to set custom icons for the grouping buttons.
-  predefinedGroup: mdi:account-group # default is mdi:speaker-multiple
-  joinAll: mdi:account-multiple # default is mdi:checkbox-multiple-marked-outline
-  unJoinAll: mdi:account-remove # default is mdi:minus-box-multiple-outline
-groupingDisableMainSpeakers: true # default is false. Disables (greys out) any speaker that is currently the main speaker of a multi-speaker group.
-groupingDontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
-groupingHideUngroupAllButtons: true # default is false. Hides the join all/unjoin all buttons in the grouping section.
-groupingSkipApplyButton: true # default is false. Will skip the apply button when grouping.
+grouping:
+  title: ''
+  compact: true # default is false. Makes the grouping section more compact.
+  dontSwitchPlayer: true # default is false. Will not switch to another player if main player is ungrouped.
+  buttonColor: black # default is theme accent color. Use this to change the background/accent color of grouping buttons.
+  buttonFontSize: 1.2 # default is 1. Unit is 'rem'. Use this to change the font size of grouping buttons.
+  buttonIcons: # Use this to set custom icons for the grouping buttons.
+    predefinedGroup: mdi:account-group # default is mdi:speaker-multiple
+    joinAll: mdi:account-multiple # default is mdi:checkbox-multiple-marked-outline
+    unJoinAll: mdi:account-remove # default is mdi:minus-box-multiple-outline
+  disableMainSpeakers: true # default is false. Disables (greys out) any speaker that is currently the main speaker of a multi-speaker group.
+  dontSortMembersOnTop: true # default is false. Will not sort members of the selected player on top of the list in the grouping section.
+  hideUngroupAllButtons: true # default is false. Hides the join all/unjoin all buttons in the grouping section.
+  skipApplyButton: true # default is false. Will skip the apply button when grouping.
 ```
 
 ### Volumes Configuration
 
 ```yaml
-volumesTitle: '' # default is empty. Use this to change the title for the volumes section.
+volumes:
+  title: '' # default is empty. Use this to change the title for the volumes section.
+  hideCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
+  labelForAllSlider: 'All volumes' # default is 'All'. Use this to change the label for the all volumes slider.
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.
 changeVolumeOnSlide: true # default is false. If set to true, volume will be changed while sliding the volume slider. If false, volume will only be changed when releasing the slider.
-volumesHideCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
 inverseGroupMuteState: true # default is false, which means that only if all players are muted, mute icon shows as 'muted'. If set to true, mute icon will show as 'muted' if any player is muted.
-volumesLabelForAllSlider: 'All volumes' # default is 'All'. Use this to change the label for the all volumes slider.
 volumeStepSize: 1 # Use this to change the step size when using volume up/down. Default is to use the step size of Home Assistant's media player integration. 
 ```
 
@@ -345,9 +350,10 @@ volumeStepSize: 1 # Use this to change the step size when using volume up/down. 
 ### Queue Configuration
 
 ```yaml
-queueTitle: Songs # default is 'Play Queue'. Use this to change the title for the queue section. 
-queueItemBackgroundColor: '#ff0000' # Use this to set a custom background color for queue items.
-queueItemTextColor: '#ffffff' # Use this to set a custom text color for queue items.
+queue:
+  title: Songs # default is 'Play Queue'. Use this to change the title for the queue section. 
+  itemBackgroundColor: '#ff0000' # Use this to set a custom background color for queue items.
+  itemTextColor: '#ffffff' # Use this to set a custom text color for queue items.
 ```
 <!-- //#ONLY_SONOS_CARD_END -->
 
@@ -395,8 +401,9 @@ Create a modern look by using a blurred version of the album artwork as backgrou
 
 ```yaml
 type: custom:sonos-card
-playerArtworkAsBackgroundBlur: 10
-playerControlsAndHeaderBackgroundOpacity: 0.7
+player:
+  artworkAsBackgroundBlur: 10
+  controlsAndHeaderBackgroundOpacity: 0.7
 ```
 
 ## Slim version
@@ -405,14 +412,18 @@ This example will give a slimmer version of the card.
 ```yaml
 type: custom:sonos-card
 heightPercentage: 60
-playerShowVolumeUpAndDownButtons: true
-favoritesItemsPerRow: 6
+player:
+  showVolumeUpAndDownButtons: true
+  hideArtwork: true
+  controlsLargeIcons: true
+favorites:
+  itemsPerRow: 6
+  hideHeader: true
+groups:
+  compact: true
+grouping:
+  compact: true
 footerHeight: 3.5
-favoritesHideHeader: true
-groupsCompact: true
-groupingCompact: true
-playerHideArtwork: true
-playerControlsLargeIcons: true  
 ```
 
 ![slim.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/slim.png)
@@ -436,12 +447,13 @@ Example:
     
 ```yaml
 type: custom:sonos-card
-customFavorites: 
-  all: # 'all' means it will show for all players, otherwise specify the entity_id of the player.
-    - title: BBC
-      media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service
-      media_content_type: music
-      thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+favorites:
+  customFavorites: 
+    all: # 'all' means it will show for all players, otherwise specify the entity_id of the player.
+      - title: BBC
+        media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service
+        media_content_type: music
+        thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
 ```
 
 ### Finding media_content_id (advanced)

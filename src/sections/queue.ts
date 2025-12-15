@@ -25,7 +25,7 @@ export class Queue extends LitElement {
     return html`
       <div class="header">
         <div class="title">
-          ${this.store.config.queueTitle ??
+          ${this.store.config.queue?.title ??
           (this.activePlayer.attributes.media_playlist ?? `Play Queue`) +
             (this.activePlayer.attributes.media_channel ? ' (not active)' : '')}
         </div>

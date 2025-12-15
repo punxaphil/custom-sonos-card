@@ -5,7 +5,7 @@ import '../components/favorites-icons';
 import '../components/favorites-header';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
-import { CardConfig, MediaPlayerItem } from '../types';
+import { FavoritesConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { MediaPlayer } from '../model/media-player';
 import { until } from 'lit-html/directives/until.js';
@@ -15,13 +15,13 @@ import { MEDIA_ITEM_SELECTED } from '../constants';
 
 export class Favorites extends LitElement {
   @property({ attribute: false }) store!: Store;
-  private config!: CardConfig;
+  private config!: FavoritesConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
 
   render() {
-    this.config = this.store.config;
+    this.config = this.store.config.favorites ?? {};
     this.activePlayer = this.store.activePlayer;
     this.mediaBrowseService = this.store.mediaBrowseService;
     this.mediaControlService = this.store.mediaControlService;
@@ -34,7 +34,7 @@ export class Favorites extends LitElement {
         this.getFavorites(this.activePlayer)
           .then((items) => {
             if (items?.length) {
-              const itemsPerRow = this.config.favoritesItemsPerRow || 4;
+              const itemsPerRow = this.config.itemsPerRow || 4;
               if (itemsPerRow > 1) {
                 return html`
                   <sonos-favorites-icons
@@ -82,17 +82,17 @@ export class Favorites extends LitElement {
     let favorites = await this.mediaBrowseService.getFavorites(player);
     favorites.sort((a, b) => this.sortOnTopFavoritesThenAlphabetically(a.title, b.title));
     favorites = [
-      ...(this.config.favoritesCustomFavorites?.[this.activePlayer.id]?.map(Favorites.createFavorite) || []),
-      ...(this.config.favoritesCustomFavorites?.all?.map(Favorites.createFavorite) || []),
+      ...(this.config.customFavorites?.[this.activePlayer.id]?.map(Favorites.createFavorite) || []),
+      ...(this.config.customFavorites?.all?.map(Favorites.createFavorite) || []),
       ...favorites,
     ];
-    return this.config.favoritesNumberToShow ? favorites.slice(0, this.config.favoritesNumberToShow) : favorites;
+    return this.config.numberToShow ? favorites.slice(0, this.config.numberToShow) : favorites;
   }
 
   private sortOnTopFavoritesThenAlphabetically(a: string, b: string) {
-    const favoritesTopItems = this.config.favoritesTopItems ?? [];
-    const aIndex = indexOfWithoutSpecialChars(favoritesTopItems, a);
-    const bIndex = indexOfWithoutSpecialChars(favoritesTopItems, b);
+    const topItems = this.config.topItems ?? [];
+    const aIndex = indexOfWithoutSpecialChars(topItems, a);
+    const bIndex = indexOfWithoutSpecialChars(topItems, b);
     if (aIndex > -1 && bIndex > -1) {
       return aIndex - bIndex;
     } else {

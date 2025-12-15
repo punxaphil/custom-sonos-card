@@ -2,47 +2,50 @@ import { html, TemplateResult } from 'lit';
 import { BaseEditor, Schema } from './base-editor';
 import { property } from 'lit/decorators.js';
 
+type SectionKey = 'player' | 'favorites' | 'groups' | 'grouping' | 'volumes' | 'queue';
+
 class Form extends BaseEditor {
   @property({ attribute: false }) schema!: Schema[];
   @property({ attribute: false }) data!: unknown;
   @property() changed!: (ev: CustomEvent) => void;
-  @property() labelPrefix?: string;
+  @property() section?: SectionKey;
 
   protected render(): TemplateResult {
     const schema = filterEditorSchemaOnCardType(this.schema, this.config.type);
+    const data = this.section ? (this.config[this.section] ?? {}) : this.data || this.config;
     return html`
       <ha-form
-        .data=${this.data || this.config}
+        .data=${data}
         .schema=${schema}
-        .computeLabel=${createComputeLabel(this.labelPrefix)}
+        .computeLabel=${createComputeLabel()}
         .hass=${this.hass}
-        @value-changed=${this.changed || this.valueChanged}
+        @value-changed=${this.changed || this.handleValueChanged}
       ></ha-form>
     `;
   }
-  protected valueChanged(ev: CustomEvent): void {
+
+  private handleValueChanged = (ev: CustomEvent): void => {
     const changed = ev.detail.value;
-    this.config = {
-      ...this.config,
-      ...changed,
-    };
+    if (this.section) {
+      this.config = {
+        ...this.config,
+        [this.section]: { ...(this.config[this.section] ?? {}), ...changed },
+      };
+    } else {
+      this.config = { ...this.config, ...changed };
+    }
     this.configChanged();
-  }
+  };
 }
 
-function createComputeLabel(prefix?: string) {
+function createComputeLabel() {
   return ({ help, label, name }: { name: string; help: string; label: string }) => {
     if (label) {
       return label;
     }
-    let processedName = name;
-    if (prefix && processedName.startsWith(prefix)) {
-      processedName = processedName.slice(prefix.length);
-      processedName = processedName.charAt(0).toLowerCase() + processedName.slice(1);
-    }
-    let unCamelCased = processedName.replace(/([A-Z])/g, ' $1');
-    unCamelCased = unCamelCased.charAt(0).toUpperCase() + unCamelCased.slice(1);
-    return unCamelCased + (help ? ` (${help})` : '');
+    const unCamelCased = name.replace(/([A-Z])/g, ' $1');
+    const capitalized = unCamelCased.charAt(0).toUpperCase() + unCamelCased.slice(1);
+    return capitalized + (help ? ` (${help})` : '');
   };
 }
 

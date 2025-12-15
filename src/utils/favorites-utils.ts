@@ -21,12 +21,13 @@ function getValueFromKeyIgnoreSpecialChars(
 }
 
 function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
+  const favoritesConfig = config.favorites ?? {};
   let thumbnail =
-    getValueFromKeyIgnoreSpecialChars(config.favoritesCustomThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
+    getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
   if (!thumbnail) {
-    thumbnail = getValueFromKeyIgnoreSpecialChars(config.favoritesCustomThumbnailsIfMissing, mediaItem.title);
+    thumbnail = getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnailsIfMissing, mediaItem.title);
     if (itemsWithImage && !thumbnail) {
-      thumbnail = config.favoritesCustomThumbnailsIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
+      thumbnail = favoritesConfig.customThumbnailsIfMissing?.['default'] || DEFAULT_MEDIA_THUMBNAIL;
     }
   } else if (thumbnail?.match(/https:\/\/brands\.home-assistant\.io\/.+\/logo.png/)) {
     thumbnail = thumbnail?.replace('logo.png', 'icon.png');

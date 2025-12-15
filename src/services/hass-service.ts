@@ -34,7 +34,7 @@ export default class HassService {
       media_content_id,
       media_content_type,
     });
-    if (this.config.favoritesReplaceHttpWithHttpsForThumbnails) {
+    if (this.config.favorites?.replaceHttpWithHttpsForThumbnails) {
       mediaPlayerItem.children = mediaPlayerItem.children?.map((child) => ({
         ...child,
         thumbnail: child.thumbnail?.replace('http://', 'https://'),

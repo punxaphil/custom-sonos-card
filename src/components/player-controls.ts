@@ -2,7 +2,7 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
-import { CardConfig } from '../types';
+import { CardConfig, PlayerConfig } from '../types';
 import {
   mdiFastForward,
   mdiPauseCircle,
@@ -22,6 +22,7 @@ import MediaBrowseService from '../services/media-browse-service';
 class PlayerControls extends LitElement {
   @property({ attribute: false }) store!: Store;
   private config!: CardConfig;
+  private playerConfig!: PlayerConfig;
   private activePlayer!: MediaPlayer;
   private mediaControlService!: MediaControlService;
   private mediaBrowseService!: MediaBrowseService;
@@ -30,29 +31,30 @@ class PlayerControls extends LitElement {
 
   render() {
     this.config = this.store.config;
+    this.playerConfig = this.config.player ?? {};
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
     this.mediaBrowseService = this.store.mediaBrowseService;
-    const noUpDown = !!this.config.playerShowVolumeUpAndDownButtons && nothing;
-    const noFastForwardAndRewind = !!this.config.playerShowFastForwardAndRewindButtons && nothing;
-    const noShuffle = !this.config.playerHideControlShuffleButton && nothing;
-    const noPrev = !this.config.playerHideControlPrevTrackButton && nothing;
-    const noNext = !this.config.playerHideControlNextTrackButton && nothing;
-    const noRepeat = !this.config.playerHideControlRepeatButton && nothing;
-    const noBrowse = !!this.config.playerShowBrowseMediaButton && nothing;
+    const noUpDown = !!this.playerConfig.showVolumeUpAndDownButtons && nothing;
+    const noFastForwardAndRewind = !!this.playerConfig.showFastForwardAndRewindButtons && nothing;
+    const noShuffle = !this.playerConfig.hideControlShuffleButton && nothing;
+    const noPrev = !this.playerConfig.hideControlPrevTrackButton && nothing;
+    const noNext = !this.playerConfig.hideControlNextTrackButton && nothing;
+    const noRepeat = !this.playerConfig.hideControlRepeatButton && nothing;
+    const noBrowse = !!this.playerConfig.showBrowseMediaButton && nothing;
 
     this.volumePlayer = this.getVolumePlayer();
-    this.updateMemberVolumes = !this.config.playerVolumeEntityId;
-    const pauseOrStop = this.config.playerStopInsteadOfPause ? mdiStopCircle : mdiPauseCircle;
+    this.updateMemberVolumes = !this.playerConfig.volumeEntityId;
+    const pauseOrStop = this.playerConfig.stopInsteadOfPause ? mdiStopCircle : mdiPauseCircle;
     const playing = this.activePlayer.isPlaying();
     return html`
       <style>
         .icons * {
-          ${this.config.playerControlsColor ? `color: ${this.config.playerControlsColor};` : ''}
+          ${this.playerConfig.controlsColor ? `color: ${this.playerConfig.controlsColor};` : ''}
         }
       </style>
       <div class="main" id="mediaControls">
-        <div class="icons ${this.config.playerControlsLargeIcons ? 'large-icons' : ''}">
+        <div class="icons ${this.playerConfig.controlsLargeIcons ? 'large-icons' : ''}">
           <div class="flex-1"></div>
           <ha-icon-button hide=${noUpDown} @click=${this.volDown} .path=${mdiVolumeMinus}></ha-icon-button>
           <sonos-shuffle hide=${noShuffle} .store=${this.store}></sonos-shuffle>
@@ -71,7 +73,7 @@ class PlayerControls extends LitElement {
         </div>
         <sonos-volume .store=${this.store} .player=${this.volumePlayer}
                       .updateMembers=${this.updateMemberVolumes} .isPlayer=${true}
-                      hide=${this.config.playerHideVolume || nothing}></sonos-volume>
+                      hide=${this.playerConfig.hideVolume || nothing}></sonos-volume>
         <div class="icons">
           <ha-icon-button hide=${this.store.hidePower(true)} @click=${this.togglePower}></ha-icon-button>
         </div">
@@ -82,7 +84,7 @@ class PlayerControls extends LitElement {
   private prev = async () => await this.mediaControlService.prev(this.activePlayer);
   private play = async () => await this.mediaControlService.play(this.activePlayer);
   private pauseOrStop = async () => {
-    return this.config.playerStopInsteadOfPause
+    return this.playerConfig.stopInsteadOfPause
       ? await this.mediaControlService.stop(this.activePlayer)
       : await this.mediaControlService.pause(this.activePlayer);
   };
@@ -93,11 +95,11 @@ class PlayerControls extends LitElement {
 
   private getVolumePlayer() {
     let result;
-    if (this.config.playerVolumeEntityId) {
+    if (this.playerConfig.volumeEntityId) {
       if (this.config.allowPlayerVolumeEntityOutsideOfGroup) {
-        result = findPlayer(this.store.allMediaPlayers, this.config.playerVolumeEntityId);
+        result = findPlayer(this.store.allMediaPlayers, this.playerConfig.volumeEntityId);
       } else {
-        result = this.activePlayer.getMember(this.config.playerVolumeEntityId);
+        result = this.activePlayer.getMember(this.playerConfig.volumeEntityId);
       }
     }
     return result ?? this.activePlayer;
@@ -108,12 +110,12 @@ class PlayerControls extends LitElement {
   private rewind = async () =>
     await this.mediaControlService.seek(
       this.activePlayer,
-      this.activePlayer.attributes.media_position - (this.config.playerFastForwardAndRewindStepSizeSeconds || 15),
+      this.activePlayer.attributes.media_position - (this.playerConfig.fastForwardAndRewindStepSizeSeconds || 15),
     );
   private fastForward = async () =>
     await this.mediaControlService.seek(
       this.activePlayer,
-      this.activePlayer.attributes.media_position + (this.config.playerFastForwardAndRewindStepSizeSeconds || 15),
+      this.activePlayer.attributes.media_position + (this.playerConfig.fastForwardAndRewindStepSizeSeconds || 15),
     );
 
   static get styles() {

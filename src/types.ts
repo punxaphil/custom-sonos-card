@@ -40,121 +40,142 @@ interface StyleConfig {
   borderRadius?: string;
 }
 
+export interface PlayerConfig {
+  artworkAsBackground?: boolean;
+  artworkAsBackgroundBlur?: number;
+  artworkHostname?: string;
+  artworkMinHeight?: number;
+  backgroundOverlayColor?: string;
+  controlsAndHeaderBackgroundOpacity?: number;
+  controlsColor?: string;
+  controlsLargeIcons?: boolean;
+  controlsMargin?: string;
+  fallbackArtwork?: string;
+  fastForwardAndRewindStepSizeSeconds?: number;
+  headerEntityFontSize?: number;
+  headerSongFontSize?: number;
+  hideArtistAlbum?: boolean;
+  hideArtwork?: boolean;
+  hideControlNextTrackButton?: boolean;
+  hideControlPowerButton?: boolean;
+  hideControlPrevTrackButton?: boolean;
+  hideControlRepeatButton?: boolean;
+  hideControlShuffleButton?: boolean;
+  hideControls?: boolean;
+  hideEntityName?: boolean;
+  hideHeader?: boolean;
+  hidePlaylist?: boolean;
+  hideVolume?: boolean;
+  hideVolumeMuteButton?: boolean;
+  hideVolumePercentage?: boolean;
+  labelWhenNoMediaIsSelected?: string;
+  mediaArtworkOverrides?: MediaArtworkOverride[];
+  showAudioInputFormat?: boolean;
+  showBrowseMediaButton?: boolean;
+  showChannel?: boolean;
+  showFastForwardAndRewindButtons?: boolean;
+  showSource?: boolean;
+  showVolumeUpAndDownButtons?: boolean;
+  stopInsteadOfPause?: boolean;
+  volumeEntityId?: string;
+  volumeMuteButtonSize?: number;
+  volumeSliderHeight?: number;
+}
+
+export interface FavoritesConfig {
+  customFavorites?: CustomFavorites;
+  customThumbnails?: CustomFavoriteThumbnails;
+  customThumbnailsIfMissing?: CustomFavoriteThumbnails;
+  hideBrowseMediaButton?: boolean;
+  hideHeader?: boolean;
+  hideTitleForThumbnailIcons?: boolean;
+  iconBorder?: string;
+  iconPadding?: number;
+  iconTitleBackgroundColor?: string;
+  iconTitleColor?: string;
+  itemsPerRow?: number;
+  numberToShow?: number;
+  replaceHttpWithHttpsForThumbnails?: boolean;
+  sortByType?: boolean;
+  title?: string;
+  exclude?: string[];
+  topItems?: string[];
+}
+
+export interface GroupsConfig {
+  buttonWidth?: number;
+  compact?: boolean;
+  hideCurrentTrack?: boolean;
+  itemMargin?: string;
+  title?: string;
+}
+
+export interface GroupingConfig {
+  buttonColor?: string;
+  buttonFontSize?: number;
+  buttonIcons?: GroupingButtonIcons;
+  compact?: boolean;
+  disableMainSpeakers?: boolean;
+  dontSortMembersOnTop?: boolean;
+  dontSwitchPlayer?: boolean;
+  hideUngroupAllButtons?: boolean;
+  skipApplyButton?: boolean;
+  title?: string;
+}
+
+export interface VolumesConfig {
+  hideCogwheel?: boolean;
+  labelForAllSlider?: string;
+  title?: string;
+}
+
+export interface QueueConfig {
+  itemBackgroundColor?: string;
+  itemTextColor?: string;
+  title?: string;
+}
+
 export interface CardConfig extends LovelaceCardConfig {
   style?: StyleConfig;
   sections?: Section[];
   startSection?: Section;
   // Common
+  adjustVolumeRelativeToMainPlayer?: boolean;
+  allowPlayerVolumeEntityOutsideOfGroup?: boolean;
   baseFontSize?: number;
+  changeVolumeOnSlide?: boolean;
   doNotRememberSelectedPlayer?: boolean;
-  entityId?: string;
+  dynamicVolumeSlider?: boolean;
+  dynamicVolumeSliderMax?: number;
+  dynamicVolumeSliderThreshold?: number;
   entities?: string[];
+  entitiesToIgnoreVolumeLevelFor?: string[];
+  entityId?: string;
   entityNameRegexToReplace?: string;
   entityNameReplacement?: string;
   entityPlatform?: string;
   excludeItemsInEntitiesList?: boolean;
   footerHeight?: number;
   heightPercentage?: number;
+  inverseGroupMuteState?: boolean;
   mediaTitleRegexToReplace?: string;
   mediaTitleReplacement?: string;
   minWidth?: number;
+  predefinedGroups?: ConfigPredefinedGroup[];
   sectionButtonIconSize?: number;
   sectionButtonIcons?: SectionButtonIcons;
   showNonSonosPlayers?: boolean;
   storePlayerInSessionStorage?: boolean;
   title?: string;
-  widthPercentage?: number;
-  // Player
-  allowPlayerVolumeEntityOutsideOfGroup?: boolean;
-  playerArtworkAsBackground?: boolean;
-  playerArtworkAsBackgroundBlur?: number;
-  playerArtworkHostname?: string;
-  playerArtworkMinHeight?: number;
-  playerBackgroundOverlayColor?: string;
-  playerControlsAndHeaderBackgroundOpacity?: number;
-  playerControlsColor?: string;
-  playerControlsLargeIcons?: boolean;
-  playerControlsMargin?: string;
-  dynamicVolumeSlider?: boolean;
-  dynamicVolumeSliderMax?: number;
-  dynamicVolumeSliderThreshold?: number;
-  entitiesToIgnoreVolumeLevelFor?: string[];
-  playerFallbackArtwork?: string;
-  playerFastForwardAndRewindStepSizeSeconds?: number;
-  playerHeaderEntityFontSize?: number;
-  playerHeaderSongFontSize?: number;
-  playerHideArtistAlbum?: boolean;
-  playerHideArtwork?: boolean;
-  playerHideControls?: boolean;
-  playerHideControlNextTrackButton?: boolean;
-  playerHideControlPowerButton?: boolean;
-  playerHideControlPrevTrackButton?: boolean;
-  playerHideControlRepeatButton?: boolean;
-  playerHideControlShuffleButton?: boolean;
-  playerHideEntityName?: boolean;
-  playerHideHeader?: boolean;
-  playerHidePlaylist?: boolean;
-  playerHideVolume?: boolean;
-  playerHideVolumeMuteButton?: boolean;
-  playerHideVolumePercentage?: boolean;
-  playerLabelWhenNoMediaIsSelected?: string;
-  playerMediaArtworkOverrides?: MediaArtworkOverride[];
-  playerShowAudioInputFormat?: boolean;
-  playerShowBrowseMediaButton?: boolean;
-  playerShowChannel?: boolean;
-  playerShowFastForwardAndRewindButtons?: boolean;
-  playerShowSource?: boolean;
-  playerShowVolumeUpAndDownButtons?: boolean;
-  playerStopInsteadOfPause?: boolean;
-  playerVolumeEntityId?: string;
-  playerVolumeMuteButtonSize?: number;
-  playerVolumeSliderHeight?: number;
-  // Favorites
-  favoritesCustomFavorites?: CustomFavorites;
-  favoritesCustomThumbnails?: CustomFavoriteThumbnails;
-  favoritesCustomThumbnailsIfMissing?: CustomFavoriteThumbnails;
-  favoritesHideBrowseMediaButton?: boolean;
-  favoritesHideHeader?: boolean;
-  favoritesHideTitleForThumbnailIcons?: boolean;
-  favoritesIconBorder?: string;
-  favoritesIconPadding?: number;
-  favoritesIconTitleBackgroundColor?: string;
-  favoritesIconTitleColor?: string;
-  favoritesItemsPerRow?: number;
-  favoritesNumberToShow?: number;
-  favoritesReplaceHttpWithHttpsForThumbnails?: boolean;
-  favoritesSortByType?: boolean;
-  favoritesTitle?: string;
-  favoritesToIgnore?: string[];
-  favoritesTopItems?: string[];
-  // Groups
-  groupsButtonWidth?: number;
-  groupsCompact?: boolean;
-  groupsHideCurrentTrack?: boolean;
-  groupsItemMargin?: string;
-  groupsTitle?: string;
-  // Grouping
-  groupingButtonColor?: string;
-  groupingButtonFontSize?: number;
-  groupingButtonIcons?: GroupingButtonIcons;
-  groupingCompact?: boolean;
-  groupingDisableMainSpeakers?: boolean;
-  groupingDontSortMembersOnTop?: boolean;
-  groupingDontSwitchPlayer?: boolean;
-  groupingHideUngroupAllButtons?: boolean;
-  predefinedGroups?: ConfigPredefinedGroup[];
-  groupingSkipApplyButton?: boolean;
-  // Volumes
-  adjustVolumeRelativeToMainPlayer?: boolean;
-  changeVolumeOnSlide?: boolean;
-  volumesHideCogwheel?: boolean;
-  inverseGroupMuteState?: boolean;
-  volumesLabelForAllSlider?: string;
   volumeStepSize?: number;
-  // Queue
-  queueItemBackgroundColor?: string;
-  queueItemTextColor?: string;
-  queueTitle?: string;
+  widthPercentage?: number;
+  // Section configs
+  player?: PlayerConfig;
+  favorites?: FavoritesConfig;
+  groups?: GroupsConfig;
+  grouping?: GroupingConfig;
+  volumes?: VolumesConfig;
+  queue?: QueueConfig;
 }
 
 export interface MediaArtworkOverride {

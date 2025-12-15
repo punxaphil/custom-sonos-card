@@ -6,7 +6,7 @@ import '../components/progress';
 import '../components/volume';
 
 import Store from '../model/store';
-import { CardConfig } from '../types';
+import { CardConfig, PlayerConfig } from '../types';
 
 import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../constants';
 import { MediaPlayer } from '../model/media-player';
@@ -15,19 +15,21 @@ export class Player extends LitElement {
   @property({ attribute: false }) store!: Store;
   @state() private resolvedImageUrl?: string;
   private config!: CardConfig;
+  private playerConfig!: PlayerConfig;
   private activePlayer!: MediaPlayer;
   private lastTemplateUrl?: string;
 
   render() {
     this.config = this.store.config;
+    this.playerConfig = this.config.player ?? {};
     this.activePlayer = this.store.activePlayer;
 
     this.resolveTemplateImageUrlIfNeeded();
-    const blurAmount = this.config.playerArtworkAsBackgroundBlur ?? 0;
-    const playerArtworkAsBackground = this.config.playerArtworkAsBackground || blurAmount > 0;
-    const backgroundOpacity = this.config.playerControlsAndHeaderBackgroundOpacity ?? 0.9;
-    const backgroundOverlayColor = this.config.playerBackgroundOverlayColor;
-    const containerStyle = playerArtworkAsBackground
+    const blurAmount = this.playerConfig.artworkAsBackgroundBlur ?? 0;
+    const artworkAsBackground = this.playerConfig.artworkAsBackground || blurAmount > 0;
+    const backgroundOpacity = this.playerConfig.controlsAndHeaderBackgroundOpacity ?? 0.9;
+    const backgroundOverlayColor = this.playerConfig.backgroundOverlayColor;
+    const containerStyle = artworkAsBackground
       ? blurAmount > 0
         ? `--blur-background-image: ${this.getBackgroundImageUrl()}; --blur-amount: ${blurAmount}px; --background-opacity: ${backgroundOpacity}${backgroundOverlayColor ? `; --background-overlay-color: ${backgroundOverlayColor}` : ''}`
         : `${this.getBackgroundImage()}; --background-opacity: ${backgroundOpacity}${backgroundOverlayColor ? `; --background-overlay-color: ${backgroundOverlayColor}` : ''}`
@@ -36,34 +38,34 @@ export class Player extends LitElement {
       <div class="container ${blurAmount > 0 ? 'blurred-background' : ''}" style=${containerStyle || nothing}>
         <sonos-player-header
           class="header"
-          background=${playerArtworkAsBackground || nothing}
+          background=${artworkAsBackground || nothing}
           .store=${this.store}
-          hide=${this.config.playerHideHeader || nothing}
+          hide=${this.playerConfig.hideHeader || nothing}
         ></sonos-player-header>
         <div
           class="artwork"
-          hide=${(playerArtworkAsBackground && !blurAmount) || this.config.playerHideArtwork || nothing}
+          hide=${(artworkAsBackground && !blurAmount) || this.playerConfig.hideArtwork || nothing}
           style=${this.artworkStyle()}
         ></div>
         <sonos-player-controls
           class="controls"
-          background=${playerArtworkAsBackground || nothing}
+          background=${artworkAsBackground || nothing}
           .store=${this.store}
-          hide=${this.config.playerHideControls || nothing}
-          style=${this.config.playerControlsMargin ? `margin: ${this.config.playerControlsMargin}` : nothing}
+          hide=${this.playerConfig.hideControls || nothing}
+          style=${this.playerConfig.controlsMargin ? `margin: ${this.playerConfig.controlsMargin}` : nothing}
         ></sonos-player-controls>
       </div>
     `;
   }
 
   private artworkStyle() {
-    const minHeight = this.config.playerArtworkMinHeight ?? 5;
+    const minHeight = this.playerConfig.artworkMinHeight ?? 5;
     return `${this.getBackgroundImage()}; min-height: ${minHeight}rem`;
   }
 
   private getBackgroundImageUrl() {
     const fallbackImage =
-      this.config.playerFallbackArtwork ??
+      this.playerConfig.fallbackArtwork ??
       (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
@@ -76,7 +78,7 @@ export class Player extends LitElement {
 
   private getBackgroundImage() {
     const fallbackImage =
-      this.config.playerFallbackArtwork ??
+      this.playerConfig.fallbackArtwork ??
       (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
     const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
@@ -90,7 +92,7 @@ export class Player extends LitElement {
   }
 
   private getMatchingOverride(entityImage?: string) {
-    const overrides = this.config.playerMediaArtworkOverrides;
+    const overrides = this.playerConfig.mediaArtworkOverrides;
     if (!overrides) return undefined;
 
     const { media_title, media_artist, media_album_name, media_content_id, media_channel } =
@@ -111,7 +113,7 @@ export class Player extends LitElement {
   }
 
   private getArtworkImage() {
-    const prefix = this.config.playerArtworkHostname || '';
+    const prefix = this.playerConfig.artworkHostname || '';
     const { entity_picture, entity_picture_local, app_id } = this.activePlayer.attributes;
     let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
     if (app_id === 'music_assistant') {
