@@ -8,6 +8,97 @@ This release includes a major refactoring to use **nested YAML configuration**. 
 
 All section-specific configuration options now live under nested section keys (`player`, `favorites`, `groups`, `grouping`, `volumes`, `queue`).
 
+### Quick Migration Guide
+
+If your card stopped working after upgrading to v10, follow these steps:
+
+#### Step 1: Identify prefixed options
+
+Look for any options in your config that start with these prefixes:
+- `player...` → move under `player:`
+- `mediaBrowser...` → rename to remove prefix and move under `favorites:`
+- `favorites...` → move under `favorites:`
+- `groups...` → move under `groups:`
+- `grouping...` → move under `grouping:`
+- `volumes...` → move under `volumes:`
+- `queue...` → move under `queue:`
+
+#### Step 2: Remove the prefix and nest under the section
+
+For each prefixed option:
+1. Remove the section prefix (e.g., `playerHideArtwork` → `hideArtwork`)
+2. Move it under the appropriate section key
+
+#### Step 3: Rename mediaBrowser to favorites
+
+If you used `mediaBrowser...` options, rename them to use `favorites` instead.
+
+#### Migration Examples
+
+**Volume controls not showing?**
+```yaml
+# Before (v9)
+playerHideVolume: false
+playerShowVolumeUpAndDownButtons: true
+
+# After (v10)
+player:
+  hideVolume: false
+  showVolumeUpAndDownButtons: true
+```
+
+**Favorites/Media Browser missing?**
+```yaml
+# Before (v9)
+mediaBrowserItemsPerRow: 3
+mediaBrowserHideTitleForThumbnailIcons: true
+favoritesTopItems:
+  - My Playlist
+
+# After (v10)
+favorites:
+  itemsPerRow: 3
+  hideTitleForThumbnailIcons: true
+  topItems:
+    - My Playlist
+```
+
+**Groups section broken?**
+```yaml
+# Before (v9)
+groupsTitle: My Speakers
+groupsCompact: true
+
+# After (v10)
+groups:
+  title: My Speakers
+  compact: true
+```
+
+**Grouping section broken?**
+```yaml
+# Before (v9)
+groupingButtonColor: "#ff0000"
+groupingCompact: true
+
+# After (v10)
+grouping:
+  buttonColor: "#ff0000"
+  compact: true
+```
+
+#### Options that stay at root level
+
+These options do NOT need to be nested (they affect multiple sections):
+- `entities`, `entityId`, `entityPlatform`
+- `predefinedGroups`
+- `sections`, `startSection`
+- `title`, `baseFontSize`, `heightPercentage`, `widthPercentage`
+- `volumeStepSize`, `dynamicVolumeSlider`, `changeVolumeOnSlide`
+- All `entityName...` and `mediaTitle...` regex options
+
+See the full list in "Cross-Section Options" below.
+
 #### Media Browser → Favorites (Section Rename)
 
 The "Media Browser" section has been renamed to "Favorites" throughout the codebase and configuration.
