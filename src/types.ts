@@ -133,6 +133,8 @@ export interface VolumesConfig {
 export interface QueueConfig {
   itemBackgroundColor?: string;
   itemTextColor?: string;
+  selectedItemBackgroundColor?: string;
+  selectedItemTextColor?: string;
   title?: string;
 }
 

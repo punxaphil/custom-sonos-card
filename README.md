@@ -352,9 +352,11 @@ volumeStepSize: 1 # Use this to change the step size when using volume up/down. 
 
 ```yaml
 queue:
-  title: Songs # default is 'Play Queue'. Use this to change the title for the queue section. 
+  title: Songs # default is 'Play Queue'. Use this to change the title for the queue section.
   itemBackgroundColor: '#ff0000' # Use this to set a custom background color for queue items.
   itemTextColor: '#ffffff' # Use this to set a custom text color for queue items.
+  selectedItemBackgroundColor: '#00ff00' # Use this to set a custom background color for the currently playing queue item.
+  selectedItemTextColor: '#000000' # Use this to set a custom text color for the currently playing queue item.
 ```
 <!-- //#ONLY_SONOS_CARD_END -->
 

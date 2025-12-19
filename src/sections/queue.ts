@@ -50,6 +50,7 @@ export class Queue extends LitElement {
                     @click=${() => this.onMediaItemSelected(index)}
                     .item=${item}
                     .selected=${selected !== undefined && selected === index}
+                    .store=${this.store}
                     ><ha-icon-button
                       hide=${this.editMode && nothing}
                       @click=${(event: Event) => {

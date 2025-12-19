@@ -1,4 +1,4 @@
-import { css, html, LitElement, nothing, PropertyValues } from 'lit';
+import { css, html, LitElement, PropertyValues } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { MediaPlayerItem } from '../types';
@@ -11,15 +11,15 @@ class MediaRow extends LitElement {
   @property({ type: Boolean }) selected = false;
 
   render() {
-    const queueConfig = this.store?.config?.queue ?? {};
-    const bgColor = queueConfig.itemBackgroundColor;
-    const textColor = queueConfig.itemTextColor;
-    const customStyle =
-      bgColor || textColor
-        ? `${bgColor ? `background: ${bgColor};` : ''}${textColor ? `color: ${textColor};` : ''}`
-        : nothing;
+    const { itemBackgroundColor, itemTextColor, selectedItemBackgroundColor, selectedItemTextColor } =
+      this.store?.config?.queue ?? {};
+    const bgColor = this.selected ? selectedItemBackgroundColor : itemBackgroundColor;
+    const textColor = this.selected ? selectedItemTextColor : itemTextColor;
+    const cssVars =
+      (bgColor ? `--secondary-background-color: ${bgColor};` : '') +
+      (textColor ? `--secondary-text-color: ${textColor};` : '');
     return html`
-      <mwc-list-item hasMeta ?selected=${this.selected} ?activated=${this.selected} class="button" style=${customStyle}>
+      <mwc-list-item hasMeta ?selected=${this.selected} ?activated=${this.selected} class="button" style="${cssVars}">
         <div class="row">${renderFavoritesItem(this.item)}</div>
         <slot slot="meta"></slot>
       </mwc-list-item>
