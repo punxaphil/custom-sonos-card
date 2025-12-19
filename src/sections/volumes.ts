@@ -86,8 +86,9 @@ export class Volumes extends LitElement {
     return relatedEntities.map((relatedEntity: HassEntity) => {
       relatedEntity.attributes.friendly_name =
         relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
+      const fontSize = this.config.volumes?.additionalControlsFontSize ?? 12;
       return html`
-        <div>
+        <div style="--ha-font-size-m: ${fontSize}px">
           <state-card-content .stateObj=${relatedEntity} .hass=${this.store.hass}></state-card-content>
         </div>
       `;
@@ -150,10 +151,6 @@ export class Volumes extends LitElement {
 
       *[hide] {
         display: none;
-      }
-
-      state-card-content {
-        --ha-font-size-m: 12px;
       }
     `;
   }

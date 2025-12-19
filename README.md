@@ -338,6 +338,7 @@ grouping:
 ```yaml
 volumes:
   title: '' # default is empty. Use this to change the title for the volumes section.
+  additionalControlsFontSize: 14 # default is 12. Font size in pixels for additional controls (e.g., Bass, Treble, Audio delay).
   hideCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
   labelForAllSlider: 'All volumes' # default is 'All'. Use this to change the label for the all volumes slider.
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.

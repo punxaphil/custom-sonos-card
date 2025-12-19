@@ -124,6 +124,7 @@ export interface GroupingConfig {
 }
 
 export interface VolumesConfig {
+  additionalControlsFontSize?: number;
   hideCogwheel?: boolean;
   labelForAllSlider?: string;
   title?: string;

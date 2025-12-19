@@ -4,6 +4,10 @@ export const VOLUMES_SCHEMA = [
     type: 'string',
   },
   {
+    name: 'additionalControlsFontSize',
+    selector: { number: {} },
+  },
+  {
     name: 'hideCogwheel',
     selector: { boolean: {} },
   },
