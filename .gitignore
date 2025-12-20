@@ -4,3 +4,6 @@ dist*/
 node_modules/
 coverage/
 lcov-report/
+.local-deploy.sh
+.env
+.playwright-mcp
