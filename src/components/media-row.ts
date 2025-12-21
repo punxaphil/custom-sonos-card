@@ -4,11 +4,13 @@ import Store from '../model/store';
 import { MediaPlayerItem } from '../types';
 import { mediaItemTitleStyle } from '../constants';
 import { renderFavoritesItem } from '../utils/favorites-utils';
+import './playing-bars';
 
 class MediaRow extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ attribute: false }) item!: MediaPlayerItem;
   @property({ type: Boolean }) selected = false;
+  @property({ type: Boolean }) playing = false;
 
   render() {
     const { itemBackgroundColor, itemTextColor, selectedItemBackgroundColor, selectedItemTextColor } =
@@ -21,7 +23,10 @@ class MediaRow extends LitElement {
     return html`
       <mwc-list-item hasMeta ?selected=${this.selected} ?activated=${this.selected} class="button" style="${cssVars}">
         <div class="row">${renderFavoritesItem(this.item)}</div>
-        <slot slot="meta"></slot>
+        <div class="meta-content" slot="meta">
+          <sonos-playing-bars .show=${this.playing}></sonos-playing-bars>
+          <slot></slot>
+        </div>
       </mwc-list-item>
     `;
   }
@@ -73,6 +78,12 @@ class MediaRow extends LitElement {
           font-size: 1.1rem;
           align-self: center;
           flex: 1;
+        }
+
+        .meta-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
         }
       `,
       mediaItemTitleStyle,

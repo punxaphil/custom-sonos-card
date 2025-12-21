@@ -1,10 +1,10 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { when } from 'lit/directives/when.js';
 import Store from '../model/store';
 import { dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
 import { SESSION_STORAGE_PLAYER_ID } from '../constants';
 import { MediaPlayer } from '../model/media-player';
+import './playing-bars';
 
 class Group extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -41,16 +41,7 @@ class Group extends LitElement {
           </div>
         </div>
 
-        ${when(
-          this.player.isPlaying(),
-          () => html`
-            <div class="bars" slot="meta">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          `,
-        )}
+        <sonos-playing-bars slot="meta" .show=${this.player.isPlaying()}></sonos-playing-bars>
       </mwc-list-item>
     `;
   }
@@ -91,17 +82,6 @@ class Group extends LitElement {
 
   static get styles() {
     return css`
-      @keyframes sound {
-        0% {
-          opacity: 0.35;
-          height: 0.15rem;
-        }
-        100% {
-          opacity: 1;
-          height: 1rem;
-        }
-      }
-
       mwc-list-item {
         height: fit-content;
         margin: 1rem;
@@ -165,37 +145,6 @@ class Group extends LitElement {
       }
       .compact div {
         margin: 0.1rem;
-      }
-
-      .bars {
-        width: 0.55rem;
-        position: relative;
-        margin-left: 1rem;
-      }
-
-      .bars > div {
-        background: var(--secondary-text-color);
-        bottom: 0.05rem;
-        height: 0.15rem;
-        position: absolute;
-        width: 0.15rem;
-        animation: sound 0ms -800ms linear infinite alternate;
-        display: block;
-      }
-
-      .bars > div:first-child {
-        left: 0.05rem;
-        animation-duration: 474ms;
-      }
-
-      .bars > div:nth-child(2) {
-        left: 0.25rem;
-        animation-duration: 433ms;
-      }
-
-      .bars > div:last-child {
-        left: 0.45rem;
-        animation-duration: 407ms;
       }
     `;
   }

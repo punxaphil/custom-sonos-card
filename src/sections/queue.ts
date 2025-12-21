@@ -45,11 +45,14 @@ export class Queue extends LitElement {
           ${until(
             this.store.hassService.getQueue(this.store.activePlayer).then((queue) =>
               queue.map((item, index) => {
+                const isSelected = selected !== undefined && selected === index;
+                const isPlaying = isSelected && this.activePlayer.isPlaying();
                 return html`
                   <sonos-media-row
                     @click=${() => this.onMediaItemSelected(index)}
                     .item=${item}
-                    .selected=${selected !== undefined && selected === index}
+                    .selected=${isSelected}
+                    .playing=${isPlaying}
                     .store=${this.store}
                     ><ha-icon-button
                       hide=${this.editMode && nothing}
