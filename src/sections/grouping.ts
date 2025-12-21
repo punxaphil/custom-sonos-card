@@ -88,8 +88,12 @@ export class Grouping extends LitElement {
           this.groupingConfig.skipApplyButton ||
           nothing}
         >
-          <ha-control-button class="apply" @click=${this.applyGrouping}> Apply</ha-control-button>
-          <ha-control-button @click=${this.cancelGrouping}> Cancel</ha-control-button>
+          <ha-control-button class="apply" @click=${this.applyGrouping}>
+            ${this.store.hass.localize('ui.common.apply') || 'Apply'}
+          </ha-control-button>
+          <ha-control-button @click=${this.cancelGrouping}>
+            ${this.store.hass.localize('ui.common.cancel') || 'Cancel'}
+          </ha-control-button>
         </ha-control-button-group>
       </div>
     `;

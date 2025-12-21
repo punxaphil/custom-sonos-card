@@ -13,11 +13,12 @@ class Source extends LitElement {
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
 
+    const sourceLabel = this.store.hass.localize('ui.card.media_player.source') || 'Source';
     return html`
       <div>
-        <span> Source </span>
+        <span>${sourceLabel}</span>
         <ha-select
-          .label="Source"
+          .label=${sourceLabel}
           .value=${this.activePlayer.attributes.source}
           @selected=${this.setSource}
           naturalMenuWidth
