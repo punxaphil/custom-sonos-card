@@ -37,10 +37,6 @@
 
 # Deployment
 To deploy and test changes locally on the Home Assistant instance:
-1. Run `npm run build && bash ./.local-deploy.sh` to build and copy the files to the HA server
-2. Navigate to `${HA_URL}/config/lovelace/resources` (HA_URL is defined in `.env`)
-3. If login is required, use credentials from `.env` (HA_USER and HA_PASSWORD) and check "Keep me logged in"
-4. Find the row with `custom-sonos-card` and click on it
-5. In the URL field, increment the `hacstag` number by 1 (e.g., `hacstag=1093` → `hacstag=1094`)
-6. Click the "Update" button
-7. Navigate to `${HA_URL}${HA_TEST_PAGE}` to verify changes
+1. Run `./deploy.sh` to build, copy files to HA, and auto-increment the hacstag
+2. On first run, you'll be prompted to create a long-lived access token in HA (Profile → Long-Lived Access Tokens)
+3. Navigate to `${HA_URL}${HA_TEST_PAGE}` to verify changes (HA_URL and HA_TEST_PAGE are defined in `.env`)

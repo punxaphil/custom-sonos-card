@@ -3,8 +3,6 @@
     "target": "es2017",
     "module": "esnext",
     "moduleResolution": "node",
-    "include": ["./src/**/*","./test/**/*"],
-
     "lib": [
       "es2021",
       "dom",
@@ -19,6 +17,7 @@
     "skipLibCheck": false,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "noUnusedLocals": true,
-  }
+    "noUnusedLocals": true
+  },
+  "include": ["./src/**/*", "./test/**/*", "./deploy.ts"]
 }

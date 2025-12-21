@@ -7,3 +7,4 @@ lcov-report/
 .local-deploy.sh
 .env
 .playwright-mcp
+.ha_token
