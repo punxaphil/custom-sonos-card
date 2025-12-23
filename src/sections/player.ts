@@ -14,10 +14,12 @@ import { MediaPlayer } from '../model/media-player';
 export class Player extends LitElement {
   @property({ attribute: false }) store!: Store;
   @state() private resolvedImageUrl?: string;
+  @state() private imageLoaded = false;
   private config!: CardConfig;
   private playerConfig!: PlayerConfig;
   private activePlayer!: MediaPlayer;
   private lastTemplateUrl?: string;
+  private lastCheckedImageUrl?: string;
 
   render() {
     this.config = this.store.config;
@@ -25,6 +27,7 @@ export class Player extends LitElement {
     this.activePlayer = this.store.activePlayer;
 
     this.resolveTemplateImageUrlIfNeeded();
+    this.preloadImageIfNeeded();
     const blurAmount = this.playerConfig.artworkAsBackgroundBlur ?? 0;
     const artworkAsBackground = this.playerConfig.artworkAsBackground || blurAmount > 0;
     const backgroundOpacity = this.playerConfig.controlsAndHeaderBackgroundOpacity ?? 0.9;
@@ -64,31 +67,51 @@ export class Player extends LitElement {
   }
 
   private getBackgroundImageUrl() {
-    const fallbackImage =
-      this.playerConfig.fallbackArtwork ??
-      (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
-    const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
-    if (image?.entityImage) {
-      return `url(${image.entityImage}), ${fallbackBackgroundUrl}`;
-    } else {
-      return fallbackBackgroundUrl;
+    if (image?.entityImage && this.imageLoaded) {
+      return `url(${image.entityImage})`;
     }
+    return `url(${this.getFallbackImage()})`;
+  }
+
+  private getFallbackImage() {
+    return (
+      this.playerConfig.fallbackArtwork ??
+      (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE)
+    );
   }
 
   private getBackgroundImage() {
-    const fallbackImage =
-      this.playerConfig.fallbackArtwork ??
-      (this.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
-    const fallbackBackgroundUrl = `url(${fallbackImage})`;
     const image = this.getArtworkImage();
-    if (image) {
-      return `background-image: url(${image.entityImage}), ${fallbackBackgroundUrl}${
-        image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''
-      }`;
-    } else {
-      return `background-image: ${fallbackBackgroundUrl}`;
+    if (image?.entityImage && this.imageLoaded) {
+      return `background-image: url(${image.entityImage})${image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : ''}`;
     }
+    return `background-image: url(${this.getFallbackImage()})`;
+  }
+
+  private preloadImageIfNeeded() {
+    const image = this.getArtworkImage();
+    const imageUrl = image?.entityImage;
+    if (imageUrl === this.lastCheckedImageUrl) return;
+
+    this.lastCheckedImageUrl = imageUrl;
+    if (!imageUrl) {
+      this.imageLoaded = false;
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      if (this.lastCheckedImageUrl === imageUrl) {
+        this.imageLoaded = true;
+      }
+    };
+    img.onerror = () => {
+      if (this.lastCheckedImageUrl === imageUrl) {
+        this.imageLoaded = false;
+      }
+    };
+    img.src = imageUrl;
   }
 
   private getMatchingOverride(entityImage?: string) {
