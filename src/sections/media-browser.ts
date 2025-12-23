@@ -3,10 +3,11 @@ import { property, state } from 'lit/decorators.js';
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
+  mdiContentSave,
+  mdiContentSaveCheck,
   mdiDotsVertical,
   mdiGrid,
   mdiHome,
-  mdiHomeImportOutline,
   mdiListBoxOutline,
 } from '@mdi/js';
 import Store from '../model/store';
@@ -123,8 +124,9 @@ export class MediaBrowser extends LitElement {
         ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
         : html`<div class="spacer"></div>`}
         <span class="title">${this.currentTitle || 'Media Browser'}</span>
+        <ha-icon-button .path=${mdiHome} @click=${this.goToRoot} title="Go to root"></ha-icon-button>
         <ha-icon-button
-          .path=${this.isCurrentPathStart ? mdiHome : mdiHomeImportOutline}
+          .path=${this.isCurrentPathStart ? mdiContentSaveCheck : mdiContentSave}
           @click=${this.toggleStartPath}
           title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
         ></ha-icon-button>
@@ -176,6 +178,13 @@ export class MediaBrowser extends LitElement {
       this.saveCurrentPath();
       this.updateIsCurrentPathStart();
     }
+  };
+
+  private goToRoot = () => {
+    this.navigateIds = [{ media_content_id: undefined, media_content_type: undefined }];
+    this.currentTitle = '';
+    this.saveCurrentPath();
+    this.updateIsCurrentPathStart();
   };
 
   private onMediaPicked = async (event: CustomEvent) => {
