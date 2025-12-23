@@ -9,7 +9,6 @@ declare global {
 }
 
 export enum Section {
-  FAVORITES = 'favorites',
   GROUPS = 'groups',
   MEDIA_BROWSER = 'media-browser',
   PLAYER = 'player',
@@ -30,7 +29,6 @@ export interface GroupingButtonIcons {
 
 interface SectionButtonIcons {
   player?: string;
-  favorites?: string;
   groups?: string;
   grouping?: string;
   mediaBrowser?: string;

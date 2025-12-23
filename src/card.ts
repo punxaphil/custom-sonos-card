@@ -14,7 +14,7 @@ import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { cardDoesNotContainAllSections, getHeight, getWidth, isSonosCard } from './utils/utils';
 
-const { GROUPING, GROUPS, FAVORITES, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 const TITLE_HEIGHT = 2;
 const FOOTER_HEIGHT = 5;
 
@@ -48,64 +48,54 @@ export class Card extends LitElement {
         </div>
         ${title ? html`<div class="title">${title}</div>` : html``}
         <div class="content" style=${this.contentStyle(contentHeight)}>
-          ${
-            this.activePlayerId
-              ? choose(this.section, [
-                  [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
-                  [
-                    GROUPS,
-                    () =>
-                      html` <sonos-groups
+          ${this.activePlayerId
+        ? choose(this.section, [
+          [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
+          [
+            GROUPS,
+            () =>
+              html` <sonos-groups
                         .store=${this.store}
                         @active-player=${this.activePlayerListener}
                       ></sonos-groups>`,
-                  ],
-                  [
-                    GROUPING,
-                    () =>
-                      html`<sonos-grouping
+          ],
+          [
+            GROUPING,
+            () =>
+              html`<sonos-grouping
                         .store=${this.store}
                         @active-player=${this.activePlayerListener}
                       ></sonos-grouping>`,
-                  ],
-                  [
-                    FAVORITES,
-                    () => html`
-                      <sonos-favorites
-                        .store=${this.store}
-                        @item-selected=${this.onMediaItemSelected}
-                      ></sonos-favorites>
-                    `,
-                  ],
-                  [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
-                  [
-                    MEDIA_BROWSER,
-                    () =>
-                      html`<sonos-media-browser
+          ],
+          [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+          [
+            MEDIA_BROWSER,
+            () =>
+              html`<sonos-media-browser
                         .store=${this.store}
                         @item-selected=${this.onMediaItemSelected}
                       ></sonos-media-browser>`,
-                  ],
-                  [
-                    QUEUE,
-                    () =>
-                      html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
-                  ],
-                ])
-              : html`<div class="no-players">${noPlayersText}</div>`
-          }
+          ],
+          [
+            QUEUE,
+            () =>
+              html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
+          ],
+        ])
+        : html`<div class="no-players">${noPlayersText}</div>`
+      }
         </div>
         ${when(
-          showFooter,
-          () =>
-            html`<sonos-footer
+        showFooter,
+        () =>
+          html`<sonos-footer
               style=${this.footerStyle(footerHeight)}
               .config=${this.config}
               .section=${this.section}
               @show-section=${this.showSectionListener}
             >
             </sonos-footer>`,
-        )}
+      )}
       </ha-card>
     `;
   }
@@ -241,8 +231,8 @@ export class Card extends LitElement {
     } else if (sections) {
       this.section = sections.includes(PLAYER)
         ? PLAYER
-        : sections.includes(FAVORITES)
-          ? FAVORITES
+        : sections.includes(MEDIA_BROWSER)
+          ? MEDIA_BROWSER
           : sections.includes(GROUPS)
             ? GROUPS
             : sections.includes(GROUPING)

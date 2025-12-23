@@ -4,7 +4,7 @@ import { CardConfig, Section } from '../types';
 import './section-button';
 import { isSonosCard } from '../utils/utils';
 
-const { GROUPING, GROUPS, FAVORITES, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
+const { GROUPING, GROUPS, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 
 class Footer extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
@@ -14,8 +14,7 @@ class Footer extends LitElement {
     const icons = this.config.sectionButtonIcons;
     let sections: [Section, string][] = [
       [PLAYER, icons?.player ?? 'mdi:home'],
-      [FAVORITES, icons?.favorites ?? 'mdi:star-outline'],
-      [MEDIA_BROWSER, icons?.mediaBrowser ?? 'mdi:folder-music'],
+      [MEDIA_BROWSER, icons?.mediaBrowser ?? 'mdi:star-outline'],
       [GROUPS, icons?.groups ?? 'mdi:speaker-multiple'],
       [GROUPING, icons?.grouping ?? 'mdi:checkbox-multiple-marked-circle-outline'],
       [QUEUE, icons?.queue ?? 'mdi:queue-first-in-last-out'],
@@ -27,7 +26,7 @@ class Footer extends LitElement {
     sections = sections.filter(([section]) => !this.config.sections || this.config.sections?.includes(section));
     return html`
       ${sections.map(
-        ([section, icon]) => html`
+      ([section, icon]) => html`
           <sonos-section-button
             .config=${this.config}
             .icon=${icon}
@@ -35,7 +34,7 @@ class Footer extends LitElement {
             .section=${section}
           ></sonos-section-button>
         `,
-      )}
+    )}
     `;
   }
 
