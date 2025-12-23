@@ -171,21 +171,49 @@ export class MediaBrowser extends LitElement {
           @click=${this.toggleStartPath}
           title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
         ></ha-icon-button>
+        ${this.renderLayoutMenu()}
       </div>
       ${this.renderFavoritesContent()}
     `;
   }
 
+  private renderLayoutMenu() {
+    return html`
+      <ha-button-menu fixed corner="BOTTOM_END" @action=${this.handleMenuAction}>
+        <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
+        <ha-list-item graphic="icon">
+          Auto
+          <ha-svg-icon
+            class=${this.layout === 'auto' ? 'selected' : ''}
+            slot="graphic"
+            .path=${mdiAlphaABoxOutline}
+          ></ha-svg-icon>
+        </ha-list-item>
+        <ha-list-item graphic="icon">
+          Grid
+          <ha-svg-icon class=${this.layout === 'grid' ? 'selected' : ''} slot="graphic" .path=${mdiGrid}></ha-svg-icon>
+        </ha-list-item>
+        <ha-list-item graphic="icon">
+          List
+          <ha-svg-icon
+            class=${this.layout === 'list' ? 'selected' : ''}
+            slot="graphic"
+            .path=${mdiListBoxOutline}
+          ></ha-svg-icon>
+        </ha-list-item>
+      </ha-button-menu>
+    `;
+  }
+
   private renderFavoritesContent() {
-    const config = this.store.config.favorites ?? {};
-    const itemsPerRow = config.itemsPerRow || 4;
+    const useGrid = this.layout !== 'list';
 
     return html`
       ${until(
       this.getFavorites()
         .then((items) => {
           if (items?.length) {
-            if (itemsPerRow > 1) {
+            if (useGrid) {
               return html`
                   <sonos-favorites-icons
                     .items=${items}
@@ -273,33 +301,7 @@ export class MediaBrowser extends LitElement {
           @click=${this.toggleStartPath}
           title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
         ></ha-icon-button>
-        <ha-button-menu fixed corner="BOTTOM_END" @action=${this.handleMenuAction}>
-          <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
-          <ha-list-item graphic="icon">
-            Auto
-            <ha-svg-icon
-              class=${this.layout === 'auto' ? 'selected' : ''}
-              slot="graphic"
-              .path=${mdiAlphaABoxOutline}
-            ></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            Grid
-            <ha-svg-icon
-              class=${this.layout === 'grid' ? 'selected' : ''}
-              slot="graphic"
-              .path=${mdiGrid}
-            ></ha-svg-icon>
-          </ha-list-item>
-          <ha-list-item graphic="icon">
-            List
-            <ha-svg-icon
-              class=${this.layout === 'list' ? 'selected' : ''}
-              slot="graphic"
-              .path=${mdiListBoxOutline}
-            ></ha-svg-icon>
-          </ha-list-item>
-        </ha-button-menu>
+        ${this.renderLayoutMenu()}
       </div>
       <sonos-ha-media-player-browse
         .hass=${this.store.hass}

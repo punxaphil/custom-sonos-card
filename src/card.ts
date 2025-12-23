@@ -48,54 +48,55 @@ export class Card extends LitElement {
         </div>
         ${title ? html`<div class="title">${title}</div>` : html``}
         <div class="content" style=${this.contentStyle(contentHeight)}>
-          ${this.activePlayerId
-        ? choose(this.section, [
-          [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
-          [
-            GROUPS,
-            () =>
-              html` <sonos-groups
+          ${
+            this.activePlayerId
+              ? choose(this.section, [
+                  [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
+                  [
+                    GROUPS,
+                    () =>
+                      html` <sonos-groups
                         .store=${this.store}
                         @active-player=${this.activePlayerListener}
                       ></sonos-groups>`,
-          ],
-          [
-            GROUPING,
-            () =>
-              html`<sonos-grouping
+                  ],
+                  [
+                    GROUPING,
+                    () =>
+                      html`<sonos-grouping
                         .store=${this.store}
                         @active-player=${this.activePlayerListener}
                       ></sonos-grouping>`,
-          ],
-          [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
-          [
-            MEDIA_BROWSER,
-            () =>
-              html`<sonos-media-browser
+                  ],
+                  [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+                  [
+                    MEDIA_BROWSER,
+                    () =>
+                      html`<sonos-media-browser
                         .store=${this.store}
                         @item-selected=${this.onMediaItemSelected}
                       ></sonos-media-browser>`,
-          ],
-          [
-            QUEUE,
-            () =>
-              html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
-          ],
-        ])
-        : html`<div class="no-players">${noPlayersText}</div>`
-      }
+                  ],
+                  [
+                    QUEUE,
+                    () =>
+                      html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
+                  ],
+                ])
+              : html`<div class="no-players">${noPlayersText}</div>`
+          }
         </div>
         ${when(
-        showFooter,
-        () =>
-          html`<sonos-footer
+          showFooter,
+          () =>
+            html`<sonos-footer
               style=${this.footerStyle(footerHeight)}
               .config=${this.config}
               .section=${this.section}
               @show-section=${this.showSectionListener}
             >
             </sonos-footer>`,
-      )}
+        )}
       </ha-card>
     `;
   }

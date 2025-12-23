@@ -26,7 +26,7 @@ class Footer extends LitElement {
     sections = sections.filter(([section]) => !this.config.sections || this.config.sections?.includes(section));
     return html`
       ${sections.map(
-      ([section, icon]) => html`
+        ([section, icon]) => html`
           <sonos-section-button
             .config=${this.config}
             .icon=${icon}
@@ -34,7 +34,7 @@ class Footer extends LitElement {
             .section=${section}
           ></sonos-section-button>
         `,
-    )}
+      )}
     `;
   }
 
