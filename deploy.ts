@@ -38,20 +38,16 @@ function loadEnv(): EnvConfig {
   return env;
 }
 
-function loadToken(): string | null {
-  const tokenPath = path.join(__dirname, '.ha_token');
-  if (fs.existsSync(tokenPath)) {
-    return fs.readFileSync(tokenPath, 'utf-8').trim();
-  }
-  return null;
+function loadToken(env: EnvConfig): string | null {
+  return env.HA_TOKEN?.trim() || null;
 }
 
 async function updateHacstag(): Promise<void> {
   const env = loadEnv();
-  const token = loadToken();
+  const token = loadToken(env);
 
   if (!token) {
-    console.error('No .ha_token file found. Run deploy.sh first to set up token.');
+    console.error('No HA_TOKEN found in .env file. Run deploy.sh first to set up token.');
     process.exit(1);
   }
 

@@ -5,6 +5,7 @@ set -e
 if [ ! -f .env ]; then
     echo "Error: .env file not found. Please create one with the following variables:"
     echo "  HA_URL=https://your-ha-instance.local"
+    echo "  HA_TOKEN=your-long-lived-access-token"
     echo "  HA_TEST_PAGE=/lovelace/test"
     echo "  HA_SSH_USER=root"
     echo "  HA_SSH_HOST=192.168.1.100"
@@ -34,18 +35,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 scp "$SCRIPT_DIR/dist/custom-sonos-card.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/custom-sonos-card/"
 scp "$SCRIPT_DIR/dist-maxi-media-player/maxi-media-player.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/maxi-media-player/"
 
-# Check for token
-TOKEN_FILE=".ha_token"
-if [ ! -f "$TOKEN_FILE" ]; then
-    echo -e "${YELLOW}No token found. Please create a long-lived access token in HA:${NC}"
+# Check for token in .env
+if [ -z "$HA_TOKEN" ]; then
+    echo -e "${YELLOW}No HA_TOKEN found in .env. Please create a long-lived access token in HA:${NC}"
     echo "1. Go to $HA_URL/profile"
     echo "2. Scroll to 'Long-Lived Access Tokens'"
     echo "3. Click 'Create Token' and name it 'deploy-script'"
     echo "4. Paste the token here:"
     read -r HA_TOKEN
-    echo "$HA_TOKEN" > "$TOKEN_FILE"
-    chmod 600 "$TOKEN_FILE"
-    echo -e "${GREEN}Token saved to $TOKEN_FILE${NC}"
+    echo "" >> .env
+    echo "HA_TOKEN=$HA_TOKEN" >> .env
+    export HA_TOKEN
+    echo -e "${GREEN}Token saved to .env${NC}"
 fi
 
 echo -e "${YELLOW}Updating HA resource hacstag...${NC}"
