@@ -11,6 +11,7 @@ export default defineConfig({
 
       output: {
         entryFileNames: 'custom-sonos-card.js',
+        inlineDynamicImports: true,
       },
     },
   },

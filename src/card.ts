@@ -14,7 +14,7 @@ import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { cardDoesNotContainAllSections, getHeight, getWidth, isSonosCard } from './utils/utils';
 
-const { GROUPING, GROUPS, FAVORITES, PLAYER, VOLUMES, QUEUE } = Section;
+const { GROUPING, GROUPS, FAVORITES, MEDIA_BROWSER, PLAYER, VOLUMES, QUEUE } = Section;
 const TITLE_HEIGHT = 2;
 const FOOTER_HEIGHT = 5;
 
@@ -78,6 +78,14 @@ export class Card extends LitElement {
                     `,
                   ],
                   [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
+                  [
+                    MEDIA_BROWSER,
+                    () =>
+                      html`<sonos-media-browser
+                        .store=${this.store}
+                        @item-selected=${this.onMediaItemSelected}
+                      ></sonos-media-browser>`,
+                  ],
                   [
                     QUEUE,
                     () =>
