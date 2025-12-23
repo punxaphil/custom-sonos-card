@@ -1079,15 +1079,15 @@ export class HaMediaPlayerBrowse extends LitElement {
           position: absolute;
           transition: color 0.5s;
           border-radius: var(--ha-border-radius-circle);
-          top: calc(50% - 40px);
-          right: calc(50% - 35px);
+          top: calc(50% - 20px);
+          right: calc(50% - 20px);
           opacity: 0;
           transition: opacity 0.1s ease-out;
         }
 
         .child .play:not(.can_expand) {
-          --mdc-icon-button-size: 70px;
-          --mdc-icon-size: 48px;
+          --mdc-icon-button-size: 40px;
+          --mdc-icon-size: 24px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
         }

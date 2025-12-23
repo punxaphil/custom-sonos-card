@@ -88,7 +88,7 @@ export interface FavoritesConfig {
   customFavorites?: CustomFavorites;
   customThumbnails?: CustomFavoriteThumbnails;
   customThumbnailsIfMissing?: CustomFavoriteThumbnails;
-  hideBrowseMediaButton?: boolean;
+  showBrowseMediaButton?: boolean;
   hideHeader?: boolean;
   hideTitleForThumbnailIcons?: boolean;
   iconBorder?: string;
@@ -102,6 +102,10 @@ export interface FavoritesConfig {
   title?: string;
   exclude?: string[];
   topItems?: string[];
+}
+
+export interface MediaBrowserConfig {
+  title?: string;
 }
 
 export interface GroupsConfig {
@@ -181,6 +185,7 @@ export interface CardConfig extends LovelaceCardConfig {
   grouping?: GroupingConfig;
   volumes?: VolumesConfig;
   queue?: QueueConfig;
+  mediaBrowser?: MediaBrowserConfig;
 }
 
 export interface MediaArtworkOverride {

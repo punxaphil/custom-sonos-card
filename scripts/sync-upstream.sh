@@ -78,6 +78,15 @@ sed -i '' \
   -e "s/gap: '16px'/gap: '8px'/g" \
   "$UPSTREAM_DIR/ha-media-player-browse.ts"
 
+# Reduce play button size for smaller grid items
+echo "Reducing play button size..."
+sed -i '' \
+  -e 's/--mdc-icon-button-size: 70px/--mdc-icon-button-size: 40px/g' \
+  -e 's/--mdc-icon-size: 48px/--mdc-icon-size: 24px/g' \
+  -e 's/top: calc(50% - 40px)/top: calc(50% - 20px)/g' \
+  -e 's/right: calc(50% - 35px)/right: calc(50% - 20px)/g' \
+  "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
 # Save version info
 echo "$RELEASE_TAG" > "$VERSION_FILE"
 echo "Synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> "$VERSION_FILE"

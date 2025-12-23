@@ -14,7 +14,7 @@ class FavoritesHeader extends LitElement {
     return html`
       <div class="title">${favoritesConfig.title ?? 'All Favorites'}</div>
       <ha-icon-button
-        hide=${favoritesConfig.hideBrowseMediaButton || nothing}
+        hide=${!favoritesConfig.showBrowseMediaButton || nothing}
         @click=${() => this.store.mediaBrowseService.showBrowseMedia(this.store.activePlayer, this)}
         .path=${mdiPlayBoxMultiple}
       ></ha-icon-button>

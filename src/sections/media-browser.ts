@@ -1,11 +1,21 @@
-import { css, html, LitElement, nothing } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { mdiArrowLeft } from '@mdi/js';
+import {
+  mdiAlphaABoxOutline,
+  mdiArrowLeft,
+  mdiDotsVertical,
+  mdiGrid,
+  mdiHome,
+  mdiHomeImportOutline,
+  mdiListBoxOutline,
+} from '@mdi/js';
 import Store from '../model/store';
 import '../upstream/ha-media-player-browse';
 import { MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
 import { MediaPlayerItem } from '../types';
+
+type LayoutType = 'auto' | 'grid' | 'list';
 
 interface NavigateId {
   media_content_id?: string;
@@ -13,28 +23,139 @@ interface NavigateId {
   title?: string;
 }
 
+const START_PATH_KEY = 'sonos-card-media-browser-start';
+const LAYOUT_KEY = 'sonos-card-media-browser-layout';
+
+// Module-level state to persist across section switches (resets on page reload)
+let currentPath: NavigateId[] | null = null;
+let currentPathTitle = '';
+
 export class MediaBrowser extends LitElement {
   @property({ attribute: false }) store!: Store;
-  @state() private navigateIds: NavigateId[] = [{ media_content_id: undefined, media_content_type: undefined }];
+  @state() private navigateIds: NavigateId[] = [];
   @state() private currentTitle = '';
+  @state() private isCurrentPathStart = false;
+  @state() private layout: LayoutType = 'auto';
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.initializeNavigateIds();
+    this.loadLayout();
+  }
+
+  private loadLayout() {
+    const savedLayout = localStorage.getItem(LAYOUT_KEY) as LayoutType | null;
+    if (savedLayout && ['auto', 'grid', 'list'].includes(savedLayout)) {
+      this.layout = savedLayout;
+    }
+  }
+
+  private setLayout(layout: LayoutType) {
+    this.layout = layout;
+    localStorage.setItem(LAYOUT_KEY, layout);
+  }
+
+  private handleMenuAction = (ev: CustomEvent<{ index: number }>) => {
+    const layouts: LayoutType[] = ['auto', 'grid', 'list'];
+    this.setLayout(layouts[ev.detail.index]);
+  };
+
+  private getStartPath(): NavigateId[] | null {
+    const startPath = localStorage.getItem(START_PATH_KEY);
+    if (startPath) {
+      try {
+        return JSON.parse(startPath);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private initializeNavigateIds() {
+    // If we have a cached path from section switching, use it
+    if (currentPath) {
+      this.navigateIds = currentPath;
+      this.currentTitle = currentPathTitle;
+      this.updateIsCurrentPathStart();
+      return;
+    }
+
+    // On page reload: use saved start path if available, otherwise root
+    const startPath = this.getStartPath();
+    if (startPath?.length) {
+      this.navigateIds = startPath;
+      const lastItem = this.navigateIds[this.navigateIds.length - 1];
+      this.currentTitle = lastItem?.title || '';
+    } else {
+      this.navigateIds = [{ media_content_id: undefined, media_content_type: undefined }];
+    }
+    this.updateIsCurrentPathStart();
+  }
+
+  private saveCurrentPath() {
+    currentPath = this.navigateIds;
+    currentPathTitle = this.currentTitle;
+  }
+
+  private updateIsCurrentPathStart() {
+    const startPath = this.getStartPath();
+    this.isCurrentPathStart = JSON.stringify(this.navigateIds) === JSON.stringify(startPath);
+  }
+
+  private setAsStartPath = () => {
+    localStorage.setItem(START_PATH_KEY, JSON.stringify(this.navigateIds));
+    this.isCurrentPathStart = true;
+  };
 
   render() {
     const activePlayer = this.store.activePlayer;
     const canGoBack = this.navigateIds.length > 1;
 
     return html`
-      ${canGoBack
-        ? html`
-            <div class="header">
-              <ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>
-              <span class="title">${this.currentTitle}</span>
-            </div>
-          `
-        : nothing}
+      <div class="header">
+        ${canGoBack
+        ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
+        : html`<div class="spacer"></div>`}
+        <span class="title">${this.currentTitle || 'Media Browser'}</span>
+        <ha-icon-button
+          .path=${this.isCurrentPathStart ? mdiHome : mdiHomeImportOutline}
+          @click=${this.setAsStartPath}
+          title="Set as start page"
+        ></ha-icon-button>
+        <ha-button-menu fixed corner="BOTTOM_END" @action=${this.handleMenuAction}>
+          <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
+          <ha-list-item graphic="icon">
+            Auto
+            <ha-svg-icon
+              class=${this.layout === 'auto' ? 'selected' : ''}
+              slot="graphic"
+              .path=${mdiAlphaABoxOutline}
+            ></ha-svg-icon>
+          </ha-list-item>
+          <ha-list-item graphic="icon">
+            Grid
+            <ha-svg-icon
+              class=${this.layout === 'grid' ? 'selected' : ''}
+              slot="graphic"
+              .path=${mdiGrid}
+            ></ha-svg-icon>
+          </ha-list-item>
+          <ha-list-item graphic="icon">
+            List
+            <ha-svg-icon
+              class=${this.layout === 'list' ? 'selected' : ''}
+              slot="graphic"
+              .path=${mdiListBoxOutline}
+            ></ha-svg-icon>
+          </ha-list-item>
+        </ha-button-menu>
+      </div>
       <sonos-ha-media-player-browse
         .hass=${this.store.hass}
         .entityId=${activePlayer.id}
         .navigateIds=${this.navigateIds}
+        .preferredLayout=${this.layout}
         .action=${'play'}
         @media-picked=${this.onMediaPicked}
         @media-browsed=${this.onMediaBrowsed}
@@ -47,6 +168,8 @@ export class MediaBrowser extends LitElement {
       this.navigateIds = this.navigateIds.slice(0, -1);
       const lastItem = this.navigateIds[this.navigateIds.length - 1];
       this.currentTitle = lastItem?.title || '';
+      this.saveCurrentPath();
+      this.updateIsCurrentPathStart();
     }
   };
 
@@ -60,6 +183,8 @@ export class MediaBrowser extends LitElement {
     this.navigateIds = event.detail.ids;
     const lastItem = this.navigateIds[this.navigateIds.length - 1];
     this.currentTitle = lastItem?.title || event.detail.current?.title || '';
+    this.saveCurrentPath();
+    this.updateIsCurrentPathStart();
   };
 
   static get styles() {
@@ -73,17 +198,24 @@ export class MediaBrowser extends LitElement {
       .header {
         display: flex;
         align-items: center;
-        padding: 8px;
+        padding: 4px 8px;
         border-bottom: 1px solid var(--divider-color);
         background: var(--card-background-color);
       }
       .title {
+        flex: 1;
         font-weight: 500;
         font-size: 1.1em;
-        margin-left: 8px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        text-align: center;
+      }
+      .spacer {
+        width: 48px;
+      }
+      ha-svg-icon.selected {
+        color: var(--primary-color);
       }
       sonos-ha-media-player-browse {
         --mdc-icon-size: 24px;
