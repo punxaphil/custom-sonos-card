@@ -103,9 +103,14 @@ export class MediaBrowser extends LitElement {
     this.isCurrentPathStart = JSON.stringify(this.navigateIds) === JSON.stringify(startPath);
   }
 
-  private setAsStartPath = () => {
-    localStorage.setItem(START_PATH_KEY, JSON.stringify(this.navigateIds));
-    this.isCurrentPathStart = true;
+  private toggleStartPath = () => {
+    if (this.isCurrentPathStart) {
+      localStorage.removeItem(START_PATH_KEY);
+      this.isCurrentPathStart = false;
+    } else {
+      localStorage.setItem(START_PATH_KEY, JSON.stringify(this.navigateIds));
+      this.isCurrentPathStart = true;
+    }
   };
 
   render() {
@@ -120,8 +125,8 @@ export class MediaBrowser extends LitElement {
         <span class="title">${this.currentTitle || 'Media Browser'}</span>
         <ha-icon-button
           .path=${this.isCurrentPathStart ? mdiHome : mdiHomeImportOutline}
-          @click=${this.setAsStartPath}
-          title="Set as start page"
+          @click=${this.toggleStartPath}
+          title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
         ></ha-icon-button>
         <ha-button-menu fixed corner="BOTTOM_END" @action=${this.handleMenuAction}>
           <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
@@ -181,8 +186,9 @@ export class MediaBrowser extends LitElement {
 
   private onMediaBrowsed = (event: CustomEvent) => {
     this.navigateIds = event.detail.ids;
+    const isRoot = this.navigateIds.length === 1 && !this.navigateIds[0].media_content_id;
     const lastItem = this.navigateIds[this.navigateIds.length - 1];
-    this.currentTitle = lastItem?.title || event.detail.current?.title || '';
+    this.currentTitle = isRoot ? '' : lastItem?.title || event.detail.current?.title || '';
     this.saveCurrentPath();
     this.updateIsCurrentPathStart();
   };
