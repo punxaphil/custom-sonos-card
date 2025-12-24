@@ -3,9 +3,9 @@ import { property, state } from 'lit/decorators.js';
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
-  mdiContentSave,
-  mdiContentSaveCheck,
   mdiDotsVertical,
+  mdiFolderStar,
+  mdiFolderStarOutline,
   mdiGrid,
   mdiListBoxOutline,
   mdiPlayBoxMultiple,
@@ -167,7 +167,8 @@ export class MediaBrowser extends LitElement {
         <span class="title">${title}</span>
         <ha-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></ha-icon-button>
         <ha-icon-button
-          .path=${this.isCurrentPathStart ? mdiContentSaveCheck : mdiContentSave}
+          class=${this.isCurrentPathStart ? 'startpath-active' : ''}
+          .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
           @click=${this.toggleStartPath}
           title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
         ></ha-icon-button>
@@ -297,7 +298,8 @@ export class MediaBrowser extends LitElement {
         <span class="title">${this.currentTitle || 'Media Browser'}</span>
         <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
         <ha-icon-button
-          .path=${this.isCurrentPathStart ? mdiContentSaveCheck : mdiContentSave}
+          class=${this.isCurrentPathStart ? 'startpath-active' : ''}
+          .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
           @click=${this.toggleStartPath}
           title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
         ></ha-icon-button>
@@ -373,6 +375,9 @@ export class MediaBrowser extends LitElement {
       }
       ha-svg-icon.selected {
         color: var(--primary-color);
+      }
+      ha-icon-button.startpath-active {
+        color: var(--accent-color);
       }
       sonos-ha-media-player-browse,
       sonos-favorites-icons,

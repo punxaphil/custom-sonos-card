@@ -10,7 +10,7 @@ declare global {
 
 export enum Section {
   GROUPS = 'groups',
-  MEDIA_BROWSER = 'media-browser',
+  MEDIA_BROWSER = 'media browser',
   PLAYER = 'player',
   GROUPING = 'grouping',
   VOLUMES = 'volumes',
