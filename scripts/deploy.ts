@@ -23,7 +23,7 @@ interface Resource {
 }
 
 function loadEnv(): EnvConfig {
-  const envPath = path.join(__dirname, '.env');
+  const envPath = path.join(__dirname, '..', '.env');
   const env: EnvConfig = {};
   if (fs.existsSync(envPath)) {
     fs.readFileSync(envPath, 'utf-8')

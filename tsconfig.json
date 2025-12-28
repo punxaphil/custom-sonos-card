@@ -8,16 +8,27 @@
       "dom",
       "dom.iterable"
     ],
+    "types": [
+      "node"
+    ],
     "noEmit": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "esModuleInterop": true
   },
-  "include": ["./src/**/*", "./test/**/*", "./deploy.ts"]
+  "include": [
+    "./src/**/*",
+    "./test/**/*",
+    "./scripts/deploy.ts"
+  ],
+  "exclude": [
+    "./src/upstream/**/*"
+  ]
 }

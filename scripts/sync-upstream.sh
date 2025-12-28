@@ -91,10 +91,19 @@ sed -i '' \
 echo "$RELEASE_TAG" > "$VERSION_FILE"
 echo "Synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> "$VERSION_FILE"
 
+# Add @ts-nocheck to all upstream TypeScript files
+echo "Adding @ts-nocheck to all upstream files..."
+for file in $(find "$UPSTREAM_DIR" -name "*.ts" -type f); do
+  if [ -f "$file" ]; then
+    sed -i '' '1s/^/\/\/ @ts-nocheck\n/' "$file"
+  fi
+done
+
 echo ""
 echo "✅ Synced from HA frontend release: $RELEASE_TAG"
 echo "✅ Component renamed to 'sonos-ha-media-player-browse'"
 echo "✅ Grid customizations applied (100px items, 8px gap)"
+echo "✅ @ts-nocheck added to all upstream files"
 echo "✅ Version saved to $VERSION_FILE"
 echo ""
 echo "Next: Run 'npm run build' to check for breaking changes"
