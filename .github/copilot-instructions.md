@@ -40,3 +40,4 @@ To deploy and test changes locally on the Home Assistant instance:
 1. Run `./deploy.sh` to build, copy files to HA, and auto-increment the hacstag
 2. On first run, you'll be prompted to create a long-lived access token in HA (Profile → Long-Lived Access Tokens)
 3. Navigate to `${HA_URL}${HA_TEST_PAGE}` to verify changes (HA_URL and HA_TEST_PAGE are defined in `.env`)
+4. If releasing, use `npx bumpp`
