@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { HomeAssistant } from 'custom-card-helpers';
 
 export interface BrandsUrlOptions {

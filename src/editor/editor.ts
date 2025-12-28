@@ -1,6 +1,7 @@
-import { css, html, nothing, TemplateResult } from 'lit';
+import { css, html, TemplateResult } from 'lit';
 import { state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
+import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import { Section } from '../types';
 import { BaseEditor } from './base-editor';
 import { GROUPS_SCHEMA } from './schema/groups-schema';
@@ -10,14 +11,14 @@ import { QUEUE_SCHEMA } from './schema/queue-schema';
 import { isSonosCard } from '../utils/utils';
 import './tabs/common-tab';
 import './tabs/player-tab';
-import './tabs/favorites-tab';
+import './tabs/media-browser-tab';
 import './tabs/section-tab';
 import './form';
 
 enum Tab {
   COMMON = 'Common',
   PLAYER = 'Player',
-  FAVORITES = 'Favorites',
+  MEDIA_BROWSER = 'Media Browser',
   GROUPS = 'Groups',
   GROUPING = 'Grouping',
   VOLUMES = 'Volumes',
@@ -27,25 +28,76 @@ enum Tab {
 class CardEditor extends BaseEditor {
   @state() private activeTab = Tab.COMMON;
 
+  private get tabs() {
+    return Object.values(Tab).filter((tab) => tab !== Tab.QUEUE || isSonosCard(this.config));
+  }
+
+  private get activeTabIndex() {
+    return this.tabs.indexOf(this.activeTab);
+  }
+
+  private scrollToActiveTab() {
+    requestAnimationFrame(() => {
+      const container = this.shadowRoot?.querySelector('.tabs-list');
+      const activeButton = this.shadowRoot?.querySelector('.tab-button.active') as HTMLElement;
+      if (container && activeButton) {
+        activeButton.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    });
+  }
+
+  private navigatePrev = () => {
+    const idx = this.activeTabIndex;
+    if (idx > 0) {
+      this.activeTab = this.tabs[idx - 1];
+      this.scrollToActiveTab();
+    }
+  };
+
+  private navigateNext = () => {
+    const idx = this.activeTabIndex;
+    if (idx < this.tabs.length - 1) {
+      this.activeTab = this.tabs[idx + 1];
+      this.scrollToActiveTab();
+    }
+  };
+
   protected render(): TemplateResult {
     if (!this.config.sections || this.config.sections.length === 0) {
-      this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.FAVORITES];
+      this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.MEDIA_BROWSER];
       if (isSonosCard(this.config)) {
         this.config.sections.push(Section.QUEUE);
       }
     }
-    const tabs = Object.values(Tab).filter((tab) => tab !== Tab.QUEUE || isSonosCard(this.config));
+    const tabs = this.tabs;
+    const activeIndex = this.activeTabIndex;
+    const showLeftArrow = activeIndex > 0;
+    const showRightArrow = activeIndex < tabs.length - 1;
+
     return html`
       <div class="tabs-container">
-        <ha-control-button-group>
+        <ha-icon-button
+          class="nav-arrow ${showLeftArrow ? '' : 'hidden'}"
+          .path=${mdiChevronLeft}
+          @click=${this.navigatePrev}
+        ></ha-icon-button>
+        <div class="tabs-list">
           ${tabs.map(
             (tab) => html`
-              <ha-control-button selected=${this.activeTab === tab || nothing} @click=${() => (this.activeTab = tab)}>
+              <button
+                class="tab-button ${this.activeTab === tab ? 'active' : ''}"
+                @click=${() => (this.activeTab = tab)}
+              >
                 ${tab}
-              </ha-control-button>
+              </button>
             `,
           )}
-        </ha-control-button-group>
+        </div>
+        <ha-icon-button
+          class="nav-arrow ${showRightArrow ? '' : 'hidden'}"
+          .path=${mdiChevronRight}
+          @click=${this.navigateNext}
+        ></ha-icon-button>
       </div>
       ${this.renderTabContent()}
     `;
@@ -59,7 +111,10 @@ class CardEditor extends BaseEditor {
     return choose(this.activeTab, [
       [Tab.COMMON, () => html`<sonos-card-common-tab .config=${c} .hass=${h}></sonos-card-common-tab>`],
       [Tab.PLAYER, () => html`<sonos-card-player-tab .config=${c} .hass=${h}></sonos-card-player-tab>`],
-      [Tab.FAVORITES, () => html`<sonos-card-favorites-tab .config=${c} .hass=${h}></sonos-card-favorites-tab>`],
+      [
+        Tab.MEDIA_BROWSER,
+        () => html`<sonos-card-media-browser-tab .config=${c} .hass=${h}></sonos-card-media-browser-tab>`,
+      ],
       [Tab.GROUPS, () => t(GROUPS_SCHEMA, 'groups')],
       [Tab.GROUPING, () => t(GROUPING_SCHEMA, 'grouping')],
       [Tab.VOLUMES, () => t(VOLUMES_SCHEMA, 'volumes')],
@@ -69,31 +124,62 @@ class CardEditor extends BaseEditor {
 
   static get styles() {
     return css`
+      :host {
+        display: block;
+      }
       .tabs-container {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 0 10px;
+        border-bottom: 1px solid var(--divider-color, #e0e0e0);
+      }
+      .tabs-list {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        flex: 1;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+      .tabs-list::-webkit-scrollbar {
+        display: none;
+      }
+      .tab-button {
+        height: 32px;
+        border: none;
+        background: transparent;
+        color: var(--primary-text-color);
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 4px;
         position: relative;
-      }
-      .tabs-container::after {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 30px;
-        background: linear-gradient(to right, transparent, var(--card-background-color, #fff));
-        pointer-events: none;
-      }
-      ha-control-button[selected] {
-        --control-button-background-color: var(--primary-color);
-      }
-      ha-control-button {
+        padding: 0 8px;
         white-space: nowrap;
       }
-      ha-control-button-group {
-        margin: 5px;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        padding-right: 25px;
+      .tab-button:hover {
+        background: var(--secondary-background-color);
+      }
+      .tab-button.active {
+        color: var(--primary-color);
+      }
+      .tab-button.active::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--primary-color);
+      }
+      .nav-arrow {
+        --mdc-icon-button-size: 32px;
+        --mdc-icon-size: 20px;
+        color: var(--primary-color);
+        flex-shrink: 0;
+      }
+      .nav-arrow.hidden {
+        visibility: hidden;
       }
     `;
   }

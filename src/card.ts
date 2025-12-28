@@ -245,8 +245,9 @@ export class Card extends LitElement {
       this.section = PLAYER;
     }
 
-    newConfig.favorites = newConfig.favorites ?? {};
-    newConfig.favorites.itemsPerRow = newConfig.favorites.itemsPerRow || 4;
+    newConfig.mediaBrowser = newConfig.mediaBrowser ?? {};
+    newConfig.mediaBrowser.favorites = newConfig.mediaBrowser.favorites ?? {};
+    newConfig.mediaBrowser.itemsPerRow = newConfig.mediaBrowser.itemsPerRow || 4;
     // support custom:auto-entities
     if (newConfig.entities?.length && newConfig.entities[0].entity) {
       newConfig.entities = newConfig.entities.map((entity: { entity: string }) => entity.entity);

@@ -86,24 +86,24 @@ export interface FavoritesConfig {
   customFavorites?: CustomFavorites;
   customThumbnails?: CustomFavoriteThumbnails;
   customThumbnailsIfMissing?: CustomFavoriteThumbnails;
-  showBrowseMediaButton?: boolean;
-  hideHeader?: boolean;
+  exclude?: string[];
   hideTitleForThumbnailIcons?: boolean;
   iconBorder?: string;
   iconPadding?: number;
   iconTitleBackgroundColor?: string;
   iconTitleColor?: string;
-  itemsPerRow?: number;
   numberToShow?: number;
   replaceHttpWithHttpsForThumbnails?: boolean;
   sortByType?: boolean;
   title?: string;
-  exclude?: string[];
   topItems?: string[];
 }
 
 export interface MediaBrowserConfig {
-  title?: string;
+  favorites?: FavoritesConfig;
+  hideHeader?: boolean;
+  itemsPerRow?: number;
+  onlyFavorites?: boolean;
 }
 
 export interface GroupsConfig {
@@ -178,7 +178,6 @@ export interface CardConfig extends LovelaceCardConfig {
   widthPercentage?: number;
   // Section configs
   player?: PlayerConfig;
-  favorites?: FavoritesConfig;
   groups?: GroupsConfig;
   grouping?: GroupingConfig;
   volumes?: VolumesConfig;

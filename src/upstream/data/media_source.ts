@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { HomeAssistant } from '../types';
 import type { MediaPlayerItem } from './media-player';
 

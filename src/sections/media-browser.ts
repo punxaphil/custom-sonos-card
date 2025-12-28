@@ -17,7 +17,7 @@ import '../components/favorites-list';
 import '../components/favorites-icons';
 import { MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
-import { FavoritesConfig, MediaPlayerItem } from '../types';
+import { FavoritesConfig, MediaBrowserConfig, MediaPlayerItem } from '../types';
 import { until } from 'lit-html/directives/until.js';
 import { indexOfWithoutSpecialChars } from '../utils/favorites-utils';
 
@@ -75,6 +75,15 @@ export class MediaBrowser extends LitElement {
   }
 
   private initializeView() {
+    const onlyFavorites = this.store.config.mediaBrowser?.onlyFavorites ?? false;
+
+    // If onlyFavorites is enabled, always show favorites
+    if (onlyFavorites) {
+      this.view = 'favorites';
+      this.updateIsCurrentPathStart();
+      return;
+    }
+
     // If we have a cached view from section switching, use it
     if (currentView !== null) {
       this.view = currentView;
@@ -158,22 +167,33 @@ export class MediaBrowser extends LitElement {
   }
 
   private renderFavorites() {
-    const favoritesConfig = this.store.config.favorites ?? {};
+    const mediaBrowserConfig: MediaBrowserConfig = this.store.config.mediaBrowser ?? {};
+    const favoritesConfig: FavoritesConfig = mediaBrowserConfig.favorites ?? {};
     const title = favoritesConfig.title ?? 'Favorites';
+    const hideHeader = mediaBrowserConfig.hideHeader ?? false;
+    const onlyFavorites = mediaBrowserConfig.onlyFavorites ?? false;
 
     return html`
-      <div class="header">
-        <div class="spacer"></div>
-        <span class="title">${title}</span>
-        <ha-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></ha-icon-button>
-        <ha-icon-button
-          class=${this.isCurrentPathStart ? 'startpath-active' : ''}
-          .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
-          @click=${this.toggleStartPath}
-          title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
-        ></ha-icon-button>
-        ${this.renderLayoutMenu()}
-      </div>
+      ${hideHeader
+        ? ''
+        : html`<div class="header">
+            <div class="spacer"></div>
+            <span class="title">${title}</span>
+            ${onlyFavorites
+              ? ''
+              : html`<ha-icon-button
+                    .path=${mdiPlayBoxMultiple}
+                    @click=${this.goToBrowser}
+                    title="Browse Media"
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    class=${this.isCurrentPathStart ? 'startpath-active' : ''}
+                    .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
+                    @click=${this.toggleStartPath}
+                    title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
+                  ></ha-icon-button>`}
+            ${this.renderLayoutMenu()}
+          </div>`}
       ${this.renderFavoritesContent()}
     `;
   }
@@ -211,46 +231,46 @@ export class MediaBrowser extends LitElement {
 
     return html`
       ${until(
-      this.getFavorites()
-        .then((items) => {
-          if (items?.length) {
-            if (useGrid) {
-              return html`
+        this.getFavorites()
+          .then((items) => {
+            if (items?.length) {
+              if (useGrid) {
+                return html`
                   <sonos-favorites-icons
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onFavoriteSelected}
                   ></sonos-favorites-icons>
                 `;
-            } else {
-              return html`
+              } else {
+                return html`
                   <sonos-favorites-list
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onFavoriteSelected}
                   ></sonos-favorites-list>
                 `;
+              }
+            } else {
+              return html`<div class="no-items">No favorites found</div>`;
             }
-          } else {
-            return html`<div class="no-items">No favorites found</div>`;
-          }
-        })
-        .catch((e) => html`<div class="no-items">Failed to fetch favorites. ${e.message ?? JSON.stringify(e)}</div>`),
-    )}
+          })
+          .catch((e) => html`<div class="no-items">Failed to fetch favorites. ${e.message ?? JSON.stringify(e)}</div>`),
+      )}
     `;
   }
 
   private async getFavorites() {
-    const config: FavoritesConfig = this.store.config.favorites ?? {};
+    const favoritesConfig: FavoritesConfig = this.store.config.mediaBrowser?.favorites ?? {};
     const player = this.store.activePlayer;
     let favorites = await this.store.mediaBrowseService.getFavorites(player);
-    favorites.sort((a, b) => this.sortFavorites(a.title, b.title, config));
+    favorites.sort((a, b) => this.sortFavorites(a.title, b.title, favoritesConfig));
     favorites = [
-      ...(config.customFavorites?.[player.id]?.map(MediaBrowser.createFavorite) || []),
-      ...(config.customFavorites?.all?.map(MediaBrowser.createFavorite) || []),
+      ...(favoritesConfig.customFavorites?.[player.id]?.map(MediaBrowser.createFavorite) || []),
+      ...(favoritesConfig.customFavorites?.all?.map(MediaBrowser.createFavorite) || []),
       ...favorites,
     ];
-    return config.numberToShow ? favorites.slice(0, config.numberToShow) : favorites;
+    return favoritesConfig.numberToShow ? favorites.slice(0, favoritesConfig.numberToShow) : favorites;
   }
 
   private sortFavorites(a: string, b: string, config: FavoritesConfig) {
@@ -287,24 +307,29 @@ export class MediaBrowser extends LitElement {
   }
 
   private renderBrowser() {
+    const mediaBrowserConfig: MediaBrowserConfig = this.store.config.mediaBrowser ?? {};
     const activePlayer = this.store.activePlayer;
     const canGoBack = this.navigateIds.length > 1;
+    const hideHeader = mediaBrowserConfig.hideHeader ?? false;
+    const title = this.currentTitle || 'Media Browser';
 
     return html`
-      <div class="header">
-        ${canGoBack
-        ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
-        : html`<div class="spacer"></div>`}
-        <span class="title">${this.currentTitle || 'Media Browser'}</span>
-        <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
-        <ha-icon-button
-          class=${this.isCurrentPathStart ? 'startpath-active' : ''}
-          .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
-          @click=${this.toggleStartPath}
-          title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
-        ></ha-icon-button>
-        ${this.renderLayoutMenu()}
-      </div>
+      ${hideHeader
+        ? ''
+        : html`<div class="header">
+            ${canGoBack
+              ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
+              : html`<div class="spacer"></div>`}
+            <span class="title">${title}</span>
+            <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
+            <ha-icon-button
+              class=${this.isCurrentPathStart ? 'startpath-active' : ''}
+              .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
+              @click=${this.toggleStartPath}
+              title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
+            ></ha-icon-button>
+            ${this.renderLayoutMenu()}
+          </div>`}
       <sonos-ha-media-player-browse
         .hass=${this.store.hass}
         .entityId=${activePlayer.id}

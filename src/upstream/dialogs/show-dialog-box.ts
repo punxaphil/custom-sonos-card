@@ -1,3 +1,4 @@
+// @ts-nocheck
 export interface AlertDialogParams {
     title?: string;
     text?: string;

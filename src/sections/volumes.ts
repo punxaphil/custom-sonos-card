@@ -80,7 +80,7 @@ export class Volumes extends LitElement {
 
   private async getAdditionalControls(hide: boolean, player: MediaPlayer) {
     if (hide) {
-      return;
+      return [];
     }
     const relatedEntities = await this.hassService.getRelatedEntities(player, 'switch', 'number', 'sensor');
     return relatedEntities.map((relatedEntity: HassEntity) => {

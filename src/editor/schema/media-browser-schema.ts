@@ -1,15 +1,27 @@
-export const FAVORITES_SCHEMA = [
+export const MEDIA_BROWSER_SCHEMA = [
+  {
+    name: 'hideHeader',
+    selector: { boolean: {} },
+  },
+  {
+    name: 'itemsPerRow',
+    type: 'integer',
+    valueMin: 1,
+  },
+  {
+    name: 'onlyFavorites',
+    selector: { boolean: {} },
+  },
+];
+
+export const FAVORITES_SUB_SCHEMA = [
   {
     name: 'title',
     type: 'string',
   },
   {
-    name: 'hideBrowseMediaButton',
-    selector: { boolean: {} },
-  },
-  {
-    name: 'hideHeader',
-    selector: { boolean: {} },
+    name: 'exclude',
+    type: 'string',
   },
   {
     name: 'hideTitleForThumbnailIcons',
@@ -37,11 +49,6 @@ export const FAVORITES_SCHEMA = [
     help: 'Color for favorites icon titles (e.g., red, #ff0000)',
   },
   {
-    name: 'itemsPerRow',
-    type: 'integer',
-    valueMin: 1,
-  },
-  {
     name: 'numberToShow',
     type: 'integer',
     valueMin: 1,
@@ -56,10 +63,6 @@ export const FAVORITES_SCHEMA = [
   },
   {
     name: 'topItems',
-    type: 'string',
-  },
-  {
-    name: 'exclude',
     type: 'string',
   },
 ];

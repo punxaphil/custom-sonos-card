@@ -74,7 +74,7 @@ sections: # Choose which sections to show in the card. Available sections are:
   - volumes
   - groups
   - grouping
-  - favorites
+  - media browser
   - player
   - queue
 ```
@@ -85,7 +85,7 @@ sections: # Choose which sections to show in the card. Available sections are:
   - volumes
   - groups
   - grouping
-  - favorites
+  - media browser
   - player
 ```
 --> <!-- //#ONLY_SONOS_CARD -->
@@ -127,7 +127,7 @@ showNonSonosPlayers: true # default is false, which means only Sonos players wil
 ```yaml
 title: ''
 sections: # see explanation further up
-  - favorites
+  - media browser
   - player
 baseFontSize: 1.5 # default is 1. Unit is 'rem'. Use this to change the base font size for the entire card.
 doNotRememberSelectedPlayer: true # default is false. If set to true, the selected player will not be remembered in URL hash or session storage.
@@ -142,7 +142,7 @@ minWidth: 10 # default is 20. Unit is 'rem'. Use this to change the minimum widt
 sectionButtonIconSize: 5 # Set the size of section button icons in rem units (e.g., 5 for 5rem)
 sectionButtonIcons: # customize icons for the section buttons
   player: mdi:ab-testing
-  favorites: mdi:star-box-multiple
+  mediaBrowser: mdi:star-box-multiple
   groups: mdi:multicast
   grouping: mdi:group
   volumes: mdi:volume-high
@@ -256,51 +256,52 @@ player:
   showAudioInputFormat: true # default is false. Will show the audio input format (e.g. Dolby Digital) in the player section if available. By default, it will only show if the input format in the volumes section.
   showBrowseMediaButton: true # default is false. Will show the browse media button in the player section.
   showChannel: true # default is false. Will show the channel (if available) in the player section. This can for instance be the radio station name.
-  showFastForwardAndRewindButtons: true # default is false, shows fast forward and rewind buttons
+  showFastForwardAndRewindButtons: true # default is false, shows fast-forward and rewind buttons
   showSource: true # default is false. Will show the source (if available) in the player section.
   showVolumeUpAndDownButtons: true # default is false, shows buttons for increasing and decreasing volume
   stopInsteadOfPause: true # default is false. Will show the stop button instead of the pause button when media is playing.
 ```
 
-### Favorites Configuration
+### Media Browser Configuration
 
 ```yaml
-favorites:
-  title: My favorites # default is 'All favorites'. Use this to change the title for the favorites section.
-  customFavorites: # Read more in 'Custom Favorites' section below
-    media_player.tv: # set this to 'all' to show the custom favorite for all players
-      - title: TV # Must match the name of the source (unless you specify media_content_id/type as shown below)
-        thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
-    all:
-      - title: BBC
-        media_content_id: media-source://radio_browser/98adecf7-2683-4408-9be7-02d3f9098eb8
-        media_content_type: music
-        thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
-  customThumbnails:
-    Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-  customThumbnailsIfMissing:
-    Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
-    Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
-    fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to image of music notes.
-  hideBrowseMediaButton: true # default is false. Hides the button to browse more media in Home Assistant.
-  hideHeader: true # default is false. Hides the header of the favorites section (title and browse media button).
-  hideTitleForThumbnailIcons: true # default is false. Only makes a difference if itemsPerRow > 1. Will hide title for thumbnail artworks.
-  iconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
-  iconPadding: 0.25 # default is 0.75. Unit is 'rem'. Use this to change the padding around favorites icon artwork.
-  iconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
-  iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
-  itemsPerRow: 1 # default is 4. Use this to show items as list.
-  exclude: # will compare both against title and media_content_id
-    - My Favorite Album # Hide specific title
-    - Christmas # Hide any titles matching 'Christmas'
-    - radio_browser # Hide any radio stations from radio_browser (since their media_content_id contains this string)
-  numberToShow: 10 # Use this to limit the amount of favorites to show
-  replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you  want to replace http with https for thumbnails. 
-  sortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
-  topItems: # Show these favorites at the top of the list
-    - Legendary
-    - Country Rocks
-    - Kacey Musgraves Radio
+mediaBrowser:
+  hideHeader: true # default is false. Hides the header of the media browser section (title and navigation buttons).
+  itemsPerRow: 1 # default is 4. Use this to show items as list. Applies to both favorites and media browser.
+  onlyFavorites: true # default is false. Hides the media browser button, showing only favorites.
+  favorites: # Settings specific to the favorites view within media browser
+    title: My favorites # default is 'Favorites'. Use this to change the title for the favorites view.
+    customFavorites: # Read more in 'Custom Favorites' section below
+      media_player.tv: # set this to 'all' to show the custom favorite for all players
+        - title: TV # Must match the name of the source (unless you specify media_content_id/type as shown below)
+          thumbnail: https://cdn-icons-png.flaticon.com/512/716/716429.png
+      all:
+        - title: BBC
+          media_content_id: media-source://radio_browser/98adecf7-2683-4408-9be7-02d3f9098eb8
+          media_content_type: music
+          thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+    customThumbnails:
+      Voyage: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
+    customThumbnailsIfMissing:
+      Ed Sheeran Radio: https://i.scdn.co/image/ab6761610000e5eb4d2f80ceffc6c70a432ccd7c
+      Legendary: https://i.scdn.co/image/ab67706f000000027b2e7ee752dc222ff2fd466f
+      fallback: https://cdn-icons-png.flaticon.com/512/651/651717.png # will use this if thumbnail is missing and none of the above matches. Defaults to image of music notes.
+    exclude: # will compare both against title and media_content_id
+      - My Favorite Album # Hide specific title
+      - Christmas # Hide any titles matching 'Christmas'
+      - radio_browser # Hide any radio stations from radio_browser (since their media_content_id contains this string)
+    hideTitleForThumbnailIcons: true # default is false. Only makes a difference if itemsPerRow > 1. Will hide title for thumbnail artworks.
+    iconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
+    iconPadding: 0.25 # default is 0.75. Unit is 'rem'. Use this to change the padding around favorites icon artwork.
+    iconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
+    iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
+    numberToShow: 10 # Use this to limit the amount of favorites to show.
+    replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you want to replace http with https for thumbnails.
+    sortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
+    topItems: # Show these favorites at the top of the list
+      - Legendary
+      - Country Rocks
+      - Kacey Musgraves Radio
 ```
 
 ### Groups Configuration
@@ -380,7 +381,7 @@ cards:
   - type: custom:sonos-card
     sections:
       - grouping
-      - favorites
+      - media browser
 ```
 
 ## Theme variables
@@ -419,7 +420,7 @@ player:
   showVolumeUpAndDownButtons: true
   hideArtwork: true
   controlsLargeIcons: true
-favorites:
+mediaBrowser:
   itemsPerRow: 6
   hideHeader: true
 groups:
@@ -450,13 +451,14 @@ Example:
     
 ```yaml
 type: custom:sonos-card
-favorites:
-  customFavorites: 
-    all: # 'all' means it will show for all players, otherwise specify the entity_id of the player.
-      - title: BBC
-        media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service
-        media_content_type: music
-        thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+mediaBrowser:
+  favorites:
+    customFavorites: 
+      all: # 'all' means it will show for all players, otherwise specify the entity_id of the player.
+        - title: BBC
+          media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service
+          media_content_type: music
+          thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
 ```
 
 ### Finding media_content_id (advanced)

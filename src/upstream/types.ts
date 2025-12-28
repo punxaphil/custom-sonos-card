@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { HomeAssistant as HAHomeAssistant } from 'custom-card-helpers';
 
 export type HomeAssistant = HAHomeAssistant;

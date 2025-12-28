@@ -1,3 +1,4 @@
+// @ts-nocheck
 const UNAVAILABLE_STATES = ['unavailable', 'unknown'];
 
 export const stateActive = (stateObj: { state: string }): boolean => {

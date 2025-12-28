@@ -21,7 +21,7 @@ function getValueFromKeyIgnoreSpecialChars(
 }
 
 function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
-  const favoritesConfig = config.favorites ?? {};
+  const favoritesConfig = config.mediaBrowser?.favorites ?? {};
   let thumbnail =
     getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
   if (!thumbnail) {

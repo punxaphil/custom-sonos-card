@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { LitVirtualizer } from '@lit-labs/virtualizer';
 import { grid } from '@lit-labs/virtualizer/layouts/grid.js';
 
