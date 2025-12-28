@@ -43,6 +43,7 @@ interface StyleConfig {
 export interface PlayerConfig {
   artworkAsBackground?: boolean;
   artworkAsBackgroundBlur?: number;
+  artworkBorderRadius?: number;
   artworkHostname?: string;
   artworkMinHeight?: number;
   backgroundOverlayColor?: string;

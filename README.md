@@ -204,6 +204,7 @@ player:
   hideHeader: true # default is false. Hides the player header (entity name, song, album, progress).
   artworkAsBackground: true # default is false. Will show the artwork as background for the player section.
   artworkAsBackgroundBlur: 10 # default is 0 (no blur). Adds a blur effect to the background artwork and shows the normal artwork on top. Higher values = more blur. Creates a modern look similar to Apple Music. Implies artworkAsBackground.
+  artworkBorderRadius: 10 # default is 0. Adds a border radius to the player artwork in pixels.
   artworkHostname: http://192.168.0.59:8123 #default is ''. Usually not needed, but depending on your setup your device might not be able to access the artwork on the default host. One example where it could be needed is if you cast the dashboard with Google Cast.
   artworkMinHeight: 10 # default is 5. Use this to change the minimum height of the artwork in the player section. Unit is in rem.
   fallbackArtwork: https://cdn-icons-png.flaticon.com/512/651/651717.png # Override default fallback artwork image if artwork is missing for the currently selected media.

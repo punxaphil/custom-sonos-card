@@ -63,6 +63,10 @@ export class Player extends LitElement {
 
   private artworkStyle() {
     const minHeight = this.playerConfig.artworkMinHeight ?? 5;
+    const borderRadius = this.playerConfig.artworkBorderRadius ?? 0;
+    if (borderRadius > 0) {
+      return `${this.getBackgroundImage()}; border-radius: ${borderRadius}px; background-size: cover; aspect-ratio: 1; height: 100%; max-height: 50vh; width: auto; margin: 0 auto;`;
+    }
     return `${this.getBackgroundImage()}; min-height: ${minHeight}rem`;
   }
 

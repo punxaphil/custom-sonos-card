@@ -8,6 +8,11 @@ export const PLAYER_SCHEMA = [
     selector: { number: { min: 0, max: 100, step: 1 } },
   },
   {
+    name: 'artworkBorderRadius',
+    selector: { number: { min: 0, max: 100, step: 1 } },
+    help: 'Border radius in pixels for player artwork',
+  },
+  {
     name: 'artworkHostname',
     type: 'string',
   },

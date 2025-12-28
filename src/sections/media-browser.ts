@@ -180,8 +180,8 @@ export class MediaBrowser extends LitElement {
             <div class="spacer"></div>
             <span class="title">${title}</span>
             ${onlyFavorites
-            ? ''
-            : html`<ha-icon-button
+              ? ''
+              : html`<ha-icon-button
                     .path=${mdiPlayBoxMultiple}
                     @click=${this.goToBrowser}
                     title="Browse Media"
@@ -231,32 +231,32 @@ export class MediaBrowser extends LitElement {
 
     return html`
       ${until(
-      this.getFavorites()
-        .then((items) => {
-          if (items?.length) {
-            if (useGrid) {
-              return html`
+        this.getFavorites()
+          .then((items) => {
+            if (items?.length) {
+              if (useGrid) {
+                return html`
                   <sonos-favorites-icons
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onFavoriteSelected}
                   ></sonos-favorites-icons>
                 `;
-            } else {
-              return html`
+              } else {
+                return html`
                   <sonos-favorites-list
                     .items=${items}
                     .store=${this.store}
                     @item-selected=${this.onFavoriteSelected}
                   ></sonos-favorites-list>
                 `;
+              }
+            } else {
+              return html`<div class="no-items">No favorites found</div>`;
             }
-          } else {
-            return html`<div class="no-items">No favorites found</div>`;
-          }
-        })
-        .catch((e) => html`<div class="no-items">Failed to fetch favorites. ${e.message ?? JSON.stringify(e)}</div>`),
-    )}
+          })
+          .catch((e) => html`<div class="no-items">Failed to fetch favorites. ${e.message ?? JSON.stringify(e)}</div>`),
+      )}
     `;
   }
 
@@ -318,8 +318,8 @@ export class MediaBrowser extends LitElement {
         ? ''
         : html`<div class="header">
             ${canGoBack
-            ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
-            : html`<div class="spacer"></div>`}
+              ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
+              : html`<div class="spacer"></div>`}
             <span class="title">${title}</span>
             <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
             <ha-icon-button

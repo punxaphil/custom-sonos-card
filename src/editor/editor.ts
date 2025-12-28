@@ -86,7 +86,7 @@ class CardEditor extends BaseEditor {
         ></ha-icon-button>
         <div class="tabs-list">
           ${tabs.map(
-      (tab) => html`
+            (tab) => html`
               <button
                 class="tab-button ${this.activeTab === tab ? 'active' : ''}"
                 @click=${() => (this.activeTab = tab)}
@@ -94,7 +94,7 @@ class CardEditor extends BaseEditor {
                 ${tab}
               </button>
             `,
-    )}
+          )}
         </div>
         <ha-icon-button
           class="nav-arrow ${showRightArrow ? '' : 'hidden'}"
