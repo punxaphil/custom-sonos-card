@@ -4,7 +4,7 @@ import Store from '../model/store';
 import { FavoritesConfig, MediaBrowserConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../constants';
-import { itemsWithFallbacks, renderFavoritesItem } from '../utils/favorites-utils';
+import { itemsWithFallbacks, renderFavoritesItem } from '../utils/media-browse-utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 export class FavoritesIcons extends LitElement {

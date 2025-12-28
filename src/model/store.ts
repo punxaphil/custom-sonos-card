@@ -51,9 +51,9 @@ export default class Store {
       [],
     );
     this.activePlayer = this.determineActivePlayer(activePlayerId);
-    this.hassService = new HassService(this.hass, currentSection, card, config);
+    this.hassService = new HassService(this.hass, currentSection, card);
     this.mediaControlService = new MediaControlService(this.hassService, config);
-    this.mediaBrowseService = new MediaBrowseService(this.hassService, config);
+    this.mediaBrowseService = new MediaBrowseService(this.hass, config);
     this.predefinedGroups = this.createPredefinedGroups();
   }
 

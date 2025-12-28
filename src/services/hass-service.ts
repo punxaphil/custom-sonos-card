@@ -1,5 +1,5 @@
 import { HomeAssistant } from 'custom-card-helpers';
-import { CardConfig, GetQueueResponse, MediaPlayerItem, Section, TemplateResult } from '../types';
+import { GetQueueResponse, MediaPlayerItem, Section, TemplateResult } from '../types';
 import { ServiceCallRequest } from 'custom-card-helpers/dist/types';
 import { CALL_MEDIA_DONE, CALL_MEDIA_STARTED } from '../constants';
 import { MediaPlayer } from '../model/media-player';
@@ -9,13 +9,11 @@ export default class HassService {
   private readonly hass: HomeAssistant;
   private readonly currentSection: Section;
   private readonly card: Element;
-  private readonly config: CardConfig;
 
-  constructor(hass: HomeAssistant, section: Section, card: Element, config: CardConfig) {
+  constructor(hass: HomeAssistant, section: Section, card: Element) {
     this.hass = hass;
     this.currentSection = section;
     this.card = card;
-    this.config = config;
   }
 
   async callMediaService(service: string, inOptions: ServiceCallRequest['serviceData']) {
@@ -25,22 +23,6 @@ export default class HassService {
     } finally {
       this.card.dispatchEvent(customEvent(CALL_MEDIA_DONE));
     }
-  }
-
-  async browseMedia(mediaPlayer: MediaPlayer, media_content_type?: string, media_content_id?: string) {
-    const mediaPlayerItem = await this.hass.callWS<MediaPlayerItem>({
-      type: 'media_player/browse_media',
-      entity_id: mediaPlayer.id,
-      media_content_id,
-      media_content_type,
-    });
-    if (this.config.mediaBrowser?.favorites?.replaceHttpWithHttpsForThumbnails) {
-      mediaPlayerItem.children = mediaPlayerItem.children?.map((child) => ({
-        ...child,
-        thumbnail: child.thumbnail?.replace('http://', 'https://'),
-      }));
-    }
-    return mediaPlayerItem;
   }
 
   async renderTemplate<T>(template: string, defaultValue: T): Promise<T> {

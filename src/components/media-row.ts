@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import Store from '../model/store';
 import { MediaPlayerItem } from '../types';
 import { mediaItemTitleStyle } from '../constants';
-import { renderFavoritesItem } from '../utils/favorites-utils';
+import { renderFavoritesItem } from '../utils/media-browse-utils';
 import './playing-bars';
 
 class MediaRow extends LitElement {

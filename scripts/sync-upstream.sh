@@ -63,6 +63,11 @@ sed -i '' \
   -e 's|from "\.\./\.\./types"|from "../../types"|g' \
   "$UPSTREAM_DIR/ha-media-player-browse.ts"
 
+# Use filterOutIgnoredMediaSources to filter children
+echo "Adding media source filter..."
+sed -i '' 's/let children = currentItem.children || \[\];/let children = filterOutIgnoredMediaSources(currentItem.children || []);/g' \
+  "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
 # CRITICAL: Rename component to avoid registration conflicts with HA frontend
 echo "Renaming component to avoid conflicts..."
 sed -i '' 's/@customElement("ha-media-player-browse")/@customElement("sonos-ha-media-player-browse")/g' \
@@ -91,6 +96,11 @@ sed -i '' \
 echo "$RELEASE_TAG" > "$VERSION_FILE"
 echo "Synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> "$VERSION_FILE"
 
+# Add filterOutIgnoredMediaSources import to ha-media-player-browse.ts
+echo "Adding filterOutIgnoredMediaSources import..."
+sed -i '' '1s/^/import { filterOutIgnoredMediaSources } from '\''..\/utils\/media-browse-utils'\'';\n/' \
+  "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
 # Add @ts-nocheck to all upstream TypeScript files
 echo "Adding @ts-nocheck to all upstream files..."
 for file in $(find "$UPSTREAM_DIR" -name "*.ts" -type f); do
@@ -103,6 +113,7 @@ echo ""
 echo "✅ Synced from HA frontend release: $RELEASE_TAG"
 echo "✅ Component renamed to 'sonos-ha-media-player-browse'"
 echo "✅ Grid customizations applied (100px items, 8px gap)"
+echo "✅ Non-audio media sources filtered (TTS, camera, images)"
 echo "✅ @ts-nocheck added to all upstream files"
 echo "✅ Version saved to $VERSION_FILE"
 echo ""

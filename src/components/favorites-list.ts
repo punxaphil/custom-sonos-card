@@ -4,7 +4,7 @@ import Store from '../model/store';
 import { CardConfig, MediaPlayerItem } from '../types';
 import { customEvent } from '../utils/utils';
 import { listStyle, MEDIA_ITEM_SELECTED } from '../constants';
-import { itemsWithFallbacks } from '../utils/favorites-utils';
+import { itemsWithFallbacks } from '../utils/media-browse-utils';
 
 export class FavoritesList extends LitElement {
   @property({ attribute: false }) store!: Store;

@@ -63,6 +63,9 @@ class CardEditor extends BaseEditor {
   };
 
   protected render(): TemplateResult {
+    if (!this.config) {
+      return html``;
+    }
     if (!this.config.sections || this.config.sections.length === 0) {
       this.config.sections = [Section.PLAYER, Section.VOLUMES, Section.GROUPS, Section.GROUPING, Section.MEDIA_BROWSER];
       if (isSonosCard(this.config)) {
@@ -83,7 +86,7 @@ class CardEditor extends BaseEditor {
         ></ha-icon-button>
         <div class="tabs-list">
           ${tabs.map(
-            (tab) => html`
+      (tab) => html`
               <button
                 class="tab-button ${this.activeTab === tab ? 'active' : ''}"
                 @click=${() => (this.activeTab = tab)}
@@ -91,7 +94,7 @@ class CardEditor extends BaseEditor {
                 ${tab}
               </button>
             `,
-          )}
+    )}
         </div>
         <ha-icon-button
           class="nav-arrow ${showRightArrow ? '' : 'hidden'}"

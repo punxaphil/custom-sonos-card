@@ -296,7 +296,6 @@ mediaBrowser:
     iconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
     iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
     numberToShow: 10 # Use this to limit the amount of favorites to show.
-    replaceHttpWithHttpsForThumbnails: true # default is false. Use this if you want to replace http with https for thumbnails.
     sortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
     topItems: # Show these favorites at the top of the list
       - Legendary

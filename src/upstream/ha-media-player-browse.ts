@@ -28,6 +28,7 @@ import { loadVirtualizer } from './resources/virtualizer';
 import type { HomeAssistant } from 'custom-card-helpers';
 import { brandsUrl, extractDomainFromBrandUrl, isBrandUrl } from './util/brands-url';
 import { documentationUrl } from './util/documentation-url';
+import { filterOutIgnoredMediaSources } from '../utils/media-browse-utils';
 // HA components are available at runtime - no need to import
 import type { ManualMediaPickedEvent } from './ha-browse-media-manual';
 import type { TtsMediaPickedEvent } from './ha-browse-media-tts';
@@ -323,7 +324,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     const currentItem = this._currentItem;
 
     const subtitle = this.hass.localize(`ui.components.media-browser.class.${currentItem.media_class}`);
-    let children = currentItem.children || [];
+    let children = filterOutIgnoredMediaSources(currentItem.children || []);
     const canPlayChildren = new Set<string>();
 
     // Filter children based on accept property if provided

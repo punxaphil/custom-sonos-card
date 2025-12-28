@@ -1,16 +1,17 @@
+import { HomeAssistant } from 'custom-card-helpers';
 import { CardConfig, MediaPlayerItem } from '../types';
-import HassService from './hass-service';
 import { MediaPlayer } from '../model/media-player';
-import { stringContainsAnyItemInArray } from '../utils/favorites-utils';
+import { stringContainsAnyItemInArray } from '../utils/media-browse-utils';
 import { customEvent } from '../utils/utils';
 import { HASS_MORE_INFO } from '../constants';
+import { browseMediaPlayer } from '../upstream/data/media-player';
 
 export default class MediaBrowseService {
-  private hassService: HassService;
+  private hass: HomeAssistant;
   private config: CardConfig;
 
-  constructor(hassService: HassService, config: CardConfig) {
-    this.hassService = hassService;
+  constructor(hass: HomeAssistant, config: CardConfig) {
+    this.hass = hass;
     this.config = config;
   }
 
@@ -37,7 +38,7 @@ export default class MediaBrowseService {
   }
 
   private async getFavoritesForPlayer(player: MediaPlayer) {
-    const mediaRoot = await this.hassService.browseMedia(player);
+    const mediaRoot = await browseMediaPlayer(this.hass, player.id);
     const favoritesStr = 'favorites';
     const favoritesDir = mediaRoot.children?.find(
       (child) =>
@@ -54,10 +55,11 @@ export default class MediaBrowseService {
   }
 
   private async browseDir(player: MediaPlayer, favoritesDir: MediaPlayerItem, favorites: MediaPlayerItem[]) {
-    const dir = await this.hassService.browseMedia(
-      player,
-      favoritesDir.media_content_type,
+    const dir = await browseMediaPlayer(
+      this.hass,
+      player.id,
       favoritesDir.media_content_id,
+      favoritesDir.media_content_type,
     );
     for (const child of dir.children ?? []) {
       if (child.can_play) {
