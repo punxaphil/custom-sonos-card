@@ -18,16 +18,12 @@ export class FavoritesIcons extends LitElement {
     const items = itemsWithFallbacks(this.items, this.store.config);
     let prevType: string | undefined = '';
     this.sortItemsByFavoriteTypeIfConfigured(items, favoritesConfig);
-    const color = favoritesConfig.iconTitleColor;
-    const bgColor = favoritesConfig.iconTitleBackgroundColor;
+    const iconTitleColor = favoritesConfig.iconTitleColor;
+    const iconTitleBgColor = favoritesConfig.iconTitleBackgroundColor;
     const border = favoritesConfig.iconBorder;
     const padding = favoritesConfig.iconPadding;
     return html`
       <style>
-        .title {
-          ${color ? `color: ${color};` : ''}
-          ${bgColor ? `background-color: ${bgColor};` : ''}
-        }
         ha-control-button {
           ${border ? `border: ${border};` : ''}
           ${padding !== undefined ? `--control-button-padding: ${padding}rem;` : ''}
@@ -42,7 +38,12 @@ export class FavoritesIcons extends LitElement {
               style=${this.buttonStyle(mediaBrowserConfig.itemsPerRow || 4)}
               @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
             >
-              ${renderFavoritesItem(item, !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons)}
+              ${renderFavoritesItem(
+                item,
+                !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons,
+                iconTitleColor,
+                iconTitleBgColor,
+              )}
             </ha-control-button>
           `;
           prevType = item.favoriteType;

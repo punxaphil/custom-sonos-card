@@ -2,23 +2,23 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 
 class PlayingBars extends LitElement {
-    @property({ type: Boolean }) show = false;
+  @property({ type: Boolean }) show = false;
 
-    render() {
-        if (!this.show) {
-            return nothing;
-        }
-        return html`
+  render() {
+    if (!this.show) {
+      return nothing;
+    }
+    return html`
       <div class="bars">
         <div></div>
         <div></div>
         <div></div>
       </div>
     `;
-    }
+  }
 
-    static get styles() {
-        return css`
+  static get styles() {
+    return css`
       @keyframes sound {
         0% {
           opacity: 0.35;
@@ -66,7 +66,7 @@ class PlayingBars extends LitElement {
         animation-duration: 407ms;
       }
     `;
-    }
+  }
 }
 
 customElements.define('sonos-playing-bars', PlayingBars);
