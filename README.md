@@ -134,6 +134,7 @@ doNotRememberSelectedPlayer: true # default is false. If set to true, the select
 entityId: media_player.bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)
 entityNameRegexToReplace: ' PLAYER' # Regex pattern to replace parts of the entity names
 entityNameReplacement: ''
+fontFamily: 'Roboto, sans-serif' # Use this to change the font family for the entire card.
 footerHeight: 4 # default is 5. Unit is 'rem'. Use this to change the height of the footer.
 heightPercentage: 75 # default is 100. Use this to change the height of the card. Set to 'auto' to make the card height adjust to the content.
 mediaTitleRegexToReplace: '.wav?.*' # Regex pattern to replace parts of the media title
@@ -309,10 +310,13 @@ mediaBrowser:
 ```yaml
 groups:
   title: ''
-  compact: true # default is false. Makes the groups section more compact.
+  backgroundColor: '#2a2a2a' # Use this to change the background color of group buttons.
   buttonWidth: 10 # default is full width. Unit is 'rem'. Use this to change the width of the groups list.
+  compact: true # default is false. Makes the groups section more compact.
   hideCurrentTrack: true # default is false, which means song/track info for groups will be shown
   itemMargin: '5px' # default is '1rem'. Use this to change the margin around groups list items.
+  speakersFontSize: 1.2 # default is 1.1. Unit is 'rem'. Use this to change the font size of the speakers name.
+  titleFontSize: 1 # default is 0.9. Unit is 'rem'. Use this to change the font size of the track title.
 ```
 
 ### Grouping Configuration

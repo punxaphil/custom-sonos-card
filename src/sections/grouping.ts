@@ -37,12 +37,10 @@ export class Grouping extends LitElement {
       this.applyGrouping();
     }
 
-    const buttonColor = this.groupingConfig.buttonColor;
     const buttonFontSize = this.groupingConfig.buttonFontSize;
     return html`
       <style>
         sonos-grouping-button {
-          ${buttonColor ? `--accent-color: ${buttonColor};` : ''}
           ${buttonFontSize ? `font-size: ${buttonFontSize}rem;` : ''}
         }
       </style>
@@ -270,7 +268,13 @@ export class Grouping extends LitElement {
   }
 
   private groupingButton(icon: string, click: () => void) {
-    return html` <sonos-grouping-button @click=${click} .icon=${icon}></sonos-grouping-button> `;
+    return html`
+      <sonos-grouping-button
+        @click=${click}
+        .icon=${icon}
+        .buttonColor=${this.groupingConfig.buttonColor}
+      ></sonos-grouping-button>
+    `;
   }
 
   private getNotJoinedPlayers() {
@@ -298,6 +302,7 @@ export class Grouping extends LitElement {
           .icon=${this.groupingConfig.buttonIcons?.predefinedGroup ?? 'mdi:speaker-multiple'}
           .name=${predefinedGroup.name}
           .selected=${this.selectedPredefinedGroup?.name === predefinedGroup.name}
+          .buttonColor=${this.groupingConfig.buttonColor}
         ></sonos-grouping-button>
       `;
     });

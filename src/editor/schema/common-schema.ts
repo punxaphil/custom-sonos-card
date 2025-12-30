@@ -70,6 +70,11 @@ export const COMMON_SCHEMA = [
     selector: { entity: { multiple: true, filter: { domain: 'media_player' } } },
   },
   {
+    name: 'fontFamily',
+    type: 'string',
+    help: 'Font family for the entire card (e.g., Arial, Roboto)',
+  },
+  {
     name: 'footerHeight',
     type: 'integer',
     valueMin: 0,

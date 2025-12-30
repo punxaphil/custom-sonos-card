@@ -6,7 +6,7 @@ export const GROUPING_SCHEMA = [
   {
     name: 'buttonColor',
     type: 'string',
-    help: 'Background/accent color for grouping buttons',
+    help: 'Background color for grouping buttons',
   },
   {
     name: 'buttonFontSize',

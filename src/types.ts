@@ -107,11 +107,14 @@ export interface MediaBrowserConfig {
 }
 
 export interface GroupsConfig {
+  backgroundColor?: string;
   buttonWidth?: number;
   compact?: boolean;
   hideCurrentTrack?: boolean;
   itemMargin?: string;
+  speakersFontSize?: number;
   title?: string;
+  titleFontSize?: number;
 }
 
 export interface GroupingConfig {
@@ -162,6 +165,7 @@ export interface CardConfig extends LovelaceCardConfig {
   entityNameReplacement?: string;
   entityPlatform?: string;
   excludeItemsInEntitiesList?: boolean;
+  fontFamily?: string;
   footerHeight?: number;
   heightPercentage?: number;
   inverseGroupMuteState?: boolean;

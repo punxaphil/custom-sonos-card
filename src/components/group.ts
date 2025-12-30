@@ -1,5 +1,6 @@
-import { css, html, LitElement, nothing } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import Store from '../model/store';
 import { dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
 import { SESSION_STORAGE_PLAYER_ID } from '../constants';
@@ -23,7 +24,13 @@ class Group extends LitElement {
     const currentTrack = groupsConfig.hideCurrentTrack ? '' : this.player.getCurrentTrack();
     const speakerList = getSpeakerList(this.player, this.store.predefinedGroups);
     const icons = this.player.members.map((member) => member.attributes.icon).filter((icon) => icon);
-    const itemMargin = groupsConfig.itemMargin;
+    const { itemMargin, backgroundColor, speakersFontSize, titleFontSize } = groupsConfig;
+    const listItemStyle = styleMap({
+      ...(itemMargin ? { margin: itemMargin } : {}),
+      ...(backgroundColor ? { background: backgroundColor } : {}),
+    });
+    const speakersStyle = styleMap(speakersFontSize ? { fontSize: `${speakersFontSize}rem` } : {});
+    const titleStyle = styleMap(titleFontSize ? { fontSize: `${titleFontSize}rem` } : {});
     return html`
       <mwc-list-item
         hasMeta
@@ -31,13 +38,13 @@ class Group extends LitElement {
         ?selected=${this.selected}
         ?activated=${this.selected}
         @click=${() => this.handleGroupClicked()}
-        style=${itemMargin ? `margin: ${itemMargin}` : nothing}
+        style=${listItemStyle}
       >
         <div class="row">
           ${this.renderIcons(icons)}
           <div class="text">
-            <span class="speakers">${speakerList}</span>
-            <span class="song-title">${currentTrack}</span>
+            <span class="speakers" style=${speakersStyle}>${speakerList}</span>
+            <span class="song-title" style=${titleStyle}>${currentTrack}</span>
           </div>
         </div>
 
