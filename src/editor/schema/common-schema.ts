@@ -1,6 +1,6 @@
 const options = {
   player: 'Player',
-  favorites: 'Favorites',
+  'media browser': 'Media Browser',
   groups: 'Groups',
   grouping: 'Grouping',
   volumes: 'Volumes',
