@@ -68,8 +68,9 @@ class PlayerControls extends LitElement {
           <sonos-repeat hide=${noRepeat} .store=${this.store}></sonos-repeat>
 
           <ha-icon-button hide=${noUpDown} @click=${this.volUp} .path=${mdiVolumePlus}></ha-icon-button>
-          <div class="flex-1"></div>
-          <ha-icon-button hide=${noBrowse} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
+          <div class="flex-1">
+            <ha-icon-button class="browse-button" hide=${noBrowse} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
+          </div>
         </div>
         <sonos-volume .store=${this.store} .player=${this.volumePlayer}
                       .updateMembers=${this.updateMemberVolumes} .isPlayer=${true}
@@ -147,6 +148,9 @@ class PlayerControls extends LitElement {
       }
       .flex-1 {
         flex: 1;
+      }
+      .browse-button {
+        float: right;
       }
 
       .large-icons {

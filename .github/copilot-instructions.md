@@ -38,4 +38,6 @@
 - ALWAYS run `./scripts/deploy.sh` after implementing any code changes
 - On first run, you'll be prompted to create a long-lived access token in HA (Profile → Long-Lived Access Tokens)
 - Navigate to `${HA_URL}${HA_TEST_PAGE}` to verify changes (HA_URL and HA_TEST_PAGE are defined in `.env`)
+- When using Playwright to verify changes, navigate to `${HA_URL}${HA_TEST_PAGE}`, use HA_USER and HA_PASSWORD from `.env` for login credentials, and click "Keep me logged in"
+- When testing configuration changes, edit the test dashboard in ../dashboards/ then run update_dashboards.sh
 - If releasing, use `npx bumpp`
