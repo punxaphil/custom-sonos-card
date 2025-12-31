@@ -1,6 +1,6 @@
 {
   "name": "custom-sonos-card",
-  "version": "10.0.0-beta.10",
+  "version": "10.0.0-beta.11",
   "description": "",
   "main": "src/main.js",
   "module": "src/main.js",
