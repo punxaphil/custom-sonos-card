@@ -201,7 +201,13 @@ export class Card extends LitElement {
       // only set borderRadius if this.config.style.borderRadius is set, otherwise the card looks weird with box-shadow
       ...(this.config.style?.borderRadius ? { borderRadius: this.config.style.borderRadius } : {}),
       ...(this.config.baseFontSize ? { fontSize: `${this.config.baseFontSize}rem` } : {}),
-      ...(this.config.fontFamily ? { fontFamily: this.config.fontFamily } : {}),
+      ...(this.config.fontFamily
+        ? {
+            fontFamily: this.config.fontFamily,
+            '--mdc-typography-font-family': this.config.fontFamily,
+            '--ha-font-family-body': this.config.fontFamily,
+          }
+        : {}),
     });
   }
 
