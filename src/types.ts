@@ -97,6 +97,10 @@ export interface FavoritesConfig {
   sortByType?: boolean;
   title?: string;
   topItems?: string[];
+  typeColor?: string;
+  typeFontSize?: string;
+  typeFontWeight?: string;
+  typeMarginBottom?: string;
 }
 
 export interface MediaBrowserConfig {

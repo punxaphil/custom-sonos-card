@@ -58,6 +58,26 @@ export const FAVORITES_SUB_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'typeColor',
+    type: 'string',
+    help: 'Color for type headers when sortByType is enabled',
+  },
+  {
+    name: 'typeFontSize',
+    type: 'string',
+    help: 'Font size for type headers (e.g., 18px)',
+  },
+  {
+    name: 'typeFontWeight',
+    type: 'string',
+    help: 'Font weight for type headers (e.g., normal, bold)',
+  },
+  {
+    name: 'typeMarginBottom',
+    type: 'string',
+    help: 'Bottom margin for type headers (e.g., 6px)',
+  },
+  {
     name: 'topItems',
     type: 'string',
   },

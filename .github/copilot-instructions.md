@@ -25,6 +25,13 @@
 - In each schema file, configs should be sorted alphabetically by name.
 - Exception: "title" config (e.g., `groupsTitle`, `favoritesTitle`) should always be first in its section's schema.
 
+# Adding New Configuration Options
+When adding a new configuration option, update ALL of the following:
+1. `src/types.ts` - Add the TypeScript interface property
+2. `src/editor/schema/*.ts` - Add to the appropriate editor schema for the visual editor
+3. `README.md` - Document the option with description and example
+4. Component code - Implement the actual functionality
+
 # README
 - In the README, each section's YAML config block should have the "title" config on top (e.g., `queueTitle`, `groupsTitle`).
 

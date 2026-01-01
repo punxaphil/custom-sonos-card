@@ -22,11 +22,21 @@ export class FavoritesIcons extends LitElement {
     const iconTitleBgColor = favoritesConfig.iconTitleBackgroundColor;
     const border = favoritesConfig.iconBorder;
     const padding = favoritesConfig.iconPadding;
+    const typeColor = favoritesConfig.typeColor;
+    const typeFontSize = favoritesConfig.typeFontSize;
+    const typeFontWeight = favoritesConfig.typeFontWeight;
+    const typeMarginBottom = favoritesConfig.typeMarginBottom;
     return html`
       <style>
         ha-control-button {
           ${border ? `border: ${border};` : ''}
           ${padding !== undefined ? `--control-button-padding: ${padding}rem;` : ''}
+        }
+        .favorite-type {
+          ${typeColor ? `color: ${typeColor};` : ''}
+          ${typeFontSize ? `font-size: ${typeFontSize};` : ''}
+          ${typeFontWeight ? `font-weight: ${typeFontWeight};` : ''}
+          ${typeMarginBottom ? `margin-bottom: ${typeMarginBottom};` : ''}
         }
       </style>
       <div class="icons">
@@ -100,9 +110,9 @@ export class FavoritesIcons extends LitElement {
 
         .favorite-type {
           width: 100%;
-          border-bottom: 1px solid var(--secondary-background-color);
           display: none;
           margin-top: 0.2rem;
+          margin-left: 15px;
           font-weight: bold;
         }
 

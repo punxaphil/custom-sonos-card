@@ -299,6 +299,10 @@ mediaBrowser:
     iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
     numberToShow: 10 # Use this to limit the amount of favorites to show.
     sortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
+    typeColor: blue # default is theme text color. Color for type headers when sortByType is enabled.
+    typeFontSize: 18px # default is inherited. Font size for type headers.
+    typeFontWeight: normal # default is bold. Font weight for type headers.
+    typeMarginBottom: 6px # default is none. Bottom margin for type headers.
     topItems: # Show these favorites at the top of the list
       - Legendary
       - Country Rocks
