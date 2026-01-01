@@ -13,7 +13,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { createInterface } from 'readline';
 import { execSync } from 'child_process';
-import { inc, valid, ReleaseType } from 'semver';
+import { inc, ReleaseType, valid } from 'semver';
 
 const dryRun = process.argv.includes('--dry-run');
 
@@ -84,7 +84,7 @@ async function selectVersion(): Promise<string> {
 
   console.log('');
 
-  const answer = await prompt('Enter choice (1-' + choices.length + '): ');
+  const answer = await prompt(`Enter choice (1-${choices.length}): `);
   const index = parseInt(answer, 10) - 1;
 
   if (index < 0 || index >= choices.length) {
