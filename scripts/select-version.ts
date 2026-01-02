@@ -9,23 +9,32 @@
  *   npx tsx scripts/select-version.ts --dry-run # Dry-run mode (no changes)
  */
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { createInterface } from 'readline';
 import { execSync } from 'child_process';
 import { inc, ReleaseType, valid } from 'semver';
 
 const dryRun = process.argv.includes('--dry-run');
 
-const packageJsonPath = join(process.cwd(), 'package.json');
-const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-const currentVersion = pkg.version;
-
 const releaseTypes: ReleaseType[] = ['patch', 'minor', 'major', 'prepatch', 'preminor', 'premajor', 'prerelease'];
 
 function exec(command: string): string {
   return execSync(command, { encoding: 'utf-8' }).trim();
 }
+
+function getLatestVersion(): string {
+  try {
+    // Get the most recent tag reachable from HEAD
+    const latestTag = exec('git describe --tags --abbrev=0');
+    if (!latestTag) {
+      return '0.0.0';
+    }
+    return latestTag.replace(/^v/, '');
+  } catch {
+    return '0.0.0';
+  }
+}
+
+const currentVersion = getLatestVersion();
 
 function dryExec(command: string, description: string): void {
   if (dryRun) {
@@ -72,22 +81,37 @@ async function confirm(question: string): Promise<boolean> {
   return answer.toLowerCase() !== 'n';
 }
 
+function getDefaultChoiceIndex(current: string): number {
+  // If current version is a prerelease (has -), suggest prerelease (index 6)
+  // Otherwise suggest patch (index 0)
+  return current.includes('-') ? 6 : 0;
+}
+
 async function selectVersion(): Promise<string> {
   const choices = getVersionChoices(currentVersion);
+  const defaultIndex = getDefaultChoiceIndex(currentVersion);
+  const defaultChoice = choices[defaultIndex];
 
   console.log(`\nCurrent version: ${currentVersion}\n`);
   console.log('Select a new version:\n');
 
   choices.forEach((choice, index) => {
-    console.log(`  ${index + 1}) ${choice.name}`);
+    const marker = index === defaultIndex ? '→' : ' ';
+    console.log(`${marker} ${index + 1}) ${choice.name}`);
   });
 
   console.log('');
 
-  const answer = await prompt(`Enter choice (1-${choices.length}): `);
+  const answer = await prompt(`Enter choice (1-${choices.length}) [${defaultIndex + 1}]: `);
+  
+  // If empty, use default
+  if (answer === '') {
+    return defaultChoice.value;
+  }
+  
   const index = parseInt(answer, 10) - 1;
 
-  if (index < 0 || index >= choices.length) {
+  if (isNaN(index) || index < 0 || index >= choices.length) {
     console.error('Invalid choice');
     process.exit(1);
   }
