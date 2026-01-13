@@ -96,7 +96,9 @@ export class Player extends LitElement {
   private preloadImageIfNeeded() {
     const image = this.getArtworkImage();
     const imageUrl = image?.entityImage;
-    if (imageUrl === this.lastCheckedImageUrl) return;
+    if (imageUrl === this.lastCheckedImageUrl) {
+      return;
+    }
 
     this.lastCheckedImageUrl = imageUrl;
     if (!imageUrl) {
@@ -118,20 +120,42 @@ export class Player extends LitElement {
     img.src = imageUrl;
   }
 
+  private matchesString(value: string | undefined, expected: string | undefined): boolean {
+    return !!value && value === expected;
+  }
+
+  private matchesRegexp(value: string | undefined, pattern: string | undefined): boolean {
+    if (!value || !pattern) {
+      return false;
+    }
+    try {
+      return new RegExp(pattern).test(value);
+    } catch {
+      return false;
+    }
+  }
+
   private getMatchingOverride(entityImage?: string) {
     const overrides = this.playerConfig.mediaArtworkOverrides;
-    if (!overrides) return undefined;
+    if (!overrides) {
+      return undefined;
+    }
 
     const { media_title, media_artist, media_album_name, media_content_id, media_channel } =
       this.activePlayer.attributes;
 
     let override = overrides.find(
       (value) =>
-        (media_title && media_title === value.mediaTitleEquals) ||
-        (media_artist && media_artist === value.mediaArtistEquals) ||
-        (media_album_name && media_album_name === value.mediaAlbumNameEquals) ||
-        (media_channel && media_channel === value.mediaChannelEquals) ||
-        (media_content_id && media_content_id === value.mediaContentIdEquals),
+        this.matchesString(media_title, value.mediaTitleEquals) ||
+        this.matchesString(media_artist, value.mediaArtistEquals) ||
+        this.matchesString(media_album_name, value.mediaAlbumNameEquals) ||
+        this.matchesString(media_channel, value.mediaChannelEquals) ||
+        this.matchesString(media_content_id, value.mediaContentIdEquals) ||
+        this.matchesRegexp(media_title, value.mediaTitleRegexp) ||
+        this.matchesRegexp(media_artist, value.mediaArtistRegexp) ||
+        this.matchesRegexp(media_album_name, value.mediaAlbumNameRegexp) ||
+        this.matchesRegexp(media_channel, value.mediaChannelRegexp) ||
+        this.matchesRegexp(media_content_id, value.mediaContentIdRegexp),
     );
     if (!override) {
       override = overrides.find((value) => !entityImage && value.ifMissing);

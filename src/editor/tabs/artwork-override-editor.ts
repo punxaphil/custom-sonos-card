@@ -11,6 +11,11 @@ const ARTWORK_OVERRIDE_SCHEMA = [
   { name: 'mediaAlbumNameEquals', type: 'string' },
   { name: 'mediaContentIdEquals', type: 'string' },
   { name: 'mediaChannelEquals', type: 'string' },
+  { name: 'mediaTitleRegexp', type: 'string' },
+  { name: 'mediaArtistRegexp', type: 'string' },
+  { name: 'mediaAlbumNameRegexp', type: 'string' },
+  { name: 'mediaContentIdRegexp', type: 'string' },
+  { name: 'mediaChannelRegexp', type: 'string' },
   { name: 'imageUrl', type: 'string' },
   { type: 'integer', name: 'sizePercentage', default: 100, required: true, valueMin: 1, valueMax: 100 },
 ];

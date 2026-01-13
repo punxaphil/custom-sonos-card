@@ -10,8 +10,12 @@ class PredefinedGroupEditor extends BaseEditor {
   @state() private predefinedGroup?: PredefinedGroup<ConfigPredefinedGroupPlayer>;
 
   protected render(): TemplateResult {
-    if (!this.predefinedGroup) this.initPredefinedGroup();
-    if (!this.predefinedGroup) return html``;
+    if (!this.predefinedGroup) {
+      this.initPredefinedGroup();
+    }
+    if (!this.predefinedGroup) {
+      return html``;
+    }
 
     const pgWithoutVolumes = {
       ...this.predefinedGroup,
@@ -71,7 +75,9 @@ class PredefinedGroupEditor extends BaseEditor {
   };
 
   private volumeChanged = (ev: CustomEvent, playerId: string) => {
-    if (!this.predefinedGroup) return;
+    if (!this.predefinedGroup) {
+      return;
+    }
     const volume = ev.detail.value.volume;
     const entities = this.predefinedGroup.entities.map((e) => (e.player === playerId ? { ...e, volume } : e));
     this.predefinedGroup = { ...this.predefinedGroup, entities };

@@ -3,7 +3,9 @@
 Sonos Card for Home Assistant UI with a focus on managing multiple media players!
 
 <!-- //#ONLY_SONOS_CARD_START -->
+
 This card is nearly identical to the [Maxi Media Player](https://github.com/punxaphil/maxi-media-player), but is optimized for Sonos players. It will, by default, automatically discover all Sonos players in your Home Assistant instance. It also includes some Sonos specific features like queue management and sleep timer.
+
 <!-- //#ONLY_SONOS_CARD_END -->
 <!-- //#ONLY_SONOS_CARD
 This card, Maxi Media Player, is a generalisation of the [Sonos Card](https://github.com/punxaphil/custom-sonos-card), and its aim is to work with all media players supported by Home Assistant. In contrast to the Sonos Card, it will not automatically discover your media players, but you will have to specify which ones to use in the configuration. #NO_REPLACE_ON_THIS_LINE
@@ -11,20 +13,20 @@ This card, Maxi Media Player, is a generalisation of the [Sonos Card](https://gi
 
 ## Features:
 
-* Group/Ungroup speakers
-* Control multiple speakers
-* Play favorites from list
-* Favorites section
-* Control individual volumes in a group
-* Artwork background
-* Possibility to override artwork
-* Shuffle and repeat mode
-* Theming
-* Configurable styling
-* Dynamic volume level slider
-* Track progress bar
-* Show, play and remove tracks of play queue <!-- //#ONLY_SONOS_CARD -->
-* Set and clear sleep timer <!-- //#ONLY_SONOS_CARD -->
+- Group/Ungroup speakers
+- Control multiple speakers
+- Play favorites from list
+- Favorites section
+- Control individual volumes in a group
+- Artwork background
+- Possibility to override artwork
+- Shuffle and repeat mode
+- Theming
+- Configurable styling
+- Dynamic volume level slider
+- Track progress bar
+- Show, play and remove tracks of play queue <!-- //#ONLY_SONOS_CARD -->
+- Set and clear sleep timer <!-- //#ONLY_SONOS_CARD -->
 
 and more!
 
@@ -42,10 +44,13 @@ Do you like the Sonos Card? Support the project with a coffee ☕️
 [![BMC](https://www.buymeacoffee.com/assets/img/custom_images/white_img.png)](https://www.buymeacoffee.com/punxaphil)
 
 # Installation
+
 ## With HACS (recommended)
+
 Recommended way of installing this card is with HACS [Home Assistant Community Store](https://hacs.xyz/).
 
 ## Without HACS
+
 1. Download this file: custom-sonos-card.js
 1. Add this file into your <config>/www folder
 1. On your dashboard click on the icon at the right top corner then on Edit dashboard
@@ -69,6 +74,7 @@ each other (by adding multiple instances of the card with different sections ena
 By using the section configuration you can utilise the full power of Home Assistant's layout capabilities and also drag in other cards in your Dashboard view.
 
 <!-- //#ONLY_SONOS_CARD_START -->
+
 ```yaml
 sections: # Choose which sections to show in the card. Available sections are:
   - volumes
@@ -78,6 +84,7 @@ sections: # Choose which sections to show in the card. Available sections are:
   - player
   - queue
 ```
+
 <!-- //#ONLY_SONOS_CARD_END -->
 <!-- //#ONLY_SONOS_CARD
 ```yaml
@@ -89,7 +96,6 @@ sections: # Choose which sections to show in the card. Available sections are:
   - player
 ```
 --> <!-- //#ONLY_SONOS_CARD -->
-
 
 ### Configuration
 
@@ -110,6 +116,7 @@ entityPlatform: sonos # will select all entities for this platform. Will overrid
 ```
 --> <!-- //#ONLY_SONOS_CARD -->
 <!-- //#ONLY_SONOS_CARD_START -->
+
 ```yaml
 type: custom:sonos-card
 entities: # Entities are automatically discovered if you don't supply this setting. You can also use this sort your entities in a specific order (instead of alphabetically).
@@ -120,6 +127,7 @@ entities: # Entities are automatically discovered if you don't supply this setti
 excludeItemsInEntitiesList: true # Will invert the selection in the `entities` list, so that all players that are not in the list will be used.
 showNonSonosPlayers: true # default is false, which means only Sonos players will be shown.
 ```
+
 <!-- //#ONLY_SONOS_CARD_END -->
 
 ### Common Configuration
@@ -147,7 +155,7 @@ sectionButtonIcons: # customize icons for the section buttons
   groups: mdi:multicast
   grouping: mdi:group
   volumes: mdi:volume-high
-startSection: groups # default is player. Use this to set the default section to show. 
+startSection: groups # default is player. Use this to set the default section to show.
 storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
 allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the playerVolumeEntityId to be outside the group of the selected player.
@@ -164,7 +172,7 @@ predefinedGroups: # defaults to empty. More advanced features in separate sectio
       - media_player.bedroom
       - media_player.hall
   - name: Kitchen&Hall
-    media: Legendary # If you want to start playing a specific favorite when grouping 
+    media: Legendary # If you want to start playing a specific favorite when grouping
     entities: # Use below format if you want to set the volume of the speakers when grouping
       - player: media_player.kitchen
         volume: 10
@@ -175,24 +183,24 @@ predefinedGroups: # defaults to empty. More advanced features in separate sectio
     entities:
       - media_player.tv
   # below advanced settings for predefined groups fully depend on what features your device supports
-  - name: Party Mode # Example with device-specific settings 
-    bass: 10 # Set bass level (-10 to 10) 
-    treble: -2 # Set treble level (-10 to 10) 
-    loudness: true # Enable/disable loudness 
+  - name: Party Mode # Example with device-specific settings
+    bass: 10 # Set bass level (-10 to 10)
+    treble: -2 # Set treble level (-10 to 10)
+    loudness: true # Enable/disable loudness
     entities:
       - media_player.living_room
       - media_player.kitchen
   - name: Podcast Mode
     bass: -5
     loudness: false
-    speechEnhancement: true # Enable speech enhancement (soundbars only) 
-    nightSound: true # Enable night sound mode (soundbars only) 
+    speechEnhancement: true # Enable speech enhancement (soundbars only)
+    nightSound: true # Enable night sound mode (soundbars only)
     entities:
       - media_player.living_room
   - name: All with Crossfade
-    crossfade: true # Enable/disable crossfade between tracks 
-    touchControls: true # Enable/disable touch controls 
-    statusLight: false # Enable/disable status light 
+    crossfade: true # Enable/disable crossfade between tracks
+    touchControls: true # Enable/disable touch controls
+    statusLight: false # Enable/disable status light
     entities:
       - media_player.bedroom
       - media_player.hall
@@ -216,7 +224,7 @@ player:
     - mediaTitleEquals: TV
       imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
       sizePercentage: 40
-    - mediaContentIdEquals: "x-htastream:RINCON_949F3EC2E15B01400:spdif"
+    - mediaContentIdEquals: 'x-htastream:RINCON_949F3EC2E15B01400:spdif'
       imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108783.png
     - mediaTitleEquals: p4malmo-aac-192
       imageUrl: >-
@@ -224,14 +232,25 @@ player:
     - mediaArtistEquals: Metallica
       imageUrl: >-
         https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
-    - mediaAlbumNameEquals: "Master of Puppets"
+    - mediaAlbumNameEquals: 'Master of Puppets'
       imageUrl: >-
         https://mytuner.global.ssl.fastly.net/media/tvos_radios/2BDTPrpMbn_cTdteqo.jpg
-    - mediaChannelEquals: "Sky Radio Smooth Hits"
+    - mediaChannelEquals: 'Sky Radio Smooth Hits'
       imageUrl: https://cdn-icons-png.flaticon.com/512/4108/4108794.png
-    - ifMissing: true # ifMissing will only be used if none of the "Equals" overrides above resulted in a match 
+    - mediaTitleRegexp: ^NRK # Use regexp to match multiple titles, e.g. NRK P1, NRK P2, NRK P3
+      imageUrl: https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/NRK_logo.svg/200px-NRK_logo.svg.png
+      sizePercentage: 50
+    - mediaArtistRegexp: '.*Radio.*' # Regexp matching any artist containing "Radio"
+      imageUrl: https://cdn-icons-png.flaticon.com/512/3659/3659784.png
+    - mediaAlbumNameRegexp: 'Greatest.*Hits' # Regexp matching album names like "Greatest Hits", "Greatest Love Hits"
+      imageUrl: https://cdn-icons-png.flaticon.com/512/3844/3844724.png
+    - mediaContentIdRegexp: 'spotify:.*' # Regexp matching Spotify content IDs
+      imageUrl: https://cdn-icons-png.flaticon.com/512/174/174872.png
+    - mediaChannelRegexp: '^P[1-4]$' # Regexp matching channels P1, P2, P3, P4
+      imageUrl: https://cdn-icons-png.flaticon.com/512/2995/2995101.png
+    - ifMissing: true # ifMissing will only be used if none of the "Equals" or "Regexp" overrides above resulted in a match
       imageUrl: https://cdn-icons-png.flaticon.com/512/651/651758.png
-    - mediaTitleEquals: "My Radio Station" # imageUrl supports templates
+    - mediaTitleEquals: 'My Radio Station' # imageUrl supports templates
       imageUrl: '{{ states("sensor.my_cover_image_entity") }}'
   backgroundOverlayColor: 'rgba(0,0,0, 0.3)' # When artworkAsBackground is true, this sets the background overlay color for controls and header.
   controlsAndHeaderBackgroundOpacity: 0.7 # default is 0.9. Adjusts the opacity of the header and controls background when artworkAsBackground is enabled. Range 0-1.
@@ -353,10 +372,11 @@ volumes:
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.
 changeVolumeOnSlide: true # default is false. If set to true, volume will be changed while sliding the volume slider. If false, volume will only be changed when releasing the slider.
 inverseGroupMuteState: true # default is false, which means that only if all players are muted, mute icon shows as 'muted'. If set to true, mute icon will show as 'muted' if any player is muted.
-volumeStepSize: 1 # Use this to change the step size when using volume up/down. Default is to use the step size of Home Assistant's media player integration. 
+volumeStepSize: 1 # Use this to change the step size when using volume up/down. Default is to use the step size of Home Assistant's media player integration.
 ```
 
 <!-- //#ONLY_SONOS_CARD_START -->
+
 ### Queue Configuration
 
 ```yaml
@@ -367,6 +387,7 @@ queue:
   selectedItemBackgroundColor: '#00ff00' # Use this to set a custom background color for the currently playing queue item.
   selectedItemTextColor: '#000000' # Use this to set a custom text color for the currently playing queue item.
 ```
+
 <!-- //#ONLY_SONOS_CARD_END -->
 
 ## Using individual section cards
@@ -376,6 +397,7 @@ As mentioned earlier, use the individual sections for more layout flexibility.
 Here is an example:
 
 ![sections.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/sections.png)
+
 ```yaml
 type: horizontal-stack
 cards:
@@ -395,6 +417,7 @@ cards:
 ## Theme variables
 
 The following variables are being used and can be set in your theme to change the appearance of the card:
+
 ```
 --accent-color
 --primary-color
@@ -421,6 +444,7 @@ player:
 ## Slim version
 
 This example will give a slimmer version of the card.
+
 ```yaml
 type: custom:sonos-card
 heightPercentage: 60
@@ -446,6 +470,7 @@ footerHeight: 3.5
 You can add your own buttons to the Favorites section. This can be useful if you want to quickly start a specific radio station or playlist.
 
 To determine what to configure for a button do the following:
+
 1. Start playing the radio station or playlist you want to add. This can for instance be done in this card's favorites section or in the built-in Home Assistant Media page.
 2. Open the Developer Tools in Home Assistant.
 3. Go to the States tab.
@@ -456,12 +481,12 @@ To determine what to configure for a button do the following:
 
 Example:
 ![custom_favorites.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/custom_favorites.png)
-    
+
 ```yaml
 type: custom:sonos-card
 mediaBrowser:
   favorites:
-    customFavorites: 
+    customFavorites:
       all: # 'all' means it will show for all players, otherwise specify the entity_id of the player.
         - title: BBC
           media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service
@@ -472,6 +497,7 @@ mediaBrowser:
 ### Finding media_content_id (advanced)
 
 If you want to find the `media_content_id` for a specific radio station or playlist, sometimes the above method is not enough. If so, you can use the following method to find it:
+
 1. Open Media tab
 2. Open Chrome Dev Tools
 3. Go to Network tab
@@ -484,6 +510,7 @@ If you want to find the `media_content_id` for a specific radio station or playl
 10. A line will appear, click on it
 11. Expand the JSON object, and look under `service_data`
     There you will see something like:
+
 ```
 entity_id: "media_player.kok"
 media_content_id: "spotify://8fb1de564ba7e4c8c4512361860574c83b9/spotify:playlist:1Oz4xMzRKtRiEs51243ZknqGJm"
@@ -491,7 +518,6 @@ media_content_type: "spotify://playlist"
 ```
 
 ![media_content_id.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/media_content_id.png)
-
 
 ## Dynamic volume level slider
 
@@ -514,10 +540,11 @@ If you never want to remember the selected player, you can set `doNotRememberSel
 
 ## Sort order of entities
 
-If you want to have a custom sorting for your entities in the groups section you can use the `entities` configuration. 
+If you want to have a custom sorting for your entities in the groups section you can use the `entities` configuration.
 Default is otherwise to sort by entity name.
 
 Example:
+
 ```yaml
 type: custom:sonos-card
 entities:
@@ -574,4 +601,3 @@ card_mod:
 ```
 
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_2.png)
-

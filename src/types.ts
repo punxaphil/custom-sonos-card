@@ -200,6 +200,11 @@ export interface MediaArtworkOverride {
   mediaAlbumNameEquals?: string;
   mediaContentIdEquals?: string;
   mediaChannelEquals?: string;
+  mediaTitleRegexp?: string;
+  mediaArtistRegexp?: string;
+  mediaAlbumNameRegexp?: string;
+  mediaContentIdRegexp?: string;
+  mediaChannelRegexp?: string;
   imageUrl?: string;
   sizePercentage?: number;
 }
