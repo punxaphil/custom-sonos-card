@@ -290,6 +290,11 @@ mediaBrowser:
   hideHeader: true # default is false. Hides the header of the media browser section (title and navigation buttons).
   itemsPerRow: 1 # default is 4. Use this to show items as list. Applies to both favorites and media browser.
   onlyFavorites: true # default is false. Hides the media browser button, showing only favorites.
+  shortcut: # Optional shortcut button for quick access to a specific folder in the media browser. media_content_id, media_content_type, and name are required.
+    media_content_id: 'media-source://spotify/library/made-for-you' # Required: The content ID of the folder
+    media_content_type: 'spotify://library' # Required: The content type
+    icon: 'mdi:spotify' # Optional: Icon for the shortcut button (default is bookmark icon)
+    name: 'Made for You' # Required: Tooltip/name for the shortcut button
   favorites: # Settings specific to the favorites view within media browser
     title: My favorites # default is 'Favorites'. Use this to change the title for the favorites view.
     customFavorites: # Read more in 'Custom Favorites' section below
@@ -496,28 +501,61 @@ mediaBrowser:
 
 ### Finding media_content_id (advanced)
 
-If you want to find the `media_content_id` for a specific radio station or playlist, sometimes the above method is not enough. If so, you can use the following method to find it:
+If you want to find the `media_content_id` for a specific radio station, playlist, or media browser folder, sometimes the above method is not enough. If so, you can use the following method to find it:
 
-1. Open Media tab
-2. Open Chrome Dev Tools
-3. Go to Network tab
-4. Filter on "WS"
-5. Reload page
-6. Now you will see a row `websocket`, click on `websocket`
-7. Select Messages tab
-8. Add filter `play_media`
-9. Now navigate to your playlist, and start playing it
-10. A line will appear, click on it
-11. Expand the JSON object, and look under `service_data`
-    There you will see something like:
+1. Open your browser's Developer Tools (F12 or right-click → Inspect)
+2. Go to the **Network** tab
+3. Filter by **WS** (WebSocket)
+4. Reload the page
+5. Click on the `websocket` connection that appears
+6. Go to the **Messages** tab
+7. Filter messages by:
+   - `play_media` - for finding content to play (custom favorites)
+   - `browse_media` - for finding folder paths (media browser shortcuts)
+8. Navigate to your playlist/folder and start playing it or click on it
+9. A message will appear - click on it and expand the JSON object
+10. Look for `media_content_id` and `media_content_type` in the data
 
+Example for a playable item (custom favorite):
+```json
+{
+  "service_data": {
+    "entity_id": "media_player.living_room",
+    "media_content_id": "spotify://playlist:1Oz4xMzRKtRiEs51243ZknqGJm",
+    "media_content_type": "spotify://playlist"
+  }
+}
 ```
-entity_id: "media_player.kok"
-media_content_id: "spotify://8fb1de564ba7e4c8c4512361860574c83b9/spotify:playlist:1Oz4xMzRKtRiEs51243ZknqGJm"
-media_content_type: "spotify://playlist"
+
+Example for a folder (media browser shortcut):
+```json
+{
+  "type": "media_player/browse_media",
+  "entity_id": "media_player.living_room",
+  "media_content_id": "spotify://8fb1de564ba7e4c8c4561860574c83b9",
+  "media_content_type": "spotify://library"
+}
 ```
 
 ![media_content_id.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/media_content_id.png)
+
+## Media Browser Shortcut
+
+You can configure a shortcut button in the media browser header that takes you directly to a specific folder. This is especially useful for wall-mounted touch displays where you want quick access to frequently used folders like Spotify playlists.
+
+### Example configuration
+
+```yaml
+type: custom:sonos-card
+mediaBrowser:
+  shortcut:
+    media_content_id: 'spotify://8fb1de564ba7e4c8c4561860574c83b9'
+    media_content_type: 'spotify://library'
+    icon: 'mdi:spotify'
+    name: 'My Spotify'
+```
+
+The shortcut button will appear in the media browser header (both in Favorites and Browse Media views), to the left of the other navigation icons. Clicking it will navigate directly to the specified folder, reducing multiple taps to just one.
 
 ## Dynamic volume level slider
 

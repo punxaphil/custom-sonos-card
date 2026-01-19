@@ -14,6 +14,29 @@ export const MEDIA_BROWSER_SCHEMA = [
   },
 ];
 
+export const SHORTCUT_SUB_SCHEMA = [
+  {
+    name: 'media_content_id',
+    type: 'string',
+    help: 'The content ID of the folder (use browser DevTools to find this)',
+  },
+  {
+    name: 'media_content_type',
+    type: 'string',
+    help: 'The content type (e.g., spotify://library)',
+  },
+  {
+    name: 'icon',
+    type: 'string',
+    help: 'Icon for the button (e.g., mdi:spotify). Default is bookmark icon.',
+  },
+  {
+    name: 'name',
+    type: 'string',
+    help: 'Tooltip/name for the shortcut button',
+  },
+];
+
 export const FAVORITES_SUB_SCHEMA = [
   {
     name: 'title',

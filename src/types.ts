@@ -103,11 +103,19 @@ export interface FavoritesConfig {
   typeMarginBottom?: string;
 }
 
+export interface MediaBrowserShortcut {
+  icon?: string;
+  name: string;
+  media_content_id: string;
+  media_content_type: string;
+}
+
 export interface MediaBrowserConfig {
   favorites?: FavoritesConfig;
   hideHeader?: boolean;
   itemsPerRow?: number;
   onlyFavorites?: boolean;
+  shortcut?: MediaBrowserShortcut;
 }
 
 export interface GroupsConfig {

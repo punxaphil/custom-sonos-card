@@ -1,16 +1,19 @@
 import { css, html, TemplateResult } from 'lit';
 import { BaseEditor } from '../base-editor';
-import { FAVORITES_SUB_SCHEMA, MEDIA_BROWSER_SCHEMA } from '../schema/media-browser-schema';
+import { FAVORITES_SUB_SCHEMA, MEDIA_BROWSER_SCHEMA, SHORTCUT_SUB_SCHEMA } from '../schema/media-browser-schema';
+import { MediaBrowserShortcut } from '../../types';
 
 class MediaBrowserTab extends BaseEditor {
   protected render(): TemplateResult {
     const mediaBrowserConfig = this.config.mediaBrowser ?? {};
     const favoritesConfig = mediaBrowserConfig.favorites ?? {};
+    const shortcutConfig = mediaBrowserConfig.shortcut ?? {};
     const exclude = favoritesConfig.exclude ?? [];
     const topItems = favoritesConfig.topItems ?? [];
 
     const mediaBrowserData = { ...mediaBrowserConfig };
     const favoritesData = { ...favoritesConfig, exclude: exclude.join(', '), topItems: topItems.join(', ') };
+    const shortcutData = { ...shortcutConfig };
 
     return html`
       <sonos-card-editor-form
@@ -19,6 +22,15 @@ class MediaBrowserTab extends BaseEditor {
         .hass=${this.hass}
         .data=${mediaBrowserData}
         .changed=${this.mediaBrowserChanged}
+      ></sonos-card-editor-form>
+
+      <h3>Shortcut</h3>
+      <sonos-card-editor-form
+        .schema=${SHORTCUT_SUB_SCHEMA}
+        .config=${this.config}
+        .hass=${this.hass}
+        .data=${shortcutData}
+        .changed=${this.shortcutChanged}
       ></sonos-card-editor-form>
 
       <h3>Favorites</h3>
@@ -48,6 +60,26 @@ class MediaBrowserTab extends BaseEditor {
       mediaBrowser: {
         ...(this.config.mediaBrowser ?? {}),
         ...changed,
+      },
+    };
+    this.configChanged();
+  };
+
+  private shortcutChanged = (ev: CustomEvent) => {
+    const changed = ev.detail.value;
+    const mediaBrowser = this.config.mediaBrowser ?? {};
+    // Remove empty values to clean up config
+    const shortcut = Object.fromEntries(
+      Object.entries({
+        ...(mediaBrowser.shortcut ?? {}),
+        ...changed,
+      }).filter(([, v]) => v !== '' && v !== undefined),
+    );
+    this.config = {
+      ...this.config,
+      mediaBrowser: {
+        ...mediaBrowser,
+        shortcut: Object.keys(shortcut).length > 0 ? (shortcut as unknown as MediaBrowserShortcut) : undefined,
       },
     };
     this.configChanged();

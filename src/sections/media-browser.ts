@@ -3,6 +3,7 @@ import { property, state } from 'lit/decorators.js';
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
+  mdiBookmark,
   mdiDotsVertical,
   mdiFolderStar,
   mdiFolderStarOutline,
@@ -17,7 +18,7 @@ import '../components/favorites-list';
 import '../components/favorites-icons';
 import { MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
-import { FavoritesConfig, MediaBrowserConfig, MediaPlayerItem } from '../types';
+import { FavoritesConfig, MediaBrowserConfig, MediaBrowserShortcut, MediaPlayerItem } from '../types';
 import { until } from 'lit-html/directives/until.js';
 import { indexOfWithoutSpecialChars } from '../utils/media-browse-utils';
 
@@ -52,6 +53,25 @@ export class MediaBrowser extends LitElement {
     this.initializeView();
     this.loadLayout();
   }
+
+  private onShortcutClick = () => {
+    const shortcut = this.store.config.mediaBrowser?.shortcut;
+    if (shortcut) {
+      // Navigate to browser view with the shortcut path
+      this.view = 'browser';
+      this.navigateIds = [
+        { media_content_id: undefined, media_content_type: undefined },
+        {
+          media_content_id: shortcut.media_content_id,
+          media_content_type: shortcut.media_content_type,
+          title: shortcut.name,
+        },
+      ];
+      this.currentTitle = shortcut.name || '';
+      this.saveCurrentState();
+      this.updateIsCurrentPathStart();
+    }
+  };
 
   private loadLayout() {
     const savedLayout = localStorage.getItem(LAYOUT_KEY) as LayoutType | null;
@@ -173,12 +193,15 @@ export class MediaBrowser extends LitElement {
     const hideHeader = mediaBrowserConfig.hideHeader ?? false;
     const onlyFavorites = mediaBrowserConfig.onlyFavorites ?? false;
 
+    const shortcut = mediaBrowserConfig.shortcut;
+
     return html`
       ${hideHeader
         ? ''
         : html`<div class="header">
             <div class="spacer"></div>
             <span class="title">${title}</span>
+            ${onlyFavorites ? '' : this.renderShortcutButton(shortcut)}
             ${onlyFavorites
               ? ''
               : html`<ha-icon-button
@@ -196,6 +219,33 @@ export class MediaBrowser extends LitElement {
           </div>`}
       ${this.renderFavoritesContent()}
     `;
+  }
+
+  private renderShortcutButton(shortcut: MediaBrowserShortcut | undefined) {
+    // Only show if all required properties are provided
+    if (!shortcut?.media_content_id || !shortcut?.media_content_type || !shortcut?.name) {
+      return '';
+    }
+    const icon = shortcut.icon ?? mdiBookmark;
+    const isActive = this.isInShortcutFolder(shortcut);
+    return html`
+      <ha-icon-button
+        class=${isActive ? 'shortcut-active' : ''}
+        @click=${this.onShortcutClick}
+        title=${shortcut.name}
+        .path=${icon.startsWith('mdi:') ? undefined : icon}
+      >
+        ${icon.startsWith('mdi:') ? html`<ha-icon .icon=${icon}></ha-icon>` : ''}
+      </ha-icon-button>
+    `;
+  }
+
+  private isInShortcutFolder(shortcut: MediaBrowserShortcut): boolean {
+    if (this.view !== 'browser' || this.navigateIds.length < 2) {
+      return false;
+    }
+    // Check if any item in the path matches the shortcut
+    return this.navigateIds.some((nav) => nav.media_content_id === shortcut.media_content_id);
   }
 
   private renderLayoutMenu() {
@@ -312,6 +362,7 @@ export class MediaBrowser extends LitElement {
     const canGoBack = this.navigateIds.length > 1;
     const hideHeader = mediaBrowserConfig.hideHeader ?? false;
     const title = this.currentTitle || 'Media Browser';
+    const shortcut = mediaBrowserConfig.shortcut;
 
     return html`
       ${hideHeader
@@ -321,6 +372,7 @@ export class MediaBrowser extends LitElement {
               ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
               : html`<div class="spacer"></div>`}
             <span class="title">${title}</span>
+            ${this.renderShortcutButton(shortcut)}
             <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
             <ha-icon-button
               class=${this.isCurrentPathStart ? 'startpath-active' : ''}
@@ -402,6 +454,9 @@ export class MediaBrowser extends LitElement {
         color: var(--primary-color);
       }
       ha-icon-button.startpath-active {
+        color: var(--accent-color);
+      }
+      ha-icon-button.shortcut-active {
         color: var(--accent-color);
       }
       sonos-ha-media-player-browse,
