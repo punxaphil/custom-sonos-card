@@ -75,13 +75,29 @@ sed -i '' 's/@customElement("ha-media-player-browse")/@customElement("sonos-ha-m
 
 # Apply Sonos Card customizations to grid layout
 echo "Applying Sonos Card grid customizations..."
-# Change grid item size from 175px to 100px for compact display (4 columns instead of 2)
+# Change grid item size heights and gap
 sed -i '' \
-  -e "s/width: '175px'/width: '100px'/g" \
   -e "s/height: '312px'/height: '180px'/g" \
   -e "s/height: '225px'/height: '150px'/g" \
   -e "s/gap: '16px'/gap: '8px'/g" \
   "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
+# Replace the hardcoded itemSize with getGridItemSize function call
+echo "Updating grid to use getGridItemSize..."
+sed -i '' "s/itemSize: {[^}]*width: '175px'[^}]*}/itemSize: getGridItemSize(this.itemsPerRow, childrenMediaClass.thumbnail_ratio === 'portrait')/g" \
+  "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
+# Add itemsPerRow property to the component
+echo "Adding itemsPerRow property..."
+sed -i '' '/public preferredLayout.*auto/a\
+\
+  @property({ type: Number }) public itemsPerRow?: number;
+' "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
+# Remove type import of LitVirtualizer (causes duplicate registration)
+echo "Fixing LitVirtualizer import..."
+sed -i '' '/^import type { LitVirtualizer }/d' "$UPSTREAM_DIR/ha-media-player-browse.ts"
+sed -i '' 's/private _virtualizer?: LitVirtualizer/private _virtualizer?: any/g' "$UPSTREAM_DIR/ha-media-player-browse.ts"
 
 # Reduce play button size for smaller grid items
 echo "Reducing play button size..."
@@ -92,13 +108,29 @@ sed -i '' \
   -e 's/right: calc(50% - 35px)/right: calc(50% - 20px)/g' \
   "$UPSTREAM_DIR/ha-media-player-browse.ts"
 
+# Update virtualizer.ts to conditionally register lit-virtualizer
+echo "Updating virtualizer.ts..."
+cat > "$UPSTREAM_DIR/resources/virtualizer.ts" << 'EOF'
+// @ts-nocheck
+import { LitVirtualizer } from '@lit-labs/virtualizer/LitVirtualizer.js';
+
+// Only register if not already defined (HA might have it already)
+if (!customElements.get('lit-virtualizer')) {
+    customElements.define('lit-virtualizer', LitVirtualizer);
+}
+
+export const loadVirtualizer = async (): Promise<void> => {
+    // Element is registered above via static import
+};
+EOF
+
 # Save version info
 echo "$RELEASE_TAG" > "$VERSION_FILE"
 echo "Synced: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> "$VERSION_FILE"
 
-# Add filterOutIgnoredMediaSources import to ha-media-player-browse.ts
-echo "Adding filterOutIgnoredMediaSources import..."
-sed -i '' '1s/^/import { filterOutIgnoredMediaSources } from '\''..\/utils\/media-browse-utils'\'';\n/' \
+# Add custom imports to ha-media-player-browse.ts
+echo "Adding custom imports..."
+sed -i '' '1s/^/import { filterOutIgnoredMediaSources, getGridItemSize } from '\''..\/utils\/media-browse-utils'\'';\n/' \
   "$UPSTREAM_DIR/ha-media-player-browse.ts"
 
 # Add @ts-nocheck to all upstream TypeScript files
@@ -112,7 +144,8 @@ done
 echo ""
 echo "✅ Synced from HA frontend release: $RELEASE_TAG"
 echo "✅ Component renamed to 'sonos-ha-media-player-browse'"
-echo "✅ Grid customizations applied (100px items, 8px gap)"
+echo "✅ Grid customizations applied (dynamic itemsPerRow width, 8px gap)"
+echo "✅ itemsPerRow property added for configurable grid columns"
 echo "✅ Non-audio media sources filtered (TTS, camera, images)"
 echo "✅ @ts-nocheck added to all upstream files"
 echo "✅ Version saved to $VERSION_FILE"

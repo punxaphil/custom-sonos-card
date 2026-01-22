@@ -1,5 +1,4 @@
 // @ts-nocheck
-import type { LitVirtualizer } from '@lit-labs/virtualizer';
 import { grid } from '@lit-labs/virtualizer/layouts/grid.js';
 
 import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from '@mdi/js';
@@ -28,7 +27,7 @@ import { loadVirtualizer } from './resources/virtualizer';
 import type { HomeAssistant } from 'custom-card-helpers';
 import { brandsUrl, extractDomainFromBrandUrl, isBrandUrl } from './util/brands-url';
 import { documentationUrl } from './util/documentation-url';
-import { filterOutIgnoredMediaSources } from '../utils/media-browse-utils';
+import { filterOutIgnoredMediaSources, getGridItemSize } from '../utils/media-browse-utils';
 // HA components are available at runtime - no need to import
 import type { ManualMediaPickedEvent } from './ha-browse-media-manual';
 import type { TtsMediaPickedEvent } from './ha-browse-media-tts';
@@ -75,6 +74,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ attribute: false })
   public preferredLayout: MediaPlayerLayoutType = 'auto';
 
+  @property({ type: Number }) public itemsPerRow?: number;
+
   @property({ type: Boolean }) public dialog = false;
 
   @property({ attribute: false }) public navigateIds: MediaPlayerItemId[] = [];
@@ -105,7 +106,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query('.content') private _content?: HTMLDivElement;
 
-  @query('lit-virtualizer') private _virtualizer?: LitVirtualizer;
+  @query('lit-virtualizer') private _virtualizer?: any;
 
   private _observed = false;
 
@@ -474,10 +475,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             <lit-virtualizer
                               scroller
                               .layout=${grid({
-                  itemSize: {
-                    width: '100px',
-                    height: childrenMediaClass.thumbnail_ratio === 'portrait' ? '180px' : '150px',
-                  },
+                  itemSize: getGridItemSize(this.itemsPerRow, childrenMediaClass.thumbnail_ratio === 'portrait'),
                   gap: '8px',
                   flex: { preserve: 'aspect-ratio' },
                   justify: 'space-evenly',

@@ -65,6 +65,41 @@ export function filterOutIgnoredMediaSources<T extends { media_content_id?: stri
   return items.filter((item) => !IGNORED_MEDIA_SOURCES.some((src) => item.media_content_id?.startsWith(src)));
 }
 
+/**
+ * Calculate grid item size based on itemsPerRow setting.
+ * Used by media browser to support configurable grid columns.
+ */
+export function getGridItemSize(
+  itemsPerRow: number | undefined,
+  isPortrait: boolean,
+): { width: string; height: string } {
+  const defaultWidth = 100;
+  const defaultHeight = isPortrait ? 180 : 150;
+
+  if (!itemsPerRow || itemsPerRow === 4) {
+    return { width: `${defaultWidth}px`, height: `${defaultHeight}px` };
+  }
+
+  // Width map based on typical card width (~400px)
+  const widthMap: Record<number, number> = {
+    1: 380,
+    2: 180,
+    3: 120,
+    4: 100,
+    5: 75,
+    6: 60,
+    7: 50,
+    8: 42,
+  };
+
+  const width = widthMap[itemsPerRow] || defaultWidth;
+  // Scale height proportionally to maintain aspect ratio
+  const scale = width / defaultWidth;
+  const height = Math.round(defaultHeight * scale);
+
+  return { width: `${width}px`, height: `${height}px` };
+}
+
 export function itemsWithFallbacks(mediaPlayerItems: MediaPlayerItem[], config: CardConfig): MediaPlayerItem[] {
   const itemsWithImage = hasItemsWithImage(mediaPlayerItems);
   return mediaPlayerItems.map((item) => {

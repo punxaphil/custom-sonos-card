@@ -387,6 +387,7 @@ export class MediaBrowser extends LitElement {
         .entityId=${activePlayer.id}
         .navigateIds=${this.navigateIds}
         .preferredLayout=${this.layout}
+        .itemsPerRow=${mediaBrowserConfig.itemsPerRow}
         .action=${'play'}
         @media-picked=${this.onMediaPicked}
         @media-browsed=${this.onMediaBrowsed}
