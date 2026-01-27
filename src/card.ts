@@ -200,7 +200,18 @@ export class Card extends LitElement {
       overflow: 'hidden',
       // only set borderRadius if this.config.style.borderRadius is set, otherwise the card looks weird with box-shadow
       ...(this.config.style?.borderRadius ? { borderRadius: this.config.style.borderRadius } : {}),
-      ...(this.config.baseFontSize ? { fontSize: `${this.config.baseFontSize}rem` } : {}),
+      ...(this.config.baseFontSize
+        ? {
+            fontSize: `${this.config.baseFontSize}rem`,
+            '--sonos-font-size': `${this.config.baseFontSize}rem`,
+            '--ha-font-size-s': '0.75em',
+            '--ha-font-size-m': '0.875em',
+            '--ha-font-size-l': '1em',
+            '--ha-font-size-xl': '1.125em',
+            '--ha-font-size-2xl': '1.25em',
+            '--ha-font-size-4xl': '1.5em',
+          }
+        : {}),
       ...(this.config.fontFamily
         ? {
             fontFamily: this.config.fontFamily,
@@ -289,7 +300,7 @@ export class Card extends LitElement {
         margin: 0.4rem 0;
         text-align: center;
         font-weight: bold;
-        font-size: 1.2rem;
+        font-size: calc(var(--sonos-font-size, 1rem) * 1.2);
         color: var(--secondary-text-color);
       }
       .no-players {

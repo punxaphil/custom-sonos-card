@@ -100,7 +100,7 @@ export class FavoritesIcons extends LitElement {
         }
 
         .title {
-          font-size: 0.8rem;
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.8);
           position: absolute;
           width: 100%;
           line-height: 160%;

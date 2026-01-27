@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import '../components/group';
@@ -27,6 +27,6 @@ export class Groups extends LitElement {
     `;
   }
   static get styles() {
-    return listStyle;
+    return [listStyle, css``];
   }
 }

@@ -144,7 +144,7 @@ class Volume extends LitElement {
       }
 
       .volume-level {
-        font-size: x-small;
+        font-size: calc(var(--sonos-font-size, 1rem) * 0.75);
         display: flex;
       }
 

@@ -103,7 +103,7 @@ class Group extends LitElement {
 
       .row {
         display: flex;
-        margin: 1rem 0;
+        margin: 1em 0;
         align-items: center;
       }
 
@@ -115,43 +115,43 @@ class Group extends LitElement {
 
       .speakers {
         white-space: initial;
-        font-size: 1.1rem;
+        font-size: calc(var(--sonos-font-size, 1rem) * 1.1);
         font-weight: bold;
         color: var(--secondary-text-color);
       }
 
       .song-title {
-        font-size: 0.9rem;
+        font-size: calc(var(--sonos-font-size, 1rem) * 0.9);
         font-weight: bold;
       }
 
       .icons {
         text-align: center;
         margin: 0;
-        min-width: 5rem;
-        max-width: 5rem;
+        min-width: 5em;
+        max-width: 5em;
       }
 
       .icons[empty] {
-        min-width: 1rem;
-        max-width: 1rem;
+        min-width: 1em;
+        max-width: 1em;
       }
 
       ha-icon {
-        --mdc-icon-size: 3rem;
-        margin: 1rem;
+        --mdc-icon-size: 3em;
+        margin: 1em;
       }
 
       ha-icon.small {
-        --mdc-icon-size: 2rem;
+        --mdc-icon-size: 2em;
         margin: 0;
       }
 
       .compact ha-icon {
-        --mdc-icon-size: 2rem;
+        --mdc-icon-size: 2em;
       }
       .compact div {
-        margin: 0.1rem;
+        margin: 0.1em;
       }
     `;
   }

@@ -438,7 +438,7 @@ export class MediaBrowser extends LitElement {
       .title {
         flex: 1;
         font-weight: 500;
-        font-size: 1.1em;
+        font-size: calc(var(--sonos-font-size, 1rem) * 1.1);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

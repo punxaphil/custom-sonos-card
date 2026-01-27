@@ -86,9 +86,9 @@ export class Volumes extends LitElement {
     return relatedEntities.map((relatedEntity: HassEntity) => {
       relatedEntity.attributes.friendly_name =
         relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
-      const fontSize = this.config.volumes?.additionalControlsFontSize ?? 12;
+      const fontSize = this.config.volumes?.additionalControlsFontSize ?? 0.75;
       return html`
-        <div style="--ha-font-size-m: ${fontSize}px">
+        <div style="--ha-font-size-m: ${fontSize}rem">
           <state-card-content .stateObj=${relatedEntity} .hass=${this.store.hass}></state-card-content>
         </div>
       `;
@@ -132,7 +132,7 @@ export class Volumes extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        font-size: 1.1rem;
+        font-size: calc(var(--sonos-font-size, 1rem) * 1.1);
         font-weight: bold;
         min-height: 1rem;
       }

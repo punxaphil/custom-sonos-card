@@ -75,7 +75,7 @@ class MediaRow extends LitElement {
         }
 
         .title {
-          font-size: 1.1rem;
+          font-size: calc(var(--sonos-font-size, 1rem) * 1.1);
           align-self: center;
           flex: 1;
         }

@@ -343,8 +343,8 @@ groups:
   compact: true # default is false. Makes the groups section more compact.
   hideCurrentTrack: true # default is false, which means song/track info for groups will be shown
   itemMargin: '5px' # default is '1rem'. Use this to change the margin around groups list items.
-  speakersFontSize: 1.2 # default is 1.1. Unit is 'rem'. Use this to change the font size of the speakers name.
-  titleFontSize: 1 # default is 0.9. Unit is 'rem'. Use this to change the font size of the track title.
+  speakersFontSize: 1.2 # default is 1.1. Unit is 'em'. Use this to change the font size of the speakers name.
+  titleFontSize: 1 # default is 0.9. Unit is 'em'. Use this to change the font size of the track title.
 ```
 
 ### Grouping Configuration
@@ -355,7 +355,7 @@ grouping:
   compact: true # default is false. Makes the grouping section more compact.
   dontSwitchPlayer: true # default is false. Will not switch to another player if main player is ungrouped.
   buttonColor: black # default is theme accent color. Use this to change the background/accent color of grouping buttons.
-  buttonFontSize: 1.2 # default is 1. Unit is 'rem'. Use this to change the font size of grouping buttons.
+  buttonFontSize: 1.2 # default is 1. Unit is 'em'. Use this to change the font size of grouping buttons.
   buttonIcons: # Use this to set custom icons for the grouping buttons.
     predefinedGroup: mdi:account-group # default is mdi:speaker-multiple
     joinAll: mdi:account-multiple # default is mdi:checkbox-multiple-marked-outline
@@ -371,7 +371,7 @@ grouping:
 ```yaml
 volumes:
   title: '' # default is empty. Use this to change the title for the volumes section.
-  additionalControlsFontSize: 14 # default is 12. Font size in pixels for additional controls (e.g., Bass, Treble, Audio delay).
+  additionalControlsFontSize: 0.9 # default is 0.75. Unit is 'em'. Font size for additional controls (e.g., Bass, Treble, Audio delay).
   hideCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
   labelForAllSlider: 'All volumes' # default is 'All'. Use this to change the label for the all volumes slider.
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.

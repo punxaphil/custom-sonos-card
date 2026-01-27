@@ -42,7 +42,7 @@ When adding a new configuration option, update ALL of the following:
   - Study the README.md and the create_dist script for more information. 
 
 # Deployment
-- ALWAYS run `./scripts/deploy.sh` after implementing any code changes
+- ALWAYS run `npm run deploy` after implementing any code changes (it builds automatically, don't build separately)
 - On first run, you'll be prompted to create a long-lived access token in HA (Profile → Long-Lived Access Tokens)
 - Navigate to `${HA_URL}${HA_TEST_PAGE}` to verify changes (HA_URL and HA_TEST_PAGE are defined in `.env`)
 - When using Playwright to verify changes, navigate to `${HA_URL}${HA_TEST_PAGE}`, use HA_USER and HA_PASSWORD from `.env` for login credentials, and click "Keep me logged in"

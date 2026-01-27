@@ -38,7 +38,7 @@ export class SleepTimer extends LitElement {
       #sleepTimer {
         display: flex;
         color: var(--primary-text-color);
-        gap: 7px;
+        gap: 0.5em;
       }
 
       #sleepTimerAlarm {

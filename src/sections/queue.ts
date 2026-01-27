@@ -116,7 +116,7 @@ export class Queue extends LitElement {
         }
         .title {
           text-align: center;
-          font-size: 1.2rem;
+          font-size: calc(var(--sonos-font-size, 1rem) * 1.2);
           font-weight: bold;
           align-items: center;
           justify-content: center;
@@ -124,8 +124,10 @@ export class Queue extends LitElement {
         }
         .list {
           overflow: auto;
-          --mdc-icon-button-size: 1.5rem;
-          --mdc-icon-size: 1rem;
+          --mdc-icon-button-size: 1.5em;
+          --mdc-icon-size: 1em;
+        }
+        mwc-list {
         }
         *[selected] {
           color: var(--accent-color);
