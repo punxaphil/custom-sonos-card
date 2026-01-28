@@ -43,10 +43,14 @@ When adding a new configuration option, update ALL of the following:
 
 # Upstream folder
 - The `src/upstream/` folder contains code synced from Home Assistant frontend via `scripts/sync-upstream.sh`.
-- **AVOID modifying files in `src/upstream/` directly** - every change requires updating the sync script to reapply patches.
+- **AVOID modifying files in `src/upstream/` directly** - changes require regenerating the patch file.
 - Instead, extract custom logic to `src/utils/` or other folders outside upstream.
 - Pass data/callbacks from the component that uses upstream code (e.g., `media-browser.ts` → `ha-media-player-browse.ts`).
-- If upstream changes ARE necessary, also update `scripts/sync-upstream.sh` with the corresponding sed commands to reapply the change after syncing.
+- If upstream changes ARE necessary, regenerate the patch file:
+  ```bash
+  curl -sf "https://raw.githubusercontent.com/home-assistant/frontend/[VERSION]/src/components/media-player/ha-media-player-browse.ts" -o /tmp/upstream.ts
+  diff -u /tmp/upstream.ts src/upstream/ha-media-player-browse.ts > patches/ha-media-player-browse.patch
+  ```
 
 # Deployment
 - ALWAYS run `npm run deploy` after implementing any code changes (it builds automatically, don't build separately)
