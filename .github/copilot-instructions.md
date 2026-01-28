@@ -41,6 +41,13 @@ When adding a new configuration option, update ALL of the following:
   - For readme stuff, use ONLY_SONOS_CARD, ONLY_SONOS_CARD_END, and ONLY_SONOS_CARD_START to show/hide docs for different cards. 
   - Study the README.md and the create_dist script for more information. 
 
+# Upstream folder
+- The `src/upstream/` folder contains code synced from Home Assistant frontend via `scripts/sync-upstream.sh`.
+- **AVOID modifying files in `src/upstream/` directly** - every change requires updating the sync script to reapply patches.
+- Instead, extract custom logic to `src/utils/` or other folders outside upstream.
+- Pass data/callbacks from the component that uses upstream code (e.g., `media-browser.ts` → `ha-media-player-browse.ts`).
+- If upstream changes ARE necessary, also update `scripts/sync-upstream.sh` with the corresponding sed commands to reapply the change after syncing.
+
 # Deployment
 - ALWAYS run `npm run deploy` after implementing any code changes (it builds automatically, don't build separately)
 - On first run, you'll be prompted to create a long-lived access token in HA (Profile → Long-Lived Access Tokens)

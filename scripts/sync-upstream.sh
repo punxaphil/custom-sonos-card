@@ -94,6 +94,47 @@ sed -i '' '/public preferredLayout.*auto/a\
   @property({ type: Number }) public itemsPerRow?: number;
 ' "$UPSTREAM_DIR/ha-media-player-browse.ts"
 
+# Add flex-grid rendering for custom itemsPerRow (percentage-based, adapts to container width)
+echo "Adding flex-grid rendering for custom itemsPerRow..."
+sed -i '' "/: this.hass.localize('ui.components.media-browser.no_items')}/a\\
+\\
+                        \`\\
+              : this.itemsPerRow !== 4 // 4 is default, handled by lit-virtualizer below\\
+                ? html\`\\
+                    <div class=\"children flex-grid\" style=\"--items-per-row: \${this.itemsPerRow}\">\\
+                      \${children.map((child) => this._renderGridItem(child))}\\
+                    </div>\\
+                    \${currentItem.not_shown\\
+                      ? html\`\\
+                          <div class=\"grid not-shown\">\\
+                            <div class=\"title\">\\
+                              \${this.hass.localize('ui.components.media-browser.not_shown', {\\
+                                count: currentItem.not_shown,\\
+                              })}\\
+                            </div>\\
+                          </div>\\
+                        \`\\
+                      : ''}\\
+                  \`
+" "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
+# Add flex-grid CSS styles
+echo "Adding flex-grid CSS..."
+sed -i '' '/padding: 16px;$/a\
+\        }\
+\
+\        div.children.flex-grid {\
+\          display: flex;\
+\          flex-wrap: wrap;\
+\          padding: 4px;\
+\          gap: 8px;\
+\        }\
+\
+\        .flex-grid .child {\
+\          /* 8px gap between items, so subtract gap*(n-1)/n ≈ gap for simplicity */\
+\          width: calc(100% / var(--items-per-row) - 8px);
+' "$UPSTREAM_DIR/ha-media-player-browse.ts"
+
 # Remove type import of LitVirtualizer (causes duplicate registration)
 echo "Fixing LitVirtualizer import..."
 sed -i '' '/^import type { LitVirtualizer }/d' "$UPSTREAM_DIR/ha-media-player-browse.ts"
