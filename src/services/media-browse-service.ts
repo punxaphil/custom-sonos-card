@@ -32,8 +32,14 @@ export default class MediaBrowseService {
   }
 
   private removeDuplicates(items: MediaPlayerItem[]) {
-    return items.filter((item, index, all) => {
-      return index === all.findIndex((current) => current.title === item.title);
+    const seen = new Set<string>();
+    return items.filter((item) => {
+      const key = item.media_content_id || item.title;
+      if (!key || seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
     });
   }
 
