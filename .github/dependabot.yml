@@ -9,6 +9,13 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "eslint"
+        versions: [">=10"]
+      - dependency-name: "@eslint/js"
+        versions: [">=10"]
+      - dependency-name: "@types/eslint__js"
+        versions: [">=10"]
     groups:
       dev-deps:
         dependency-type: "development"
