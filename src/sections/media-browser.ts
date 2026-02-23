@@ -22,6 +22,8 @@ import { MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
 import { FavoritesConfig, MediaBrowserConfig, MediaBrowserShortcut, MediaPlayerItem } from '../types';
 import { indexOfWithoutSpecialChars } from '../utils/media-browse-utils';
+import { keyed } from 'lit/directives/keyed.js';
+import { styleMap } from 'lit/directives/style-map.js';
 
 type LayoutType = 'auto' | 'grid' | 'list';
 type ViewType = 'favorites' | 'browser';
@@ -276,18 +278,31 @@ export class MediaBrowser extends LitElement {
   }
 
   private renderLayoutMenu() {
+    const selectedStyle = { color: 'var(--accent-color)' };
     return html`
       <ha-dropdown @wa-select=${this.handleMenuAction}>
         <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
-        <ha-dropdown-item value="auto" .selected=${this.layout === 'auto'}>
+        <ha-dropdown-item
+          value="auto"
+          .selected=${this.layout === 'auto'}
+          style=${styleMap(this.layout === 'auto' ? selectedStyle : {})}
+        >
           <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
           Auto
         </ha-dropdown-item>
-        <ha-dropdown-item value="grid" .selected=${this.layout === 'grid'}>
+        <ha-dropdown-item
+          value="grid"
+          .selected=${this.layout === 'grid'}
+          style=${styleMap(this.layout === 'grid' ? selectedStyle : {})}
+        >
           <ha-svg-icon slot="icon" .path=${mdiGrid}></ha-svg-icon>
           Grid
         </ha-dropdown-item>
-        <ha-dropdown-item value="list" .selected=${this.layout === 'list'}>
+        <ha-dropdown-item
+          value="list"
+          .selected=${this.layout === 'list'}
+          style=${styleMap(this.layout === 'list' ? selectedStyle : {})}
+        >
           <ha-svg-icon slot="icon" .path=${mdiListBoxOutline}></ha-svg-icon>
           List
         </ha-dropdown-item>
@@ -395,16 +410,19 @@ export class MediaBrowser extends LitElement {
             ></ha-icon-button>
             ${this.renderLayoutMenu()}
           </div>`}
-      <sonos-ha-media-player-browse
-        .hass=${this.store.hass}
-        .entityId=${activePlayer.id}
-        .navigateIds=${this.navigateIds}
-        .preferredLayout=${this.layout}
-        .itemsPerRow=${mediaBrowserConfig.itemsPerRow}
-        .action=${'play'}
-        @media-picked=${this.onMediaPicked}
-        @media-browsed=${this.onMediaBrowsed}
-      ></sonos-ha-media-player-browse>
+      ${keyed(
+        this.layout,
+        html`<sonos-ha-media-player-browse
+          .hass=${this.store.hass}
+          .entityId=${activePlayer.id}
+          .navigateIds=${this.navigateIds}
+          .preferredLayout=${this.layout}
+          .itemsPerRow=${mediaBrowserConfig.itemsPerRow}
+          .action=${'play'}
+          @media-picked=${this.onMediaPicked}
+          @media-browsed=${this.onMediaBrowsed}
+        ></sonos-ha-media-player-browse>`,
+      )}
     `;
   }
 

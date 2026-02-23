@@ -476,6 +476,34 @@ export class HaMediaPlayerBrowse extends LitElement {
                   : this.hass.localize('ui.components.media-browser.no_items')}
                           </div>
                         `
+              : this.preferredLayout === 'list'
+                ? html`
+                            <ha-list>
+                              <lit-virtualizer
+                                scroller
+                                .items=${children}
+                                style=${styleMap({
+                  height: `${children.length * 72 + 26}px`,
+                })}
+                                .renderItem=${this._renderListItem}
+                              ></lit-virtualizer>
+                              ${currentItem.not_shown
+                    ? html`
+                                    <ha-list-item
+                                      noninteractive
+                                      class="not-shown"
+                                      .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}
+                                    >
+                                      <span class="title">
+                                        ${this.hass.localize('ui.components.media-browser.not_shown', {
+                      count: currentItem.not_shown,
+                    })}
+                                      </span>
+                                    </ha-list-item>
+                                  `
+                    : ''}
+                            </ha-list>
+                          `
               : this.itemsPerRow // Use fixed grid when itemsPerRow is specified
                 ? html`
                     <div class="children flex-grid" style="--items-per-row: ${this.itemsPerRow}">
