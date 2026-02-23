@@ -128,6 +128,12 @@ export default class Store {
     const hassWithEntities = hass as HomeAssistantWithEntities;
     const filtered = Object.values(hass.states).filter((hassEntity) => {
       if (hassEntity.entity_id.includes('media_player')) {
+        if (
+          this.config.allowPlayerVolumeEntityOutsideOfGroup &&
+          hassEntity.entity_id === this.config.player?.volumeEntityId
+        ) {
+          return true;
+        }
         if (isSonosCard(this.config)) {
           return entityMatchSonos(this.config, hassEntity, hassWithEntities);
         } else {
