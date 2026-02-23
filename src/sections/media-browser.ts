@@ -1,5 +1,5 @@
 import { css, html, LitElement, nothing } from 'lit';
-import { property, state, query } from 'lit/decorators.js';
+import { property, query, state } from 'lit/decorators.js';
 import {
   mdiAlphaABoxOutline,
   mdiArrowLeft,
@@ -21,7 +21,6 @@ import '../components/favorites-icons';
 import { MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
 import { FavoritesConfig, MediaBrowserConfig, MediaBrowserShortcut, MediaPlayerItem } from '../types';
-import { until } from 'lit-html/directives/until.js';
 import { indexOfWithoutSpecialChars } from '../utils/media-browse-utils';
 
 type LayoutType = 'auto' | 'grid' | 'list';
@@ -51,12 +50,35 @@ export class MediaBrowser extends LitElement {
   @state() private view: ViewType = 'favorites';
   @state() private playAllLoading = false;
   @state() private mediaLoaded = false;
+  @state() private cachedFavorites: MediaPlayerItem[] | null = null;
+  private cachedFavoritesPlayerId: string | null = null;
   @query('sonos-ha-media-player-browse') private mediaBrowser?: HaMediaPlayerBrowse;
 
   connectedCallback() {
     super.connectedCallback();
     this.initializeView();
     this.loadLayout();
+    if (this.view === 'favorites') {
+      this.loadFavorites();
+    }
+  }
+
+  willUpdate(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has('store') && this.view === 'favorites') {
+      const playerId = this.store?.activePlayer?.id;
+      if (playerId && playerId !== this.cachedFavoritesPlayerId) {
+        this.loadFavorites();
+      }
+    }
+  }
+
+  private async loadFavorites() {
+    const playerId = this.store?.activePlayer?.id;
+    if (!playerId) {
+      return;
+    }
+    this.cachedFavoritesPlayerId = playerId;
+    this.cachedFavorites = await this.getFavorites();
   }
 
   private onShortcutClick = () => {
@@ -173,6 +195,7 @@ export class MediaBrowser extends LitElement {
     this.currentTitle = '';
     this.saveCurrentState();
     this.updateIsCurrentPathStart();
+    this.loadFavorites();
   };
 
   private goToBrowser = () => {
@@ -273,37 +296,30 @@ export class MediaBrowser extends LitElement {
   }
 
   private renderFavoritesContent() {
+    if (!this.cachedFavorites) {
+      return nothing;
+    }
+    if (!this.cachedFavorites.length) {
+      return html`<div class="no-items">No favorites found</div>`;
+    }
     const useGrid = this.layout !== 'list';
-
-    return html`
-      ${until(
-        this.getFavorites()
-          .then((items) => {
-            if (items?.length) {
-              if (useGrid) {
-                return html`
-                  <sonos-favorites-icons
-                    .items=${items}
-                    .store=${this.store}
-                    @item-selected=${this.onFavoriteSelected}
-                  ></sonos-favorites-icons>
-                `;
-              } else {
-                return html`
-                  <sonos-favorites-list
-                    .items=${items}
-                    .store=${this.store}
-                    @item-selected=${this.onFavoriteSelected}
-                  ></sonos-favorites-list>
-                `;
-              }
-            } else {
-              return html`<div class="no-items">No favorites found</div>`;
-            }
-          })
-          .catch((e) => html`<div class="no-items">Failed to fetch favorites. ${e.message ?? JSON.stringify(e)}</div>`),
-      )}
-    `;
+    if (useGrid) {
+      return html`
+        <sonos-favorites-icons
+          .items=${this.cachedFavorites}
+          .store=${this.store}
+          @item-selected=${this.onFavoriteSelected}
+        ></sonos-favorites-icons>
+      `;
+    } else {
+      return html`
+        <sonos-favorites-list
+          .items=${this.cachedFavorites}
+          .store=${this.store}
+          @item-selected=${this.onFavoriteSelected}
+        ></sonos-favorites-list>
+      `;
+    }
   }
 
   private async getFavorites() {
