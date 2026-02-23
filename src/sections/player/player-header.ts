@@ -1,9 +1,9 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import Store from '../model/store';
-import { PlayerConfig } from '../types';
-import { getSpeakerList } from '../utils/utils';
-import { MediaPlayer } from '../model/media-player';
+import Store from '../../model/store';
+import { PlayerConfig } from '../../types';
+import { getSpeakerList } from '../../utils/utils';
+import { MediaPlayer } from '../../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit/directives/style-map.js';

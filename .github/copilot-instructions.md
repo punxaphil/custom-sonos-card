@@ -5,8 +5,8 @@
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
 - Prefer direct returns, destructuring, and small helper functions.
 - If a variable adds clarity, name it descriptively and keep its scope minimal.
-- Files should never be longer than 100 lines.
-- Methods should never be longer than 20 lines.
+- Files should never be longer than 200 lines.
+- Methods should never be longer than 40 lines.
 - Never use `eslint-disable` or `/* eslint-disable */` comments to silence linter errors; instead fix the underlying issue
 - No jsdoc. No comments needed. Code explains itself
 - Prefer composition to inheritance.

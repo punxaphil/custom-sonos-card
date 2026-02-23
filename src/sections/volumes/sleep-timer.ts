@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { property, query } from 'lit/decorators.js';
-import Store from '../model/store';
-import { MediaPlayer } from '../model/media-player';
+import Store from '../../model/store';
+import { MediaPlayer } from '../../model/media-player';
 import { mdiAlarm, mdiCheckCircle, mdiCloseCircle } from '@mdi/js';
 
 export class SleepTimer extends LitElement {

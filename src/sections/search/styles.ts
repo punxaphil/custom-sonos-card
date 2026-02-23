@@ -1,5 +1,5 @@
 import { css } from 'lit';
-import { sectionCommonStyles } from './section-common.styles';
+import { sectionCommonStyles } from '../section-common.styles';
 
 export const searchStyles = [
   sectionCommonStyles,

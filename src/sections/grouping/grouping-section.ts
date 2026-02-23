@@ -1,14 +1,14 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import { when } from 'lit/directives/when.js';
-import MediaControlService from '../services/media-control-service';
-import Store from '../model/store';
-import { dispatchActivePlayerId, getGroupingChanges, getGroupPlayerIds } from '../utils/utils';
-import { listStyle } from '../constants';
-import { MediaPlayer } from '../model/media-player';
-import '../components/grouping-button';
-import { CardConfig, GroupingConfig, PredefinedGroup } from '../types';
-import { GroupingItem } from '../model/grouping-item';
+import MediaControlService from '../../services/media-control-service';
+import Store from '../../model/store';
+import { dispatchActivePlayerId, getGroupingChanges, getGroupPlayerIds } from '../../utils/utils';
+import { listStyle } from '../../constants';
+import { MediaPlayer } from '../../model/media-player';
+import './grouping-button';
+import { CardConfig, GroupingConfig, PredefinedGroup } from '../../types';
+import { GroupingItem } from '../../model/grouping-item';
 
 export class Grouping extends LitElement {
   @property({ attribute: false }) store!: Store;

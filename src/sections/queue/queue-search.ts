@@ -1,7 +1,7 @@
 import { html, LitElement, nothing, PropertyValues } from 'lit';
 import { property, state, query } from 'lit/decorators.js';
 import { mdiMagnify, mdiChevronUp, mdiChevronDown, mdiCheckAll, mdiEyeCheck, mdiClose } from '@mdi/js';
-import { QueueSearchMatch } from '../types';
+import { QueueSearchMatch } from '../../types';
 import { queueSearchStyles } from './queue-search.styles';
 
 export class QueueSearch extends LitElement {

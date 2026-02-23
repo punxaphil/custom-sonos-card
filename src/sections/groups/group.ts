@@ -1,11 +1,11 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import Store from '../model/store';
-import { dispatchActivePlayerId, getSpeakerList } from '../utils/utils';
-import { SESSION_STORAGE_PLAYER_ID } from '../constants';
-import { MediaPlayer } from '../model/media-player';
-import './playing-bars';
+import Store from '../../model/store';
+import { dispatchActivePlayerId, getSpeakerList } from '../../utils/utils';
+import { SESSION_STORAGE_PLAYER_ID } from '../../constants';
+import { MediaPlayer } from '../../model/media-player';
+import '../../components/playing-bars';
 
 class Group extends LitElement {
   @property({ attribute: false }) store!: Store;

@@ -1,15 +1,15 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import '../components/player-controls';
-import '../components/player-header';
-import '../components/progress';
-import '../components/volume';
+import './player-controls';
+import './player-header';
+import './progress';
+import '../../components/volume';
 
-import Store from '../model/store';
-import { CardConfig, PlayerConfig } from '../types';
+import Store from '../../model/store';
+import { CardConfig, PlayerConfig } from '../../types';
 
-import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../constants';
-import { MediaPlayer } from '../model/media-player';
+import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../../constants';
+import { MediaPlayer } from '../../model/media-player';
 
 export class Player extends LitElement {
   @property({ attribute: false }) store!: Store;

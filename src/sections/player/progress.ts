@@ -1,7 +1,7 @@
 import { css, html, LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import Store from '../model/store';
-import { MediaPlayer } from '../model/media-player';
+import Store from '../../model/store';
+import { MediaPlayer } from '../../model/media-player';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
 class Progress extends LitElement {

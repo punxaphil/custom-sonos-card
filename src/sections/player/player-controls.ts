@@ -1,8 +1,8 @@
 import { css, html, LitElement, nothing, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import MediaControlService from '../services/media-control-service';
-import Store from '../model/store';
-import { CardConfig, PlayerConfig } from '../types';
+import MediaControlService from '../../services/media-control-service';
+import Store from '../../model/store';
+import { CardConfig, PlayerConfig } from '../../types';
 import {
   mdiFastForward,
   mdiHeart,
@@ -17,9 +17,9 @@ import {
   mdiVolumeMinus,
   mdiVolumePlus,
 } from '@mdi/js';
-import { MediaPlayer } from '../model/media-player';
-import { findPlayer } from '../utils/utils';
-import MediaBrowseService from '../services/media-browse-service';
+import { MediaPlayer } from '../../model/media-player';
+import { findPlayer } from '../../utils/utils';
+import MediaBrowseService from '../../services/media-browse-service';
 
 class PlayerControls extends LitElement {
   @property({ attribute: false }) store!: Store;

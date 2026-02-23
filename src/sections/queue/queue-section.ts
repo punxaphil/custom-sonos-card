@@ -1,21 +1,21 @@
 import { html, LitElement, nothing, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import Store from '../model/store';
-import { MediaPlayer } from '../model/media-player';
-import { listStyle, MEDIA_ITEM_SELECTED } from '../constants';
-import { customEvent, delay } from '../utils/utils';
-import { clearSelection, invertSelection, updateSelection } from '../utils/selection-utils';
-import { getParallelBatch, recalculateIndicesAfterDeletion } from '../utils/batch-operation-utils';
+import Store from '../../model/store';
+import { MediaPlayer } from '../../model/media-player';
+import { listStyle, MEDIA_ITEM_SELECTED } from '../../constants';
+import { customEvent, delay } from '../../utils/utils';
+import { clearSelection, invertSelection, updateSelection } from '../../utils/selection-utils';
+import { getParallelBatch, recalculateIndicesAfterDeletion } from '../../utils/batch-operation-utils';
 import { mdiCheckboxMultipleMarkedOutline, mdiCloseBoxMultipleOutline, mdiTrashCanOutline } from '@mdi/js';
-import '../components/media-row';
-import '../components/queue-search';
-import '../components/selection-actions';
-import '../components/operation-overlay';
-import '../components/play-menu';
-import { MASS_QUEUE_NOT_INSTALLED, MediaPlayerItem, OperationProgress, QueueSearchMatch } from '../types';
-import type { PlayMenuAction } from '../components/play-menu';
-import type { EnqueueMode } from '../services/music-assistant-service';
-import { queueStyles } from './queue.styles';
+import '../../components/media-row';
+import './queue-search';
+import '../../components/selection-actions';
+import '../../components/operation-overlay';
+import '../../components/play-menu';
+import { MASS_QUEUE_NOT_INSTALLED, MediaPlayerItem, OperationProgress, QueueSearchMatch } from '../../types';
+import type { PlayMenuAction } from '../../components/play-menu';
+import type { EnqueueMode } from '../../services/music-assistant-service';
+import { queueStyles } from './styles';
 
 export class Queue extends LitElement {
   @property() store!: Store;

@@ -1,10 +1,10 @@
 import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
-import '../components/group';
-import Store from '../model/store';
-import { listStyle } from '../constants';
-import { MediaPlayer } from '../model/media-player';
+import './group';
+import Store from '../../model/store';
+import { listStyle } from '../../constants';
+import { MediaPlayer } from '../../model/media-player';
 
 export class Groups extends LitElement {
   @property({ attribute: false }) store!: Store;

@@ -1,10 +1,10 @@
 import { html, LitElement, nothing, PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import Store from '../model/store';
-import { listStyle, MEDIA_ITEM_SELECTED } from '../constants';
-import { customEvent } from '../utils/utils';
-import { clearSelection, invertSelection, updateSelection } from '../utils/selection-utils';
-import { queueItemsAfterCurrent } from '../utils/batch-operation-utils';
+import Store from '../../model/store';
+import { listStyle, MEDIA_ITEM_SELECTED } from '../../constants';
+import { customEvent } from '../../utils/utils';
+import { clearSelection, invertSelection, updateSelection } from '../../utils/selection-utils';
+import { queueItemsAfterCurrent } from '../../utils/batch-operation-utils';
 import {
   mdiAccessPoint,
   mdiAccount,
@@ -25,15 +25,15 @@ import {
   mdiSkipNext,
   mdiSkipNextCircle,
 } from '@mdi/js';
-import '../components/media-row';
-import '../components/operation-overlay';
-import '../components/selection-actions';
-import '../components/play-menu';
-import { MediaPlayerItem, OperationProgress, SearchMediaType, SearchResultItem } from '../types';
-import type { EnqueueMode } from '../services/music-assistant-service';
-import type { PlayMenuAction } from '../components/play-menu';
-import { MusicAssistantService } from '../services/music-assistant-service';
-import { searchStyles } from './search.styles';
+import '../../components/media-row';
+import '../../components/operation-overlay';
+import '../../components/selection-actions';
+import '../../components/play-menu';
+import { MediaPlayerItem, OperationProgress, SearchMediaType, SearchResultItem } from '../../types';
+import type { EnqueueMode } from '../../services/music-assistant-service';
+import type { PlayMenuAction } from '../../components/play-menu';
+import { MusicAssistantService } from '../../services/music-assistant-service';
+import { searchStyles } from './styles';
 
 const LOCAL_STORAGE_KEY = 'sonos-search-state';
 

@@ -1,15 +1,15 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import Store from '../model/store';
-import { CardConfig } from '../types';
+import Store from '../../model/store';
+import { CardConfig } from '../../types';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
 import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
-import MediaControlService from '../services/media-control-service';
-import { MediaPlayer } from '../model/media-player';
-import HassService from '../services/hass-service';
+import MediaControlService from '../../services/media-control-service';
+import { MediaPlayer } from '../../model/media-player';
+import HassService from '../../services/hass-service';
 import { HassEntity } from 'home-assistant-js-websocket';
-import '../components/sleep-timer';
+import './sleep-timer';
 
 export class Volumes extends LitElement {
   @property({ attribute: false }) store!: Store;
