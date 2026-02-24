@@ -7,8 +7,7 @@ import { MEDIA_ITEM_SELECTED } from '../../../constants';
 import { customEvent } from '../../../utils/utils';
 import { FavoritesConfig, MediaPlayerItem } from '../../../types';
 import { indexOfWithoutSpecialChars } from '../../../utils/media-browse-utils';
-
-type LayoutType = 'auto' | 'grid' | 'list';
+import { LayoutType } from '../media-browser.types';
 
 export class Favorites extends LitElement {
   @property({ attribute: false }) store!: Store;

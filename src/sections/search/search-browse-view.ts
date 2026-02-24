@@ -7,7 +7,8 @@ import { toMediaPlayerItem, getMediaTypeIcon } from './search-utils';
 import '../../components/media-row';
 import { mdiAccessPoint, mdiArrowLeft, mdiPlay, mdiPlayBoxMultiple, mdiPlaylistPlus, mdiSkipNext, mdiSkipNextCircle } from '@mdi/js';
 import { SearchResultItem } from './search.types';
-import type { EnqueueMode, MusicAssistantService } from '../../services/music-assistant-service';
+import type { EnqueueMode } from '../../types';
+import type { MusicAssistantService } from '../../services/music-assistant-service';
 
 export class SearchBrowseView extends LitElement {
   @property({ attribute: false }) store!: Store;

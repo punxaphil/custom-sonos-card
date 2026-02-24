@@ -1,14 +1,13 @@
 import { html, TemplateResult } from 'lit';
-import { BaseEditor, Schema } from './base-editor';
+import { BaseEditor } from './base-editor';
 import { property } from 'lit/decorators.js';
-
-type SectionKey = 'player' | 'media browser' | 'groups' | 'grouping' | 'volumes' | 'queue' | 'search';
+import { FormSectionKey, Schema } from './editor.types';
 
 class Form extends BaseEditor {
   @property({ attribute: false }) schema!: Schema[];
   @property({ attribute: false }) data!: unknown;
   @property() changed!: (ev: CustomEvent) => void;
-  @property() section?: SectionKey;
+  @property() section?: FormSectionKey;
 
   protected render(): TemplateResult {
     const schema = filterEditorSchemaOnCardType(this.schema, this.config.type);

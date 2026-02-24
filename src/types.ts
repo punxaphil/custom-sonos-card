@@ -382,3 +382,24 @@ export interface OperationProgress {
   total: number;
   label: string;
 }
+
+export type PlayMenuAction = {
+  enqueue: EnqueueMode;
+  radioMode?: boolean;
+};
+
+export type EnqueueMode = 'add' | 'next' | 'replace' | 'replace_next' | 'play';
+
+export type MusicAssistantFavoritesMediaType = 'track' | 'album' | 'artist' | 'playlist' | 'radio';
+
+export type BatchOperationFn = (onProgress: (completed: number) => void, shouldCancel: () => boolean) => Promise<void>;
+
+export interface BatchOperationState {
+  operationProgress: OperationProgress | null;
+  cancelOperation: boolean;
+}
+
+export interface BatchOperationCallbacks {
+  setProgress: (progress: OperationProgress | null) => void;
+  onComplete?: () => void;
+}

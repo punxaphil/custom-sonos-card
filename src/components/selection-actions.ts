@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { mdiSelectInverse } from '@mdi/js';
 import { customEvent } from '../utils/utils';
 import './play-menu';
-import type { PlayMenuAction } from './play-menu';
+import type { PlayMenuAction } from '../types';
 
 export class SelectionActions extends LitElement {
   @property({ type: Boolean }) hasSelection = false;

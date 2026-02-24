@@ -2,11 +2,7 @@ import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
 import { mdiAccessPoint, mdiClose, mdiPlay, mdiPlayBoxMultiple, mdiPlaylistPlus, mdiSkipNext, mdiSkipNextCircle } from '@mdi/js';
 import { customEvent } from '../utils/utils';
-
-export type PlayMenuAction = {
-  enqueue: 'replace' | 'play' | 'next' | 'add' | 'replace_next';
-  radioMode?: boolean;
-};
+import { PlayMenuAction } from '../types';
 
 const PLAY_MENU_ACTIONS: PlayMenuAction[] = [
   { enqueue: 'replace' },

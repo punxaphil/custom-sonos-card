@@ -13,8 +13,8 @@ import '../../components/selection-actions';
 import '../../components/operation-overlay';
 import '../../components/play-menu';
 import { MASS_QUEUE_NOT_INSTALLED, MediaPlayerItem, OperationProgress, QueueSearchMatch } from '../../types';
-import type { PlayMenuAction } from '../../components/play-menu';
-import type { EnqueueMode } from '../../services/music-assistant-service';
+import type { PlayMenuAction } from '../../types';
+import type { EnqueueMode } from '../../types';
 import { queueStyles } from './styles';
 
 export class Queue extends LitElement {

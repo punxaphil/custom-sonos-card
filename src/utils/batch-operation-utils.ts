@@ -1,20 +1,4 @@
-import { MediaPlayerItem, OperationProgress } from '../types';
-
-/**
- * Shared types and utilities for batch operations in lists (queue, search, etc.)
- */
-
-export type BatchOperationFn = (onProgress: (completed: number) => void, shouldCancel: () => boolean) => Promise<void>;
-
-export interface BatchOperationState {
-  operationProgress: OperationProgress | null;
-  cancelOperation: boolean;
-}
-
-export interface BatchOperationCallbacks {
-  setProgress: (progress: OperationProgress | null) => void;
-  onComplete?: () => void;
-}
+import { BatchOperationCallbacks, BatchOperationFn, MediaPlayerItem, OperationProgress } from '../types';
 
 /**
  * Execute a batch operation with progress tracking and cancellation support.

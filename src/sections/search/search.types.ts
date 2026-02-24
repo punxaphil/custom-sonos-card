@@ -1,6 +1,6 @@
 import { OperationProgress } from '../../types';
 import type { MusicAssistantService } from '../../services/music-assistant-service';
-import type { PlayMenuAction } from '../../components/play-menu';
+import type { PlayMenuAction } from '../../types';
 
 export type SearchMediaType = 'artist' | 'album' | 'track' | 'playlist' | 'radio';
 

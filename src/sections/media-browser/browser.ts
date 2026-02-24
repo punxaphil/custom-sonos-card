@@ -11,12 +11,7 @@ import { keyed } from 'lit/directives/keyed.js';
 import { mediaBrowserStyles } from './styles';
 import { renderLayoutMenu } from './layout-menu';
 import { playAll, renderShortcutButton } from './utils';
-
-interface NavigateId {
-  media_content_id?: string;
-  media_content_type?: string;
-  title?: string;
-}
+import { NavigateId } from './media-browser.types';
 
 let currentPath: NavigateId[] | null = null;
 let currentPathTitle = '';

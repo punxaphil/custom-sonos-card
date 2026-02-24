@@ -12,8 +12,8 @@ import '../../components/operation-overlay';
 import '../../components/play-menu';
 import { SearchResultItem } from './search.types';
 import { OperationProgress } from '../../types';
-import type { EnqueueMode } from '../../services/music-assistant-service';
-import type { PlayMenuAction } from '../../components/play-menu';
+import type { EnqueueMode } from '../../types';
+import type { PlayMenuAction } from '../../types';
 import { MusicAssistantService } from '../../services/music-assistant-service';
 
 export class SearchResults extends LitElement {

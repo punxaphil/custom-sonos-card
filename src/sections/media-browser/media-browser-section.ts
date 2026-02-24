@@ -10,9 +10,7 @@ import { customEvent } from '../../utils/utils';
 import { mediaBrowserStyles } from './styles';
 import { renderLayoutMenu } from './layout-menu';
 import { renderShortcutButton } from './utils';
-
-type LayoutType = 'auto' | 'grid' | 'list';
-type ViewType = 'favorites' | 'browser';
+import { LayoutType, ViewType } from './media-browser.types';
 
 const START_PATH_KEY = 'sonos-card-media-browser-start';
 const LAYOUT_KEY = 'sonos-card-media-browser-layout';

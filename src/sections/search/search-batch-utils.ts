@@ -1,6 +1,7 @@
 import { MediaPlayerItem, OperationProgress } from '../../types';
 import { BatchCallbacks, SearchResultItem } from './search.types';
-import type { EnqueueMode, MusicAssistantService } from '../../services/music-assistant-service';
+import type { EnqueueMode } from '../../types';
+import type { MusicAssistantService } from '../../services/music-assistant-service';
 import { queueItemsAfterCurrent } from '../../utils/batch-operation-utils';
 import { toMediaPlayerItem } from './search-utils';
 import Store from '../../model/store';

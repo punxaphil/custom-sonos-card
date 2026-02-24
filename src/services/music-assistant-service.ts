@@ -11,11 +11,9 @@ import {
 import { MusicAssistantSearchResponse, MusicAssistantSearchResult, SearchMediaType, SearchResultItem } from '../sections/search/search.types';
 import { MediaPlayer } from '../model/media-player';
 
-export type EnqueueMode = 'add' | 'next' | 'replace' | 'replace_next' | 'play';
+import { EnqueueMode, MusicAssistantFavoritesMediaType } from '../types';
 
 const LIBRARY_URI_PREFIX = 'library://';
-
-type MusicAssistantFavoritesMediaType = 'track' | 'album' | 'artist' | 'playlist' | 'radio';
 
 export class MusicAssistantService {
   private readonly hass: HomeAssistant;
