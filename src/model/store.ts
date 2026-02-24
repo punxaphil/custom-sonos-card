@@ -35,6 +35,17 @@ export default class Store {
   public allMediaPlayers: MediaPlayer[];
   public predefinedGroups: PredefinedGroup[];
 
+  getJoinedPlayerIds(): string[] {
+    return this.allMediaPlayers
+      .map((p) => p.id)
+      .filter((id) => id === this.activePlayer.id || this.activePlayer.hasMember(id));
+  }
+
+  getJoinedAndNotJoinedCounts(): { joinedCount: number; notJoinedCount: number } {
+    const joinedCount = this.getJoinedPlayerIds().length;
+    return { joinedCount, notJoinedCount: this.allMediaPlayers.length - joinedCount };
+  }
+
   constructor(
     hass: HomeAssistant,
     config: CardConfig,
