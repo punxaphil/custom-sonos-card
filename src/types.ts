@@ -1,6 +1,17 @@
 import { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
 import { MediaPlayer } from './model/media-player';
 import { MediaPlayerItem as UpstreamMediaPlayerItem } from './upstream/data/media-player';
+import type { SearchConfig } from './sections/search/search.types';
+
+export type {
+  LibraryFilter,
+  SearchConfig,
+  SearchMediaType,
+  SearchResultItem,
+  SearchExecutionState,
+  MusicAssistantSearchResult,
+  MusicAssistantSearchResponse,
+} from './sections/search/search.types';
 
 declare global {
   // noinspection JSUnusedGlobalSymbols
@@ -359,75 +370,11 @@ export interface QueueSearchMatch {
   matchIndices: number[];
 }
 
-export type SearchMediaType = 'artist' | 'album' | 'track' | 'playlist' | 'radio';
-
-export interface SearchConfig {
-  massConfigEntryId?: string;
-  defaultMediaType?: SearchMediaType;
-  searchLimit?: number;
-  title?: string;
-  autoSearchMinChars?: number;
-  autoSearchDebounceMs?: number;
-}
-
-export interface MusicAssistantSearchResult {
-  media_type: string;
-  name: string;
-  uri: string;
-  version?: string;
-  favorite?: boolean;
-  in_library?: boolean;
-  image?:
-    | string
-    | {
-        path?: string;
-        provider?: string;
-        remotely_accessible?: boolean;
-      };
-  artists?: Array<{
-    name: string;
-    item_id: string;
-  }>;
-  album?: {
-    name: string;
-    item_id: string;
-  };
-  sort_name?: string;
-  item_id: string;
-  provider: string;
-  provider_mappings?: Array<{
-    item_id: string;
-    provider_domain: string;
-    provider_instance: string;
-    url?: string;
-  }>;
-}
-
-export interface MusicAssistantSearchResponse {
-  artists?: MusicAssistantSearchResult[];
-  albums?: MusicAssistantSearchResult[];
-  tracks?: MusicAssistantSearchResult[];
-  playlists?: MusicAssistantSearchResult[];
-  radio?: MusicAssistantSearchResult[];
-}
-
 export interface ConfigEntry {
   entry_id: string;
   domain: string;
   title: string;
   state: string;
-}
-
-export interface SearchResultItem {
-  title: string;
-  subtitle?: string;
-  uri: string;
-  mediaType: SearchMediaType;
-  imageUrl?: string;
-  favorite?: boolean;
-  inLibrary?: boolean;
-  itemId?: string;
-  provider?: string;
 }
 
 export interface OperationProgress {

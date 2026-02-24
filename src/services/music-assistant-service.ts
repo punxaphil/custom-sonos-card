@@ -6,12 +6,9 @@ import {
   MassQueueResponse,
   MediaPlayerItem,
   MusicAssistantQueueResponse,
-  MusicAssistantSearchResponse,
-  MusicAssistantSearchResult,
-  SearchMediaType,
-  SearchResultItem,
   TemplateResult,
 } from '../types';
+import { MusicAssistantSearchResponse, MusicAssistantSearchResult, SearchMediaType, SearchResultItem } from '../sections/search/search.types';
 import { MediaPlayer } from '../model/media-player';
 
 export type EnqueueMode = 'add' | 'next' | 'replace' | 'replace_next' | 'play';
