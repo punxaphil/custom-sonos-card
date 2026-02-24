@@ -312,6 +312,7 @@ export class Grouping extends LitElement {
       return;
     }
     this.modifiedItems = [];
+    this.selectedPredefinedGroup = undefined;
   }
 
   private getGroupingItems() {
