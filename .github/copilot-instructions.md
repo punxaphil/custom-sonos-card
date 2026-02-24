@@ -37,6 +37,7 @@
 - add style to top-most component. Example: `sonos-grouping-button {` should be declared in the grouping-button.ts file, not in the parent component. Exception is if some component want to override style.
 - keep the html part of render as HTML:y as possible. Prefer using `?hidden` attributes and always-present elements over ternaries (`condition ? html\`...\` : nothing`) and `when()` directives. Example instead of ${applying ? html`<div class="applying"><ha-spinner></ha-spinner></div>` : nothing} you could have a hide attribute on the div and then just do <div class="applying" ?hidden=${!applying}><ha-spinner></ha-spinner></div>
 - never extract sub-configs. Example: `const groupingConfig = store.groupingConfig;` instead just use `this.store.config.grouping`. This goes for all sub-configs.
+- If files inside components that only have logic (i.e. doesn't extend LitElement), they must be named *-utils.ts. Example: `grouping-button-utils.ts` for helper functions related to the grouping button component. 
 
 # Editor Schema
 

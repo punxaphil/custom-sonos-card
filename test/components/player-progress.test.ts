@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convertProgress } from '../../src/sections/player/progress';
+import { convertProgress } from '../../src/sections/player/player-progress';
 
 describe('convertProgress', () => {
   it('should strip leading zero from minutes (00:13 -> 0:13)', () => {

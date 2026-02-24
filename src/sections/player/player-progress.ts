@@ -1,12 +1,10 @@
 import { css, html, LitElement } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import Store from '../../model/store';
-import { MediaPlayer } from '../../model/media-player';
 import { styleMap } from 'lit-html/directives/style-map.js';
 
-class Progress extends LitElement {
+class PlayerProgress extends LitElement {
   @property({ attribute: false }) store!: Store;
-  private activePlayer!: MediaPlayer;
 
   @state() private playingProgress!: number;
   private tracker?: NodeJS.Timeout;
@@ -23,29 +21,27 @@ class Progress extends LitElement {
   }
 
   render() {
-    this.activePlayer = this.store.activePlayer;
-    this.mediaDuration = this.activePlayer?.attributes.media_duration || 0;
+    this.mediaDuration = this.store.activePlayer?.attributes.media_duration || 0;
     const showProgress = this.mediaDuration > 0;
     if (showProgress) {
       this.trackProgress();
-      return html`
-        <div class="progress">
-          <span>${convertProgress(this.playingProgress)}</span>
-          <div class="bar" @click=${this.handleSeek}>
-            <div class="progress-bar" style=${this.progressBarStyle(this.mediaDuration)}></div>
-          </div>
-          <span> -${convertProgress(this.mediaDuration - this.playingProgress)}</span>
-        </div>
-      `;
     }
-    return html``;
+    return html`
+      <div class="progress" ?hidden=${!showProgress}>
+        <span>${convertProgress(this.playingProgress)}</span>
+        <div class="bar" @click=${this.handleSeek}>
+          <div class="progress-bar" style=${this.progressBarStyle(this.mediaDuration)}></div>
+        </div>
+        <span> -${convertProgress(this.mediaDuration - this.playingProgress)}</span>
+      </div>
+    `;
   }
 
   private async handleSeek(e: MouseEvent) {
     const progressWidth = this.progressBar!.offsetWidth;
     const percent = e.offsetX / progressWidth;
     const position = this.mediaDuration * percent;
-    await this.store.mediaControlService.seek(this.activePlayer, position);
+    await this.store.mediaControlService.seek(this.store.activePlayer, position);
   }
 
   private progressBarStyle(mediaDuration: number) {
@@ -53,9 +49,9 @@ class Progress extends LitElement {
   }
 
   trackProgress() {
-    const position = this.activePlayer?.attributes.media_position || 0;
-    const playing = this.activePlayer?.isPlaying();
-    const updatedAt = this.activePlayer?.attributes.media_position_updated_at || 0;
+    const position = this.store.activePlayer?.attributes.media_position || 0;
+    const playing = this.store.activePlayer?.isPlaying();
+    const updatedAt = this.store.activePlayer?.attributes.media_position_updated_at || 0;
     if (playing) {
       this.playingProgress = position + (Date.now() - new Date(updatedAt).getTime()) / 1000.0;
     } else {
@@ -76,6 +72,10 @@ class Progress extends LitElement {
         font-size: x-small;
         display: flex;
         --paper-progress-active-color: lightgray;
+      }
+
+      [hidden] {
+        display: none !important;
       }
 
       .bar {
@@ -101,4 +101,4 @@ export const convertProgress = (duration: number) => {
   return time.replace(/^0(\d)/, '$1');
 };
 
-customElements.define('sonos-progress', Progress);
+customElements.define('sonos-progress', PlayerProgress);

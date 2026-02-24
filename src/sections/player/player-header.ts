@@ -1,57 +1,55 @@
-import { css, html, LitElement, nothing } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../../model/store';
-import { PlayerConfig } from '../../types';
 import { getSpeakerList } from '../../utils/utils';
-import { MediaPlayer } from '../../model/media-player';
 import { until } from 'lit-html/directives/until.js';
 import { when } from 'lit/directives/when.js';
 import { styleMap } from 'lit/directives/style-map.js';
 
 class PlayerHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
-  private config!: PlayerConfig;
-  private activePlayer!: MediaPlayer;
 
   render() {
-    this.config = this.store.config.player ?? {};
-    this.activePlayer = this.store.activePlayer;
-    const entityStyle = this.config.headerEntityFontSize ? { fontSize: `${this.config.headerEntityFontSize}rem` } : {};
-    const songStyle = this.config.headerSongFontSize ? { fontSize: `${this.config.headerSongFontSize}rem` } : {};
+    const { headerEntityFontSize, headerSongFontSize, hideEntityName, hideArtistAlbum, showAudioInputFormat } =
+      this.store.config.player ?? {};
+    const entityStyle = headerEntityFontSize ? { fontSize: `${headerEntityFontSize}rem` } : {};
+    const songStyle = headerSongFontSize ? { fontSize: `${headerSongFontSize}rem` } : {};
 
     return html` <div class="info">
-      <div class="entity" style=${styleMap(entityStyle)} hide=${this.config.hideEntityName || nothing}>
-        ${getSpeakerList(this.activePlayer, this.store.predefinedGroups)}
+      <div class="entity" style=${styleMap(entityStyle)} ?hidden=${!!hideEntityName}>
+        ${getSpeakerList(this.store.activePlayer, this.store.predefinedGroups)}
       </div>
       <div class="song" style=${styleMap(songStyle)}>${this.getSong()}</div>
-      <div class="artist-album" hide=${this.config.hideArtistAlbum || nothing}>
-        ${this.getAlbum()} ${when(this.config.showAudioInputFormat, () => until(this.getAudioInputFormat()))}
+      <div class="artist-album" ?hidden=${!!hideArtistAlbum}>
+        ${this.getAlbum()} ${when(showAudioInputFormat, () => until(this.getAudioInputFormat()))}
       </div>
       <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
   }
 
   private getSong() {
-    let song = this.activePlayer.getCurrentTrack();
-    song = song || this.config.labelWhenNoMediaIsSelected || 'No media selected';
-    if (this.config.showSource && this.activePlayer.attributes.source) {
-      song = `${song} (${this.activePlayer.attributes.source})`;
+    const { labelWhenNoMediaIsSelected, showSource } = this.store.config.player ?? {};
+    let song = this.store.activePlayer.getCurrentTrack();
+    song = song || labelWhenNoMediaIsSelected || 'No media selected';
+    if (showSource && this.store.activePlayer.attributes.source) {
+      song = `${song} (${this.store.activePlayer.attributes.source})`;
     }
     return song;
   }
 
   private getAlbum() {
-    let album = this.activePlayer.attributes.media_album_name;
-    if (this.config.showChannel && this.activePlayer.attributes.media_channel) {
-      album = this.activePlayer.attributes.media_channel;
-    } else if (!this.config.hidePlaylist && this.activePlayer.attributes.media_playlist) {
-      album = `${this.activePlayer.attributes.media_playlist} - ${album}`;
+    const { showChannel, hidePlaylist } = this.store.config.player ?? {};
+    let album = this.store.activePlayer.attributes.media_album_name;
+    if (showChannel && this.store.activePlayer.attributes.media_channel) {
+      album = this.store.activePlayer.attributes.media_channel;
+    } else if (!hidePlaylist && this.store.activePlayer.attributes.media_playlist) {
+      album = `${this.store.activePlayer.attributes.media_playlist} - ${album}`;
     }
     return album;
   }
 
   private async getAudioInputFormat() {
-    const sensors = await this.store.hassService.getRelatedEntities(this.activePlayer, 'sensor');
+    const sensors = await this.store.hassService.getRelatedEntities(this.store.activePlayer, 'sensor');
     const audioInputFormat = sensors.find((sensor) => sensor.entity_id.includes('audio_input_format'));
     return audioInputFormat && audioInputFormat.state && audioInputFormat.state !== 'No audio'
       ? html`<span class="audio-input-format">${audioInputFormat.state}</span>`
@@ -99,8 +97,8 @@ class PlayerHeader extends LitElement {
         margin-left: 8px;
       }
 
-      *[hide] {
-        display: none;
+      [hidden] {
+        display: none !important;
       }
     `;
   }

@@ -1,0 +1,96 @@
+import Store from '../../model/store';
+import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../../constants';
+
+function matchesString(value: string | undefined, expected: string | undefined): boolean {
+  return !!value && value === expected;
+}
+
+function matchesRegexp(value: string | undefined, pattern: string | undefined): boolean {
+  if (!value || !pattern) {
+    return false;
+  }
+  try {
+    return new RegExp(pattern).test(value);
+  } catch {
+    return false;
+  }
+}
+
+export function findArtworkOverride(store: Store, entityImage?: string) {
+  const overrides = store.config.player?.mediaArtworkOverrides;
+  if (!overrides) {
+    return undefined;
+  }
+  const { media_title, media_artist, media_album_name, media_content_id, media_channel } =
+    store.activePlayer.attributes;
+  let override = overrides.find(
+    (value) =>
+      matchesString(media_title, value.mediaTitleEquals) ||
+      matchesString(media_artist, value.mediaArtistEquals) ||
+      matchesString(media_album_name, value.mediaAlbumNameEquals) ||
+      matchesString(media_channel, value.mediaChannelEquals) ||
+      matchesString(media_content_id, value.mediaContentIdEquals) ||
+      matchesRegexp(media_title, value.mediaTitleRegexp) ||
+      matchesRegexp(media_artist, value.mediaArtistRegexp) ||
+      matchesRegexp(media_album_name, value.mediaAlbumNameRegexp) ||
+      matchesRegexp(media_channel, value.mediaChannelRegexp) ||
+      matchesRegexp(media_content_id, value.mediaContentIdRegexp),
+  );
+  if (!override) {
+    override = overrides.find((value) => !entityImage && value.ifMissing);
+  }
+  return override;
+}
+
+export function getArtworkImage(store: Store, resolvedImageUrl?: string) {
+  const prefix = store.config.player?.artworkHostname || '';
+  const { entity_picture, entity_picture_local, app_id } = store.activePlayer.attributes;
+  let entityImage = entity_picture ? prefix + entity_picture : entity_picture;
+  if (app_id === 'music_assistant') {
+    entityImage = entity_picture_local ? prefix + entity_picture_local : entity_picture;
+  }
+  let sizePercentage = undefined;
+  const override = findArtworkOverride(store, entityImage);
+  if (override?.imageUrl) {
+    if (override.imageUrl.includes('{{')) {
+      entityImage = resolvedImageUrl ?? '';
+    } else {
+      entityImage = override.imageUrl;
+    }
+    sizePercentage = override?.sizePercentage ?? sizePercentage;
+  }
+  return { entityImage, sizePercentage };
+}
+
+export function getFallbackImage(store: Store) {
+  return (
+    store.config.player?.fallbackArtwork ??
+    (store.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE)
+  );
+}
+
+export function getBackgroundImage(store: Store, imageLoaded: boolean, resolvedImageUrl?: string) {
+  const image = getArtworkImage(store, resolvedImageUrl);
+  if (image?.entityImage && imageLoaded) {
+    const sizeStyle = image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : '';
+    return `background-image: url(${image.entityImage})${sizeStyle}`;
+  }
+  return `background-image: url(${getFallbackImage(store)})`;
+}
+
+export function getBackgroundImageUrl(store: Store, imageLoaded: boolean, resolvedImageUrl?: string) {
+  const image = getArtworkImage(store, resolvedImageUrl);
+  if (image?.entityImage && imageLoaded) {
+    return `url(${image.entityImage})`;
+  }
+  return `url(${getFallbackImage(store)})`;
+}
+
+export function getArtworkStyle(store: Store, imageLoaded: boolean, resolvedImageUrl?: string) {
+  const { artworkMinHeight: minHeight = 5, artworkBorderRadius: borderRadius = 0 } = store.config.player ?? {};
+  const bg = getBackgroundImage(store, imageLoaded, resolvedImageUrl);
+  if (borderRadius > 0) {
+    return `${bg}; border-radius: ${borderRadius}px; background-size: cover; aspect-ratio: 1; height: 100%; max-height: 50vh; width: auto; margin: 0 auto;`;
+  }
+  return `${bg}; min-height: ${minHeight}rem`;
+}

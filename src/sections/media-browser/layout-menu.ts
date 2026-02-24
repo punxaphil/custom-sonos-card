@@ -8,27 +8,15 @@ export function renderLayoutMenu(layout: string, onSelect: (ev: CustomEvent<{ it
   return html`
     <ha-dropdown @wa-select=${onSelect}>
       <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
-      <ha-dropdown-item
-        value="auto"
-        .selected=${layout === 'auto'}
-        style=${styleMap(layout === 'auto' ? selectedStyle : {})}
-      >
+      <ha-dropdown-item value="auto" .selected=${layout === 'auto'} style=${styleMap(layout === 'auto' ? selectedStyle : {})}>
         <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
         Auto
       </ha-dropdown-item>
-      <ha-dropdown-item
-        value="grid"
-        .selected=${layout === 'grid'}
-        style=${styleMap(layout === 'grid' ? selectedStyle : {})}
-      >
+      <ha-dropdown-item value="grid" .selected=${layout === 'grid'} style=${styleMap(layout === 'grid' ? selectedStyle : {})}>
         <ha-svg-icon slot="icon" .path=${mdiGrid}></ha-svg-icon>
         Grid
       </ha-dropdown-item>
-      <ha-dropdown-item
-        value="list"
-        .selected=${layout === 'list'}
-        style=${styleMap(layout === 'list' ? selectedStyle : {})}
-      >
+      <ha-dropdown-item value="list" .selected=${layout === 'list'} style=${styleMap(layout === 'list' ? selectedStyle : {})}>
         <ha-svg-icon slot="icon" .path=${mdiListBoxOutline}></ha-svg-icon>
         List
       </ha-dropdown-item>
