@@ -296,13 +296,7 @@ export class Search extends LitElement {
         <mwc-list multi>
           ${this.browseResults.map((item, index) => {
             const mediaPlayerItem = this.toMediaPlayerItem(item);
-            return html`
-              <sonos-media-row
-                @click=${() => this.onBrowseItemClick(index)}
-                .item=${mediaPlayerItem}
-                .store=${this.store}
-              ></sonos-media-row>
-            `;
+            return html` <sonos-media-row @click=${() => this.onBrowseItemClick(index)} .item=${mediaPlayerItem} .store=${this.store}></sonos-media-row> `;
           })}
         </mwc-list>
       </div>
@@ -354,11 +348,7 @@ export class Search extends LitElement {
     this.browseLoading = true;
     this.browseResults = [];
     try {
-      this.browseResults = await this.musicAssistantService.getCollectionItems(
-        item.uri,
-        item.mediaType,
-        this.massQueueConfigEntryId,
-      );
+      this.browseResults = await this.musicAssistantService.getCollectionItems(item.uri, item.mediaType, this.massQueueConfigEntryId);
     } catch (e) {
       console.error('Failed to browse collection:', e);
     } finally {
@@ -428,9 +418,7 @@ export class Search extends LitElement {
                       .path=${mdiDotsVertical}
                       @click=${this.toggleFilterMenu}
                       title="More filters"
-                      ?selected=${this.mediaTypes.has('album') ||
-                      this.mediaTypes.has('radio') ||
-                      this.libraryFilter !== 'all'}
+                      ?selected=${this.mediaTypes.has('album') || this.mediaTypes.has('radio') || this.libraryFilter !== 'all'}
                     ></ha-icon-button>
                     ${this.filterMenuOpen ? this.renderFilterMenu() : nothing}
                   </div>
@@ -463,13 +451,7 @@ export class Search extends LitElement {
         <div class="filter-menu-divider"></div>
         <div class="filter-menu-item" @click=${this.toggleLibraryFilter}>
           <ha-svg-icon .path=${mdiBookshelf}></ha-svg-icon>
-          <span
-            >${this.libraryFilter === 'all'
-              ? 'All'
-              : this.libraryFilter === 'library'
-                ? 'Library only'
-                : 'Non-library only'}</span
-          >
+          <span>${this.libraryFilter === 'all' ? 'All' : this.libraryFilter === 'library' ? 'Library only' : 'Non-library only'}</span>
           ${this.libraryFilter !== 'all' ? html`<ha-svg-icon class="check" .path=${mdiCheck}></ha-svg-icon>` : nothing}
         </div>
         <div class="filter-menu-divider"></div>
@@ -507,16 +489,8 @@ export class Search extends LitElement {
     return html`
       <div class="search-bar">
         <ha-icon-button .path=${mdiMagnify} @click=${this.performSearch}></ha-icon-button>
-        <input
-          type="text"
-          placeholder="Search ${typeLabels}..."
-          .value=${this.searchText}
-          @input=${this.onSearchInput}
-          @keydown=${this.onSearchKeyDown}
-        />
-        ${this.searchText
-          ? html`<ha-icon-button .path=${mdiClose} @click=${this.clearSearch} title="Clear"></ha-icon-button>`
-          : nothing}
+        <input type="text" placeholder="Search ${typeLabels}..." .value=${this.searchText} @input=${this.onSearchInput} @keydown=${this.onSearchKeyDown} />
+        ${this.searchText ? html`<ha-icon-button .path=${mdiClose} @click=${this.clearSearch} title="Clear"></ha-icon-button>` : nothing}
       </div>
     `;
   }
@@ -707,8 +681,7 @@ export class Search extends LitElement {
     this.selectedIndices = new Set(); // Clear selection on new search
 
     // Determine which types to search
-    const typesToSearch: SearchMediaType[] =
-      this.mediaTypes.size > 0 ? Array.from(this.mediaTypes) : ['track', 'artist', 'album', 'playlist', 'radio'];
+    const typesToSearch: SearchMediaType[] = this.mediaTypes.size > 0 ? Array.from(this.mediaTypes) : ['track', 'artist', 'album', 'playlist', 'radio'];
 
     try {
       this.results = await this.musicAssistantService.searchMultipleTypes(
@@ -770,12 +743,7 @@ export class Search extends LitElement {
     }
     this.playMenuItemIndex = null;
     const action = e.detail;
-    await this.musicAssistantService.playMedia(
-      this.store.activePlayer,
-      item.uri,
-      action.enqueue as EnqueueMode,
-      action.radioMode,
-    );
+    await this.musicAssistantService.playMedia(this.store.activePlayer, item.uri, action.enqueue as EnqueueMode, action.radioMode);
     this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED));
   }
 
@@ -814,13 +782,7 @@ export class Search extends LitElement {
     this.operationProgress = { current: 0, total: items.length, label: 'Loading' };
 
     await this.runBatchOperation((onProgress, shouldCancel) =>
-      this.store.mediaControlService.queueAndPlay(
-        this.store.activePlayer,
-        items,
-        enqueue === 'replace' ? 'replace' : 'play',
-        onProgress,
-        shouldCancel,
-      ),
+      this.store.mediaControlService.queueAndPlay(this.store.activePlayer, items, enqueue === 'replace' ? 'replace' : 'play', onProgress, shouldCancel),
     );
   }
 
@@ -834,12 +796,7 @@ export class Search extends LitElement {
 
     const playMode: 'add' | 'next' | 'replace' | 'play' = enqueue === 'add' ? 'add' : 'next';
     await this.runBatchOperation((onProgress, shouldCancel) =>
-      queueItemsAfterCurrent(
-        items,
-        (item) => this.store.mediaControlService.playMedia(this.store.activePlayer, item, playMode),
-        onProgress,
-        shouldCancel,
-      ),
+      queueItemsAfterCurrent(items, (item) => this.store.mediaControlService.playMedia(this.store.activePlayer, item, playMode), onProgress, shouldCancel),
     );
   }
 
@@ -863,13 +820,7 @@ export class Search extends LitElement {
     try {
       let success: boolean;
       if (item.favorite) {
-        success = await this.musicAssistantService.removeFromFavorites(
-          this.massQueueConfigEntryId,
-          item.uri,
-          item.mediaType,
-          item.itemId,
-          item.provider,
-        );
+        success = await this.musicAssistantService.removeFromFavorites(this.massQueueConfigEntryId, item.uri, item.mediaType, item.itemId, item.provider);
       } else {
         success = await this.musicAssistantService.addToFavorites(this.massQueueConfigEntryId, item.uri);
       }
@@ -904,13 +855,7 @@ export class Search extends LitElement {
     try {
       let success: boolean;
       if (item.inLibrary) {
-        success = await this.musicAssistantService.removeFromLibrary(
-          this.massQueueConfigEntryId,
-          item.uri,
-          item.mediaType,
-          item.itemId,
-          item.provider,
-        );
+        success = await this.musicAssistantService.removeFromLibrary(this.massQueueConfigEntryId, item.uri, item.mediaType, item.itemId, item.provider);
       } else {
         success = await this.musicAssistantService.addToLibrary(this.massQueueConfigEntryId, item.uri);
       }
@@ -939,9 +884,7 @@ export class Search extends LitElement {
       .map((i) => this.toMediaPlayerItem(this.results[i]));
   }
 
-  private async runBatchOperation(
-    operation: (onProgress: (completed: number) => void, shouldCancel: () => boolean) => Promise<void>,
-  ) {
+  private async runBatchOperation(operation: (onProgress: (completed: number) => void, shouldCancel: () => boolean) => Promise<void>) {
     this.cancelOperation = false;
     try {
       await operation(

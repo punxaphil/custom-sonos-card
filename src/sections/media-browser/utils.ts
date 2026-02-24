@@ -27,22 +27,13 @@ export async function playAll(store: Store, children: MediaPlayerItem[]): Promis
   return children[0];
 }
 
-export function renderShortcutButton(
-  shortcut: MediaBrowserShortcut | undefined,
-  onClick: () => void,
-  isActive = false,
-) {
+export function renderShortcutButton(shortcut: MediaBrowserShortcut | undefined, onClick: () => void, isActive = false) {
   if (!shortcut?.media_content_id || !shortcut?.media_content_type || !shortcut?.name) {
     return nothing;
   }
   const icon = shortcut.icon ?? mdiBookmark;
   return html`
-    <ha-icon-button
-      class=${isActive ? 'shortcut-active' : ''}
-      @click=${onClick}
-      title=${shortcut.name}
-      .path=${icon.startsWith('mdi:') ? undefined : icon}
-    >
+    <ha-icon-button class=${isActive ? 'shortcut-active' : ''} @click=${onClick} title=${shortcut.name} .path=${icon.startsWith('mdi:') ? undefined : icon}>
       ${icon.startsWith('mdi:') ? html`<ha-icon .icon=${icon}></ha-icon>` : nothing}
     </ha-icon-button>
   `;

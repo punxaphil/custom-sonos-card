@@ -111,13 +111,7 @@ export class QueueSearch extends LitElement {
               title="Show only matches"
             ></ha-icon-button>`
           : nothing}
-        ${hasText
-          ? html`<ha-icon-button
-              .path=${mdiClose}
-              @click=${this.clearSearchText}
-              title="Clear search"
-            ></ha-icon-button>`
-          : nothing}
+        ${hasText ? html`<ha-icon-button .path=${mdiClose} @click=${this.clearSearchText} title="Clear search"></ha-icon-button>` : nothing}
       </div>
     `;
   }
@@ -127,13 +121,7 @@ export class QueueSearch extends LitElement {
       <span class="match-info">${this.currentMatchIndex + 1}/${this.matchIndices.length}</span>
       <ha-icon-button .path=${mdiChevronUp} @click=${this.previousMatch}></ha-icon-button>
       <ha-icon-button .path=${mdiChevronDown} @click=${this.nextMatch}></ha-icon-button>
-      ${this.selectMode
-        ? html`<ha-icon-button
-            .path=${mdiCheckAll}
-            @click=${this.selectAllMatches}
-            title="Select all matches"
-          ></ha-icon-button>`
-        : nothing}
+      ${this.selectMode ? html`<ha-icon-button .path=${mdiCheckAll} @click=${this.selectAllMatches} title="Select all matches"></ha-icon-button>` : nothing}
     `;
   }
 
@@ -205,9 +193,7 @@ export class QueueSearch extends LitElement {
     }
 
     const searchLower = this.searchText.toLowerCase();
-    this.matchIndices = this.items
-      .map((item, i) => (item.title?.toLowerCase().includes(searchLower) ? i : -1))
-      .filter((i) => i !== -1);
+    this.matchIndices = this.items.map((item, i) => (item.title?.toLowerCase().includes(searchLower) ? i : -1)).filter((i) => i !== -1);
 
     if (this.matchIndices.length === 0) {
       this.lastHighlightedIndex = -1;

@@ -17,12 +17,7 @@ class Source extends LitElement {
     return html`
       <div>
         <span>${sourceLabel}</span>
-        <ha-select
-          .label=${sourceLabel}
-          .value=${this.activePlayer.attributes.source}
-          @selected=${this.setSource}
-          naturalMenuWidth
-        >
+        <ha-select .label=${sourceLabel} .value=${this.activePlayer.attributes.source} @selected=${this.setSource} naturalMenuWidth>
           ${this.activePlayer.attributes.source_list?.map((source: string) => {
             return html` <ha-list-item .value=${source}> ${source} </ha-list-item> `;
           })}
@@ -32,10 +27,7 @@ class Source extends LitElement {
   }
 
   private setSource = async (event: CustomEvent) =>
-    await this.mediaControlService.setSource(
-      this.activePlayer,
-      this.activePlayer.attributes.source_list[event.detail.index],
-    );
+    await this.mediaControlService.setSource(this.activePlayer, this.activePlayer.attributes.source_list[event.detail.index]);
   static get styles() {
     return css`
       div {

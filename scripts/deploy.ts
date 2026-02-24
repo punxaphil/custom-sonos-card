@@ -126,10 +126,7 @@ async function updateHacstags(): Promise<void> {
   });
 }
 
-function buildUpdates(
-  msg: HaMessage,
-  reject: (err: Error) => void,
-): { resourceId: number; currentUrl: string; newUrl: string; cardName: string }[] {
+function buildUpdates(msg: HaMessage, reject: (err: Error) => void): { resourceId: number; currentUrl: string; newUrl: string; cardName: string }[] {
   const resources = msg.result ?? [];
   const updates: { resourceId: number; currentUrl: string; newUrl: string; cardName: string }[] = [];
 

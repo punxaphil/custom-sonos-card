@@ -6,9 +6,7 @@ const SYNC_POLL_INTERVAL = 500;
 const SYNC_TIMEOUT = 30_000;
 
 export function buildGroupingItems(store: Store, modifiedItems: string[]): GroupingItem[] {
-  const items = store.allMediaPlayers.map(
-    (player) => new GroupingItem(player, store.activePlayer, modifiedItems.includes(player.id)),
-  );
+  const items = store.allMediaPlayers.map((player) => new GroupingItem(player, store.activePlayer, modifiedItems.includes(player.id)));
   const selected = items.filter((item) => item.isSelected);
   if (selected.length === 1) {
     selected[0].isDisabled = true;

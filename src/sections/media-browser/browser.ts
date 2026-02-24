@@ -118,8 +118,7 @@ export class MediaBrowserBrowser extends LitElement {
               ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
               : html`<div class="spacer"></div>`}
             <span class="title">${this.currentTitle || 'Media Browser'}</span>
-            ${this.renderPlayAllButton()}
-            ${renderShortcutButton(shortcut, () => this.navigateToShortcut(shortcut!), this.isShortcutActive(shortcut))}
+            ${this.renderPlayAllButton()} ${renderShortcutButton(shortcut, () => this.navigateToShortcut(shortcut!), this.isShortcutActive(shortcut))}
             <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
             <ha-icon-button
               class=${this.isCurrentPathStart ? 'startpath-active' : ''}
@@ -158,11 +157,7 @@ export class MediaBrowserBrowser extends LitElement {
     if (playableCount === 0 || this.playAllLoading) {
       return nothing;
     }
-    return html`<ha-icon-button
-      .path=${mdiPlay}
-      @click=${this.handlePlayAll}
-      title="Play all (${playableCount} tracks)"
-    ></ha-icon-button>`;
+    return html`<ha-icon-button .path=${mdiPlay} @click=${this.handlePlayAll} title="Play all (${playableCount} tracks)"></ha-icon-button>`;
   }
 
   private async handlePlayAll() {

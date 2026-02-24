@@ -54,44 +54,12 @@ export class Card extends LitElement {
             this.activePlayerId
               ? choose(this.section, [
                   [PLAYER, () => html` <sonos-player .store=${this.store}></sonos-player>`],
-                  [
-                    GROUPS,
-                    () =>
-                      html` <sonos-groups
-                        .store=${this.store}
-                        @active-player=${this.activePlayerListener}
-                      ></sonos-groups>`,
-                  ],
-                  [
-                    GROUPING,
-                    () =>
-                      html`<sonos-grouping
-                        .store=${this.store}
-                        @active-player=${this.activePlayerListener}
-                      ></sonos-grouping>`,
-                  ],
+                  [GROUPS, () => html` <sonos-groups .store=${this.store} @active-player=${this.activePlayerListener}></sonos-groups>`],
+                  [GROUPING, () => html`<sonos-grouping .store=${this.store} @active-player=${this.activePlayerListener}></sonos-grouping>`],
                   [VOLUMES, () => html` <sonos-volumes .store=${this.store}></sonos-volumes>`],
-                  [
-                    MEDIA_BROWSER,
-                    () =>
-                      html`<sonos-media-browser
-                        .store=${this.store}
-                        @item-selected=${this.onMediaItemSelected}
-                      ></sonos-media-browser>`,
-                  ],
-                  [
-                    QUEUE,
-                    () =>
-                      html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`,
-                  ],
-                  [
-                    SEARCH,
-                    () =>
-                      html`<sonos-search
-                        .store=${this.store}
-                        @item-selected=${this.onMediaItemSelected}
-                      ></sonos-search>`,
-                  ],
+                  [MEDIA_BROWSER, () => html`<sonos-media-browser .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-media-browser>`],
+                  [QUEUE, () => html`<sonos-queue .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-queue>`],
+                  [SEARCH, () => html`<sonos-search .store=${this.store} @item-selected=${this.onMediaItemSelected}></sonos-search>`],
                 ])
               : html`<div class="no-players">${noPlayersText}</div>`
           }
@@ -295,8 +263,7 @@ export class Card extends LitElement {
   private getConfigError(config: CardConfig): string | null {
     const isMusicAssistant = config.entityPlatform === 'music_assistant';
     const hasShowNonSonos = !!config.showNonSonosPlayers;
-    const hasOtherPlatform =
-      !!config.entityPlatform && config.entityPlatform !== 'music_assistant' && config.entityPlatform !== 'sonos';
+    const hasOtherPlatform = !!config.entityPlatform && config.entityPlatform !== 'music_assistant' && config.entityPlatform !== 'sonos';
     const activeCount = [isMusicAssistant, hasShowNonSonos, hasOtherPlatform].filter(Boolean).length;
     if (activeCount > 1) {
       return 'Conflicting configuration: only one of useMusicAssistant, showNonSonosPlayers, or entityPlatform can be set at a time. Please fix your configuration.';

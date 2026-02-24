@@ -136,11 +136,7 @@ export class MediaBrowser extends LitElement {
             ${onlyFavorites ? '' : renderShortcutButton(config.shortcut, this.onShortcutClick)}
             ${onlyFavorites
               ? ''
-              : html`<ha-icon-button
-                    .path=${mdiPlayBoxMultiple}
-                    @click=${this.goToBrowser}
-                    title="Browse Media"
-                  ></ha-icon-button>
+              : html`<ha-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></ha-icon-button>
                   <ha-icon-button
                     class=${this.isCurrentPathStart ? 'startpath-active' : ''}
                     .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
@@ -149,11 +145,7 @@ export class MediaBrowser extends LitElement {
                   ></ha-icon-button>`}
             ${renderLayoutMenu(this.layout, this.handleMenuAction)}
           </div>`}
-      <sonos-favorites
-        .store=${this.store}
-        .layout=${this.layout}
-        @item-selected=${this.onMediaItemSelected}
-      ></sonos-favorites>
+      <sonos-favorites .store=${this.store} .layout=${this.layout} @item-selected=${this.onMediaItemSelected}></sonos-favorites>
     `;
   }
 

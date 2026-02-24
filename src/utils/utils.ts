@@ -72,20 +72,13 @@ export function getGroupPlayerIds(hassEntity: HassEntity): string[] {
 }
 
 export function supportsTurnOn(player: MediaPlayer) {
-  return (
-    ((player.attributes.supported_features || 0) & MediaPlayerEntityFeature.TURN_ON) ===
-    MediaPlayerEntityFeature.TURN_ON
-  );
+  return ((player.attributes.supported_features || 0) & MediaPlayerEntityFeature.TURN_ON) === MediaPlayerEntityFeature.TURN_ON;
 }
 
 export function getGroupingChanges(groupingItems: GroupingItem[], joinedPlayers: string[], activePlayerId: string) {
   const isSelected = groupingItems.filter((item) => item.isSelected);
-  const unJoin = groupingItems
-    .filter((item) => !item.isSelected && joinedPlayers.includes(item.player.id))
-    .map((item) => item.player.id);
-  const join = groupingItems
-    .filter((item) => item.isSelected && !joinedPlayers.includes(item.player.id))
-    .map((item) => item.player.id);
+  const unJoin = groupingItems.filter((item) => !item.isSelected && joinedPlayers.includes(item.player.id)).map((item) => item.player.id);
+  const join = groupingItems.filter((item) => item.isSelected && !joinedPlayers.includes(item.player.id)).map((item) => item.player.id);
 
   let newMainPlayer = activePlayerId;
 

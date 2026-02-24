@@ -74,28 +74,13 @@ class CardEditor extends BaseEditor {
 
     return html`
       <div class="tabs-container">
-        <ha-icon-button
-          class="nav-arrow ${showLeftArrow ? '' : 'hidden'}"
-          .path=${mdiChevronLeft}
-          @click=${this.navigatePrev}
-        ></ha-icon-button>
+        <ha-icon-button class="nav-arrow ${showLeftArrow ? '' : 'hidden'}" .path=${mdiChevronLeft} @click=${this.navigatePrev}></ha-icon-button>
         <div class="tabs-list">
           ${tabs.map(
-            (tab) => html`
-              <button
-                class="tab-button ${this.activeTab === tab ? 'active' : ''}"
-                @click=${() => (this.activeTab = tab)}
-              >
-                ${tab}
-              </button>
-            `,
+            (tab) => html` <button class="tab-button ${this.activeTab === tab ? 'active' : ''}" @click=${() => (this.activeTab = tab)}>${tab}</button> `,
           )}
         </div>
-        <ha-icon-button
-          class="nav-arrow ${showRightArrow ? '' : 'hidden'}"
-          .path=${mdiChevronRight}
-          @click=${this.navigateNext}
-        ></ha-icon-button>
+        <ha-icon-button class="nav-arrow ${showRightArrow ? '' : 'hidden'}" .path=${mdiChevronRight} @click=${this.navigateNext}></ha-icon-button>
       </div>
       ${this.renderTabContent()}
     `;
@@ -104,15 +89,11 @@ class CardEditor extends BaseEditor {
   private renderTabContent() {
     const c = this.config,
       h = this.hass;
-    const t = (s: unknown[], sec: string) =>
-      html`<sonos-card-section-tab .schema=${s} .section=${sec} .config=${c} .hass=${h}></sonos-card-section-tab>`;
+    const t = (s: unknown[], sec: string) => html`<sonos-card-section-tab .schema=${s} .section=${sec} .config=${c} .hass=${h}></sonos-card-section-tab>`;
     return choose(this.activeTab, [
       [Tab.COMMON, () => html`<sonos-card-common-tab .config=${c} .hass=${h}></sonos-card-common-tab>`],
       [Tab.PLAYER, () => html`<sonos-card-player-tab .config=${c} .hass=${h}></sonos-card-player-tab>`],
-      [
-        Tab.MEDIA_BROWSER,
-        () => html`<sonos-card-media-browser-tab .config=${c} .hass=${h}></sonos-card-media-browser-tab>`,
-      ],
+      [Tab.MEDIA_BROWSER, () => html`<sonos-card-media-browser-tab .config=${c} .hass=${h}></sonos-card-media-browser-tab>`],
       [Tab.GROUPS, () => t(GROUPS_SCHEMA, 'groups')],
       [Tab.GROUPING, () => t(GROUPING_SCHEMA, 'grouping')],
       [Tab.VOLUMES, () => t(VOLUMES_SCHEMA, 'volumes')],

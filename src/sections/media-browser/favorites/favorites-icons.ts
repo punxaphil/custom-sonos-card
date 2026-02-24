@@ -48,12 +48,7 @@ export class FavoritesIcons extends LitElement {
               style=${this.buttonStyle(mediaBrowserConfig.itemsPerRow || 4)}
               @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
             >
-              ${renderFavoritesItem(
-                item,
-                !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons,
-                iconTitleColor,
-                iconTitleBgColor,
-              )}
+              ${renderFavoritesItem(item, !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons, iconTitleColor, iconTitleBgColor)}
             </ha-control-button>
           `;
           prevType = item.favoriteType;

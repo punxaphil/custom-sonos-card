@@ -38,23 +38,14 @@ export class Grouping extends LitElement {
         <div class="list">
           ${items.map(
             (item) => html`
-              <sonos-grouping-item-row
-                .store=${store}
-                .item=${item}
-                .applying=${applying}
-                @toggle-item=${this.handleToggleItem}
-              ></sonos-grouping-item-row>
+              <sonos-grouping-item-row .store=${store} .item=${item} .applying=${applying} @toggle-item=${this.handleToggleItem}></sonos-grouping-item-row>
             `,
           )}
         </div>
         <div class="applying" ?hidden=${!applying}><ha-spinner></ha-spinner></div>
         <ha-control-button-group class="buttons" ?hidden=${hideButtons}>
-          <ha-control-button class="apply" @click=${this.applyGrouping}>
-            ${store.hass.localize('ui.common.apply') || 'Apply'}
-          </ha-control-button>
-          <ha-control-button @click=${this.cancelGrouping}>
-            ${store.hass.localize('ui.common.cancel') || 'Cancel'}
-          </ha-control-button>
+          <ha-control-button class="apply" @click=${this.applyGrouping}> ${store.hass.localize('ui.common.apply') || 'Apply'} </ha-control-button>
+          <ha-control-button @click=${this.cancelGrouping}> ${store.hass.localize('ui.common.cancel') || 'Cancel'} </ha-control-button>
         </ha-control-button-group>
       </div>
     `;
@@ -148,11 +139,7 @@ export class Grouping extends LitElement {
     if (newMainPlayer !== activePlayer.id && !this.store.config.grouping?.dontSwitchPlayer) {
       dispatchActivePlayerId(newMainPlayer, this.store.config, this);
     }
-    if (
-      this.store.config.entityId &&
-      unJoin.includes(this.store.config.entityId) &&
-      this.store.config.grouping?.dontSwitchPlayer
-    ) {
+    if (this.store.config.entityId && unJoin.includes(this.store.config.entityId) && this.store.config.grouping?.dontSwitchPlayer) {
       dispatchActivePlayerId(this.store.config.entityId, this.store.config, this);
     }
   }
@@ -186,8 +173,6 @@ export class Grouping extends LitElement {
   }
 
   private deSelectAll() {
-    this.groupingItems
-      .filter((item) => (!item.isMain && item.isSelected) || (item.isMain && !item.isSelected))
-      .forEach((item) => this.toggleItem(item));
+    this.groupingItems.filter((item) => (!item.isMain && item.isSelected) || (item.isMain && !item.isSelected)).forEach((item) => this.toggleItem(item));
   }
 }

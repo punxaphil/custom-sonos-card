@@ -9,10 +9,7 @@ function hasItemsWithImage(items: MediaPlayerItem[]) {
   return items.some((item) => item.thumbnail);
 }
 
-function getValueFromKeyIgnoreSpecialChars(
-  customFavoriteThumbnails: CustomFavoriteThumbnails | undefined,
-  currentTitle: string,
-) {
+function getValueFromKeyIgnoreSpecialChars(customFavoriteThumbnails: CustomFavoriteThumbnails | undefined, currentTitle: string) {
   for (const title in customFavoriteThumbnails) {
     if (removeSpecialChars(title) === removeSpecialChars(currentTitle)) {
       return customFavoriteThumbnails[title];
@@ -23,8 +20,7 @@ function getValueFromKeyIgnoreSpecialChars(
 
 function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithImage: boolean) {
   const favoritesConfig = config.mediaBrowser?.favorites ?? {};
-  let thumbnail =
-    getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
+  let thumbnail = getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
   if (!thumbnail) {
     thumbnail = getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnailsIfMissing, mediaItem.title);
     if (itemsWithImage && !thumbnail) {
@@ -54,21 +50,13 @@ export function stringContainsAnyItemInArray(array: string[], str: string) {
   return !!array.find((value) => str.includes(value));
 }
 
-const IGNORED_MEDIA_SOURCES = [
-  'media-source://tts',
-  'media-source://camera',
-  'media-source://image',
-  'media-source://image_upload',
-];
+const IGNORED_MEDIA_SOURCES = ['media-source://tts', 'media-source://camera', 'media-source://image', 'media-source://image_upload'];
 
 export function filterOutIgnoredMediaSources<T extends { media_content_id?: string }>(items: T[]): T[] {
   return items.filter((item) => !IGNORED_MEDIA_SOURCES.some((src) => item.media_content_id?.startsWith(src)));
 }
 
-export function getGridItemSize(
-  _itemsPerRow: number | undefined,
-  isPortrait: boolean,
-): { width: string; height: string } {
+export function getGridItemSize(_itemsPerRow: number | undefined, isPortrait: boolean): { width: string; height: string } {
   return { width: '100px', height: isPortrait ? '180px' : '150px' };
 }
 
@@ -83,12 +71,7 @@ export function itemsWithFallbacks(mediaPlayerItems: MediaPlayerItem[], config: 
   });
 }
 
-export function renderFavoritesItem(
-  item: MediaPlayerItem,
-  showTitle = true,
-  titleColor?: string,
-  titleBgColor?: string,
-) {
+export function renderFavoritesItem(item: MediaPlayerItem, showTitle = true, titleColor?: string, titleBgColor?: string) {
   const titleStyle = styleMap({
     color: titleColor ?? '',
     backgroundColor: titleBgColor ?? '',

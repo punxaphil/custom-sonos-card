@@ -111,12 +111,7 @@ export default class MediaControlService {
     }
   }
 
-  private async volumeWithStepSize(
-    mainPlayer: MediaPlayer,
-    updateMembers: boolean,
-    volumeStepSize: number,
-    calculateVolume: CalculateVolume,
-  ) {
+  private async volumeWithStepSize(mainPlayer: MediaPlayer, updateMembers: boolean, volumeStepSize: number, calculateVolume: CalculateVolume) {
     for (const member of mainPlayer.members) {
       if (mainPlayer.id === member.id || updateMembers) {
         const newVolume = calculateVolume(member, volumeStepSize);
@@ -205,14 +200,10 @@ export default class MediaControlService {
   }
 
   async playMedia(mediaPlayer: MediaPlayer, item: MediaPlayerItem, enqueue?: 'add' | 'next' | 'replace' | 'play') {
-    const mediaContentId = enqueue
-      ? this.transformMediaContentId(item.media_content_id ?? '')
-      : (item.media_content_id ?? '');
+    const mediaContentId = enqueue ? this.transformMediaContentId(item.media_content_id ?? '') : (item.media_content_id ?? '');
 
     if (this.config.entityPlatform === 'music_assistant') {
-      await this.hassService.callWithLoader(() =>
-        this.hassService.musicAssistantService.playMedia(mediaPlayer, mediaContentId, enqueue),
-      );
+      await this.hassService.callWithLoader(() => this.hassService.musicAssistantService.playMedia(mediaPlayer, mediaContentId, enqueue));
     } else {
       await this.hassService.callMediaService('play_media', {
         entity_id: mediaPlayer.id,
@@ -225,9 +216,7 @@ export default class MediaControlService {
 
   async playQueue(mediaPlayer: MediaPlayer, queuePosition: number, queueItemId?: string) {
     if (this.isMusicAssistant(mediaPlayer) && queueItemId) {
-      await this.hassService.callWithLoader(() =>
-        this.hassService.musicAssistantService.playQueueItem(mediaPlayer, queueItemId),
-      );
+      await this.hassService.callWithLoader(() => this.hassService.musicAssistantService.playQueueItem(mediaPlayer, queueItemId));
     } else {
       await this.hassService.callWithLoader(() =>
         this.hassService.callService('sonos', 'play_queue', {
@@ -238,12 +227,7 @@ export default class MediaControlService {
     }
   }
 
-  async moveQueueItemAfterCurrent(
-    mediaPlayer: MediaPlayer,
-    item: MediaPlayerItem,
-    index: number,
-    currentIndex: number,
-  ) {
+  async moveQueueItemAfterCurrent(mediaPlayer: MediaPlayer, item: MediaPlayerItem, index: number, currentIndex: number) {
     // For Music Assistant, can't move the currently playing item or the next buffered item
     if (this.isMusicAssistant(mediaPlayer)) {
       if (index === currentIndex || index === currentIndex + 1) {

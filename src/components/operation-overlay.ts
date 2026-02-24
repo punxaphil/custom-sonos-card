@@ -13,10 +13,7 @@ export class OperationOverlay extends LitElement {
       return nothing;
     }
 
-    const progressText =
-      this.progress.total > 1
-        ? `${this.progress.label} ${this.progress.current} of ${this.progress.total}`
-        : `${this.progress.label}...`;
+    const progressText = this.progress.total > 1 ? `${this.progress.label} ${this.progress.current} of ${this.progress.total}` : `${this.progress.label}...`;
 
     return html`
       <div class="operation-overlay">
@@ -24,9 +21,7 @@ export class OperationOverlay extends LitElement {
           <ha-spinner></ha-spinner>
           <div class="operation-progress-text">${progressText}</div>
           <ha-control-button-group>
-            <ha-control-button class="accent" @click=${this.onCancel}>
-              ${this.hass?.localize('ui.common.cancel') || 'Cancel'}
-            </ha-control-button>
+            <ha-control-button class="accent" @click=${this.onCancel}> ${this.hass?.localize('ui.common.cancel') || 'Cancel'} </ha-control-button>
           </ha-control-button-group>
         </div>
       </div>

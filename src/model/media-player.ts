@@ -53,10 +53,7 @@ export class MediaPlayer {
       track = this.attributes.media_content_id?.replace(/.*:\/\//g, '') ?? '';
     }
     if (this.config.mediaTitleRegexToReplace) {
-      track = track.replace(
-        new RegExp(this.config.mediaTitleRegexToReplace, 'g'),
-        this.config.mediaTitleReplacement || '',
-      );
+      track = track.replace(new RegExp(this.config.mediaTitleRegexToReplace, 'g'), this.config.mediaTitleReplacement || '');
     }
     return track;
   }
@@ -64,10 +61,7 @@ export class MediaPlayer {
   private getEntityName(hassEntity: HassEntity) {
     const name = hassEntity.attributes.friendly_name || '';
     if (this.config.entityNameRegexToReplace) {
-      return name.replace(
-        new RegExp(this.config.entityNameRegexToReplace, 'g'),
-        this.config.entityNameReplacement || '',
-      );
+      return name.replace(new RegExp(this.config.entityNameRegexToReplace, 'g'), this.config.entityNameReplacement || '');
     }
     return name;
   }
@@ -103,9 +97,7 @@ export class MediaPlayer {
   }
 
   private getAverageVolume() {
-    const volumes = this.members
-      .filter((m) => !this.config.entitiesToIgnoreVolumeLevelFor?.includes(m.id))
-      .map((m) => m.attributes.volume_level || 0);
+    const volumes = this.members.filter((m) => !this.config.entitiesToIgnoreVolumeLevelFor?.includes(m.id)).map((m) => m.attributes.volume_level || 0);
     return (100 * volumes.reduce((a, b) => a + b, 0)) / volumes.length;
   }
 

@@ -72,10 +72,7 @@ export const playerSectionStyles = css`
   }
 
   *[background] {
-    background-color: var(
-      --background-overlay-color,
-      rgba(var(--rgb-card-background-color), var(--background-opacity, 0.9))
-    );
+    background-color: var(--background-overlay-color, rgba(var(--rgb-card-background-color), var(--background-opacity, 0.9)));
     border-radius: 10px;
   }
 `;

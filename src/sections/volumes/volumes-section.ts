@@ -26,10 +26,7 @@ export class Volumes extends LitElement {
     this.mediaControlService = this.store.mediaControlService;
 
     const members = this.activePlayer.members;
-    return html`
-      ${when(members.length > 1, () => this.volumeWithName(this.activePlayer))}
-      ${members.map((member) => this.volumeWithName(member, false))}
-    `;
+    return html` ${when(members.length > 1, () => this.volumeWithName(this.activePlayer))} ${members.map((member) => this.volumeWithName(member, false))} `;
   }
 
   private volumeWithName(player: MediaPlayer, updateMembers = true) {
@@ -45,19 +42,9 @@ export class Volumes extends LitElement {
         <div class="volume-name-text">${name}</div>
       </div>
       <div class="slider-row">
-        <ha-icon-button
-          .disabled=${player.ignoreVolume}
-          hide=${noUpDown}
-          @click=${volDown}
-          .path=${mdiVolumeMinus}
-        ></ha-icon-button>
+        <ha-icon-button .disabled=${player.ignoreVolume} hide=${noUpDown} @click=${volDown} .path=${mdiVolumeMinus}></ha-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <ha-icon-button
-          .disabled=${player.ignoreVolume}
-          hide=${noUpDown}
-          @click=${volUp}
-          .path=${mdiVolumePlus}
-        ></ha-icon-button>
+        <ha-icon-button .disabled=${player.ignoreVolume} hide=${noUpDown} @click=${volUp} .path=${mdiVolumePlus}></ha-icon-button>
         <ha-icon-button
           hide=${updateMembers || volumesConfig.hideCogwheel || nothing}
           @click=${() => this.toggleShowSwitches(player)}
@@ -84,8 +71,7 @@ export class Volumes extends LitElement {
     }
     const relatedEntities = await this.hassService.getRelatedEntities(player, 'switch', 'number', 'sensor');
     return relatedEntities.map((relatedEntity: HassEntity) => {
-      relatedEntity.attributes.friendly_name =
-        relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
+      relatedEntity.attributes.friendly_name = relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
       const fontSize = this.config.volumes?.additionalControlsFontSize ?? 0.75;
       return html`
         <div style="--ha-font-size-m: ${fontSize}rem">

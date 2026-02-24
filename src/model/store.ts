@@ -12,14 +12,7 @@ import {
   PredefinedGroupPlayer,
   Section,
 } from '../types';
-import {
-  entityMatchMxmp,
-  entityMatchSonos,
-  getGroupPlayerIds,
-  isSonosCard,
-  sortEntities,
-  supportsTurnOn,
-} from '../utils/utils';
+import { entityMatchMxmp, entityMatchSonos, getGroupPlayerIds, isSonosCard, sortEntities, supportsTurnOn } from '../utils/utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { nothing } from 'lit';
@@ -36,9 +29,7 @@ export default class Store {
   public predefinedGroups: PredefinedGroup[];
 
   getJoinedPlayerIds(): string[] {
-    return this.allMediaPlayers
-      .map((p) => p.id)
-      .filter((id) => id === this.activePlayer.id || this.activePlayer.hasMember(id));
+    return this.allMediaPlayers.map((p) => p.id).filter((id) => id === this.activePlayer.id || this.activePlayer.hasMember(id));
   }
 
   getJoinedAndNotJoinedCounts(): { joinedCount: number; notJoinedCount: number } {
@@ -46,21 +37,12 @@ export default class Store {
     return { joinedCount, notJoinedCount: this.allMediaPlayers.length - joinedCount };
   }
 
-  constructor(
-    hass: HomeAssistant,
-    config: CardConfig,
-    currentSection: Section,
-    card: Element,
-    activePlayerId?: string,
-  ) {
+  constructor(hass: HomeAssistant, config: CardConfig, currentSection: Section, card: Element, activePlayerId?: string) {
     this.hass = hass;
     this.config = config;
     const mediaPlayerHassEntities = this.getMediaPlayerHassEntities(this.hass);
     this.allGroups = this.createPlayerGroups(mediaPlayerHassEntities);
-    this.allMediaPlayers = this.allGroups.reduce(
-      (previousValue: MediaPlayer[], currentValue) => [...previousValue, ...currentValue.members],
-      [],
-    );
+    this.allMediaPlayers = this.allGroups.reduce((previousValue: MediaPlayer[], currentValue) => [...previousValue, ...currentValue.members], []);
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     this.hassService = new HassService(this.hass, currentSection, card);
     this.mediaControlService = new MediaControlService(this.hassService, config);
@@ -139,10 +121,7 @@ export default class Store {
     const hassWithEntities = hass as HomeAssistantWithEntities;
     const filtered = Object.values(hass.states).filter((hassEntity) => {
       if (hassEntity.entity_id.includes('media_player')) {
-        if (
-          this.config.allowPlayerVolumeEntityOutsideOfGroup &&
-          hassEntity.entity_id === this.config.player?.volumeEntityId
-        ) {
+        if (this.config.allowPlayerVolumeEntityOutsideOfGroup && hassEntity.entity_id === this.config.player?.volumeEntityId) {
           return true;
         }
         if (isSonosCard(this.config)) {
@@ -165,9 +144,7 @@ export default class Store {
 
   private isMainPlayer(hassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]) {
     try {
-      const groupIds = getGroupPlayerIds(hassEntity).filter((playerId: string) =>
-        mediaPlayerHassEntities.some((value) => value.entity_id === playerId),
-      );
+      const groupIds = getGroupPlayerIds(hassEntity).filter((playerId: string) => mediaPlayerHassEntities.some((value) => value.entity_id === playerId));
       const isGrouped = groupIds?.length > 1;
       const isMainInGroup = isGrouped && groupIds && groupIds[0] === hassEntity.entity_id;
       const available = this.hass.states[hassEntity.entity_id]?.state !== 'unavailable';

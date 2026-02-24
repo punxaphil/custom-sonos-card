@@ -95,19 +95,11 @@ export class Favorites extends LitElement {
     const useGrid = this.layout !== 'list';
     if (useGrid) {
       return html`
-        <sonos-favorites-icons
-          .items=${this.cachedFavorites}
-          .store=${this.store}
-          @item-selected=${this.onFavoriteSelected}
-        ></sonos-favorites-icons>
+        <sonos-favorites-icons .items=${this.cachedFavorites} .store=${this.store} @item-selected=${this.onFavoriteSelected}></sonos-favorites-icons>
       `;
     } else {
       return html`
-        <sonos-favorites-list
-          .items=${this.cachedFavorites}
-          .store=${this.store}
-          @item-selected=${this.onFavoriteSelected}
-        ></sonos-favorites-list>
+        <sonos-favorites-list .items=${this.cachedFavorites} .store=${this.store} @item-selected=${this.onFavoriteSelected}></sonos-favorites-list>
       `;
     }
   }

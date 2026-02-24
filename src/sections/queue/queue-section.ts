@@ -110,8 +110,7 @@ export class Queue extends LitElement {
     } catch (e) {
       const error = e as Error;
       if (error.message === MASS_QUEUE_NOT_INSTALLED) {
-        this.errorMessage =
-          'To show the queue for Music Assistant, install the mass_queue integration from HACS: github.com/droans/mass_queue';
+        this.errorMessage = 'To show the queue for Music Assistant, install the mass_queue integration from HACS: github.com/droans/mass_queue';
         this.queueItems = [];
       } else {
         // Keep cached queue on other errors
@@ -131,8 +130,8 @@ export class Queue extends LitElement {
         <div class="queue-container">
           <div class="error-message">
             <p>
-              To see the Music Assistant queue, enable <code>useMusicAssistant</code> (or set
-              <code>entityPlatform: music_assistant</code>) in the card configuration.
+              To see the Music Assistant queue, enable <code>useMusicAssistant</code> (or set <code>entityPlatform: music_assistant</code>) in the card
+              configuration.
             </p>
           </div>
         </div>
@@ -163,10 +162,7 @@ export class Queue extends LitElement {
   }
 
   private shouldShowMusicAssistantConfigMessage(): boolean {
-    return (
-      this.store.config.entityPlatform !== 'music_assistant' &&
-      this.activePlayer.attributes.media_playlist === 'Music Assistant'
-    );
+    return this.store.config.entityPlatform !== 'music_assistant' && this.activePlayer.attributes.media_playlist === 'Music Assistant';
   }
 
   private isQueueNotManagedByMusicAssistant(): boolean {
@@ -229,11 +225,7 @@ export class Queue extends LitElement {
                   @queue-selected-at-end=${this.queueSelectedAtEnd}
                 ></sonos-selection-actions>
                 ${hasSelection
-                  ? html`<ha-icon-button
-                      .path=${mdiCloseBoxMultipleOutline}
-                      @click=${this.deleteSelected}
-                      title="Delete selected"
-                    ></ha-icon-button>`
+                  ? html`<ha-icon-button .path=${mdiCloseBoxMultipleOutline} @click=${this.deleteSelected} title="Delete selected"></ha-icon-button>`
                   : nothing}
                 <div class="delete-all-btn" @click=${this.clearQueue} title="Delete all">
                   <ha-icon-button .path=${mdiTrashCanOutline}></ha-icon-button>
@@ -346,14 +338,7 @@ export class Queue extends LitElement {
 
     await this.runBatchOperation(
       (onProgress, shouldCancel) =>
-        this.store.mediaControlService.moveQueueItemsAfterCurrent(
-          this.activePlayer,
-          this.queueItems,
-          selectedIndices,
-          currentIndex,
-          onProgress,
-          shouldCancel,
-        ),
+        this.store.mediaControlService.moveQueueItemsAfterCurrent(this.activePlayer, this.queueItems, selectedIndices, currentIndex, onProgress, shouldCancel),
       { scrollToPlaying: true },
     );
   }
@@ -368,13 +353,7 @@ export class Queue extends LitElement {
     this.operationProgress = { current: 0, total, label: 'Moving' };
 
     await this.runBatchOperation((onProgress, shouldCancel) =>
-      this.store.mediaControlService.moveQueueItemsToEnd(
-        this.activePlayer,
-        this.queueItems,
-        selectedIndices,
-        onProgress,
-        shouldCancel,
-      ),
+      this.store.mediaControlService.moveQueueItemsToEnd(this.activePlayer, this.queueItems, selectedIndices, onProgress, shouldCancel),
     );
   }
 
@@ -393,8 +372,7 @@ export class Queue extends LitElement {
     this.operationProgress = { current: 0, total, label: 'Loading' };
 
     await this.runBatchOperation(
-      (onProgress, shouldCancel) =>
-        this.store.mediaControlService.queueAndPlay(this.activePlayer, items, 'replace', onProgress, shouldCancel),
+      (onProgress, shouldCancel) => this.store.mediaControlService.queueAndPlay(this.activePlayer, items, 'replace', onProgress, shouldCancel),
       { scrollToPlaying: true },
     );
   }
@@ -447,12 +425,7 @@ export class Queue extends LitElement {
     // mediaControlService.playMedia only supports add/next/replace/play
     // For replace_next or radioMode, use musicAssistantService directly
     if (enqueue === 'replace_next' || action.radioMode) {
-      await this.store.hassService.musicAssistantService.playMedia(
-        this.store.activePlayer,
-        item.media_content_id,
-        enqueue as EnqueueMode,
-        action.radioMode,
-      );
+      await this.store.hassService.musicAssistantService.playMedia(this.store.activePlayer, item.media_content_id, enqueue as EnqueueMode, action.radioMode);
     } else {
       const playMode = enqueue as 'add' | 'next' | 'replace' | 'play';
       await this.store.mediaControlService.playMedia(this.store.activePlayer, item, playMode);

@@ -10,8 +10,7 @@ class PlayerHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
 
   render() {
-    const { headerEntityFontSize, headerSongFontSize, hideEntityName, hideArtistAlbum, showAudioInputFormat } =
-      this.store.config.player ?? {};
+    const { headerEntityFontSize, headerSongFontSize, hideEntityName, hideArtistAlbum, showAudioInputFormat } = this.store.config.player ?? {};
     const entityStyle = headerEntityFontSize ? { fontSize: `${headerEntityFontSize}rem` } : {};
     const songStyle = headerSongFontSize ? { fontSize: `${headerSongFontSize}rem` } : {};
 
@@ -20,9 +19,7 @@ class PlayerHeader extends LitElement {
         ${getSpeakerList(this.store.activePlayer, this.store.predefinedGroups)}
       </div>
       <div class="song" style=${styleMap(songStyle)}>${this.getSong()}</div>
-      <div class="artist-album" ?hidden=${!!hideArtistAlbum}>
-        ${this.getAlbum()} ${when(showAudioInputFormat, () => until(this.getAudioInputFormat()))}
-      </div>
+      <div class="artist-album" ?hidden=${!!hideArtistAlbum}>${this.getAlbum()} ${when(showAudioInputFormat, () => until(this.getAudioInputFormat()))}</div>
       <sonos-progress .store=${this.store}></sonos-progress>
     </div>`;
   }

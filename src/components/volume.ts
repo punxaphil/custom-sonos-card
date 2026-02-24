@@ -38,9 +38,7 @@ class Volume extends LitElement {
       <style>
         :host {
           ${sliderHeight ? `--control-slider-thickness: ${sliderHeight}rem;` : ''}
-          ${muteButtonSize
-          ? `--mdc-icon-button-size: ${muteButtonSize}rem; --mdc-icon-size: ${muteButtonSize * 0.75}rem;`
-          : ''}
+          ${muteButtonSize ? `--mdc-icon-button-size: ${muteButtonSize}rem; --mdc-icon-size: ${muteButtonSize * 0.75}rem;` : ''}
         }
       </style>
       <div class="volume" slim=${this.slim || nothing}>

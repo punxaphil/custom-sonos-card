@@ -96,12 +96,7 @@ export default class MediaBrowseService {
   }
 
   private async browseDir(player: MediaPlayer, favoritesDir: MediaPlayerItem, favorites: MediaPlayerItem[]) {
-    const dir = await browseMediaPlayer(
-      this.hass,
-      player.id,
-      favoritesDir.media_content_id,
-      favoritesDir.media_content_type,
-    );
+    const dir = await browseMediaPlayer(this.hass, player.id, favoritesDir.media_content_id, favoritesDir.media_content_type);
     for (const child of dir.children ?? []) {
       if (child.can_play) {
         favorites.push({ ...child, favoriteType: dir.title });

@@ -24,11 +24,7 @@ export class SleepTimer extends LitElement {
           .path=${mdiCheckCircle}
           @click=${() => hassService.setSleepTimer(this.player, this.sleepTimer.valueAsNumber)}
         ></ha-icon-button>
-        <ha-icon-button
-          id="sleepTimerCancel"
-          .path=${mdiCloseCircle}
-          @click=${() => hassService.cancelSleepTimer(this.player)}
-        ></ha-icon-button>
+        <ha-icon-button id="sleepTimerCancel" .path=${mdiCloseCircle} @click=${() => hassService.cancelSleepTimer(this.player)}></ha-icon-button>
       </div>
     `;
   }

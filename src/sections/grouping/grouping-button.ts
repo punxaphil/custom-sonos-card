@@ -18,8 +18,7 @@ export class GroupingButton extends LitElement {
     return html`
       <ha-control-button selected=${this.selected || nothing} style=${buttonStyle}>
         <div>
-          ${this.icon ? html` <ha-icon icon-and-name=${iconAndName} .icon=${this.icon}></ha-icon>` : ''}
-          ${this.name ? html`<span>${this.name}</span>` : ''}
+          ${this.icon ? html` <ha-icon icon-and-name=${iconAndName} .icon=${this.icon}></ha-icon>` : ''} ${this.name ? html`<span>${this.name}</span>` : ''}
         </div>
       </ha-control-button>
     `;

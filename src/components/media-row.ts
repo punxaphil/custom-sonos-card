@@ -27,15 +27,11 @@ class MediaRow extends LitElement {
   @property({ type: Boolean }) libraryLoading = false;
 
   render() {
-    const { itemBackgroundColor, itemTextColor, selectedItemBackgroundColor, selectedItemTextColor } =
-      this.store?.config?.queue ?? {};
+    const { itemBackgroundColor, itemTextColor, selectedItemBackgroundColor, selectedItemTextColor } = this.store?.config?.queue ?? {};
     const bgColor = this.selected ? selectedItemBackgroundColor : itemBackgroundColor;
     const textColor = this.selected ? selectedItemTextColor : itemTextColor;
-    const cssVars =
-      (bgColor ? `--secondary-background-color: ${bgColor};` : '') +
-      (textColor ? `--secondary-text-color: ${textColor};` : '');
-    const hasBadges =
-      this.showFavoriteBadge || this.showLibraryBadge || this.isFavorite !== null || this.isInLibrary !== null;
+    const cssVars = (bgColor ? `--secondary-background-color: ${bgColor};` : '') + (textColor ? `--secondary-text-color: ${textColor};` : '');
+    const hasBadges = this.showFavoriteBadge || this.showLibraryBadge || this.isFavorite !== null || this.isInLibrary !== null;
     const showClickableHeart = this.isFavorite !== null;
     const showClickableLibrary = this.isInLibrary !== null;
     return html`
@@ -49,11 +45,7 @@ class MediaRow extends LitElement {
         <div class="row">
           ${this.showCheckbox
             ? html`<div class="icon-slot">
-                <ha-checkbox
-                  .checked=${this.checked}
-                  @change=${this.onCheckboxChange}
-                  @click=${(e: Event) => e.stopPropagation()}
-                ></ha-checkbox>
+                <ha-checkbox .checked=${this.checked} @change=${this.onCheckboxChange} @click=${(e: Event) => e.stopPropagation()}></ha-checkbox>
               </div>`
             : this.showQueueButton
               ? html`<div class="icon-slot">
@@ -72,31 +64,19 @@ class MediaRow extends LitElement {
           ${hasBadges
             ? html`<div class="badges">
                 ${showClickableHeart
-                  ? html`<div
-                      class="badge-toggle ${this.favoriteLoading ? 'loading' : ''}"
-                      @click=${this.onFavoriteClick}
-                    >
+                  ? html`<div class="badge-toggle ${this.favoriteLoading ? 'loading' : ''}" @click=${this.onFavoriteClick}>
                       ${this.favoriteLoading
                         ? html`<ha-circular-progress indeterminate size="tiny"></ha-circular-progress>`
-                        : html`<ha-svg-icon
-                            class=${this.isFavorite ? 'accent' : ''}
-                            .path=${this.isFavorite ? mdiHeart : mdiHeartOutline}
-                          ></ha-svg-icon>`}
+                        : html`<ha-svg-icon class=${this.isFavorite ? 'accent' : ''} .path=${this.isFavorite ? mdiHeart : mdiHeartOutline}></ha-svg-icon>`}
                     </div>`
                   : this.showFavoriteBadge
                     ? html`<ha-svg-icon class="accent" .path=${mdiHeart}></ha-svg-icon>`
                     : nothing}
                 ${showClickableLibrary
-                  ? html`<div
-                      class="badge-toggle ${this.libraryLoading ? 'loading' : ''}"
-                      @click=${this.onLibraryClick}
-                    >
+                  ? html`<div class="badge-toggle ${this.libraryLoading ? 'loading' : ''}" @click=${this.onLibraryClick}>
                       ${this.libraryLoading
                         ? html`<ha-circular-progress indeterminate size="tiny"></ha-circular-progress>`
-                        : html`<ha-svg-icon
-                            class=${this.isInLibrary ? 'accent' : ''}
-                            .path=${mdiBookshelf}
-                          ></ha-svg-icon>`}
+                        : html`<ha-svg-icon class=${this.isInLibrary ? 'accent' : ''} .path=${mdiBookshelf}></ha-svg-icon>`}
                     </div>`
                   : this.showLibraryBadge
                     ? html`<ha-svg-icon class="accent" .path=${mdiBookshelf}></ha-svg-icon>`

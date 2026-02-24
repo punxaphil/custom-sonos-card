@@ -147,32 +147,29 @@ describe('Utils', () => {
       [[true, false, false], [entityOne, entityTwo], '3', ['1'], [], '3'],
       [[false, true, true], [entityOne], '1', [], ['2', '3'], '1'],
       [[false, true, true], [entityOne], '1', [], ['2', '3'], '1'],
-    ])(
-      'modified %j, joined %j, active %i -> unJoin %j, join %j, newMain %i',
-      (modified, joined, active, unJoin, join, newMain) => {
-        // Arrange
-        joined.forEach((j) => (j.attributes.group_members = joined.map((m) => m.entity_id)));
-        const mainPlayer: MediaPlayer = new MediaPlayer(entityOne, config, entities);
-        const secondPlayer: MediaPlayer = new MediaPlayer(entityTwo, config, entities);
-        const thirdPlayer: MediaPlayer = new MediaPlayer(entityThree, config, entities);
-        const groupingItems = [
-          new GroupingItem(mainPlayer, mainPlayer, modified[0]),
-          new GroupingItem(secondPlayer, mainPlayer, modified[1]),
-          new GroupingItem(thirdPlayer, mainPlayer, modified[2]),
-        ];
+    ])('modified %j, joined %j, active %i -> unJoin %j, join %j, newMain %i', (modified, joined, active, unJoin, join, newMain) => {
+      // Arrange
+      joined.forEach((j) => (j.attributes.group_members = joined.map((m) => m.entity_id)));
+      const mainPlayer: MediaPlayer = new MediaPlayer(entityOne, config, entities);
+      const secondPlayer: MediaPlayer = new MediaPlayer(entityTwo, config, entities);
+      const thirdPlayer: MediaPlayer = new MediaPlayer(entityThree, config, entities);
+      const groupingItems = [
+        new GroupingItem(mainPlayer, mainPlayer, modified[0]),
+        new GroupingItem(secondPlayer, mainPlayer, modified[1]),
+        new GroupingItem(thirdPlayer, mainPlayer, modified[2]),
+      ];
 
-        // Act
-        const joinedIds = joined.map((j) => j.entity_id);
-        const result = getGroupingChanges(groupingItems, joinedIds, active);
+      // Act
+      const joinedIds = joined.map((j) => j.entity_id);
+      const result = getGroupingChanges(groupingItems, joinedIds, active);
 
-        // Assert
-        expect(result).toEqual({
-          unJoin: unJoin,
-          join: join,
-          newMainPlayer: newMain,
-        });
-      },
-    );
+      // Assert
+      expect(result).toEqual({
+        unJoin: unJoin,
+        join: join,
+        newMainPlayer: newMain,
+      });
+    });
   });
 
   describe('getGroupPlayerIds', () => {
@@ -292,11 +289,7 @@ describe('Utils', () => {
         ['entity4', { entityPlatform: 'sonos' }, false],
       ])('when entity is %j, config is %j: should return %j', (entity_id, config, expected) => {
         // Act
-        const result = entityMatchMxmp(
-          newConfig({ ...config, type: 'custom:maxi-media-player' }),
-          hassEntity(entity_id),
-          hassWithEntities,
-        );
+        const result = entityMatchMxmp(newConfig({ ...config, type: 'custom:maxi-media-player' }), hassEntity(entity_id), hassWithEntities);
 
         // Assert
         expect(result).toBe(expected);

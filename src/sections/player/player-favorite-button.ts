@@ -11,9 +11,7 @@ class PlayerFavoriteButton extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has('store')) {
-      const isMusicAssistant = this.store.hassService.musicAssistantService.isMusicAssistantPlayer(
-        this.store.activePlayer,
-      );
+      const isMusicAssistant = this.store.hassService.musicAssistantService.isMusicAssistantPlayer(this.store.activePlayer);
       const currentMediaContentId = this.store.activePlayer.attributes.media_content_id;
       if (isMusicAssistant && currentMediaContentId !== this.lastMediaContentId) {
         this.lastMediaContentId = currentMediaContentId;
@@ -25,9 +23,7 @@ class PlayerFavoriteButton extends LitElement {
   }
 
   render() {
-    const isMusicAssistant = this.store.hassService.musicAssistantService.isMusicAssistantPlayer(
-      this.store.activePlayer,
-    );
+    const isMusicAssistant = this.store.hassService.musicAssistantService.isMusicAssistantPlayer(this.store.activePlayer);
     const favoriteClass = `favorite-button ${this.isFavorite ? 'is-favorite' : ''} ${this.favoriteLoading ? 'loading' : ''}`;
     const favoriteTitle = this.isFavorite ? 'Remove from favorites' : 'Add to favorites';
     return html`
@@ -58,9 +54,7 @@ class PlayerFavoriteButton extends LitElement {
     this.favoriteLoading = true;
     try {
       if (this.isFavorite) {
-        const success = await this.store.hassService.musicAssistantService.unfavoriteCurrentSong(
-          this.store.activePlayer,
-        );
+        const success = await this.store.hassService.musicAssistantService.unfavoriteCurrentSong(this.store.activePlayer);
         if (success && this.store.activePlayer.attributes.media_content_id === songIdAtStart) {
           this.isFavorite = false;
         }

@@ -61,9 +61,7 @@ export default class HassService {
   async getRelatedEntities(player: MediaPlayer, ...entityTypes: string[]) {
     const template = `{{ device_entities(device_id('${player.id}')) }}`;
     const result = await this.renderTemplate<string[]>(template, []);
-    return result
-      .filter((item: string) => entityTypes.some((type) => item.includes(type)))
-      .map((item) => this.hass.states[item]);
+    return result.filter((item: string) => entityTypes.some((type) => item.includes(type))).map((item) => this.hass.states[item]);
   }
 
   private isMusicAssistant(mediaPlayer: MediaPlayer): boolean {

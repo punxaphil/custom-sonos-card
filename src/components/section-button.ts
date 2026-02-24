@@ -19,11 +19,7 @@ export class SectionButton extends LitElement {
           '--mdc-icon-size': `${size * 0.6}rem`,
         }
       : {};
-    return html`<ha-icon-button
-      @click=${() => this.dispatchSection()}
-      selected=${this.selectedSection === this.section || nothing}
-      style=${styleMap(styles)}
-    >
+    return html`<ha-icon-button @click=${() => this.dispatchSection()} selected=${this.selectedSection === this.section || nothing} style=${styleMap(styles)}>
       <ha-icon .icon=${this.icon}></ha-icon>
     </ha-icon-button>`;
   }

@@ -34,9 +34,7 @@ class PredefinedGroupEditor extends BaseEditor {
       ${this.predefinedGroup.entities.map(({ player, volume }) => this.renderVolumeField(player, volume))}
       <ha-control-button-group>
         <ha-control-button @click=${this.save}>OK<ha-svg-icon .path=${mdiCheck}></ha-svg-icon></ha-control-button>
-        <ha-control-button @click=${this.delete}
-          >Delete<ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-        ></ha-control-button>
+        <ha-control-button @click=${this.delete}>Delete<ha-svg-icon .path=${mdiDelete}></ha-svg-icon></ha-control-button>
       </ha-control-button-group>
     `;
   }

@@ -28,12 +28,7 @@ class Footer extends LitElement {
     return html`
       ${sections.map(
         ([section, icon]) => html`
-          <sonos-section-button
-            .config=${this.config}
-            .icon=${icon}
-            .selectedSection=${this.section}
-            .section=${section}
-          ></sonos-section-button>
+          <sonos-section-button .config=${this.config} .icon=${icon} .selectedSection=${this.section} .section=${section}></sonos-section-button>
         `,
       )}
     `;

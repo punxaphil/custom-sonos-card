@@ -1,14 +1,6 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import {
-  mdiAccessPoint,
-  mdiClose,
-  mdiPlay,
-  mdiPlayBoxMultiple,
-  mdiPlaylistPlus,
-  mdiSkipNext,
-  mdiSkipNextCircle,
-} from '@mdi/js';
+import { mdiAccessPoint, mdiClose, mdiPlay, mdiPlayBoxMultiple, mdiPlaylistPlus, mdiSkipNext, mdiSkipNextCircle } from '@mdi/js';
 import { customEvent } from '../utils/utils';
 
 export type PlayMenuAction = {
@@ -44,12 +36,7 @@ export class PlayMenu extends LitElement {
   private renderButtonMenu() {
     return html`
       <ha-dropdown @wa-select=${this.handleAction}>
-        <ha-icon-button
-          slot="trigger"
-          .path=${mdiPlay}
-          title="Play options"
-          ?disabled=${this.disabled}
-        ></ha-icon-button>
+        <ha-icon-button slot="trigger" .path=${mdiPlay} title="Play options" ?disabled=${this.disabled}></ha-icon-button>
         ${this.renderMenuItems()}
       </ha-dropdown>
     `;
@@ -105,14 +92,7 @@ export class PlayMenu extends LitElement {
   }
 
   private getActionLabel(index: number): string {
-    return [
-      'Play Now (clear queue)',
-      'Start Radio',
-      'Play Now',
-      'Play Next',
-      'Add to Queue',
-      'Play Next (clear queue)',
-    ][index];
+    return ['Play Now (clear queue)', 'Start Radio', 'Play Now', 'Play Next', 'Add to Queue', 'Play Next (clear queue)'][index];
   }
 
   private handleAction(e: CustomEvent<{ item: { value: string } }>) {

@@ -137,12 +137,7 @@ export class MusicAssistantService {
   /**
    * Search Music Assistant for media
    */
-  async search(
-    configEntryId: string,
-    name: string,
-    mediaType: SearchMediaType,
-    limit: number = 50,
-  ): Promise<SearchResultItem[]> {
+  async search(configEntryId: string, name: string, mediaType: SearchMediaType, limit: number = 50): Promise<SearchResultItem[]> {
     try {
       const response = await this.hass.callWS<{ response: MusicAssistantSearchResponse }>({
         type: 'call_service',
@@ -208,10 +203,7 @@ export class MusicAssistantService {
     return items.map((item) => this.transformResultItem(item, mediaType));
   }
 
-  private getResultsForType(
-    response: MusicAssistantSearchResponse,
-    mediaType: SearchMediaType,
-  ): MusicAssistantSearchResult[] {
+  private getResultsForType(response: MusicAssistantSearchResponse, mediaType: SearchMediaType): MusicAssistantSearchResult[] {
     switch (mediaType) {
       case 'artist':
         return response.artists ?? [];
@@ -387,12 +379,7 @@ export class MusicAssistantService {
     });
   }
 
-  async playMedia(
-    mediaPlayer: MediaPlayer,
-    mediaId: string,
-    enqueue?: EnqueueMode,
-    radioMode?: boolean,
-  ): Promise<void> {
+  async playMedia(mediaPlayer: MediaPlayer, mediaId: string, enqueue?: EnqueueMode, radioMode?: boolean): Promise<void> {
     await this.hass.callService('music_assistant', 'play_media', {
       entity_id: mediaPlayer.id,
       media_id: [mediaId],
@@ -404,19 +391,11 @@ export class MusicAssistantService {
   /**
    * Get collection items based on media type
    */
-  async getCollectionItems(
-    uri: string,
-    mediaType: SearchMediaType,
-    massConfigEntryId: string,
-  ): Promise<SearchResultItem[]> {
+  async getCollectionItems(uri: string, mediaType: SearchMediaType, massConfigEntryId: string): Promise<SearchResultItem[]> {
     return this.getCollectionTracks(`get_${mediaType}_tracks`, uri, massConfigEntryId);
   }
 
-  private async getCollectionTracks(
-    service: string,
-    uri: string,
-    massQueueConfigEntryId: string,
-  ): Promise<SearchResultItem[]> {
+  private async getCollectionTracks(service: string, uri: string, massQueueConfigEntryId: string): Promise<SearchResultItem[]> {
     try {
       const ret = await this.hass.callWS<{ response: { tracks: MassQueueItem[] } }>({
         type: 'call_service',
@@ -449,11 +428,7 @@ export class MusicAssistantService {
     };
   }
 
-  private async findRelatedEntityId(
-    mediaPlayer: MediaPlayer,
-    entityType: string,
-    namePart: string,
-  ): Promise<string | undefined> {
+  private async findRelatedEntityId(mediaPlayer: MediaPlayer, entityType: string, namePart: string): Promise<string | undefined> {
     const template = `{{ device_entities(device_id('${mediaPlayer.id}')) }}`;
     const entities = await this.renderTemplate<string[]>(template, []);
     const matching = entities
@@ -534,13 +509,7 @@ export class MusicAssistantService {
    * Remove an item from favorites via Music Assistant API
    * Uses music/favorites/remove_item which requires media_type and library_item_id
    */
-  async removeFromFavorites(
-    massQueueConfigEntryId: string,
-    uri: string,
-    mediaType: SearchMediaType,
-    itemId?: string,
-    provider?: string,
-  ): Promise<boolean> {
+  async removeFromFavorites(massQueueConfigEntryId: string, uri: string, mediaType: SearchMediaType, itemId?: string, provider?: string): Promise<boolean> {
     try {
       const libraryItemId = await this.resolveLibraryItemId(massQueueConfigEntryId, uri, mediaType, itemId, provider);
 
@@ -576,13 +545,7 @@ export class MusicAssistantService {
   /**
    * Remove an item from the library via Music Assistant API
    */
-  async removeFromLibrary(
-    massQueueConfigEntryId: string,
-    uri: string,
-    mediaType: SearchMediaType,
-    itemId?: string,
-    provider?: string,
-  ): Promise<boolean> {
+  async removeFromLibrary(massQueueConfigEntryId: string, uri: string, mediaType: SearchMediaType, itemId?: string, provider?: string): Promise<boolean> {
     try {
       const libraryItemId = await this.resolveLibraryItemId(massQueueConfigEntryId, uri, mediaType, itemId, provider);
 

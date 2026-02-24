@@ -21,8 +21,7 @@ export function findArtworkOverride(store: Store, entityImage?: string) {
   if (!overrides) {
     return undefined;
   }
-  const { media_title, media_artist, media_album_name, media_content_id, media_channel } =
-    store.activePlayer.attributes;
+  const { media_title, media_artist, media_album_name, media_content_id, media_channel } = store.activePlayer.attributes;
   let override = overrides.find(
     (value) =>
       matchesString(media_title, value.mediaTitleEquals) ||
@@ -63,10 +62,7 @@ export function getArtworkImage(store: Store, resolvedImageUrl?: string) {
 }
 
 export function getFallbackImage(store: Store) {
-  return (
-    store.config.player?.fallbackArtwork ??
-    (store.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE)
-  );
+  return store.config.player?.fallbackArtwork ?? (store.activePlayer.attributes.media_title === 'TV' ? TV_BASE64_IMAGE : MUSIC_NOTES_BASE64_IMAGE);
 }
 
 export function getBackgroundImage(store: Store, imageLoaded: boolean, resolvedImageUrl?: string) {

@@ -37,14 +37,8 @@ class ArtworkOverrideEditor extends BaseEditor {
         .changed=${this.changed}
       ></sonos-card-editor-form>
       <ha-control-button-group>
-        <ha-control-button @click=${this.dispatchClose}
-          >OK<ha-svg-icon .path=${mdiCheck}></ha-svg-icon
-        ></ha-control-button>
-        ${isExisting
-          ? html`<ha-control-button @click=${this.delete}
-              >Delete<ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-            ></ha-control-button>`
-          : nothing}
+        <ha-control-button @click=${this.dispatchClose}>OK<ha-svg-icon .path=${mdiCheck}></ha-svg-icon></ha-control-button>
+        ${isExisting ? html`<ha-control-button @click=${this.delete}>Delete<ha-svg-icon .path=${mdiDelete}></ha-svg-icon></ha-control-button>` : nothing}
       </ha-control-button-group>
     `;
   }
