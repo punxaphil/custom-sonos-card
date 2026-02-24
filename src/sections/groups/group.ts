@@ -6,6 +6,7 @@ import { dispatchActivePlayerId, getSpeakerList } from '../../utils/utils';
 import { SESSION_STORAGE_PLAYER_ID } from '../../constants';
 import { MediaPlayer } from '../../model/media-player';
 import '../../components/playing-bars';
+import './group-icons';
 
 class Group extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -14,17 +15,15 @@ class Group extends LitElement {
 
   dispatchEntityIdEvent = () => {
     if (this.selected) {
-      const entityId = this.player.id;
-      dispatchActivePlayerId(entityId, this.store.config, this);
+      dispatchActivePlayerId(this.player.id, this.store.config, this);
     }
   };
 
   render() {
-    const groupsConfig = this.store.config.groups ?? {};
-    const currentTrack = groupsConfig.hideCurrentTrack ? '' : this.player.getCurrentTrack();
+    const { hideCurrentTrack, itemMargin, backgroundColor, speakersFontSize, titleFontSize, compact } = this.store.config.groups ?? {};
+    const currentTrack = hideCurrentTrack ? '' : this.player.getCurrentTrack();
     const speakerList = getSpeakerList(this.player, this.store.predefinedGroups);
     const icons = this.player.members.map((member) => member.attributes.icon).filter((icon) => icon);
-    const { itemMargin, backgroundColor, speakersFontSize, titleFontSize } = groupsConfig;
     const listItemStyle = styleMap({
       ...(itemMargin ? { margin: itemMargin } : {}),
       ...(backgroundColor ? { background: backgroundColor } : {}),
@@ -34,14 +33,14 @@ class Group extends LitElement {
     return html`
       <mwc-list-item
         hasMeta
-        class=${groupsConfig.compact ? 'compact' : ''}
+        class=${compact ? 'compact' : ''}
         ?selected=${this.selected}
         ?activated=${this.selected}
         @click=${() => this.handleGroupClicked()}
         style=${listItemStyle}
       >
         <div class="row">
-          ${this.renderIcons(icons)}
+          <sonos-group-icons .icons=${icons}></sonos-group-icons>
           <div class="text">
             <span class="speakers" style=${speakersStyle}>${speakerList}</span>
             <span class="song-title" style=${titleStyle}>${currentTrack}</span>
@@ -51,20 +50,6 @@ class Group extends LitElement {
         <sonos-playing-bars slot="meta" .show=${this.player.isPlaying()}></sonos-playing-bars>
       </mwc-list-item>
     `;
-  }
-
-  private renderIcons(icons: (string | undefined)[]) {
-    const length = icons.length;
-    const iconsToShow = icons.slice(0, 4);
-    const iconClass = length > 1 ? 'small' : '';
-    const iconsHtml = iconsToShow.map((icon) => html` <ha-icon class=${iconClass} .icon=${icon}></ha-icon>`);
-    if (length > 4) {
-      iconsHtml.splice(3, 1, html`<span>+${length - 3}</span>`);
-    }
-    if (length > 2) {
-      iconsHtml.splice(2, 0, html`<br />`);
-    }
-    return html` <div class="icons" ?empty=${length === 0}>${iconsHtml}</div>`;
   }
 
   connectedCallback() {
@@ -123,28 +108,6 @@ class Group extends LitElement {
       .song-title {
         font-size: calc(var(--sonos-font-size, 1rem) * 0.9);
         font-weight: bold;
-      }
-
-      .icons {
-        text-align: center;
-        margin: 0;
-        min-width: 5em;
-        max-width: 5em;
-      }
-
-      .icons[empty] {
-        min-width: 1em;
-        max-width: 1em;
-      }
-
-      ha-icon {
-        --mdc-icon-size: 3em;
-        margin: 1em;
-      }
-
-      ha-icon.small {
-        --mdc-icon-size: 2em;
-        margin: 0;
       }
 
       .compact ha-icon {

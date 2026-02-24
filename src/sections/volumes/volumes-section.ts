@@ -1,58 +1,48 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../../model/store';
-import { CardConfig } from '../../types';
 import { until } from 'lit-html/directives/until.js';
-import { when } from 'lit/directives/when.js';
 import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
-import MediaControlService from '../../services/media-control-service';
 import { MediaPlayer } from '../../model/media-player';
-import HassService from '../../services/hass-service';
 import { HassEntity } from 'home-assistant-js-websocket';
 import './sleep-timer';
 
 export class Volumes extends LitElement {
   @property({ attribute: false }) store!: Store;
-  private config!: CardConfig;
-  private activePlayer!: MediaPlayer;
-  private mediaControlService!: MediaControlService;
   @state() private showSwitches: { [entity: string]: boolean } = {};
-  private hassService!: HassService;
 
   render() {
-    this.config = this.store.config;
-    this.activePlayer = this.store.activePlayer;
-    this.hassService = this.store.hassService;
-    this.mediaControlService = this.store.mediaControlService;
-
-    const members = this.activePlayer.members;
-    return html` ${when(members.length > 1, () => this.volumeWithName(this.activePlayer))} ${members.map((member) => this.volumeWithName(member, false))} `;
+    const members = this.store.activePlayer.members;
+    const showAll = members.length > 1;
+    return html`
+      <div ?hidden=${!showAll}>${showAll ? this.volumeWithName(this.store.activePlayer) : nothing}</div>
+      ${members.map((member) => this.volumeWithName(member, false))}
+    `;
   }
 
   private volumeWithName(player: MediaPlayer, updateMembers = true) {
-    const volumesConfig = this.config.volumes ?? {};
-    const playerConfig = this.config.player ?? {};
-    const name = updateMembers ? (volumesConfig.labelForAllSlider ?? 'All') : player.name;
-    const volDown = async () => await this.mediaControlService.volumeDown(player, updateMembers);
-    const volUp = async () => await this.mediaControlService.volumeUp(player, updateMembers);
-    const noUpDown = !!playerConfig.showVolumeUpAndDownButtons && nothing;
+    const { labelForAllSlider, hideCogwheel } = this.store.config.volumes ?? {};
+    const { showVolumeUpAndDownButtons } = this.store.config.player ?? {};
+    const name = updateMembers ? (labelForAllSlider ?? 'All') : player.name;
+    const volDown = async () => await this.store.mediaControlService.volumeDown(player, updateMembers);
+    const volUp = async () => await this.store.mediaControlService.volumeUp(player, updateMembers);
     const hideSwitches = updateMembers || !this.showSwitches[player.id];
     return html` <div class="row">
       <div class="volume-name">
         <div class="volume-name-text">${name}</div>
       </div>
       <div class="slider-row">
-        <ha-icon-button .disabled=${player.ignoreVolume} hide=${noUpDown} @click=${volDown} .path=${mdiVolumeMinus}></ha-icon-button>
+        <ha-icon-button .disabled=${player.ignoreVolume} ?hidden=${!showVolumeUpAndDownButtons} @click=${volDown} .path=${mdiVolumeMinus}></ha-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <ha-icon-button .disabled=${player.ignoreVolume} hide=${noUpDown} @click=${volUp} .path=${mdiVolumePlus}></ha-icon-button>
+        <ha-icon-button .disabled=${player.ignoreVolume} ?hidden=${!showVolumeUpAndDownButtons} @click=${volUp} .path=${mdiVolumePlus}></ha-icon-button>
         <ha-icon-button
-          hide=${updateMembers || volumesConfig.hideCogwheel || nothing}
+          ?hidden=${updateMembers || !!hideCogwheel}
           @click=${() => this.toggleShowSwitches(player)}
           .path=${mdiCog}
           show-switches=${this.showSwitches[player.id] || nothing}
         ></ha-icon-button>
       </div>
-      <div class="switches" hide=${hideSwitches || nothing}>
+      <div class="switches" ?hidden=${hideSwitches}>
         <sonos-source .store=${this.store}> </sonos-source>
         ${until(this.getAdditionalControls(hideSwitches, player))}
         <sonos-sleep-timer .store=${this.store} .player=${player}></sonos-sleep-timer>
@@ -69,10 +59,10 @@ export class Volumes extends LitElement {
     if (hide) {
       return [];
     }
-    const relatedEntities = await this.hassService.getRelatedEntities(player, 'switch', 'number', 'sensor');
+    const relatedEntities = await this.store.hassService.getRelatedEntities(player, 'switch', 'number', 'sensor');
+    const { additionalControlsFontSize: fontSize = 0.75 } = this.store.config.volumes ?? {};
     return relatedEntities.map((relatedEntity: HassEntity) => {
       relatedEntity.attributes.friendly_name = relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
-      const fontSize = this.config.volumes?.additionalControlsFontSize ?? 0.75;
       return html`
         <div style="--ha-font-size-m: ${fontSize}rem">
           <state-card-content .stateObj=${relatedEntity} .hass=${this.store.hass}></state-card-content>
@@ -135,8 +125,8 @@ export class Volumes extends LitElement {
         color: var(--accent-color);
       }
 
-      *[hide] {
-        display: none;
+      [hidden] {
+        display: none !important;
       }
     `;
   }
