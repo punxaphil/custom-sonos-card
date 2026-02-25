@@ -26,6 +26,21 @@ for var in HA_URL HA_SSH_USER HA_SSH_HOST HA_SSH_PATH; do
     fi
 done
 
+# Use remote host if DEPLOY_REMOTE is set
+SCP_PORT_FLAG=""
+if [ -n "$DEPLOY_REMOTE" ]; then
+    if [ -z "$HA_SSH_HOST_REMOTE" ]; then
+        echo "Error: HA_SSH_HOST_REMOTE is not set in .env"
+        exit 1
+    fi
+    HA_SSH_HOST="${HA_SSH_HOST_REMOTE%%:*}"
+    REMOTE_PORT="${HA_SSH_HOST_REMOTE##*:}"
+    if [ "$REMOTE_PORT" != "$HA_SSH_HOST" ]; then
+        SCP_PORT_FLAG="-P $REMOTE_PORT"
+    fi
+    echo -e "${YELLOW}Using remote host: $HA_SSH_HOST${REMOTE_PORT:+:$REMOTE_PORT}${NC}"
+fi
+
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -35,8 +50,8 @@ echo -e "${YELLOW}Building...${NC}"
 cd "$PROJECT_ROOT"
 
 echo -e "${YELLOW}Deploying files to HA server...${NC}"
-scp "$PROJECT_ROOT/dist/custom-sonos-card.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/custom-sonos-card/"
-scp "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/maxi-media-player/"
+scp $SCP_PORT_FLAG "$PROJECT_ROOT/dist/custom-sonos-card.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/custom-sonos-card/"
+scp $SCP_PORT_FLAG "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/maxi-media-player/"
 
 # Check for token in .env
 if [ -z "$HA_TOKEN" ]; then
