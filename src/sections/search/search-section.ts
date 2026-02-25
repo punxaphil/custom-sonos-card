@@ -15,7 +15,7 @@ import type { SearchBar } from './search-bar';
 
 export class Search extends LitElement {
   @property() store!: Store;
-  @state() private mediaTypes: Set<SearchMediaType> = new Set(['track']);
+  @state() private mediaTypes: Set<SearchMediaType> = new Set();
   @state() private searchText = '';
   @state() private libraryFilter: LibraryFilter = 'all';
   @state() results: SearchResultItem[] = [];

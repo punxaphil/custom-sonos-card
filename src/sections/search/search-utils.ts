@@ -58,7 +58,7 @@ export function restoreSearchState(): { mediaTypes: Set<SearchMediaType>; search
     if (saved) {
       const state: SearchState = JSON.parse(saved);
       return {
-        mediaTypes: state.mediaTypes?.length ? new Set(state.mediaTypes) : new Set(['track']),
+        mediaTypes: state.mediaTypes ? new Set(state.mediaTypes) : new Set(),
         searchText: state.searchText ?? '',
         libraryFilter: state.libraryFilter ?? 'all',
       };
