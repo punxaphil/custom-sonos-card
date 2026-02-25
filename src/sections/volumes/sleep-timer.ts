@@ -10,28 +10,27 @@ export class SleepTimer extends LitElement {
   @query('#sleepTimerInput') private sleepTimer!: HTMLInputElement;
 
   render() {
-    const isNotSonos = this.player.attributes.platform !== 'sonos';
+    const hassService = this.store.hassService;
+    if (this.player.attributes.platform !== 'sonos') {
+      return html``;
+    }
     return html`
-      <div id="sleepTimer" ?hidden=${isNotSonos}>
+      <div id="sleepTimer">
         <ha-icon-button id="sleepTimerAlarm" .path=${mdiAlarm}></ha-icon-button>
         <label for="sleepTimer">Sleep Timer (s)</label>
         <input type="number" id="sleepTimerInput" min="0" max="7200" value="300" />
         <ha-icon-button
           id="sleepTimerSubmit"
           .path=${mdiCheckCircle}
-          @click=${() => this.store.hassService.setSleepTimer(this.player, this.sleepTimer.valueAsNumber)}
+          @click=${() => hassService.setSleepTimer(this.player, this.sleepTimer.valueAsNumber)}
         ></ha-icon-button>
-        <ha-icon-button id="sleepTimerCancel" .path=${mdiCloseCircle} @click=${() => this.store.hassService.cancelSleepTimer(this.player)}></ha-icon-button>
+        <ha-icon-button id="sleepTimerCancel" .path=${mdiCloseCircle} @click=${() => hassService.cancelSleepTimer(this.player)}></ha-icon-button>
       </div>
     `;
   }
 
   static get styles() {
     return css`
-      [hidden] {
-        display: none !important;
-      }
-
       #sleepTimer {
         display: flex;
         color: var(--primary-text-color);

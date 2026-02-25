@@ -4,6 +4,9 @@ import { css } from 'lit';
  * Common styles shared between Queue and Search sections
  */
 export const sectionCommonStyles = css`
+  [hidden] {
+    display: none !important;
+  }
   :host {
     display: flex;
     flex-direction: column;

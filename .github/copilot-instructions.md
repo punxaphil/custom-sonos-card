@@ -24,6 +24,16 @@
 # Code structure
 
 - Separate code into logical modules and components. UI in components and sections, types in types.ts, etc. Use utils/ for shared helper functions. Editor related code should be in editor/ folder.
+
+## Architecture layers
+
+- **Components** (`sections/`, `components/`): Lit elements that own a render tree. Should be thin render shells — delegate state and logic to controllers.
+- **Controllers** (`*-controller.ts`): Lit Reactive Controllers that own stateful UI logic (reactive state, lifecycle, computed properties). Attached to a host component via `addController`. When a controller exceeds the line limit, extract event handlers and async operations into companion `*-utils.ts` files that take the controller as a parameter.
+- **Utils** (`*-utils.ts`, `utils/`): Helper functions. Prefer pure/stateless transforms and calculations. When extracted from a controller to meet the line limit, utils may take the controller as a parameter to dispatch actions or run async operations — but never the component itself.
+- **Services** (`services/`): Stateless API wrappers for external I/O (Home Assistant WebSocket calls, media commands). Live on `Store`, know nothing about UI state.
+- **Store** (`model/store.ts`): Glues it together — holds config, active player, hass, and service instances. Passed to components via `.store` property.
+
+## Code structure rules
 - No other render\*() methods besides render() in components. If you find yourself needing to break up render() into smaller pieces, extract those pieces into separate components.
 - Don't pass around whatever can be found in store.ts. Example of what is not ok ".groupingConfig=${groupingConfig}"
 - If something could be easily retrieved from store.ts, it should be. Consider adding a helper function in store.ts instead of passing around data. Example:
@@ -37,8 +47,12 @@
 - add style to top-most component. Example: `sonos-grouping-button {` should be declared in the grouping-button.ts file, not in the parent component. Exception is if some component want to override style.
 - keep the html part of render as HTML:y as possible. Prefer using `?hidden` attributes and always-present elements over ternaries (`condition ? html\`...\` : nothing`) and `when()` directives. Example instead of ${applying ? html`<div class="applying"><ha-spinner></ha-spinner></div>` : nothing} you could have a hide attribute on the div and then just do <div class="applying" ?hidden=${!applying}><ha-spinner></ha-spinner></div>
 - never extract sub-configs. Example: `const groupingConfig = store.groupingConfig;` instead just use `this.store.config.grouping`. This goes for all sub-configs.
-- If files inside components that only have logic (i.e. doesn't extend LitElement), they must be named *-utils.ts. Example: `grouping-button-utils.ts` for helper functions related to the grouping button component.
+- If files inside components that only have logic (i.e. doesn't extend LitElement), they must be named `*-utils.ts` (pure helpers) or `*-controller.ts` (Reactive Controllers). Example: `grouping-button-utils.ts` for helper functions, `queue-controller.ts` for stateful queue logic.
+- Never pass `this` (the component) into utility functions to read/write state. If logic needs component state, it belongs in a controller, not a utils file.
 - global/shared types go in root types.ts, component-specific go in <component-name>.types.ts in the same folder as the component. Example: `grouping.types.ts` for ALL types only used by the grouping files. No types in component files, no exceptions.
+- Never add empty CSS placeholders (e.g. `css\`\``). If a style block is empty, remove it.
+- Do not create or keep Base* classes for a single consumer. Base classes are only allowed when there are 2+ concrete classes sharing real behavior.
+- Do not re-export section-local types from `src/types.ts`. Keep section-local types imported from their own `<section>.types.ts` file.
 
 # Editor Schema
 

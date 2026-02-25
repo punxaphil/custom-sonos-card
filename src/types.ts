@@ -363,13 +363,6 @@ export interface MassQueueResponse {
 
 export const MASS_QUEUE_NOT_INSTALLED = 'MASS_QUEUE_NOT_INSTALLED';
 
-export interface QueueSearchMatch {
-  index: number;
-  currentMatch: number;
-  totalMatches: number;
-  matchIndices: number[];
-}
-
 export interface ConfigEntry {
   entry_id: string;
   domain: string;
