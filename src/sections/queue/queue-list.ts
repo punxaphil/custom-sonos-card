@@ -12,10 +12,15 @@ export class QueueList extends LitElement {
   @property({ type: Number }) selectedIndex = -1;
   @property({ type: Number }) searchHighlightIndex = -1;
   @property({ type: Boolean }) selectMode = false;
+  @property({ type: Boolean }) showQueueButton = false;
   @property({ attribute: false }) store!: Store;
   @property({ attribute: false }) displayItems: MediaPlayerItem[] = [];
   @property({ attribute: false }) shownIndices: number[] = [];
   @property({ attribute: false }) selectedIndices = new Set<number>();
+
+  scrollToItem(index: number) {
+    this.shadowRoot?.querySelectorAll('sonos-media-row')?.[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   render() {
     return html`
@@ -28,6 +33,7 @@ export class QueueList extends LitElement {
             const isPlaying = isSelected && this.store.activePlayer.isPlaying();
             const isSearchHighlight = this.searchHighlightIndex === realIndex;
             const isChecked = this.selectedIndices.has(realIndex);
+            const queueButtonDisabled = isSelected || (this.selectedIndex >= 0 && realIndex === this.selectedIndex + 1);
             return html`
               <sonos-media-row
                 @click=${() => this.dispatchAction({ type: 'item-click', payload: { displayIndex: index } })}
@@ -36,9 +42,12 @@ export class QueueList extends LitElement {
                 .playing=${isPlaying}
                 .searchHighlight=${isSearchHighlight}
                 .showCheckbox=${this.selectMode}
+                .showQueueButton=${this.showQueueButton}
+                .queueButtonDisabled=${queueButtonDisabled}
                 .checked=${isChecked}
                 @checkbox-change=${(e: CustomEvent<{ checked: boolean }>) =>
                   this.dispatchAction({ type: 'checkbox-change', payload: { realIndex, checked: e.detail.checked } })}
+                @queue-item=${() => this.dispatchAction({ type: 'queue-item', payload: { realIndex } })}
                 .store=${this.store}
               ></sonos-media-row>
             `;
