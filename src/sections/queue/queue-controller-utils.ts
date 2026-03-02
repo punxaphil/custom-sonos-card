@@ -35,9 +35,6 @@ export function handleListAction(ctrl: QueueController, action: QueueListAction)
     ctrl.requestUpdate();
     return;
   }
-  if (action.type === 'queue-item') {
-    return;
-  }
   const realIndex = resolveQueueItemIndex(action.payload.displayIndex, ctrl.showOnlyMatches, ctrl.shownIndices);
   if (ctrl.selectMode) {
     ctrl.selectedIndices = updateSelection(ctrl.selectedIndices, realIndex, !ctrl.selectedIndices.has(realIndex));

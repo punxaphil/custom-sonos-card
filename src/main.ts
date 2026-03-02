@@ -6,8 +6,6 @@ import { MediaBrowser } from './sections/media-browser/media-browser-section';
 import { MediaBrowserBrowser } from './sections/media-browser/browser';
 import { Favorites } from './sections/media-browser/favorites/favorites';
 import { Queue } from './sections/queue/queue-section';
-import { QueueMass } from './sections/queue/queue-mass';
-import { QueueSonos } from './sections/queue/queue-sonos';
 import { Search } from './sections/search/search-section';
 import { Volumes } from './sections/volumes/volumes-section';
 
@@ -27,6 +25,4 @@ customElements.define('sonos-favorites', Favorites);
 customElements.define('sonos-player', Player);
 customElements.define('sonos-volumes', Volumes);
 customElements.define('sonos-queue', Queue);
-customElements.define('sonos-queue-mass', QueueMass);
-customElements.define('sonos-queue-sonos', QueueSonos);
 customElements.define('sonos-search', Search);
