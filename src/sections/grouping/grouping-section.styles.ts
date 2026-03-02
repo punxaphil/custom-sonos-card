@@ -25,11 +25,8 @@ export const groupingSectionStyles = [
     .apply {
       --control-button-background-color: var(--accent-color);
     }
-    *[hide] {
-      display: none;
-    }
-    .applying[hidden] {
-      display: none;
+    [hidden] {
+      display: none !important;
     }
     .applying {
       position: absolute;
