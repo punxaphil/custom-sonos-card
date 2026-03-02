@@ -102,7 +102,7 @@ export class Search extends LitElement {
           .massQueueConfigEntryId=${this.massQueueConfigEntryId}
           @go-back=${() => (this.browsingItem = null)}
         ></sonos-search-browse-view>
-        <div ?hidden=${!!this.browsingItem}>
+        <div class="search-content" ?hidden=${!!this.browsingItem}>
           <sonos-search-header
             .title=${title ?? 'Search'}
             .mediaTypes=${this.mediaTypes}

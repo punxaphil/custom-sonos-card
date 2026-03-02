@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
 import Store from '../../model/store';
 import './queue-mass';
@@ -14,7 +14,11 @@ export class Queue extends LitElement {
       : html`<sonos-queue-sonos .store=${this.store}></sonos-queue-sonos>`;
   }
 
-  createRenderRoot() {
-    return this;
-  }
+  static styles = css`
+    :host {
+      display: block;
+      height: 100%;
+      overflow: hidden;
+    }
+  `;
 }

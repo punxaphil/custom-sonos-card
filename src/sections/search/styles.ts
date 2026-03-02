@@ -11,6 +11,14 @@ export const searchStyles = [
       height: 100%;
       outline: none;
       position: relative;
+      overflow: hidden;
+    }
+    .search-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
     .media-type-icons {
       display: flex;

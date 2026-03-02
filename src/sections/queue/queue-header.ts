@@ -72,6 +72,10 @@ export class QueueHeader extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      flex-shrink: 0;
+    }
     [hidden] {
       display: none !important;
     }

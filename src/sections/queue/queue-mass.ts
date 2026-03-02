@@ -38,7 +38,7 @@ export class QueueMass extends LitElement {
         <div class="error-message" ?hidden=${!ctrl.showConfigMessage}><p>${MASS_CONFIG_MESSAGE}</p></div>
         <div class="error-message" ?hidden=${!ctrl.showQueueMessage}><p>${MASS_QUEUE_MESSAGE}</p></div>
         <div class="error-message" ?hidden=${!ctrl.errorMessage}><p>${ctrl.errorMessage}</p></div>
-        <div ?hidden=${ctrl.hasError}>
+        <div class="queue-content" ?hidden=${ctrl.hasError}>
           <sonos-queue-header
             .queueTitle=${ctrl.queueTitle}
             .itemCount=${ctrl.queueItems.length}
@@ -63,7 +63,13 @@ export class QueueMass extends LitElement {
             @queue-list-action=${(e: Event) => handleListAction(ctrl, (e as CustomEvent).detail)}
           ></sonos-queue-list>
         </div>
-        <div class="play-menu-overlay" ?hidden=${ctrl.playMenuItemIndex === null} @click=${() => dismissPlayMenu(ctrl)}>
+        <div
+          class="play-menu-overlay"
+          ?hidden=${ctrl.playMenuItemIndex === null}
+          @click=${() => dismissPlayMenu(ctrl)}
+          @wheel=${(e: Event) => e.preventDefault()}
+          @touchmove=${(e: Event) => e.preventDefault()}
+        >
           <sonos-play-menu
             .hasSelection=${true}
             .inline=${true}

@@ -123,6 +123,13 @@ export class SearchBrowseView extends LitElement {
     return [
       listStyle,
       css`
+        :host {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
         [hidden] {
           display: none !important;
         }
@@ -153,6 +160,12 @@ export class SearchBrowseView extends LitElement {
           text-align: center;
           padding: 2rem;
           color: var(--secondary-text-color);
+        }
+        .list {
+          overflow-y: auto;
+          overflow-x: hidden;
+          flex: 1;
+          min-height: 0;
         }
       `,
     ];

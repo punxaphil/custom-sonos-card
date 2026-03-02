@@ -11,6 +11,14 @@ export const queueStyles = [
       height: 100%;
       outline: none;
       position: relative;
+      overflow: hidden;
+    }
+    .queue-content {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
     .list.search-active {
       padding-top: 3rem;

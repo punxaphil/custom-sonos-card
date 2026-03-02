@@ -62,6 +62,13 @@ export class QueueList extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
     [hidden] {
       display: none !important;
     }

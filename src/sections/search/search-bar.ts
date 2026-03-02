@@ -43,6 +43,10 @@ export class SearchBar extends LitElement {
 
   static get styles() {
     return css`
+      :host {
+        display: block;
+        flex-shrink: 0;
+      }
       [hidden] {
         display: none !important;
       }

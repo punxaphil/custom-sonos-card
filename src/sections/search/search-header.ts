@@ -94,6 +94,10 @@ export class SearchHeader extends LitElement {
 
   static get styles() {
     return css`
+      :host {
+        display: block;
+        flex-shrink: 0;
+      }
       [hidden] {
         display: none !important;
       }

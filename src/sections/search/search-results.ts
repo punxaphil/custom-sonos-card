@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { html, LitElement, css } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../../model/store';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
@@ -73,7 +73,13 @@ export class SearchResults extends LitElement {
           })}
         </mwc-list>
       </div>
-      <div class="play-menu-overlay" ?hidden=${this.playMenuItemIndex === null} @click=${() => (this.playMenuItemIndex = null)}>
+      <div
+        class="play-menu-overlay"
+        ?hidden=${this.playMenuItemIndex === null}
+        @click=${() => (this.playMenuItemIndex = null)}
+        @wheel=${(e: Event) => e.preventDefault()}
+        @touchmove=${(e: Event) => e.preventDefault()}
+      >
         <sonos-play-menu
           .hasSelection=${true}
           .inline=${true}
@@ -185,7 +191,17 @@ export class SearchResults extends LitElement {
   }
 
   static get styles() {
-    return searchResultsStyles;
+    return [
+      ...searchResultsStyles,
+      css`
+        :host {
+          flex: 1;
+          min-height: 0;
+          position: relative;
+          overflow: hidden;
+        }
+      `,
+    ];
   }
 }
 

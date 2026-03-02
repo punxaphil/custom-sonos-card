@@ -1,8 +1,7 @@
 # General
 
-- Use ESLint and Prettier for code formatting and linting.
-- Apply Clean Code™️
-- DRY: Avoid duplicate code.
+- After each change: use `npm run deploy` which lints, builds, deploys.
+- Avoid duplicate code.
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
 - Prefer direct returns, destructuring, and small helper functions.
 - If a variable adds clarity, name it descriptively and keep its scope minimal.
@@ -34,6 +33,7 @@
 - **Store** (`model/store.ts`): Glues it together — holds config, active player, hass, and service instances. Passed to components via `.store` property.
 
 ## Code structure rules
+
 - No other render\*() methods besides render() in components. If you find yourself needing to break up render() into smaller pieces, extract those pieces into separate components.
 - Don't pass around whatever can be found in store.ts. Example of what is not ok ".groupingConfig=${groupingConfig}"
 - If something could be easily retrieved from store.ts, it should be. Consider adding a helper function in store.ts instead of passing around data. Example:
@@ -51,7 +51,7 @@
 - Never pass `this` (the component) into utility functions to read/write state. If logic needs component state, it belongs in a controller, not a utils file.
 - global/shared types go in root types.ts, component-specific go in <component-name>.types.ts in the same folder as the component. Example: `grouping.types.ts` for ALL types only used by the grouping files. No types in component files, no exceptions.
 - Never add empty CSS placeholders (e.g. `css\`\``). If a style block is empty, remove it.
-- Do not create or keep Base* classes for a single consumer. Base classes are only allowed when there are 2+ concrete classes sharing real behavior.
+- Do not create or keep Base\* classes for a single consumer. Base classes are only allowed when there are 2+ concrete classes sharing real behavior.
 - Do not re-export section-local types from `src/types.ts`. Keep section-local types imported from their own `<section>.types.ts` file.
 
 # Editor Schema
