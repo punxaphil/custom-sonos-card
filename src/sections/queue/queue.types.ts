@@ -37,7 +37,8 @@ export type QueueHeaderAction =
 
 export type QueueListAction =
   | { type: 'item-click'; payload: { displayIndex: number } }
-  | { type: 'checkbox-change'; payload: { realIndex: number; checked: boolean } };
+  | { type: 'checkbox-change'; payload: { realIndex: number; checked: boolean } }
+  | { type: 'queue-item'; payload: { realIndex: number } };
 
 export type QueueHost = import('lit').ReactiveControllerHost & HTMLElement;
 
