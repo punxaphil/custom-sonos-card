@@ -95,7 +95,10 @@ class PlayerProgress extends LitElement {
   }
 }
 
-export const convertProgress = (duration: number) => {
+export const convertProgress = (duration: number): string => {
+  if (!duration || !isFinite(duration)) {
+    return '';
+  }
   const date = new Date(duration * 1000).toISOString().substring(11, 19);
   const time = date.startsWith('00:') ? date.substring(3) : date;
   return time.replace(/^0(\d)/, '$1');
