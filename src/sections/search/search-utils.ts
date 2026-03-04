@@ -1,5 +1,5 @@
 import { mdiAccount, mdiAlbum, mdiMusic, mdiPlaylistMusic, mdiRadio } from '@mdi/js';
-import { LibraryFilter, SearchMediaType, SearchResultItem, SearchState } from './search.types';
+import { LibraryFilter, SearchMediaType, SearchResultItem, SearchState, SearchViewMode } from './search.types';
 import { MediaPlayerItem } from '../../types';
 import type { MusicAssistantService } from '../../services/music-assistant-service';
 
@@ -43,16 +43,17 @@ export function getSearchTypeLabels(mediaTypes: Set<SearchMediaType>): string {
     .join(', ');
 }
 
-export function saveSearchState(mediaTypes: Set<SearchMediaType>, searchText: string, libraryFilter: LibraryFilter): void {
+export function saveSearchState(mediaTypes: Set<SearchMediaType>, searchText: string, libraryFilter: LibraryFilter, viewMode?: SearchViewMode): void {
   const state: SearchState = {
     mediaTypes: Array.from(mediaTypes),
     searchText,
     libraryFilter,
+    viewMode,
   };
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
 }
 
-export function restoreSearchState(): { mediaTypes: Set<SearchMediaType>; searchText: string; libraryFilter: LibraryFilter } {
+export function restoreSearchState(): { mediaTypes: Set<SearchMediaType>; searchText: string; libraryFilter: LibraryFilter; viewMode?: SearchViewMode } {
   try {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
@@ -61,6 +62,7 @@ export function restoreSearchState(): { mediaTypes: Set<SearchMediaType>; search
         mediaTypes: state.mediaTypes ? new Set(state.mediaTypes) : new Set(),
         searchText: state.searchText ?? '',
         libraryFilter: state.libraryFilter ?? 'all',
+        viewMode: state.viewMode,
       };
     }
   } catch {

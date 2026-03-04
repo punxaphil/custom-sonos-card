@@ -4,13 +4,13 @@ import Store from '../../model/store';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
 import { customEvent } from '../../utils/utils';
 import { clearSelection, invertSelection, updateSelection } from '../../utils/selection-utils';
-import { toMediaPlayerItem, toggleMassItemProperty } from './search-utils';
+import { toMediaPlayerItem, toggleMassItemProperty, getMediaTypeIcon } from './search-utils';
 import { getSelectedItems, executeBatchPlay, executeBatchQueue } from './search-batch-utils';
 import { searchResultsStyles } from './styles';
 import '../../components/media-row';
 import '../../components/operation-overlay';
 import '../../components/play-menu';
-import { SearchResultItem } from './search.types';
+import { SearchResultItem, SearchViewMode } from './search.types';
 import { OperationProgress } from '../../types';
 import type { EnqueueMode } from '../../types';
 import type { PlayMenuAction } from '../../types';
@@ -23,6 +23,7 @@ export class SearchResults extends LitElement {
   @property() error: string | null = null;
   @property({ type: Boolean }) selectMode = false;
   @property() searchText = '';
+  @property() viewMode: SearchViewMode = 'list';
   @property({ attribute: false }) musicAssistantService!: MusicAssistantService;
   @property() massQueueConfigEntryId = '';
   @state() private selectedIndices = new Set<number>();
@@ -50,6 +51,26 @@ export class SearchResults extends LitElement {
       <div class="no-results" ?hidden=${!tooShort}>Type at least ${autoSearchMinChars} characters to search</div>
       <div class="no-results" ?hidden=${!noResults}>No results found</div>
       <div class="no-results" ?hidden=${!emptyPrompt}>Enter a search term</div>
+      ${this.viewMode === 'grid' ? this.renderGrid(hasContent) : this.renderList(hasContent)}
+      <div
+        class="play-menu-overlay"
+        ?hidden=${this.playMenuItemIndex === null}
+        @click=${() => (this.playMenuItemIndex = null)}
+        @wheel=${(e: Event) => e.preventDefault()}
+        @touchmove=${(e: Event) => e.preventDefault()}
+      >
+        <sonos-play-menu
+          .hasSelection=${true}
+          .inline=${true}
+          @play-menu-action=${(e: CustomEvent) => this.handleItemPlayAction(e)}
+          @play-menu-close=${() => (this.playMenuItemIndex = null)}
+        ></sonos-play-menu>
+      </div>
+    `;
+  }
+
+  private renderList(hasContent: boolean) {
+    return html`
       <div class="list" ?hidden=${!hasContent}>
         <mwc-list multi>
           ${this.results.map((item, index) => {
@@ -73,19 +94,37 @@ export class SearchResults extends LitElement {
           })}
         </mwc-list>
       </div>
-      <div
-        class="play-menu-overlay"
-        ?hidden=${this.playMenuItemIndex === null}
-        @click=${() => (this.playMenuItemIndex = null)}
-        @wheel=${(e: Event) => e.preventDefault()}
-        @touchmove=${(e: Event) => e.preventDefault()}
-      >
-        <sonos-play-menu
-          .hasSelection=${true}
-          .inline=${true}
-          @play-menu-action=${(e: CustomEvent) => this.handleItemPlayAction(e)}
-          @play-menu-close=${() => (this.playMenuItemIndex = null)}
-        ></sonos-play-menu>
+    `;
+  }
+
+  private renderGrid(hasContent: boolean) {
+    const columns = this.store.config.search?.gridColumns ?? 4;
+    return html`
+      <div class="grid-scroll" ?hidden=${!hasContent}>
+        <div class="grid" style="grid-template-columns: repeat(${columns}, minmax(0, 1fr))">
+          ${this.results.map((item, index) => {
+            const selected = this.selectedIndices.has(index);
+            return html`
+              <div class="grid-tile ${selected ? 'selected' : ''}" @click=${() => this.onItemClick(index)}>
+                ${this.selectMode
+                  ? html`<ha-checkbox
+                      class="grid-checkbox"
+                      .checked=${selected}
+                      @change=${(e: Event) => this.onCheckboxChange(index, (e.target as HTMLInputElement).checked)}
+                      @click=${(e: Event) => e.stopPropagation()}
+                    ></ha-checkbox>`
+                  : ''}
+                ${item.imageUrl
+                  ? html`<img class="grid-img" src="${item.imageUrl}" alt="${item.title}" loading="lazy" />`
+                  : html`<div class="grid-placeholder"><ha-svg-icon .path=${getMediaTypeIcon(item.mediaType)}></ha-svg-icon></div>`}
+                <div class="grid-info">
+                  <div class="grid-title">${item.title}</div>
+                  ${item.subtitle ? html`<div class="grid-subtitle">${item.subtitle}</div>` : ''}
+                </div>
+              </div>
+            `;
+          })}
+        </div>
       </div>
     `;
   }
@@ -199,6 +238,83 @@ export class SearchResults extends LitElement {
           min-height: 0;
           position: relative;
           overflow: hidden;
+        }
+        .grid-scroll {
+          flex: 1;
+          min-height: 0;
+          overflow-y: auto;
+        }
+        .grid {
+          display: grid;
+          gap: 0.75rem;
+          padding: 0.75rem;
+        }
+        .grid-tile {
+          cursor: pointer;
+          border-radius: 8px;
+          background: var(--secondary-background-color);
+          position: relative;
+          transition: outline 0.15s;
+          overflow: hidden;
+          min-width: 0;
+        }
+        .grid-tile:hover {
+          outline: 2px solid var(--divider-color, rgba(255, 255, 255, 0.2));
+        }
+        .grid-tile.selected {
+          outline: 2px solid var(--accent-color);
+        }
+        .grid-checkbox {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          z-index: 1;
+          --mdc-checkbox-unchecked-color: var(--secondary-text-color);
+        }
+        .grid-img {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          display: block;
+          object-fit: cover;
+          background-color: var(--primary-background-color);
+          border-radius: 8px 8px 0 0;
+        }
+        .grid-placeholder {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: var(--primary-background-color);
+          border-radius: 8px 8px 0 0;
+        }
+        .grid-placeholder ha-svg-icon {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          --mdc-icon-size: 40px;
+          color: var(--secondary-text-color);
+          opacity: 0.4;
+        }
+        .grid-info {
+          padding: 8px;
+        }
+        .grid-title {
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.85);
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: var(--primary-text-color);
+        }
+        .grid-subtitle {
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.75);
+          color: var(--secondary-text-color);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin-top: 2px;
         }
       `,
     ];

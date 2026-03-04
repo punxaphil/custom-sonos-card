@@ -7,6 +7,11 @@ const mediaTypeOptions = {
   radio: 'Radio',
 };
 
+const viewModeOptions = {
+  list: 'List',
+  grid: 'Grid',
+};
+
 export const SEARCH_SCHEMA = [
   {
     name: 'title',
@@ -22,6 +27,17 @@ export const SEARCH_SCHEMA = [
     type: 'select',
     options: Object.entries(mediaTypeOptions).map((entry) => entry),
     name: 'defaultMediaType',
+  },
+  {
+    type: 'select',
+    options: Object.entries(viewModeOptions).map((entry) => entry),
+    name: 'defaultViewMode',
+    help: 'Default view mode (default: list)',
+  },
+  {
+    name: 'gridColumns',
+    type: 'integer',
+    help: 'Number of columns in grid view (default: 4)',
   },
   {
     name: 'searchLimit',

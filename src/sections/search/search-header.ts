@@ -1,10 +1,21 @@
 import { css, html, LitElement, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import { mdiAccount, mdiAlbum, mdiBookshelf, mdiCheckboxMultipleMarkedOutline, mdiDotsVertical, mdiMusic, mdiPlaylistMusic, mdiRadio } from '@mdi/js';
+import {
+  mdiAccount,
+  mdiAlbum,
+  mdiBookshelf,
+  mdiCheckboxMultipleMarkedOutline,
+  mdiDotsVertical,
+  mdiMusic,
+  mdiPlaylistMusic,
+  mdiRadio,
+  mdiViewGrid,
+  mdiViewList,
+} from '@mdi/js';
 import { customEvent } from '../../utils/utils';
 import '../../components/selection-actions';
 import './search-filter-menu';
-import { HeaderIcon, LibraryFilter, SearchFilterAction, SearchHeaderAction, SearchMediaType } from './search.types';
+import { HeaderIcon, LibraryFilter, SearchFilterAction, SearchHeaderAction, SearchMediaType, SearchViewMode } from './search.types';
 import { OperationProgress } from '../../types';
 
 const ALL_HEADER_ICONS: HeaderIcon[] = [
@@ -31,6 +42,7 @@ export class SearchHeader extends LitElement {
   @property({ type: Boolean }) hasSelection = false;
   @property({ attribute: false }) operationProgress: OperationProgress | null = null;
   @property() libraryFilter: LibraryFilter = 'all';
+  @property() viewMode: SearchViewMode = 'list';
   @state() private filterMenuOpen = false;
   @state() private visibleCount = ALL_HEADER_ICONS.length;
 
@@ -55,11 +67,11 @@ export class SearchHeader extends LitElement {
 
     const headerPadding = 16; // 0.5rem * 2
     const titleMinWidth = 60;
-    const selectBtnWidth = ICON_BUTTON_WIDTH;
+    const fixedButtonsWidth = ICON_BUTTON_WIDTH * 2; // view-mode toggle + select-mode toggle
     const total = ALL_HEADER_ICONS.length;
 
     // Try fitting all icons without dots button
-    const availableWithoutDots = hostWidth - headerPadding - titleMinWidth - selectBtnWidth;
+    const availableWithoutDots = hostWidth - headerPadding - titleMinWidth - fixedButtonsWidth;
     if (availableWithoutDots >= total * ICON_BUTTON_WIDTH) {
       if (this.visibleCount !== total) {
         this.visibleCount = total;
@@ -69,7 +81,7 @@ export class SearchHeader extends LitElement {
 
     // Need dots button — account for separator + dots
     const dotsAndSep = ICON_BUTTON_WIDTH + 9;
-    const available = hostWidth - headerPadding - titleMinWidth - selectBtnWidth - dotsAndSep;
+    const available = hostWidth - headerPadding - titleMinWidth - fixedButtonsWidth - dotsAndSep;
     const count = Math.max(0, Math.min(total, Math.floor(available / ICON_BUTTON_WIDTH)));
     if (this.visibleCount !== count) {
       this.visibleCount = count;
@@ -157,6 +169,11 @@ export class SearchHeader extends LitElement {
             @queue-selected=${(e: CustomEvent) => this.dispatch({ type: 'selection-action', action: e.detail })}
             @queue-selected-at-end=${(e: CustomEvent) => this.dispatch({ type: 'selection-action', action: e.detail })}
           ></sonos-selection-actions>
+          <ha-icon-button
+            .path=${this.viewMode === 'list' ? mdiViewGrid : mdiViewList}
+            @click=${() => this.dispatch({ type: 'toggle-view-mode' })}
+            title=${this.viewMode === 'list' ? 'Grid view' : 'List view'}
+          ></ha-icon-button>
           <ha-icon-button
             .path=${mdiCheckboxMultipleMarkedOutline}
             @click=${() => this.dispatch({ type: 'toggle-select-mode' })}

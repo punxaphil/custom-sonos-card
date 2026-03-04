@@ -6,6 +6,8 @@ export type SearchMediaType = 'artist' | 'album' | 'track' | 'playlist' | 'radio
 
 export type LibraryFilter = 'all' | 'library' | 'non-library';
 
+export type SearchViewMode = 'list' | 'grid';
+
 export interface HeaderIcon {
   type: SearchMediaType | 'library-filter';
   icon: string;
@@ -19,6 +21,8 @@ export interface SearchConfig {
   title?: string;
   autoSearchMinChars?: number;
   autoSearchDebounceMs?: number;
+  defaultViewMode?: SearchViewMode;
+  gridColumns?: number;
 }
 
 export interface MusicAssistantSearchResult {
@@ -92,6 +96,7 @@ export interface SearchState {
   mediaTypes?: SearchMediaType[];
   searchText: string;
   libraryFilter?: LibraryFilter;
+  viewMode?: SearchViewMode;
 }
 
 export interface BatchCallbacks {
@@ -106,5 +111,6 @@ export type SearchHeaderAction =
   | { type: 'toggle-media-type'; mediaType: SearchMediaType }
   | { type: 'toggle-select-mode' }
   | { type: 'toggle-library-filter' }
+  | { type: 'toggle-view-mode' }
   | { type: 'invert-selection' }
   | { type: 'selection-action'; action: PlayMenuAction };

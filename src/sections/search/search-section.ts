@@ -1,9 +1,9 @@
 import { html, LitElement, PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
 import Store from '../../model/store';
-import { LibraryFilter, SearchHeaderAction, SearchMediaType, SearchResultItem } from './search.types';
+import { LibraryFilter, SearchHeaderAction, SearchMediaType, SearchResultItem, SearchViewMode } from './search.types';
 import { MusicAssistantService } from '../../services/music-assistant-service';
-import { cycleLibraryFilter, restoreSearchState } from './search-utils';
+import { cycleLibraryFilter, restoreSearchState, saveSearchState } from './search-utils';
 import { SearchService } from './search-service';
 import { searchStyles } from './styles';
 import './search-header';
@@ -27,6 +27,7 @@ export class Search extends LitElement {
   @state() private browsingItem: SearchResultItem | null = null;
   @state() private selectMode = false;
   @state() private hasSelection = false;
+  @state() private viewMode: SearchViewMode = 'list';
 
   @query('sonos-search-results') private searchResults!: SearchResults;
   @query('sonos-search-bar') private searchBar!: SearchBar;
@@ -36,7 +37,11 @@ export class Search extends LitElement {
 
   connectedCallback(): void {
     super.connectedCallback();
-    Object.assign(this, restoreSearchState());
+    const restored = restoreSearchState();
+    Object.assign(this, restored);
+    if (!restored.viewMode) {
+      this.viewMode = this.store?.config?.search?.defaultViewMode ?? 'list';
+    }
   }
 
   disconnectedCallback(): void {
@@ -109,6 +114,7 @@ export class Search extends LitElement {
             .selectMode=${this.selectMode}
             .hasSelection=${this.hasSelection}
             .libraryFilter=${this.libraryFilter}
+            .viewMode=${this.viewMode}
             @header-action=${this.handleHeaderAction}
           ></sonos-search-header>
           <sonos-search-bar
@@ -125,6 +131,7 @@ export class Search extends LitElement {
             .error=${this.error}
             .selectMode=${this.selectMode}
             .searchText=${this.searchText}
+            .viewMode=${this.viewMode}
             .musicAssistantService=${this.musicAssistantService}
             .massQueueConfigEntryId=${this.massQueueConfigEntryId}
             @browse-collection=${(e: CustomEvent) => (this.browsingItem = e.detail)}
@@ -147,6 +154,8 @@ export class Search extends LitElement {
       this.toggleSelectMode();
     } else if (detail.type === 'toggle-library-filter') {
       this.handleToggleLibraryFilter();
+    } else if (detail.type === 'toggle-view-mode') {
+      this.toggleViewMode();
     } else if (detail.type === 'invert-selection') {
       this.searchResults?.handleInvertSelection();
     } else if (detail.type === 'selection-action') {
@@ -175,6 +184,11 @@ export class Search extends LitElement {
     this.selectMode = !this.selectMode;
     this.searchResults?.clearSelectionState();
     this.hasSelection = false;
+  }
+
+  private toggleViewMode() {
+    this.viewMode = this.viewMode === 'list' ? 'grid' : 'list';
+    saveSearchState(this.mediaTypes, this.searchText, this.libraryFilter, this.viewMode);
   }
 
   private onSearchInput(value: string) {
