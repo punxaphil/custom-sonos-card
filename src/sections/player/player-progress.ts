@@ -96,7 +96,7 @@ class PlayerProgress extends LitElement {
 }
 
 export const convertProgress = (duration: number): string => {
-  if (!duration || !isFinite(duration)) {
+  if (duration == null || !isFinite(duration)) {
     return '';
   }
   const date = new Date(duration * 1000).toISOString().substring(11, 19);
