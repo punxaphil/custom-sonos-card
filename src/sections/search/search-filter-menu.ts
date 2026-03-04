@@ -1,8 +1,8 @@
-import { css, html, LitElement } from 'lit';
+import { css, html, LitElement, nothing } from 'lit';
 import { property } from 'lit/decorators.js';
-import { mdiAlbum, mdiBookshelf, mdiCheck, mdiRadio } from '@mdi/js';
+import { mdiBookshelf, mdiCheck } from '@mdi/js';
 import { customEvent } from '../../utils/utils';
-import { LibraryFilter, SearchFilterAction, SearchMediaType } from './search.types';
+import { HeaderIcon, LibraryFilter, SearchFilterAction, SearchMediaType } from './search.types';
 
 const LIBRARY_LABELS: Record<LibraryFilter, string> = {
   all: 'All',
@@ -11,28 +11,35 @@ const LIBRARY_LABELS: Record<LibraryFilter, string> = {
 };
 
 export class SearchFilterMenu extends LitElement {
+  @property({ attribute: false }) overflowIcons: HeaderIcon[] = [];
   @property({ attribute: false }) mediaTypes!: Set<SearchMediaType>;
   @property() libraryFilter: LibraryFilter = 'all';
 
   render() {
+    const mediaTypeOverflows = this.overflowIcons.filter((i) => i.type !== 'library-filter');
+    const hasLibraryFilter = this.overflowIcons.some((i) => i.type === 'library-filter');
+
     return html`
       <div class="filter-menu" @click=${(e: Event) => e.stopPropagation()}>
-        <div class="filter-menu-item" @click=${() => this.dispatch({ type: 'toggle-media-type', mediaType: 'album' })}>
-          <ha-svg-icon .path=${mdiAlbum}></ha-svg-icon>
-          <span>Albums</span>
-          <ha-svg-icon class="check" .path=${mdiCheck} ?hidden=${!this.mediaTypes.has('album')}></ha-svg-icon>
-        </div>
-        <div class="filter-menu-item" @click=${() => this.dispatch({ type: 'toggle-media-type', mediaType: 'radio' })}>
-          <ha-svg-icon .path=${mdiRadio}></ha-svg-icon>
-          <span>Radio</span>
-          <ha-svg-icon class="check" .path=${mdiCheck} ?hidden=${!this.mediaTypes.has('radio')}></ha-svg-icon>
-        </div>
-        <div class="filter-menu-divider"></div>
-        <div class="filter-menu-item" @click=${() => this.dispatch({ type: 'toggle-library-filter' })}>
-          <ha-svg-icon .path=${mdiBookshelf}></ha-svg-icon>
-          <span>${LIBRARY_LABELS[this.libraryFilter]}</span>
-          <ha-svg-icon class="check" .path=${mdiCheck} ?hidden=${this.libraryFilter === 'all'}></ha-svg-icon>
-        </div>
+        ${mediaTypeOverflows.map(
+          (icon) => html`
+            <div class="filter-menu-item" @click=${() => this.dispatch({ type: 'toggle-media-type', mediaType: icon.type as SearchMediaType })}>
+              <ha-svg-icon .path=${icon.icon}></ha-svg-icon>
+              <span>${icon.title}</span>
+              <ha-svg-icon class="check" .path=${mdiCheck} ?hidden=${!this.mediaTypes.has(icon.type as SearchMediaType)}></ha-svg-icon>
+            </div>
+          `,
+        )}
+        ${hasLibraryFilter
+          ? html`
+              ${mediaTypeOverflows.length > 0 ? html`<div class="filter-menu-divider"></div>` : nothing}
+              <div class="filter-menu-item" @click=${() => this.dispatch({ type: 'toggle-library-filter' })}>
+                <ha-svg-icon .path=${mdiBookshelf}></ha-svg-icon>
+                <span>${LIBRARY_LABELS[this.libraryFilter]}</span>
+                <ha-svg-icon class="check" .path=${mdiCheck} ?hidden=${this.libraryFilter === 'all'}></ha-svg-icon>
+              </div>
+            `
+          : nothing}
         <div class="filter-menu-divider"></div>
         <div class="filter-menu-done" @click=${() => this.dispatch({ type: 'close' })}>Done</div>
       </div>

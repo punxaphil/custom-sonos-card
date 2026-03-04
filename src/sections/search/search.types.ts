@@ -6,6 +6,12 @@ export type SearchMediaType = 'artist' | 'album' | 'track' | 'playlist' | 'radio
 
 export type LibraryFilter = 'all' | 'library' | 'non-library';
 
+export interface HeaderIcon {
+  type: SearchMediaType | 'library-filter';
+  icon: string;
+  title: string;
+}
+
 export interface SearchConfig {
   massConfigEntryId?: string;
   defaultMediaType?: SearchMediaType;
