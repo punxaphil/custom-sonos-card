@@ -396,3 +396,10 @@ export interface BatchOperationCallbacks {
   setProgress: (progress: OperationProgress | null) => void;
   onComplete?: () => void;
 }
+export interface ArtworkMatchAttributes {
+  media_title?: string;
+  media_artist?: string;
+  media_album_name?: string;
+  media_content_id?: string;
+  media_channel?: string;
+}

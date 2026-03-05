@@ -226,7 +226,7 @@ player:
   fastForwardAndRewindStepSizeSeconds: 60 # default is 15 seconds
   hideArtwork: true # default is false. Hides the artwork in the player section.
   labelWhenNoMediaIsSelected: 'No media selected'
-  mediaArtworkOverrides: # Show your own selected artwork if certain rules match
+  mediaArtworkOverrides: # Show your own selected artwork if certain rules match. These rules will also apply to favorites in the media browser section when applicable.
     - mediaTitleEquals: TV
       imageUrl: https://cdn-icons-png.flaticon.com/512/716/716429.png
       sizePercentage: 40
