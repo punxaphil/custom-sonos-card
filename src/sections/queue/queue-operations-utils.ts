@@ -110,7 +110,11 @@ export async function handleItemPlayAction(ctrl: QueueController, itemIndex: num
     await ctrl.store.hassService.musicAssistantService.playMedia(ctrl.activePlayer, item.media_content_id, action.enqueue as EnqueueMode, action.radioMode);
     return;
   }
-  await ctrl.store.mediaControlService.playMedia(ctrl.activePlayer, item, action.enqueue as 'add' | 'next' | 'replace' | 'play');
+  if (action.enqueue === 'play') {
+    await ctrl.store.mediaControlService.playQueue(ctrl.activePlayer, itemIndex, item.queueItemId);
+    return;
+  }
+  await ctrl.store.mediaControlService.playMedia(ctrl.activePlayer, item, action.enqueue as 'add' | 'next' | 'replace');
 }
 
 export async function clearQueue(ctrl: QueueController): Promise<void> {
