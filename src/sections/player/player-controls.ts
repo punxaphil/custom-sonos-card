@@ -15,6 +15,7 @@ import {
 } from '@mdi/js';
 import { findPlayer } from '../../utils/utils';
 import './player-favorite-button';
+import '../../components/icon-button';
 
 class PlayerControls extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -48,17 +49,22 @@ class PlayerControls extends LitElement {
           <div class="flex-1">
             <sonos-player-favorite-button .store=${this.store}></sonos-player-favorite-button>
           </div>
-          <ha-icon-button ?hidden=${!showVolumeUpAndDownButtons} @click=${this.volDown} .path=${mdiVolumeMinus}></ha-icon-button>
+          <sonos-icon-button ?hidden=${!showVolumeUpAndDownButtons} @click=${this.volDown} .path=${mdiVolumeMinus}></sonos-icon-button>
           <sonos-shuffle ?hidden=${!!hideControlShuffleButton} .store=${this.store}></sonos-shuffle>
-          <ha-icon-button ?hidden=${!!hideControlPrevTrackButton} @click=${this.prev} .path=${mdiSkipPrevious}></ha-icon-button>
-          <ha-icon-button ?hidden=${!showFastForwardAndRewindButtons} @click=${this.rewind} .path=${mdiRewind}></ha-icon-button>
-          <ha-icon-button @click=${playPauseHandler} .path=${playPauseIcon} class="big-icon"></ha-icon-button>
-          <ha-icon-button ?hidden=${!showFastForwardAndRewindButtons} @click=${this.fastForward} .path=${mdiFastForward}></ha-icon-button>
-          <ha-icon-button ?hidden=${!!hideControlNextTrackButton} @click=${this.next} .path=${mdiSkipNext}></ha-icon-button>
+          <sonos-icon-button ?hidden=${!!hideControlPrevTrackButton} @click=${this.prev} .path=${mdiSkipPrevious}></sonos-icon-button>
+          <sonos-icon-button ?hidden=${!showFastForwardAndRewindButtons} @click=${this.rewind} .path=${mdiRewind}></sonos-icon-button>
+          <sonos-icon-button @click=${playPauseHandler} .path=${playPauseIcon} class="big-icon"></sonos-icon-button>
+          <sonos-icon-button ?hidden=${!showFastForwardAndRewindButtons} @click=${this.fastForward} .path=${mdiFastForward}></sonos-icon-button>
+          <sonos-icon-button ?hidden=${!!hideControlNextTrackButton} @click=${this.next} .path=${mdiSkipNext}></sonos-icon-button>
           <sonos-repeat ?hidden=${!!hideControlRepeatButton} .store=${this.store}></sonos-repeat>
-          <ha-icon-button ?hidden=${!showVolumeUpAndDownButtons} @click=${this.volUp} .path=${mdiVolumePlus}></ha-icon-button>
+          <sonos-icon-button ?hidden=${!showVolumeUpAndDownButtons} @click=${this.volUp} .path=${mdiVolumePlus}></sonos-icon-button>
           <div class="flex-1">
-            <ha-icon-button class="browse-button" ?hidden=${!showBrowseMediaButton} @click=${this.browseMedia} .path=${mdiPlayBoxMultiple}></ha-icon-button>
+            <sonos-icon-button
+              class="browse-button"
+              ?hidden=${!showBrowseMediaButton}
+              @click=${this.browseMedia}
+              .path=${mdiPlayBoxMultiple}
+            ></sonos-icon-button>
           </div>
         </div>
         <sonos-volume
@@ -69,7 +75,7 @@ class PlayerControls extends LitElement {
           ?hidden=${!!hideVolume}
         ></sonos-volume>
         <div class="icons">
-          <ha-icon-button ?hidden=${hidePower} @click=${this.togglePower}></ha-icon-button>
+          <sonos-icon-button ?hidden=${hidePower} @click=${this.togglePower}></sonos-icon-button>
         </div>
       </div>
     `;
@@ -129,16 +135,16 @@ class PlayerControls extends LitElement {
         display: none !important;
       }
       .big-icon {
-        --mdc-icon-button-size: 5rem;
-        --mdc-icon-size: 5rem;
+        --icon-button-size: 5rem;
+        --icon-size: 5rem;
       }
-      .large-icons ha-icon-button {
-        --mdc-icon-size: 3rem;
-        --mdc-icon-button-size: 4rem;
+      .large-icons sonos-icon-button {
+        --icon-size: 3rem;
+        --icon-button-size: 4rem;
       }
       .large-icons .big-icon {
-        --mdc-icon-size: 5rem;
-        --mdc-icon-button-size: 5rem;
+        --icon-size: 5rem;
+        --icon-button-size: 5rem;
       }
       .flex-1 {
         flex: 1;

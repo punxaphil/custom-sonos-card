@@ -58,10 +58,10 @@ export const sectionCommonStyles = css`
     overflow-x: hidden;
     position: relative;
     flex: 1;
-    --mdc-icon-button-size: 1.5em;
-    --mdc-icon-size: 1em;
+    --icon-button-size: 1.5em;
+    --icon-size: 1em;
   }
-  ha-icon-button[selected] {
+  sonos-icon-button[selected] {
     color: var(--accent-color);
   }
   .loading {

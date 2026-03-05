@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import { mdiAccessPoint, mdiClose, mdiPlay, mdiPlayBoxMultiple, mdiPlaylistPlus, mdiSkipNext, mdiSkipNextCircle } from '@mdi/js';
 import { customEvent } from '../utils/utils';
 import { PlayMenuAction } from '../types';
+import './icon-button';
 
 const PLAY_MENU_ACTIONS: PlayMenuAction[] = [
   { enqueue: 'replace' },
@@ -32,7 +33,7 @@ export class PlayMenu extends LitElement {
   private renderButtonMenu() {
     return html`
       <ha-dropdown @wa-select=${this.handleAction}>
-        <ha-icon-button slot="trigger" .path=${mdiPlay} title="Play options" ?disabled=${this.disabled}></ha-icon-button>
+        <sonos-icon-button slot="trigger" .path=${mdiPlay} title="Play options" ?disabled=${this.disabled}></sonos-icon-button>
         ${this.renderMenuItems()}
       </ha-dropdown>
     `;
@@ -41,7 +42,7 @@ export class PlayMenu extends LitElement {
   private renderInlineMenu() {
     return html`
       <div class="inline-menu" @click=${(e: Event) => e.stopPropagation()}>
-        <ha-icon-button class="close-btn" .path=${mdiClose} @click=${this.closeMenu} title="Close"></ha-icon-button>
+        <sonos-icon-button class="close-btn" .path=${mdiClose} @click=${this.closeMenu} title="Close"></sonos-icon-button>
         ${PLAY_MENU_ACTIONS.map(
           (_action, index) => html`
             <div class="inline-menu-item" @click=${() => this.selectAction(index)}>

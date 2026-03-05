@@ -7,6 +7,7 @@ import { createQueueSearchMatch, findMatchIndices, getCurrentMatchIndex, restore
 import { queueSearchStyles } from './queue-search.styles';
 import type { QueueSearchAction, QueueSearchUiAction } from './queue.types';
 import './queue-search-panel';
+import '../../components/icon-button';
 
 export class QueueSearch extends LitElement {
   @property({ attribute: false }) items: MediaPlayerItem[] = [];
@@ -44,12 +45,12 @@ export class QueueSearch extends LitElement {
   render() {
     const hasNoMatch = this.searchText.length > 0 && this.matchIndices.length === 0;
     return html`
-      <ha-icon-button
+      <sonos-icon-button
         .path=${mdiMagnify}
         @click=${this.toggleExpanded}
         ?selected=${this.expanded || this.searchText.length > 0}
         title="Search queue"
-      ></ha-icon-button>
+      ></sonos-icon-button>
       <sonos-queue-search-panel
         ?hidden=${!this.expanded}
         .searchText=${this.searchText}

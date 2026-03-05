@@ -3,6 +3,7 @@ import { state } from 'lit/decorators.js';
 import { choose } from 'lit/directives/choose.js';
 import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import { BaseEditor } from './base-editor';
+import '../components/icon-button';
 import { GROUPS_SCHEMA } from './schema/groups-schema';
 import { GROUPING_SCHEMA } from './schema/grouping-schema';
 import { VOLUMES_SCHEMA } from './schema/volumes-schema';
@@ -74,13 +75,13 @@ class CardEditor extends BaseEditor {
 
     return html`
       <div class="tabs-container">
-        <ha-icon-button class="nav-arrow ${showLeftArrow ? '' : 'hidden'}" .path=${mdiChevronLeft} @click=${this.navigatePrev}></ha-icon-button>
+        <sonos-icon-button class="nav-arrow ${showLeftArrow ? '' : 'hidden'}" .path=${mdiChevronLeft} @click=${this.navigatePrev}></sonos-icon-button>
         <div class="tabs-list">
           ${tabs.map(
             (tab) => html` <button class="tab-button ${this.activeTab === tab ? 'active' : ''}" @click=${() => (this.activeTab = tab)}>${tab}</button> `,
           )}
         </div>
-        <ha-icon-button class="nav-arrow ${showRightArrow ? '' : 'hidden'}" .path=${mdiChevronRight} @click=${this.navigateNext}></ha-icon-button>
+        <sonos-icon-button class="nav-arrow ${showRightArrow ? '' : 'hidden'}" .path=${mdiChevronRight} @click=${this.navigateNext}></sonos-icon-button>
       </div>
       ${this.renderTabContent()}
     `;
@@ -153,8 +154,8 @@ class CardEditor extends BaseEditor {
         background: var(--primary-color);
       }
       .nav-arrow {
-        --mdc-icon-button-size: 32px;
-        --mdc-icon-size: 20px;
+        --icon-button-size: 32px;
+        --icon-size: 20px;
         color: var(--primary-color);
         flex-shrink: 0;
       }

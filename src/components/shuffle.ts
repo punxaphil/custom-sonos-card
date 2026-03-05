@@ -4,6 +4,7 @@ import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { mdiShuffle, mdiShuffleDisabled } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
+import './icon-button';
 
 class Shuffle extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -14,7 +15,7 @@ class Shuffle extends LitElement {
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
 
-    return html`<ha-icon-button @click=${this.shuffle} .path=${this.shuffleIcon()}></ha-icon-button> `;
+    return html`<sonos-icon-button @click=${this.shuffle} .path=${this.shuffleIcon()}></sonos-icon-button> `;
   }
 
   private shuffle = async () => await this.mediaControlService.shuffle(this.activePlayer);

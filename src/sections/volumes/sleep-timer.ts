@@ -3,6 +3,7 @@ import { property, query } from 'lit/decorators.js';
 import Store from '../../model/store';
 import { MediaPlayer } from '../../model/media-player';
 import { mdiAlarm, mdiCheckCircle, mdiCloseCircle } from '@mdi/js';
+import '../../components/icon-button';
 
 export class SleepTimer extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -16,15 +17,15 @@ export class SleepTimer extends LitElement {
     }
     return html`
       <div id="sleepTimer">
-        <ha-icon-button id="sleepTimerAlarm" .path=${mdiAlarm}></ha-icon-button>
+        <sonos-icon-button id="sleepTimerAlarm" .path=${mdiAlarm}></sonos-icon-button>
         <label for="sleepTimer">Sleep Timer (s)</label>
         <input type="number" id="sleepTimerInput" min="0" max="7200" value="300" />
-        <ha-icon-button
+        <sonos-icon-button
           id="sleepTimerSubmit"
           .path=${mdiCheckCircle}
           @click=${() => hassService.setSleepTimer(this.player, this.sleepTimer.valueAsNumber)}
-        ></ha-icon-button>
-        <ha-icon-button id="sleepTimerCancel" .path=${mdiCloseCircle} @click=${() => hassService.cancelSleepTimer(this.player)}></ha-icon-button>
+        ></sonos-icon-button>
+        <sonos-icon-button id="sleepTimerCancel" .path=${mdiCloseCircle} @click=${() => hassService.cancelSleepTimer(this.player)}></sonos-icon-button>
       </div>
     `;
   }

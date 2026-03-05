@@ -7,6 +7,7 @@ import { MediaPlayerItem } from '../types';
 import { mediaItemTitleStyle } from '../constants';
 import { renderFavoritesItem } from '../utils/media-browse-utils';
 import './playing-bars';
+import './icon-button';
 import { customEvent } from '../utils/utils';
 
 class MediaRow extends LitElement {
@@ -49,12 +50,12 @@ class MediaRow extends LitElement {
               </div>`
             : this.showQueueButton
               ? html`<div class="icon-slot">
-                  <ha-icon-button
+                  <sonos-icon-button
                     class=${classMap({ 'queue-btn': true, disabled: this.queueButtonDisabled })}
                     .path=${mdiSkipNext}
                     ?disabled=${this.queueButtonDisabled}
                     @click=${this.onQueueClick}
-                  ></ha-icon-button>
+                  ></sonos-icon-button>
                 </div>`
               : nothing}
           ${renderFavoritesItem(this.item)}

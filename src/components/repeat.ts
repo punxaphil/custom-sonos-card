@@ -4,6 +4,7 @@ import MediaControlService from '../services/media-control-service';
 import Store from '../model/store';
 import { MediaPlayer } from '../model/media-player';
 import { mdiRepeat, mdiRepeatOff, mdiRepeatOnce } from '@mdi/js';
+import './icon-button';
 
 class Repeat extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -14,7 +15,7 @@ class Repeat extends LitElement {
     this.activePlayer = this.store.activePlayer;
     this.mediaControlService = this.store.mediaControlService;
 
-    return html`<ha-icon-button @click=${this.repeat} .path=${this.repeatIcon()}></ha-icon-button> `;
+    return html`<sonos-icon-button @click=${this.repeat} .path=${this.repeatIcon()}></sonos-icon-button> `;
   }
 
   private repeat = async () => await this.mediaControlService.repeat(this.activePlayer);

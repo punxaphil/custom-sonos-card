@@ -4,6 +4,7 @@ import { CardConfig, Section } from '../types';
 import { customEvent } from '../utils/utils';
 import { SHOW_SECTION } from '../constants';
 import { styleMap } from 'lit/directives/style-map.js';
+import './icon-button';
 
 export class SectionButton extends LitElement {
   @property({ attribute: false }) config!: CardConfig;
@@ -15,13 +16,17 @@ export class SectionButton extends LitElement {
     const size = this.config.sectionButtonIconSize;
     const styles = size
       ? {
-          '--mdc-icon-button-size': `${size}rem`,
-          '--mdc-icon-size': `${size * 0.6}rem`,
+          '--icon-button-size': `${size}rem`,
+          '--icon-size': `${size * 0.6}rem`,
         }
       : {};
-    return html`<ha-icon-button @click=${() => this.dispatchSection()} selected=${this.selectedSection === this.section || nothing} style=${styleMap(styles)}>
+    return html`<sonos-icon-button
+      @click=${() => this.dispatchSection()}
+      selected=${this.selectedSection === this.section || nothing}
+      style=${styleMap(styles)}
+    >
       <ha-icon .icon=${this.icon}></ha-icon>
-    </ha-icon-button>`;
+    </sonos-icon-button>`;
   }
 
   private dispatchSection() {

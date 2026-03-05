@@ -5,6 +5,7 @@ import { listStyle, MEDIA_ITEM_SELECTED } from '../../constants';
 import { customEvent } from '../../utils/utils';
 import { toMediaPlayerItem, getMediaTypeIcon } from './search-utils';
 import '../../components/media-row';
+import '../../components/icon-button';
 import { mdiAccessPoint, mdiArrowLeft, mdiPlay, mdiPlayBoxMultiple, mdiPlaylistPlus, mdiSkipNext, mdiSkipNextCircle } from '@mdi/js';
 import { SearchResultItem } from './search.types';
 import type { EnqueueMode } from '../../types';
@@ -32,9 +33,9 @@ export class SearchBrowseView extends LitElement {
 
     return html`
       <div class="header browse-header">
-        <ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack} title="Back to results"></ha-icon-button>
+        <sonos-icon-button .path=${mdiArrowLeft} @click=${this.goBack} title="Back to results"></sonos-icon-button>
         <ha-dropdown @wa-select=${this.handlePlayMenuAction}>
-          <ha-icon-button slot="trigger" .path=${mdiPlay} title="Play options"></ha-icon-button>
+          <sonos-icon-button slot="trigger" .path=${mdiPlay} title="Play options"></sonos-icon-button>
           <ha-dropdown-item value="0">
             <ha-svg-icon slot="icon" .path=${mdiPlayBoxMultiple}></ha-svg-icon>
             Play Now (clear queue)
@@ -61,7 +62,7 @@ export class SearchBrowseView extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <span class="browse-title" title=${this.item.title}>${this.item.title}</span>
-        <ha-icon-button .path=${typeIcon} disabled class="type-indicator"></ha-icon-button>
+        <sonos-icon-button .path=${typeIcon} disabled class="type-indicator"></sonos-icon-button>
       </div>
       <div class="loading" ?hidden=${!this.browseLoading}><ha-spinner></ha-spinner></div>
       <div class="no-results" ?hidden=${this.browseLoading || this.browseResults.length > 0}>No items found</div>

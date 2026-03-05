@@ -2,6 +2,7 @@ import { css, html, LitElement, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import Store from '../../model/store';
 import { mdiHeart, mdiHeartOutline } from '@mdi/js';
+import '../../components/icon-button';
 
 class PlayerFavoriteButton extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -27,14 +28,14 @@ class PlayerFavoriteButton extends LitElement {
     const favoriteClass = `favorite-button ${this.isFavorite ? 'is-favorite' : ''} ${this.favoriteLoading ? 'loading' : ''}`;
     const favoriteTitle = this.isFavorite ? 'Remove from favorites' : 'Add to favorites';
     return html`
-      <ha-icon-button
+      <sonos-icon-button
         class=${favoriteClass}
         ?hidden=${!isMusicAssistant}
         @click=${this.toggleFavorite}
         .path=${this.isFavorite ? mdiHeart : mdiHeartOutline}
         title=${favoriteTitle}
         ?disabled=${this.favoriteLoading}
-      ></ha-icon-button>
+      ></sonos-icon-button>
     `;
   }
 

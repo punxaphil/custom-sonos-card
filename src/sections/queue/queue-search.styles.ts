@@ -4,7 +4,7 @@ export const queueSearchStyles = css`
   :host {
     display: contents;
   }
-  :host > ha-icon-button[selected] {
+  :host > sonos-icon-button[selected] {
     color: var(--accent-color);
   }
   .search-row {
@@ -41,11 +41,11 @@ export const queueSearchStyles = css`
     color: var(--secondary-text-color, #666);
     white-space: nowrap;
   }
-  .search-row ha-icon-button {
-    --mdc-icon-button-size: 2rem;
-    --mdc-icon-size: 1.2rem;
+  .search-row sonos-icon-button {
+    --icon-button-size: 2rem;
+    --icon-size: 1.2rem;
   }
-  .search-row ha-icon-button[selected] {
+  .search-row sonos-icon-button[selected] {
     color: var(--accent-color);
   }
 `;

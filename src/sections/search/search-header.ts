@@ -14,6 +14,7 @@ import {
 } from '@mdi/js';
 import { customEvent } from '../../utils/utils';
 import '../../components/selection-actions';
+import '../../components/icon-button';
 import './search-filter-menu';
 import { HeaderIcon, LibraryFilter, SearchFilterAction, SearchHeaderAction, SearchMediaType, SearchViewMode } from './search.types';
 import { OperationProgress } from '../../types';
@@ -130,24 +131,24 @@ export class SearchHeader extends LitElement {
           <div class="media-type-icons" ?hidden=${this.selectMode}>
             ${this.visibleIcons.map(
               (icon) => html`
-                <ha-icon-button
+                <sonos-icon-button
                   .path=${icon.icon}
                   @click=${() => this.onIconClick(icon)}
                   ?selected=${this.isIconActive(icon)}
                   title=${this.getIconTitle(icon)}
-                ></ha-icon-button>
+                ></sonos-icon-button>
               `,
             )}
             ${hasOverflow
               ? html`
                   <div class="separator" ?hidden=${this.visibleCount === 0}></div>
                   <div class="filter-menu-anchor">
-                    <ha-icon-button
+                    <sonos-icon-button
                       .path=${mdiDotsVertical}
                       @click=${() => (this.filterMenuOpen = !this.filterMenuOpen)}
                       title="More filters"
                       ?selected=${this.overflowIcons.some((i) => this.isIconActive(i))}
-                    ></ha-icon-button>
+                    ></sonos-icon-button>
                     <sonos-search-filter-menu
                       ?hidden=${!this.filterMenuOpen}
                       .overflowIcons=${this.overflowIcons}
@@ -169,17 +170,17 @@ export class SearchHeader extends LitElement {
             @queue-selected=${(e: CustomEvent) => this.dispatch({ type: 'selection-action', action: e.detail })}
             @queue-selected-at-end=${(e: CustomEvent) => this.dispatch({ type: 'selection-action', action: e.detail })}
           ></sonos-selection-actions>
-          <ha-icon-button
+          <sonos-icon-button
             .path=${this.viewMode === 'list' ? mdiViewGrid : mdiViewList}
             @click=${() => this.dispatch({ type: 'toggle-view-mode' })}
             title=${this.viewMode === 'list' ? 'Grid view' : 'List view'}
-          ></ha-icon-button>
-          <ha-icon-button
+          ></sonos-icon-button>
+          <sonos-icon-button
             .path=${mdiCheckboxMultipleMarkedOutline}
             @click=${() => this.dispatch({ type: 'toggle-select-mode' })}
             ?selected=${this.selectMode}
             title="Select mode"
-          ></ha-icon-button>
+          ></sonos-icon-button>
         </div>
       </div>
     `;
@@ -236,7 +237,7 @@ export class SearchHeader extends LitElement {
         gap: 0;
         align-items: center;
       }
-      .media-type-icons ha-icon-button[selected] {
+      .media-type-icons sonos-icon-button[selected] {
         color: var(--accent-color);
       }
       .separator {
@@ -249,7 +250,7 @@ export class SearchHeader extends LitElement {
         position: relative;
         display: inline-flex;
       }
-      .filter-menu-anchor ha-icon-button[selected] {
+      .filter-menu-anchor sonos-icon-button[selected] {
         color: var(--accent-color);
       }
     `;

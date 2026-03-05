@@ -1,13 +1,14 @@
 import { html } from 'lit';
 import { mdiAlphaABoxOutline, mdiDotsVertical, mdiGrid, mdiListBoxOutline } from '@mdi/js';
 import { styleMap } from 'lit/directives/style-map.js';
+import '../../components/icon-button';
 
 const selectedStyle = { color: 'var(--accent-color)' };
 
 export function renderLayoutMenu(layout: string, onSelect: (ev: CustomEvent<{ item: { value: string } }>) => void) {
   return html`
     <ha-dropdown @wa-select=${onSelect}>
-      <ha-icon-button slot="trigger" .path=${mdiDotsVertical}></ha-icon-button>
+      <sonos-icon-button slot="trigger" .path=${mdiDotsVertical}></sonos-icon-button>
       <ha-dropdown-item value="auto" .selected=${layout === 'auto'} style=${styleMap(layout === 'auto' ? selectedStyle : {})}>
         <ha-svg-icon slot="icon" .path=${mdiAlphaABoxOutline}></ha-svg-icon>
         Auto

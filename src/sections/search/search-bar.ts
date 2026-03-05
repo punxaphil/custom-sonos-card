@@ -4,6 +4,7 @@ import { mdiClose, mdiMagnify } from '@mdi/js';
 import { customEvent } from '../../utils/utils';
 import { SearchMediaType } from '../../types';
 import { getSearchTypeLabels } from './search-utils';
+import '../../components/icon-button';
 
 export class SearchBar extends LitElement {
   @property() searchText = '';
@@ -14,14 +15,14 @@ export class SearchBar extends LitElement {
     const typeLabels = getSearchTypeLabels(this.mediaTypes);
     return html`
       <div class="search-bar">
-        <ha-icon-button .path=${mdiMagnify} @click=${() => this.dispatchEvent(customEvent('search-submit'))}></ha-icon-button>
+        <sonos-icon-button .path=${mdiMagnify} @click=${() => this.dispatchEvent(customEvent('search-submit'))}></sonos-icon-button>
         <input type="text" placeholder="Search ${typeLabels}..." .value=${this.searchText} @input=${this.onInput} @keydown=${this.onKeyDown} />
-        <ha-icon-button
+        <sonos-icon-button
           .path=${mdiClose}
           @click=${() => this.dispatchEvent(customEvent('clear-search'))}
           title="Clear"
           ?hidden=${!this.searchText}
-        ></ha-icon-button>
+        ></sonos-icon-button>
       </div>
     `;
   }

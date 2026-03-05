@@ -6,6 +6,7 @@ import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
 import { MediaPlayer } from '../../model/media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
 import './sleep-timer';
+import '../../components/icon-button';
 
 export class Volumes extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -32,15 +33,20 @@ export class Volumes extends LitElement {
         <div class="volume-name-text">${name}</div>
       </div>
       <div class="slider-row">
-        <ha-icon-button .disabled=${player.ignoreVolume} ?hidden=${!showVolumeUpAndDownButtons} @click=${volDown} .path=${mdiVolumeMinus}></ha-icon-button>
+        <sonos-icon-button
+          .disabled=${player.ignoreVolume}
+          ?hidden=${!showVolumeUpAndDownButtons}
+          @click=${volDown}
+          .path=${mdiVolumeMinus}
+        ></sonos-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <ha-icon-button .disabled=${player.ignoreVolume} ?hidden=${!showVolumeUpAndDownButtons} @click=${volUp} .path=${mdiVolumePlus}></ha-icon-button>
-        <ha-icon-button
+        <sonos-icon-button .disabled=${player.ignoreVolume} ?hidden=${!showVolumeUpAndDownButtons} @click=${volUp} .path=${mdiVolumePlus}></sonos-icon-button>
+        <sonos-icon-button
           ?hidden=${updateMembers || !!hideCogwheel}
           @click=${() => this.toggleShowSwitches(player)}
           .path=${mdiCog}
           show-switches=${this.showSwitches[player.id] || nothing}
-        ></ha-icon-button>
+        ></sonos-icon-button>
       </div>
       <div class="switches" ?hidden=${hideSwitches}>
         <sonos-source .store=${this.store}> </sonos-source>
@@ -127,6 +133,11 @@ export class Volumes extends LitElement {
 
       [hidden] {
         display: none !important;
+      }
+
+      sonos-icon-button {
+        height: 40px;
+        align-self: start;
       }
     `;
   }

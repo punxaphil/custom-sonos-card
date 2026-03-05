@@ -5,6 +5,7 @@ import Store from '../model/store';
 import { CardConfig, PlayerConfig } from '../types';
 import { mdiPower, mdiVolumeHigh, mdiVolumeMute } from '@mdi/js';
 import { MediaPlayer } from '../model/media-player';
+import './icon-button';
 
 class Volume extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -38,17 +39,17 @@ class Volume extends LitElement {
       <style>
         :host {
           ${sliderHeight ? `--control-slider-thickness: ${sliderHeight}rem;` : ''}
-          ${muteButtonSize ? `--mdc-icon-button-size: ${muteButtonSize}rem; --mdc-icon-size: ${muteButtonSize * 0.75}rem;` : ''}
+          ${muteButtonSize ? `--icon-button-size: ${muteButtonSize}rem; --icon-size: ${muteButtonSize * 0.75}rem;` : ''}
         }
       </style>
       <div class="volume" slim=${this.slim || nothing}>
-        <ha-icon-button
+        <sonos-icon-button
           .disabled=${disabled}
           @click=${this.mute}
           .path=${muteIcon}
           hide=${(this.isPlayer && this.playerConfig.hideVolumeMuteButton) || nothing}
         >
-        </ha-icon-button>
+        </sonos-icon-button>
         <div class="volume-slider">
           <ha-control-slider
             .value=${volume}
@@ -65,7 +66,7 @@ class Volume extends LitElement {
           </div>
         </div>
         <div class="percentage-slim" hide=${this.slim && nothing}>${volume}%</div>
-        <ha-icon-button hide=${this.store.hidePower()} @click=${this.togglePower} .path=${mdiPower}></ha-icon-button>
+        <sonos-icon-button hide=${this.store.hidePower()} @click=${this.togglePower} .path=${mdiPower}></sonos-icon-button>
       </div>
     `;
   }
@@ -118,8 +119,8 @@ class Volume extends LitElement {
 
       *[slim] * {
         --control-slider-thickness: 10px;
-        --mdc-icon-button-size: 30px;
-        --mdc-icon-size: 20px;
+        --icon-button-size: 30px;
+        --icon-size: 20px;
       }
 
       *[slim] .volume-level {
@@ -158,6 +159,11 @@ class Volume extends LitElement {
 
       *[hide] {
         display: none;
+      }
+
+      sonos-icon-button {
+        height: 40px;
+        align-self: start;
       }
     `;
   }

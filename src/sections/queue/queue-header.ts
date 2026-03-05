@@ -7,6 +7,7 @@ import { customEvent } from '../../utils/utils';
 import type { QueueHeaderAction } from './queue.types';
 import './queue-search';
 import '../../components/selection-actions';
+import '../../components/icon-button';
 
 export class QueueHeader extends LitElement {
   @property() queueTitle = '';
@@ -35,14 +36,14 @@ export class QueueHeader extends LitElement {
               @queue-selected=${() => this.dispatchAction({ type: 'queue-selected-after-current' })}
               @queue-selected-at-end=${() => this.dispatchAction({ type: 'queue-selected-at-end' })}
             ></sonos-selection-actions>
-            <ha-icon-button
+            <sonos-icon-button
               .path=${mdiCloseBoxMultipleOutline}
               @click=${() => this.dispatchAction({ type: 'delete-selected' })}
               title="Delete selected"
               ?hidden=${!this.hasSelection}
-            ></ha-icon-button>
+            ></sonos-icon-button>
             <div class="delete-all-btn" @click=${() => this.dispatchAction({ type: 'clear-queue' })} title="Delete all">
-              <ha-icon-button .path=${mdiTrashCanOutline}></ha-icon-button>
+              <sonos-icon-button .path=${mdiTrashCanOutline}></sonos-icon-button>
               <span class="all-label">*</span>
             </div>
           </div>
@@ -50,13 +51,13 @@ export class QueueHeader extends LitElement {
             <sonos-shuffle .store=${this.store}></sonos-shuffle>
             <sonos-repeat .store=${this.store}></sonos-repeat>
           </div>
-          <ha-icon-button
+          <sonos-icon-button
             .path=${mdiCheckboxMultipleMarkedOutline}
             @click=${() => this.dispatchAction({ type: 'toggle-select-mode' })}
             ?selected=${this.selectMode}
             title="Select mode"
             ?disabled=${this.operationRunning}
-          ></ha-icon-button>
+          ></sonos-icon-button>
         </div>
       </div>
     `;

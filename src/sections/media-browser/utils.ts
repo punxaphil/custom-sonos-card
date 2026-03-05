@@ -2,6 +2,7 @@ import { html, nothing } from 'lit';
 import { mdiBookmark } from '@mdi/js';
 import Store from '../../model/store';
 import { MediaBrowserShortcut, MediaPlayerItem } from '../../types';
+import '../../components/icon-button';
 
 export async function playAll(store: Store, children: MediaPlayerItem[]): Promise<MediaPlayerItem | null> {
   if (!children.length) {
@@ -33,8 +34,8 @@ export function renderShortcutButton(shortcut: MediaBrowserShortcut | undefined,
   }
   const icon = shortcut.icon ?? mdiBookmark;
   return html`
-    <ha-icon-button class=${isActive ? 'shortcut-active' : ''} @click=${onClick} title=${shortcut.name} .path=${icon.startsWith('mdi:') ? undefined : icon}>
+    <sonos-icon-button class=${isActive ? 'shortcut-active' : ''} @click=${onClick} title=${shortcut.name} .path=${icon.startsWith('mdi:') ? undefined : icon}>
       ${icon.startsWith('mdi:') ? html`<ha-icon .icon=${icon}></ha-icon>` : nothing}
-    </ha-icon-button>
+    </sonos-icon-button>
   `;
 }

@@ -25,7 +25,7 @@ export const searchStyles = [
       gap: 0;
       align-items: center;
     }
-    .media-type-icons ha-icon-button[selected] {
+    .media-type-icons sonos-icon-button[selected] {
       color: var(--accent-color);
     }
     .separator {
@@ -39,7 +39,7 @@ export const searchStyles = [
       position: relative;
       cursor: pointer;
     }
-    .library-filter-btn ha-icon-button[selected] {
+    .library-filter-btn sonos-icon-button[selected] {
       color: var(--accent-color);
     }
     .library-filter-btn .overlay-icon {
@@ -113,7 +113,7 @@ export const searchStyles = [
       position: relative;
       display: inline-flex;
     }
-    .filter-menu-anchor ha-icon-button[selected] {
+    .filter-menu-anchor sonos-icon-button[selected] {
       color: var(--accent-color);
     }
     .filter-menu {

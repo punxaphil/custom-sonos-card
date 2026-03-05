@@ -3,6 +3,7 @@ import { property } from 'lit/decorators.js';
 import { mdiCheckAll, mdiChevronDown, mdiChevronUp, mdiClose, mdiEyeCheck } from '@mdi/js';
 import { customEvent } from '../../utils/utils';
 import { QueueSearchUiAction } from './queue.types';
+import '../../components/icon-button';
 
 export class QueueSearchPanel extends LitElement {
   @property() searchText = '';
@@ -26,22 +27,27 @@ export class QueueSearchPanel extends LitElement {
           @keydown=${this.onKeyDown}
         />
         <span class="match-info" ?hidden=${!hasMatches}>${this.currentMatchIndex + 1}/${this.matchCount}</span>
-        <ha-icon-button .path=${mdiChevronUp} @click=${() => this.dispatchAction({ type: 'prev' })} ?hidden=${!hasMatches}></ha-icon-button>
-        <ha-icon-button .path=${mdiChevronDown} @click=${() => this.dispatchAction({ type: 'next' })} ?hidden=${!hasMatches}></ha-icon-button>
-        <ha-icon-button
+        <sonos-icon-button .path=${mdiChevronUp} @click=${() => this.dispatchAction({ type: 'prev' })} ?hidden=${!hasMatches}></sonos-icon-button>
+        <sonos-icon-button .path=${mdiChevronDown} @click=${() => this.dispatchAction({ type: 'next' })} ?hidden=${!hasMatches}></sonos-icon-button>
+        <sonos-icon-button
           .path=${mdiCheckAll}
           @click=${() => this.dispatchAction({ type: 'select-all' })}
           title="Select all matches"
           ?hidden=${!hasMatches || !this.selectMode}
-        ></ha-icon-button>
-        <ha-icon-button
+        ></sonos-icon-button>
+        <sonos-icon-button
           .path=${mdiEyeCheck}
           @click=${() => this.dispatchAction({ type: 'toggle-show-only' })}
           ?selected=${this.showOnlyMatches}
           title="Show only matches"
           ?hidden=${!hasText}
-        ></ha-icon-button>
-        <ha-icon-button .path=${mdiClose} @click=${() => this.dispatchAction({ type: 'clear' })} title="Clear search" ?hidden=${!hasText}></ha-icon-button>
+        ></sonos-icon-button>
+        <sonos-icon-button
+          .path=${mdiClose}
+          @click=${() => this.dispatchAction({ type: 'clear' })}
+          title="Clear search"
+          ?hidden=${!hasText}
+        ></sonos-icon-button>
       </div>
     `;
   }
@@ -107,11 +113,11 @@ export class QueueSearchPanel extends LitElement {
       color: var(--secondary-text-color, #666);
       white-space: nowrap;
     }
-    .search-row ha-icon-button {
-      --mdc-icon-button-size: 2rem;
-      --mdc-icon-size: 1.2rem;
+    .search-row sonos-icon-button {
+      --icon-button-size: 2rem;
+      --icon-size: 1.2rem;
     }
-    .search-row ha-icon-button[selected] {
+    .search-row sonos-icon-button[selected] {
       color: var(--accent-color);
     }
   `;

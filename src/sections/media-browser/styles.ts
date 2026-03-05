@@ -30,10 +30,10 @@ export const mediaBrowserStyles = css`
     text-align: center;
     margin-top: 50%;
   }
-  ha-icon-button.startpath-active {
+  sonos-icon-button.startpath-active {
     color: var(--accent-color);
   }
-  ha-icon-button.shortcut-active {
+  sonos-icon-button.shortcut-active {
     color: var(--accent-color);
   }
   .loading-overlay {

@@ -4,6 +4,7 @@ import { mdiFolderStar, mdiFolderStarOutline, mdiPlayBoxMultiple } from '@mdi/js
 import Store from '../../model/store';
 import './favorites/favorites';
 import './browser';
+import '../../components/icon-button';
 import { MediaBrowserBrowser } from './browser';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
 import { customEvent } from '../../utils/utils';
@@ -134,13 +135,13 @@ export class MediaBrowser extends LitElement {
             ${onlyFavorites ? '' : renderShortcutButton(config.shortcut, this.onShortcutClick)}
             ${onlyFavorites
               ? ''
-              : html`<ha-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></ha-icon-button>
-                  <ha-icon-button
+              : html`<sonos-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></sonos-icon-button>
+                  <sonos-icon-button
                     class=${this.isCurrentPathStart ? 'startpath-active' : ''}
                     .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
                     @click=${this.toggleStartPath}
                     title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
-                  ></ha-icon-button>`}
+                  ></sonos-icon-button>`}
             ${renderLayoutMenu(this.layout, this.handleMenuAction)}
           </div>`}
       <sonos-favorites .store=${this.store} .layout=${this.layout} @item-selected=${this.onMediaItemSelected}></sonos-favorites>

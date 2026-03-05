@@ -3,6 +3,7 @@ import { property, query, state } from 'lit/decorators.js';
 import { mdiArrowLeft, mdiFolderStar, mdiFolderStarOutline, mdiPlay, mdiStar } from '@mdi/js';
 import Store from '../../model/store';
 import '../../upstream/ha-media-player-browse';
+import '../../components/icon-button';
 import { HaMediaPlayerBrowse } from '../../upstream/ha-media-player-browse';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
 import { customEvent } from '../../utils/utils';
@@ -115,17 +116,17 @@ export class MediaBrowserBrowser extends LitElement {
         ? ''
         : html`<div class="header">
             ${this.navigateIds.length > 1
-              ? html`<ha-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></ha-icon-button>`
+              ? html`<sonos-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></sonos-icon-button>`
               : html`<div class="spacer"></div>`}
             <span class="title">${this.currentTitle || 'Media Browser'}</span>
             ${this.renderPlayAllButton()} ${renderShortcutButton(shortcut, () => this.navigateToShortcut(shortcut!), this.isShortcutActive(shortcut))}
-            <ha-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></ha-icon-button>
-            <ha-icon-button
+            <sonos-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></sonos-icon-button>
+            <sonos-icon-button
               class=${this.isCurrentPathStart ? 'startpath-active' : ''}
               .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
               @click=${this.toggleStartPath}
               title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
-            ></ha-icon-button>
+            ></sonos-icon-button>
             ${renderLayoutMenu(this.layout, this.handleLayoutChange)}
           </div>`}
       ${keyed(
@@ -157,7 +158,7 @@ export class MediaBrowserBrowser extends LitElement {
     if (playableCount === 0 || this.playAllLoading) {
       return nothing;
     }
-    return html`<ha-icon-button .path=${mdiPlay} @click=${this.handlePlayAll} title="Play all (${playableCount} tracks)"></ha-icon-button>`;
+    return html`<sonos-icon-button .path=${mdiPlay} @click=${this.handlePlayAll} title="Play all (${playableCount} tracks)"></sonos-icon-button>`;
   }
 
   private async handlePlayAll() {
