@@ -64,6 +64,9 @@ class PlayerTab extends BaseEditor {
       item.mediaAlbumNameEquals ||
       item.mediaContentIdEquals ||
       item.mediaChannelEquals ||
+      item.appNameEquals ||
+      item.sourceEquals ||
+      item.appIdEquals ||
       (item.ifMissing && 'if missing') ||
       index
     );

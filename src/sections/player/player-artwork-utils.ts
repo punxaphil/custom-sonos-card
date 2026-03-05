@@ -25,11 +25,17 @@ export function findMatchingOverride(overrides: MediaArtworkOverride[], attrs: A
       matchesString(attrs.media_album_name, value.mediaAlbumNameEquals) ||
       matchesString(attrs.media_channel, value.mediaChannelEquals) ||
       matchesString(attrs.media_content_id, value.mediaContentIdEquals) ||
+      matchesString(attrs.app_name, value.appNameEquals) ||
+      matchesString(attrs.source, value.sourceEquals) ||
+      matchesString(attrs.app_id, value.appIdEquals) ||
       matchesRegexp(attrs.media_title, value.mediaTitleRegexp) ||
       matchesRegexp(attrs.media_artist, value.mediaArtistRegexp) ||
       matchesRegexp(attrs.media_album_name, value.mediaAlbumNameRegexp) ||
       matchesRegexp(attrs.media_channel, value.mediaChannelRegexp) ||
-      matchesRegexp(attrs.media_content_id, value.mediaContentIdRegexp),
+      matchesRegexp(attrs.media_content_id, value.mediaContentIdRegexp) ||
+      matchesRegexp(attrs.app_name, value.appNameRegexp) ||
+      matchesRegexp(attrs.source, value.sourceRegexp) ||
+      matchesRegexp(attrs.app_id, value.appIdRegexp),
   );
   if (!override) {
     override = overrides.find((value) => !entityImage && value.ifMissing);
@@ -42,8 +48,12 @@ export function findArtworkOverride(store: Store, entityImage?: string) {
   if (!overrides) {
     return undefined;
   }
-  const { media_title, media_artist, media_album_name, media_content_id, media_channel } = store.activePlayer.attributes;
-  return findMatchingOverride(overrides, { media_title, media_artist, media_album_name, media_content_id, media_channel }, entityImage);
+  const { media_title, media_artist, media_album_name, media_content_id, media_channel, app_name, source, app_id } = store.activePlayer.attributes;
+  return findMatchingOverride(
+    overrides,
+    { media_title, media_artist, media_album_name, media_content_id, media_channel, app_name, source, app_id },
+    entityImage,
+  );
 }
 
 export function getArtworkImage(store: Store, resolvedImageUrl?: string) {

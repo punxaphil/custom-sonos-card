@@ -224,11 +224,17 @@ export interface MediaArtworkOverride {
   mediaAlbumNameEquals?: string;
   mediaContentIdEquals?: string;
   mediaChannelEquals?: string;
+  appNameEquals?: string;
+  sourceEquals?: string;
+  appIdEquals?: string;
   mediaTitleRegexp?: string;
   mediaArtistRegexp?: string;
   mediaAlbumNameRegexp?: string;
   mediaContentIdRegexp?: string;
   mediaChannelRegexp?: string;
+  appNameRegexp?: string;
+  sourceRegexp?: string;
+  appIdRegexp?: string;
   imageUrl?: string;
   sizePercentage?: number;
 }
@@ -402,4 +408,7 @@ export interface ArtworkMatchAttributes {
   media_album_name?: string;
   media_content_id?: string;
   media_channel?: string;
+  app_name?: string;
+  source?: string;
+  app_id?: string;
 }
