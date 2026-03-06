@@ -23,7 +23,7 @@ function getThumbnail(mediaItem: MediaPlayerItem, config: CardConfig, itemsWithI
   const favoritesConfig = config.mediaBrowser?.favorites ?? {};
   const overrides = config.player?.mediaArtworkOverrides;
   const artworkOverride = overrides
-    ? findMatchingOverride(overrides, { media_title: mediaItem.title, media_content_id: mediaItem.media_content_id })
+    ? findMatchingOverride(overrides, { media_title: mediaItem.title, media_content_id: mediaItem.media_content_id }, mediaItem.thumbnail)
     : undefined;
   let thumbnail = artworkOverride?.imageUrl ?? getValueFromKeyIgnoreSpecialChars(favoritesConfig.customThumbnails, mediaItem.title) ?? mediaItem.thumbnail;
   if (!thumbnail) {
