@@ -5,8 +5,9 @@
 **Goal**: Integrate `ha-media-player-browse` from HA frontend into the existing `custom-sonos-card` repository.
 
 **Verdict**: ✅ **This is the ideal approach** — the repo already has:
+
 - Vite build system
-- TypeScript configuration  
+- TypeScript configuration
 - HACS structure
 - Media browser section (`mxmp-media-browser`)
 - Same target audience (Sonos/media player users)
@@ -16,6 +17,7 @@
 ## ⚠️ Key Constraint: Monthly Updates
 
 The HA frontend repo updates frequently (~monthly major changes). The architecture must support:
+
 - Easy `git pull` or `git merge` from upstream
 - Minimal manual conflict resolution
 - Clear separation between upstream code and your code
@@ -95,22 +97,22 @@ custom-sonos-card/
 
 The Home Assistant frontend already provides **249+ `ha-*` components** at runtime. Based on `available_elements.json`, the following dependencies are **already available** and don't need bundling:
 
-| Component | Status |
-|-----------|--------|
-| `ha-card` | ✅ Available |
-| `ha-button` | ✅ Available |
-| `ha-button-menu` | ✅ Available |
-| `ha-icon-button` | ✅ Available |
-| `ha-svg-icon` | ✅ Available |
-| `ha-spinner` | ✅ Available |
-| `ha-alert` | ✅ Available |
-| `ha-list` | ✅ Available |
-| `ha-list-item` | ✅ Available |
-| `ha-fab` | ✅ Available |
-| `ha-tooltip` | ✅ Available |
-| `ha-entity-picker` | ✅ Available |
-| `ha-form` | ✅ Available |
-| `ha-textarea` | ✅ Available |
+| Component                | Status                             |
+| ------------------------ | ---------------------------------- |
+| `ha-card`                | ✅ Available                       |
+| `ha-button`              | ✅ Available                       |
+| `ha-button-menu`         | ✅ Available                       |
+| `ha-icon-button`         | ✅ Available                       |
+| `ha-svg-icon`            | ✅ Available                       |
+| `ha-spinner`             | ✅ Available                       |
+| `ha-alert`               | ✅ Available                       |
+| `ha-list`                | ✅ Available                       |
+| `ha-list-item`           | ✅ Available                       |
+| `ha-fab`                 | ✅ Available                       |
+| `ha-tooltip`             | ✅ Available                       |
+| `ha-entity-picker`       | ✅ Available                       |
+| `ha-form`                | ✅ Available                       |
+| `ha-textarea`            | ✅ Available                       |
 | `ha-media-player-browse` | ❌ **NOT available** (lazy-loaded) |
 
 ### ⚠️ Custom Element Registration Conflict
@@ -118,7 +120,7 @@ The Home Assistant frontend already provides **249+ `ha-*` components** at runti
 **Problem**: Custom elements can only be registered once. If we bundle `ha-media-player-browse` and register it with `customElements.define()`, but the HA frontend later tries to register the same name, we get:
 
 ```
-DOMException: Failed to execute 'define' on 'CustomElementRegistry': 
+DOMException: Failed to execute 'define' on 'CustomElementRegistry':
 the name "ha-media-player-browse" has already been defined
 ```
 
@@ -138,9 +140,10 @@ Modify the `@customElement()` decorator in our copy:
 This is handled automatically by the sync script (see Phase 3b).
 
 Then use in wrapper:
+
 ```typescript
 // In src/sections/media-browser.ts
-html`<sonos-ha-media-player-browse ...></sonos-ha-media-player-browse>`
+html`<sonos-ha-media-player-browse ...></sonos-ha-media-player-browse>`;
 ```
 
 ### What Actually Needs to Be Bundled
@@ -148,13 +151,16 @@ html`<sonos-ha-media-player-browse ...></sonos-ha-media-player-browse>`
 Only these files/functions need to be extracted:
 
 #### 1. **Main Component** (~1,459 lines)
+
 - `ha-media-player-browse.ts` → rename to `media-browser-card.ts`
 
 #### 2. **Sub-components**
+
 - ~~`ha-browse-media-manual.ts`~~ - **EXCLUDED** (Manual entry feature not needed)
 - ~~`ha-browse-media-tts.ts`~~ - **EXCLUDED** (TTS feature not needed)
 
 #### 3. **Data Layer** (~350 lines total)
+
 - `data/media-player.ts` - Partial extraction:
   - `browseMediaPlayer()` function
   - `MediaPlayerItem` interface
@@ -165,30 +171,33 @@ Only these files/functions need to be extracted:
 - ~~`data/tts.ts`~~ - **EXCLUDED** (TTS feature not needed)
 
 #### 4. **Utilities** (~40 lines total)
+
 - ~~`common/dom/fire_event.ts`~~ - **Use `custom-card-helpers`**: `import { fireEvent } from 'custom-card-helpers'`
 - ~~`common/util/debounce.ts`~~ - **Use `custom-card-helpers`**: `import { debounce } from 'custom-card-helpers'`
 - `common/string/slugify.ts` (~40 lines)
 
 #### 5. **Excluded Features**
+
 - ~~`ha-language-picker`~~ - **EXCLUDED** (TTS feature not needed)
 - ~~`ha-tts-voice-picker`~~ - **EXCLUDED** (TTS feature not needed)
 - ~~`ha-browse-media-tts`~~ - **EXCLUDED** (TTS feature not needed)
 
 #### 6. **Styles** (extract relevant portions)
+
 - `haStyle` from `resources/styles.ts`
 
 ---
 
 ## Estimated Bundle Size
 
-| Category | Lines | Notes |
-|----------|-------|-------|
-| Main component | ~1,300 | Core media browser (with TTS/manual code stripped) |
-| ~~Sub-components~~ | 0 | All excluded |
-| Data layer | ~300 | Only needed functions |
-| Utilities | ~40 | slugify only (fireEvent, debounce from custom-card-helpers) |
-| Styles | ~50 | Extract only used styles |
-| **Total** | **~1,690 lines** | Down from 34,000+ |
+| Category           | Lines            | Notes                                                       |
+| ------------------ | ---------------- | ----------------------------------------------------------- |
+| Main component     | ~1,300           | Core media browser (with TTS/manual code stripped)          |
+| ~~Sub-components~~ | 0                | All excluded                                                |
+| Data layer         | ~300             | Only needed functions                                       |
+| Utilities          | ~40              | slugify only (fireEvent, debounce from custom-card-helpers) |
+| Styles             | ~50              | Extract only used styles                                    |
+| **Total**          | **~1,690 lines** | Down from 34,000+                                           |
 
 **Reduction: ~95%** of the original dependency tree eliminated.
 
@@ -221,7 +230,7 @@ No changes to existing build system needed — Vite will bundle the new files au
 
 1. Copy files with minimal modification:
    - `data/media-player.ts` - Keep full file
-   - `data/media_source.ts` - Keep full file  
+   - `data/media_source.ts` - Keep full file
 2. Only change: Update import paths
 3. Keep all functions even if unused (easier sync)
 
@@ -275,7 +284,7 @@ export enum Section {
   GROUPING = 'grouping',
   VOLUMES = 'volumes',
   QUEUE = 'queue',
-  MEDIA_BROWSER = 'media-browser',  // NEW
+  MEDIA_BROWSER = 'media-browser', // NEW
 }
 ```
 
@@ -286,7 +295,7 @@ Create `src/sections/media-browser.ts`:
 ```typescript
 import { LitElement, html, css } from 'lit';
 import { property } from 'lit/decorators.js';
-import '../upstream/ha-media-player-browse';  // Registers as 'sonos-ha-media-player-browse'
+import '../upstream/ha-media-player-browse'; // Registers as 'sonos-ha-media-player-browse'
 import Store from '../model/store';
 import { MEDIA_ITEM_SELECTED } from '../constants';
 import { customEvent } from '../utils/utils';
@@ -299,7 +308,9 @@ export class MediaBrowser extends LitElement {
       <style>
         /* Hide TTS and manual entry panels if present */
         ha-browse-media-tts,
-        ha-browse-media-manual { display: none !important; }
+        ha-browse-media-manual {
+          display: none !important;
+        }
       </style>
       <sonos-ha-media-player-browse
         .hass=${this.store.hass}
@@ -357,6 +368,7 @@ const { GROUPING, GROUPS, FAVORITES, PLAYER, VOLUMES, QUEUE, MEDIA_BROWSER } = S
 #### Step 4d: Update constants.ts (optional)
 
 Add icon for new section button if desired:
+
 ```typescript
 // sectionButtonIcons default could include:
 // mediaBrowser: 'mdi:folder-music'
@@ -367,6 +379,7 @@ Add icon for new section button if desired:
 The TTS and manual entry panels are hidden via CSS in the wrapper component (see Phase 4b).
 
 **Benefits:**
+
 - Upstream code stays unmodified → easy monthly sync
 - No merge conflicts on TTS/manual code
 - Features can be re-enabled later if needed
@@ -392,28 +405,31 @@ git commit -am "chore: sync upstream from HA frontend $(date +%Y-%m)"
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| HA frontend API changes | Components stop working | Sync script + build check catches early |
-| Breaking import changes | Build fails after sync | Automated path-fixing in sync script |
-| Missing runtime components | Card fails to render | Check `customElements.get()` before use |
-| ~~TTS picker complexity~~ | ~~N/A~~ | TTS hidden via CSS, not removed |
-| Virtualizer dependency | Bundle size increase | @lit-labs/virtualizer is small (~15KB) |
-| Monthly sync conflicts | Manual resolution needed | Keep upstream code unmodified → no conflicts |
+| Risk                       | Impact                   | Mitigation                                   |
+| -------------------------- | ------------------------ | -------------------------------------------- |
+| HA frontend API changes    | Components stop working  | Sync script + build check catches early      |
+| Breaking import changes    | Build fails after sync   | Automated path-fixing in sync script         |
+| Missing runtime components | Card fails to render     | Check `customElements.get()` before use      |
+| ~~TTS picker complexity~~  | ~~N/A~~                  | TTS hidden via CSS, not removed              |
+| Virtualizer dependency     | Bundle size increase     | @lit-labs/virtualizer is small (~15KB)       |
+| Monthly sync conflicts     | Manual resolution needed | Keep upstream code unmodified → no conflicts |
 
 ---
 
 ## Alternative Approaches Considered
 
 ### ❌ Fork Entire Frontend
+
 - **Pros**: Easy to start
 - **Cons**: 34K+ lines, massive maintenance burden, diverges quickly
 
 ### ❌ Use Dialog Instead of Card
+
 - **Pros**: `showMediaBrowserDialog()` already exists
 - **Cons**: Not a card, can't be placed on dashboards
 
 ### ✅ Extract Minimal Code (Recommended)
+
 - **Pros**: Small bundle, maintainable, clear dependencies
 - **Cons**: Some manual work to extract and adapt
 
@@ -472,12 +488,14 @@ This approach is **ideal** because:
 6. **Monthly sync** — upstream folder stays unchanged, easy to update
 
 **Key v10 structure points:**
+
 - Current sections: `FAVORITES`, `GROUPS`, `PLAYER`, `GROUPING`, `VOLUMES`, `QUEUE`
 - New section: `MEDIA_BROWSER` (uses `ha-media-player-browse` for deep browsing)
 - Favorites section remains for flat list of favorites with custom thumbnails, topItems, etc.
 - Media Browser section provides full hierarchical browsing (Spotify playlists, local media, etc.)
 
 **Monthly update workflow:**
+
 ```bash
 ./scripts/sync-upstream.sh ~/code/frontend
 npm run build
