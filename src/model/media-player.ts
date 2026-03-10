@@ -1,5 +1,6 @@
 import { HassEntity } from 'home-assistant-js-websocket';
 import { CardConfig } from '../types';
+import { findMatchingCustomFavorite } from '../utils/media-browse-utils';
 import { findPlayer, getGroupPlayerIds } from '../utils/utils';
 
 export class MediaPlayer {
@@ -47,6 +48,10 @@ export class MediaPlayer {
   }
 
   getCurrentTrack() {
+    const matchingFavorite = findMatchingCustomFavorite(this.config.mediaBrowser?.favorites?.customFavorites, this.attributes.media_content_id);
+    if (matchingFavorite?.useTitleAsMediaTitle) {
+      return matchingFavorite.title;
+    }
     let track = `${this.attributes.media_artist || ''} - ${this.attributes.media_title || ''}`;
     track = track.replace(/^ - | - $/g, '');
     if (!track) {

@@ -1,4 +1,17 @@
-import { CardConfig, CustomFavoriteThumbnails, MediaPlayerItem } from '../types';
+import { CardConfig, CustomFavorite, CustomFavorites, CustomFavoriteThumbnails, MediaPlayerItem } from '../types';
+
+export function findMatchingCustomFavorite(customFavorites: CustomFavorites | undefined, mediaContentId: string | undefined): CustomFavorite | undefined {
+  if (!customFavorites || !mediaContentId) {
+    return undefined;
+  }
+  for (const key in customFavorites) {
+    const match = customFavorites[key].find((f) => f.media_content_id === mediaContentId);
+    if (match) {
+      return match;
+    }
+  }
+  return undefined;
+}
 import { html } from 'lit';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { findMatchingOverride } from '../sections/player/player-artwork-utils';

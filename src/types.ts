@@ -246,6 +246,10 @@ export interface CustomFavorites {
 export interface CustomFavorite {
   title: string;
   thumbnail?: string;
+  media_content_id?: string;
+  media_content_type?: string;
+  useTitleAsMediaTitle?: boolean;
+  useThumbnailAsArtwork?: boolean;
 }
 
 export interface CustomFavoriteThumbnails {

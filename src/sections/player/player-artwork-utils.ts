@@ -1,6 +1,7 @@
 import Store from '../../model/store';
 import { MUSIC_NOTES_BASE64_IMAGE, TV_BASE64_IMAGE } from '../../constants';
 import { ArtworkMatchAttributes, MediaArtworkOverride } from '../../types';
+import { findMatchingCustomFavorite } from '../../utils/media-browse-utils';
 
 function matchesString(value: string | undefined, expected: string | undefined): boolean {
   return !!value && value === expected;
@@ -72,6 +73,12 @@ export function getArtworkImage(store: Store, resolvedImageUrl?: string) {
       entityImage = override.imageUrl;
     }
     sizePercentage = override?.sizePercentage ?? sizePercentage;
+  }
+  if (!override) {
+    const matchingFavorite = findMatchingCustomFavorite(store.config.mediaBrowser?.favorites?.customFavorites, store.activePlayer.attributes.media_content_id);
+    if (matchingFavorite?.useThumbnailAsArtwork && matchingFavorite.thumbnail) {
+      entityImage = matchingFavorite.thumbnail;
+    }
   }
   return { entityImage, sizePercentage };
 }

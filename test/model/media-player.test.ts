@@ -100,6 +100,60 @@ describe('MediaPlayer', () => {
     expect(mediaPlayer.getCurrentTrack()).toBe('chimes radio');
   });
 
+  it('should use custom favorite title when useTitleAsMediaTitle is true', () => {
+    config.mediaBrowser = {
+      favorites: {
+        customFavorites: {
+          all: [
+            {
+              title: 'My Radio Station',
+              media_content_id: 'http://example.com',
+              useTitleAsMediaTitle: true,
+            },
+          ],
+        },
+      },
+    };
+    mediaPlayer = new MediaPlayer(hassEntity1, config);
+    expect(mediaPlayer.getCurrentTrack()).toBe('My Radio Station');
+  });
+
+  it('should not use custom favorite title when useTitleAsMediaTitle is false', () => {
+    config.mediaBrowser = {
+      favorites: {
+        customFavorites: {
+          all: [
+            {
+              title: 'My Radio Station',
+              media_content_id: 'http://example.com',
+              useTitleAsMediaTitle: false,
+            },
+          ],
+        },
+      },
+    };
+    mediaPlayer = new MediaPlayer(hassEntity1, config);
+    expect(mediaPlayer.getCurrentTrack()).toBe('Artist - Replaced Title');
+  });
+
+  it('should not use custom favorite title when media_content_id does not match', () => {
+    config.mediaBrowser = {
+      favorites: {
+        customFavorites: {
+          all: [
+            {
+              title: 'My Radio Station',
+              media_content_id: 'http://other.com',
+              useTitleAsMediaTitle: true,
+            },
+          ],
+        },
+      },
+    };
+    mediaPlayer = new MediaPlayer(hassEntity1, config);
+    expect(mediaPlayer.getCurrentTrack()).toBe('Artist - Replaced Title');
+  });
+
   it('should get entity name correctly', () => {
     expect(mediaPlayer.name).toBe('Test Player');
     config.entityNameRegexToReplace = 'Player';
