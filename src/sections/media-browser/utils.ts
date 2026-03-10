@@ -8,23 +8,7 @@ export async function playAll(store: Store, children: MediaPlayerItem[]): Promis
   if (!children.length) {
     return null;
   }
-  const player = store.activePlayer;
-  await store.hass.callService('media_player', 'play_media', {
-    entity_id: player.id,
-    media_content_id: children[0].media_content_id,
-    media_content_type: children[0].media_content_type,
-    enqueue: 'replace',
-  });
-  await Promise.all(
-    children.slice(1).map((child) =>
-      store.hass.callService('media_player', 'play_media', {
-        entity_id: player.id,
-        media_content_id: child.media_content_id,
-        media_content_type: child.media_content_type,
-        enqueue: 'add',
-      }),
-    ),
-  );
+  await store.mediaControlService.queueAndPlay(store.activePlayer, children, 'replace');
   return children[0];
 }
 

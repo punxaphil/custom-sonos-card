@@ -36,6 +36,13 @@ export const mediaBrowserStyles = css`
   sonos-icon-button.shortcut-active {
     color: var(--accent-color);
   }
+  .play-all-warning {
+    padding: 8px 12px;
+    background: var(--warning-color, #ffa726);
+    color: var(--primary-text-color);
+    font-size: 0.85rem;
+    text-align: center;
+  }
   .loading-overlay {
     position: absolute;
     inset: 0;

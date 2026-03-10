@@ -32,6 +32,7 @@ export class MediaBrowserBrowser extends LitElement {
   @state() currentTitle = '';
   @state() private isCurrentPathStart = false;
   @state() private playAllLoading = false;
+  @state() private playAllWarning = '';
   @state() private mediaLoaded = false;
   @query('sonos-ha-media-player-browse') private mediaBrowser?: HaMediaPlayerBrowse;
 
@@ -112,6 +113,7 @@ export class MediaBrowserBrowser extends LitElement {
     const shortcut = config.shortcut;
     return html`
       ${this.playAllLoading ? html`<div class="loading-overlay"><div class="loading-spinner"></div></div>` : nothing}
+      ${this.playAllWarning ? html`<div class="play-all-warning">${this.playAllWarning}</div>` : nothing}
       ${config.hideHeader
         ? ''
         : html`<div class="header">
@@ -166,11 +168,29 @@ export class MediaBrowserBrowser extends LitElement {
     if (!children.length) {
       return;
     }
+    this.playAllWarning = '';
     this.playAllLoading = true;
     try {
       const firstItem = await playAll(this.store, children);
       if (firstItem) {
         this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, firstItem));
+      }
+      if (children.length > 1) {
+        let lastCount = 0;
+        for (let attempt = 0; attempt < 4; attempt++) {
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          const queue = await this.store.hassService.getQueue(this.store.activePlayer);
+          if (queue.length >= children.length) {
+            break;
+          }
+          if (queue.length <= lastCount) {
+            // Queue stopped growing — queueing likely not supported
+            this.playAllWarning = `Only ${queue.length} of ${children.length} items were added to the queue. Some media types do not support queueing.`;
+            setTimeout(() => (this.playAllWarning = ''), 8000);
+            break;
+          }
+          lastCount = queue.length;
+        }
       }
     } catch (e) {
       console.error('Failed to play all:', e);
