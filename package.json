@@ -46,5 +46,8 @@
     "test:watch": "vitest",
     "test:ci": "vitest run",
     "release": "tsx scripts/select-version.ts"
+  },
+  "overrides": {
+    "rollup": "^4.59.0"
   }
 }
