@@ -2,21 +2,15 @@
   "categories": [
     {
       "title": "## 🚀 Features",
-      "labels": [
-        "feat"
-      ]
+      "labels": ["feat"]
     },
     {
       "title": "## 🐛 Fixes",
-      "labels": [
-        "fix"
-      ]
+      "labels": ["fix"]
     },
     {
       "title": "## 📚 Documentation",
-      "labels": [
-        "docs"
-      ]
+      "labels": ["docs"]
     },
     {
       "title": "## 🛠 Under the hood",
@@ -28,7 +22,7 @@
   "empty_template": "- no changes",
   "label_extractor": [
     {
-      "pattern": "(\\w+): (.+)",
+      "pattern": "(\\w+)(?:\\(.*\\))?: (.+)",
       "target": "$1"
     }
   ]
