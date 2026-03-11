@@ -104,6 +104,7 @@ export interface FavoritesConfig {
   exclude?: string[];
   hideTitleForThumbnailIcons?: boolean;
   iconBorder?: string;
+  iconMarginPercentage?: number;
   iconPadding?: number;
   iconTitleBackgroundColor?: string;
   iconTitleColor?: string;

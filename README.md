@@ -169,7 +169,7 @@ dynamicVolumeSliderMax: 40 # default is 30. Use this to change the max value for
 dynamicVolumeSliderThreshold: 30 # default is 20. Use this to change the threshold for the dynamic volume slider.
 entitiesToIgnoreVolumeLevelFor: # default is empty. Use this if you want to ignore volume level for certain players in the player section. Useful if you have a main device with fixed volume.
   - media_player.my_sonos_port_device
-entityPlatform: music_assistant # default is empty. 
+entityPlatform: music_assistant # default is empty.
 predefinedGroups: # defaults to empty. More advanced features in separate section further down.
   - name: Inside
     volume: 15 # If you want to set the volume of all speakers when grouping
@@ -338,6 +338,7 @@ mediaBrowser:
       - radio_browser # Hide any radio stations from radio_browser (since their media_content_id contains this string)
     hideTitleForThumbnailIcons: true # default is false. Only makes a difference if itemsPerRow > 1. Will hide title for thumbnail artworks.
     iconBorder: 1px solid white # default is none. Use this to add a border to favorites icons.
+    iconMarginPercentage: 2 # default is 1. Percentage of margin around the icon button.
     iconPadding: 0.25 # default is 0.75. Unit is 'rem'. Use this to change the padding around favorites icon artwork.
     iconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
     iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
@@ -426,18 +427,18 @@ search:
 ```
 
 Queue supports:
+
 - Sonos queue (native Sonos integration)
 - Music Assistant queue (requires `entityPlatform: music_assistant`)
 
 If you use Music Assistant queue, install [mass_queue](https://github.com/droans/mass_queue) from HACS.
 
-
 **Search Features:**
+
 - Search for tracks, artists, albums, or playlists
 - Auto-search as you type (configurable)
 - Select multiple items and play or queue them
 - State persists when switching sections
-
 
 ## Using individual section cards
 
@@ -563,6 +564,7 @@ If you want to find the `media_content_id` for a specific radio station, playlis
 10. Look for `media_content_id` and `media_content_type` in the data
 
 Example for a playable item (custom favorite):
+
 ```json
 {
   "service_data": {
@@ -574,6 +576,7 @@ Example for a playable item (custom favorite):
 ```
 
 Example for a folder (media browser shortcut):
+
 ```json
 {
   "type": "media_player/browse_media",

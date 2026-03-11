@@ -56,6 +56,11 @@ export const FAVORITES_SUB_SCHEMA = [
     help: 'Border for favorites icons (e.g., 1px solid white)',
   },
   {
+    name: 'iconMarginPercentage',
+    type: 'integer',
+    help: 'Margin around favorites icon artwork in percentage (e.g., 10 for 10%)',
+  },
+  {
     name: 'iconPadding',
     type: 'float',
     help: 'Padding around favorites icon artwork (rem)',

@@ -67,7 +67,7 @@ export class FavoritesIcons extends LitElement {
   }
 
   private buttonStyle(favoritesItemsPerRow: number) {
-    const margin = '1%';
+    const margin = `${this.store.config.mediaBrowser?.favorites?.iconMarginPercentage ?? 1}%`;
     const size = `calc(100% / ${favoritesItemsPerRow} - ${margin} * 2)`;
     return styleMap({
       width: size,
@@ -88,7 +88,7 @@ export class FavoritesIcons extends LitElement {
         .thumbnail {
           width: 100%;
           padding-bottom: 100%;
-          margin: 0 6%;
+          margin: 0;
           background-size: 100%;
           background-repeat: no-repeat;
           background-position: center;
