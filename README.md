@@ -688,3 +688,60 @@ card_mod:
 ```
 
 ![img.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/card_mod_2.png)
+
+# Contributing
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (see `.nvmrc` for the required version)
+- A running Home Assistant instance with Sonos players (or other media players)
+
+### Setup
+
+1. Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/punxaphil/custom-sonos-card.git
+cd custom-sonos-card
+npm install
+```
+
+2. Create a `.env` file in the project root with your Home Assistant connection details:
+
+```
+HA_URL=https://your-ha-instance.local
+HA_TOKEN=your-long-lived-access-token
+HA_SSH_USER=root
+HA_SSH_HOST=192.168.1.100
+HA_SSH_PATH=/homeassistant/www/community
+```
+
+You can generate a long-lived access token from your HA profile page (`/profile` → Long-Lived Access Tokens).
+
+For localhost deployments, set `HA_LOCALHOST_CONFIG_PATH` instead of the SSH variables.
+
+For SSH to work, passwordless login (e.g. using ssh-copy-id) is expected to already be setup.
+
+### Available Commands
+
+| Command                    | Description                                    |
+| -------------------------- | ---------------------------------------------- |
+| `npm run deploy`           | Lint, build and deploy to HA via SSH           |
+| `npm run deploy:localhost` | Lint, build and deploy to a local HA instance  |
+| `npm run deploy:remote`    | Lint, build and deploy to a remote HA instance |
+
+### Development Workflow
+
+1. Make your changes in `src/`.
+2. Run `npm run deploy` to build and deploy to your HA instance for manual testing. The deploy script automatically increments the resource version (`hacstag`) so HA picks up the new build without cache issues.
+    - If you instead want to manually copy the built file to your HA instance, you can find it in `dist/custom-sonos-card.js`. Copy this file to your HA `www/community/custom-sonos-card/` directory and update the resource reference in your Lovelace config if needed.
+4. Commit using [Conventional Commits](https://www.conventionalcommits.org/) format (e.g. `feat: add new feature`, `fix: resolve bug`, `feat(favorites): scoped feature`). This is used for automatic release note generation.
+
+### Pull Requests
+
+1. Fork the repository and create a new branch for your feature or bug fix.
+2. Make your changes and ensure they follow the existing code style and copilot-instructions.md guidelines.
+3. Run the build and deploy process to test your changes in a real HA environment.
+4. Once you're satisfied with your changes, push your branch and create a pull request against the `main` repository.
+5. Provide a clear description of your changes and the motivation behind them in the pull request.
+6. The maintainers will review your pull request, provide feedback if necessary, and merge it once it's ready.
