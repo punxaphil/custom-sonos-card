@@ -1,6 +1,7 @@
 # General
 
 - After each change: use `npm run deploy` which lints, builds, deploys.
+- After each code change, run `npm run deploy` before responding to the user.
 - Avoid duplicate code.
 - Avoid redundant variables: don't create temporary variables that simply rename another value unless it improves readability or documents intent.
 - Prefer direct returns, destructuring, and small helper functions.
@@ -19,6 +20,7 @@
 - Make sure to use latest, stable versions of dependencies unless there is a specific reason not to. Those reasons must be documented in an ADR.md file.
 - Keep types clean in normal code, extract type definitions to a types.ts if they are complex or used in multiple places.
 - Use conventional commits for commit messages.
+- Do not use sed/perl/python one-liners or bulk find/replace commands to edit source files. Edit files directly with targeted patches.
 
 # Code structure
 
@@ -117,5 +119,4 @@ When adding a new configuration option, update ALL of the following:
 - On first run, you'll be prompted to create a long-lived access token in HA (Profile → Long-Lived Access Tokens)
 - Navigate to `${HA_URL}${HA_TEST_PAGE}` to verify changes (HA_URL and HA_TEST_PAGE are defined in `.env`)
 - When using Playwright to verify changes, navigate to `${HA_URL}${HA_TEST_PAGE}`, use HA_USER and HA_PASSWORD from `.env` for login credentials, and click "Keep me logged in"
-- When testing configuration changes, edit the test dashboard in ../dashboards/ then run update_dashboards.sh
 - If releasing, use `npx bumpp`
