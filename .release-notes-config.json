@@ -22,8 +22,9 @@
   "empty_template": "- no changes",
   "label_extractor": [
     {
-      "pattern": "(\\w+)(?:\\(.*\\))?: (.+)",
-      "target": "$1"
+      "pattern": "^(\\w+)(?:\\(.*?\\))?: .+",
+      "target": "$1",
+      "method": "match"
     }
   ]
 }
