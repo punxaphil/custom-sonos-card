@@ -2,14 +2,16 @@ name: HACS Action
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
   schedule:
-    - cron: "25 23 * * *"
+    - cron: '25 23 * * *'
 
 jobs:
   hacs:
     name: HACS Action
     runs-on: ubuntu-latest
+    if: github.repository == 'punxaphil/custom-sonos-card' && github.ref == 'refs/heads/main'
     steps:
       - name: HACS Action
         uses: hacs/action@main
