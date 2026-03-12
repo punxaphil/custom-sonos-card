@@ -50,7 +50,7 @@ export class MediaPlayer {
   getCurrentTrack() {
     const matchingFavorite = findMatchingCustomFavorite(this.config.mediaBrowser?.favorites?.customFavorites, this.attributes.media_content_id);
     if (matchingFavorite) {
-      const useTitle = matchingFavorite.overrides?.useTitleAsMediaTitle ?? matchingFavorite.useTitleAsMediaTitle;
+      const useTitle = matchingFavorite.useTitleAsMediaTitle ?? matchingFavorite.useTitleAsMediaTitle;
       if (useTitle) {
         return matchingFavorite.title;
       }

@@ -9,9 +9,9 @@ export function findMatchingCustomFavorite(customFavorites: CustomFavorites | un
       if (favorite.media_content_id === mediaContentId) {
         return favorite;
       }
-      if (favorite.overrides?.contentIdRegexp) {
+      if (favorite.contentIdRegexp) {
         try {
-          if (new RegExp(favorite.overrides.contentIdRegexp).test(mediaContentId)) {
+          if (new RegExp(favorite.contentIdRegexp).test(mediaContentId)) {
             return favorite;
           }
         } catch {

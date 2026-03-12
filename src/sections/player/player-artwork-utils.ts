@@ -77,7 +77,7 @@ export function getArtworkImage(store: Store, resolvedImageUrl?: string) {
   if (!override) {
     const matchingFavorite = findMatchingCustomFavorite(store.config.mediaBrowser?.favorites?.customFavorites, store.activePlayer.attributes.media_content_id);
     if (matchingFavorite) {
-      const useThumbnail = matchingFavorite.overrides?.useThumbnailAsArtwork ?? matchingFavorite.useThumbnailAsArtwork;
+      const useThumbnail = matchingFavorite.useThumbnailAsArtwork ?? matchingFavorite.useThumbnailAsArtwork;
       if (useThumbnail && matchingFavorite.thumbnail) {
         entityImage = matchingFavorite.thumbnail;
       }
