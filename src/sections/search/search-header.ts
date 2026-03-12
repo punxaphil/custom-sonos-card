@@ -12,7 +12,8 @@ import {
   mdiViewGrid,
   mdiViewList,
 } from '@mdi/js';
-import { customEvent } from '../../utils/utils';
+import { customEvent, getSpeakerList } from '../../utils/utils';
+import Store from '../../model/store';
 import '../../components/selection-actions';
 import '../../components/icon-button';
 import './search-filter-menu';
@@ -44,6 +45,7 @@ export class SearchHeader extends LitElement {
   @property({ attribute: false }) operationProgress: OperationProgress | null = null;
   @property() libraryFilter: LibraryFilter = 'all';
   @property() viewMode: SearchViewMode = 'list';
+  @property({ attribute: false }) store!: Store;
   @state() private filterMenuOpen = false;
   @state() private visibleCount = ALL_HEADER_ICONS.length;
 
@@ -121,11 +123,16 @@ export class SearchHeader extends LitElement {
 
   render() {
     const hasOverflow = this.overflowIcons.length > 0;
+    const playerName = getSpeakerList(this.store.activePlayer, this.store.predefinedGroups);
+    const hideActivePlayerName = this.store.config.search?.hideActivePlayerName ?? false;
 
     return html`
       <div class="header">
         <div class="title-container">
-          <span class="title">${this.title}</span>
+          <div class="title-text">
+            <span class="title">${this.title}</span>
+            <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
+          </div>
         </div>
         <div class="header-icons">
           <div class="media-type-icons" ?hidden=${this.selectMode}>
@@ -221,9 +228,22 @@ export class SearchHeader extends LitElement {
         min-width: 0;
         padding: 0.5rem;
       }
+      .title-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        min-width: 0;
+      }
       .title {
         font-size: calc(var(--sonos-font-size, 1rem) * 1.2);
         font-weight: bold;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .player-name {
+        font-size: calc(var(--sonos-font-size, 1rem) * 0.85);
+        color: var(--secondary-text-color);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

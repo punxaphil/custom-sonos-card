@@ -7,7 +7,7 @@ import './browser';
 import '../../components/icon-button';
 import { MediaBrowserBrowser } from './browser';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
-import { customEvent } from '../../utils/utils';
+import { customEvent, getSpeakerList } from '../../utils/utils';
 import { mediaBrowserStyles } from './styles';
 import { renderLayoutMenu } from './layout-menu';
 import { renderShortcutButton } from './utils';
@@ -124,14 +124,18 @@ export class MediaBrowser extends LitElement {
   private renderFavorites() {
     const config = this.store.config.mediaBrowser ?? {};
     const title = config.favorites?.title ?? 'Favorites';
+    const playerName = getSpeakerList(this.store.activePlayer, this.store.predefinedGroups);
     const onlyFavorites = config.onlyFavorites ?? false;
+    const hideActivePlayerName = config.hideActivePlayerName ?? false;
 
     return html`
       ${config.hideHeader
         ? ''
         : html`<div class="header">
-            <div class="spacer"></div>
-            <span class="title">${title}</span>
+            <div class="title-section">
+              <span class="title">${title}</span>
+              <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
+            </div>
             ${onlyFavorites ? '' : renderShortcutButton(config.shortcut, this.onShortcutClick)}
             ${onlyFavorites
               ? ''

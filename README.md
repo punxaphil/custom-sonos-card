@@ -306,6 +306,7 @@ player:
 ```yaml
 mediaBrowser:
   hideHeader: true # default is false. Hides the header of the media browser section (title and navigation buttons).
+  hideActivePlayerName: true # default is false. Hides the current player/group name in the media browser header.
   itemsPerRow: 1 # default is 4. Use this to show items as list. Applies to both favorites and media browser.
   onlyFavorites: true # default is false. Hides the media browser button, showing only favorites.
   shortcut: # Optional shortcut button for quick access to a specific folder in the media browser. media_content_id, media_content_type, and name are required.
@@ -395,6 +396,7 @@ volumes:
   title: '' # default is empty. Use this to change the title for the volumes section.
   additionalControlsFontSize: 0.9 # default is 0.75. Unit is 'em'. Font size for additional controls (e.g., Bass, Treble, Audio delay).
   hideCogwheel: true # default is false. Will hide the cogwheel for the volumes section.
+  hideActivePlayerName: true # default is false. Hides the current player/group name from the All label.
   labelForAllSlider: 'All volumes' # default is 'All'. Use this to change the label for the all volumes slider.
 adjustVolumeRelativeToMainPlayer: true # default is false, which means all players will be set to the same volume as the main player. If set to true, volume will be adjusted relative to the main player in the group.
 changeVolumeOnSlide: true # default is false. If set to true, volume will be changed while sliding the volume slider. If false, volume will only be changed when releasing the slider.
@@ -407,6 +409,7 @@ volumeStepSize: 1 # Use this to change the step size when using volume up/down. 
 ```yaml
 queue:
   title: Songs # default is 'Play Queue'. Use this to change the title for the queue section.
+  hideActivePlayerName: true # default is false. Hides the current player/group name in the queue header.
   itemBackgroundColor: '#ff0000' # Use this to set a custom background color for queue items.
   itemTextColor: '#ffffff' # Use this to set a custom text color for queue items.
   selectedItemBackgroundColor: '#00ff00' # Use this to set a custom background color for the currently playing queue item.
@@ -420,6 +423,7 @@ The Search section allows you to search for music using the [Music Assistant](ht
 ```yaml
 search:
   title: Search # default is 'Search'. Use this to change the title for the search section.
+  hideActivePlayerName: true # default is false. Hides the current player/group name in the search header.
   massConfigEntryId: '' # Leave empty to auto-discover Music Assistant. Only needed if you have multiple Music Assistant instances.
   defaultMediaType: track # default is none. Pre-select a media type (track, artist, album, playlist).
   searchLimit: 50 # default is 50. Maximum number of results to show per search.

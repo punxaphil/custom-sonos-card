@@ -19,6 +19,7 @@ export interface SearchConfig {
   defaultMediaType?: SearchMediaType;
   searchLimit?: number;
   title?: string;
+  hideActivePlayerName?: boolean;
   autoSearchMinChars?: number;
   autoSearchDebounceMs?: number;
   defaultViewMode?: SearchViewMode;

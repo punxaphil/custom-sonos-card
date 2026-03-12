@@ -5,6 +5,7 @@ import { until } from 'lit-html/directives/until.js';
 import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
 import { MediaPlayer } from '../../model/media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { getSpeakerList } from '../../utils/utils';
 import './sleep-timer';
 import '../../components/icon-button';
 
@@ -15,13 +16,15 @@ export class Volumes extends LitElement {
   render() {
     const members = this.store.activePlayer.members;
     const showAll = members.length > 1;
+    const hideActivePlayerName = this.store.config.volumes?.hideActivePlayerName ?? false;
+    const playerName = showAll && !hideActivePlayerName ? getSpeakerList(this.store.activePlayer, this.store.predefinedGroups) : '';
     return html`
-      <div ?hidden=${!showAll}>${showAll ? this.volumeWithName(this.store.activePlayer) : nothing}</div>
+      <div ?hidden=${!showAll}>${showAll ? this.volumeWithName(this.store.activePlayer, true, playerName) : nothing}</div>
       ${members.map((member) => this.volumeWithName(member, false))}
     `;
   }
 
-  private volumeWithName(player: MediaPlayer, updateMembers = true) {
+  private volumeWithName(player: MediaPlayer, updateMembers = true, groupName: string = '') {
     const { labelForAllSlider, hideCogwheel } = this.store.config.volumes ?? {};
     const { showVolumeUpAndDownButtons } = this.store.config.player ?? {};
     const name = updateMembers ? (labelForAllSlider ?? 'All') : player.name;
@@ -30,7 +33,15 @@ export class Volumes extends LitElement {
     const hideSwitches = updateMembers || !this.showSwitches[player.id];
     return html` <div class="row">
       <div class="volume-name">
-        <div class="volume-name-text">${name}</div>
+        ${updateMembers && groupName
+          ? html`
+              <div class="volume-name-text grouped-name">
+                <span class="grouped-name-prefix">${name} (</span>
+                <span class="grouped-name-main">${groupName}</span>
+                <span class="grouped-name-suffix">)</span>
+              </div>
+            `
+          : html`<div class="volume-name-text">${name}</div>`}
       </div>
       <div class="slider-row">
         <sonos-icon-button
@@ -83,7 +94,7 @@ export class Volumes extends LitElement {
         display: flex;
         flex-direction: column;
         padding-top: 0.3rem;
-        padding-right: 1rem;
+        padding-inline: 0.5rem;
         padding-bottom: 0.2rem;
       }
 
@@ -107,6 +118,8 @@ export class Volumes extends LitElement {
         overflow: hidden;
         flex-direction: column;
         text-align: center;
+        max-width: 90%;
+        align-self: center;
       }
 
       .volume-name-text {
@@ -117,6 +130,22 @@ export class Volumes extends LitElement {
         font-size: calc(var(--sonos-font-size, 1rem) * 1.1);
         font-weight: bold;
         min-height: 1rem;
+      }
+
+      .grouped-name {
+        display: flex;
+        align-items: center;
+      }
+
+      .grouped-name-main {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .grouped-name-prefix,
+      .grouped-name-suffix {
+        flex-shrink: 0;
       }
 
       .slider-row {

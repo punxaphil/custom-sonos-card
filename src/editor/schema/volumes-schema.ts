@@ -12,6 +12,10 @@ export const VOLUMES_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'hideActivePlayerName',
+    selector: { boolean: {} },
+  },
+  {
     name: 'labelForAllSlider',
     type: 'string',
   },

@@ -19,6 +19,11 @@ export const SEARCH_SCHEMA = [
     help: 'Custom title for the search section',
   },
   {
+    name: 'hideActivePlayerName',
+    selector: { boolean: {} },
+    help: 'Hide active player/group name in the search header',
+  },
+  {
     name: 'massConfigEntryId',
     type: 'string',
     help: 'Leave empty to auto-discover',

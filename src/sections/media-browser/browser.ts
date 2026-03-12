@@ -6,7 +6,7 @@ import '../../upstream/ha-media-player-browse';
 import '../../components/icon-button';
 import { HaMediaPlayerBrowse } from '../../upstream/ha-media-player-browse';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
-import { customEvent } from '../../utils/utils';
+import { customEvent, getSpeakerList } from '../../utils/utils';
 import { MediaBrowserShortcut, MediaPlayerItem } from '../../types';
 import { keyed } from 'lit/directives/keyed.js';
 import { mediaBrowserStyles } from './styles';
@@ -111,6 +111,8 @@ export class MediaBrowserBrowser extends LitElement {
   render() {
     const config = this.store.config.mediaBrowser ?? {};
     const shortcut = config.shortcut;
+    const playerName = getSpeakerList(this.store.activePlayer, this.store.predefinedGroups);
+    const hideActivePlayerName = config.hideActivePlayerName ?? false;
     return html`
       ${this.playAllLoading ? html`<div class="loading-overlay"><div class="loading-spinner"></div></div>` : nothing}
       ${this.playAllWarning ? html`<div class="play-all-warning">${this.playAllWarning}</div>` : nothing}
@@ -120,7 +122,10 @@ export class MediaBrowserBrowser extends LitElement {
             ${this.navigateIds.length > 1
               ? html`<sonos-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></sonos-icon-button>`
               : html`<div class="spacer"></div>`}
-            <span class="title">${this.currentTitle || 'Media Browser'}</span>
+            <div class="title-section">
+              <span class="title">${this.currentTitle || 'Media Browser'}</span>
+              <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
+            </div>
             ${this.renderPlayAllButton()} ${renderShortcutButton(shortcut, () => this.navigateToShortcut(shortcut!), this.isShortcutActive(shortcut))}
             <sonos-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></sonos-icon-button>
             <sonos-icon-button

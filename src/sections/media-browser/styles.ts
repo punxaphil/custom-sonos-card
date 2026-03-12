@@ -23,6 +23,32 @@ export const mediaBrowserStyles = css`
     white-space: nowrap;
     text-align: center;
   }
+  .title-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .title-section .title {
+    flex: 0;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+  .player-name {
+    font-size: calc(var(--sonos-font-size, 1rem) * 0.8);
+    color: var(--secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: center;
+    max-width: 100%;
+  }
   .spacer {
     width: 48px;
   }

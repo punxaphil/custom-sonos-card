@@ -3,7 +3,7 @@ import { property } from 'lit/decorators.js';
 import { mdiCheckboxMultipleMarkedOutline, mdiCloseBoxMultipleOutline, mdiTrashCanOutline } from '@mdi/js';
 import type Store from '../../model/store';
 import type { MediaPlayerItem } from '../../types';
-import { customEvent } from '../../utils/utils';
+import { customEvent, getSpeakerList } from '../../utils/utils';
 import type { QueueHeaderAction } from './queue.types';
 import './queue-search';
 import '../../components/selection-actions';
@@ -19,11 +19,16 @@ export class QueueHeader extends LitElement {
   @property({ attribute: false }) store!: Store;
 
   render() {
+    const playerName = getSpeakerList(this.store.activePlayer, this.store.predefinedGroups);
+    const hideActivePlayerName = this.store.config.queue?.hideActivePlayerName ?? false;
     return html`
       <div class="header">
-        <div class="title-container">
-          <span class="title">${this.queueTitle}</span>
-          <span class="item-count" ?hidden=${this.itemCount === 0}>(${this.itemCount} items)</span>
+        <div class="title-section">
+          <div class="title-row">
+            <span class="title">${this.queueTitle}</span>
+            <span class="item-count" ?hidden=${this.itemCount === 0}>(${this.itemCount} items)</span>
+          </div>
+          <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
         </div>
         <div class="header-icons">
           <sonos-queue-search .items=${this.items} .selectMode=${this.selectMode} @queue-search-action=${this.onSearchAction}></sonos-queue-search>
@@ -95,16 +100,29 @@ export class QueueHeader extends LitElement {
     .header-icons > * {
       display: inline-block;
     }
-    .title-container {
+    .title-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+      padding: 0.5rem;
+    }
+    .title-row {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       min-width: 0;
-      padding: 0.5rem;
     }
     .title {
       font-size: calc(var(--sonos-font-size, 1rem) * 1.2);
       font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .player-name {
+      font-size: calc(var(--sonos-font-size, 1rem) * 0.85);
+      color: var(--secondary-text-color);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

@@ -128,6 +128,7 @@ export interface MediaBrowserShortcut {
 export interface MediaBrowserConfig {
   favorites?: FavoritesConfig;
   hideHeader?: boolean;
+  hideActivePlayerName?: boolean;
   itemsPerRow?: number;
   onlyFavorites?: boolean;
   shortcut?: MediaBrowserShortcut;
@@ -161,11 +162,13 @@ export interface GroupingConfig {
 export interface VolumesConfig {
   additionalControlsFontSize?: number;
   hideCogwheel?: boolean;
+  hideActivePlayerName?: boolean;
   labelForAllSlider?: string;
   title?: string;
 }
 
 export interface QueueConfig {
+  hideActivePlayerName?: boolean;
   itemBackgroundColor?: string;
   itemTextColor?: string;
   selectedItemBackgroundColor?: string;

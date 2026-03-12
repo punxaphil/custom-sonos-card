@@ -4,6 +4,10 @@ export const QUEUE_SCHEMA = [
     type: 'string',
   },
   {
+    name: 'hideActivePlayerName',
+    selector: { boolean: {} },
+  },
+  {
     name: 'itemBackgroundColor',
     type: 'string',
   },

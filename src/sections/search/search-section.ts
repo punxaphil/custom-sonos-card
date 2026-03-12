@@ -115,6 +115,7 @@ export class Search extends LitElement {
             .hasSelection=${this.hasSelection}
             .libraryFilter=${this.libraryFilter}
             .viewMode=${this.viewMode}
+            .store=${this.store}
             @header-action=${this.handleHeaderAction}
           ></sonos-search-header>
           <sonos-search-bar

@@ -4,6 +4,10 @@ export const MEDIA_BROWSER_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'hideActivePlayerName',
+    selector: { boolean: {} },
+  },
+  {
     name: 'itemsPerRow',
     type: 'integer',
     valueMin: 1,
