@@ -5,9 +5,19 @@ export function findMatchingCustomFavorite(customFavorites: CustomFavorites | un
     return undefined;
   }
   for (const key in customFavorites) {
-    const match = customFavorites[key].find((f) => f.media_content_id === mediaContentId);
-    if (match) {
-      return match;
+    for (const favorite of customFavorites[key]) {
+      if (favorite.media_content_id === mediaContentId) {
+        return favorite;
+      }
+      if (favorite.overrides?.contentIdRegexp) {
+        try {
+          if (new RegExp(favorite.overrides.contentIdRegexp).test(mediaContentId)) {
+            return favorite;
+          }
+        } catch {
+          continue;
+        }
+      }
     }
   }
   return undefined;

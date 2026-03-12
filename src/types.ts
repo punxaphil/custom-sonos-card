@@ -244,6 +244,12 @@ export interface CustomFavorites {
   [name: string]: CustomFavorite[];
 }
 
+export interface CustomFavoriteOverrides {
+  contentIdRegexp?: string;
+  useTitleAsMediaTitle?: boolean;
+  useThumbnailAsArtwork?: boolean;
+}
+
 export interface CustomFavorite {
   title: string;
   thumbnail?: string;
@@ -251,6 +257,7 @@ export interface CustomFavorite {
   media_content_type?: string;
   useTitleAsMediaTitle?: boolean;
   useThumbnailAsArtwork?: boolean;
+  overrides?: CustomFavoriteOverrides;
 }
 
 export interface CustomFavoriteThumbnails {
