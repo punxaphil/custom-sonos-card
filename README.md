@@ -150,6 +150,7 @@ entityNameReplacement: ''
 fontFamily: 'Roboto, sans-serif' # Use this to change the font family for the entire card.
 footerHeight: 4 # default is 5. Unit is 'rem'. Use this to change the height of the footer.
 heightPercentage: 75 # default is 100. Use this to change the height of the card. Set to 'auto' to make the card height adjust to the content.
+listItemHeight: 3 # default is built-in height. Unit is 'rem'. Use this to change the height of list items (e.g., media browser rows, queue rows).
 mediaTitleRegexToReplace: '.wav?.*' # Regex pattern to replace parts of the media title
 mediaTitleReplacement: ' radio' # Replacement for the media title regex pattern
 minWidth: 10 # default is 20. Unit is 'rem'. Use this to change the minimum width of the card.

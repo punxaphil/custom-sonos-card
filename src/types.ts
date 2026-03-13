@@ -200,6 +200,7 @@ export interface CardConfig extends LovelaceCardConfig {
   footerHeight?: number;
   heightPercentage?: number;
   inverseGroupMuteState?: boolean;
+  listItemHeight?: number;
   mediaTitleRegexToReplace?: string;
   mediaTitleReplacement?: string;
   minWidth?: number;

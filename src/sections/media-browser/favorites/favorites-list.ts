@@ -17,7 +17,9 @@ export class FavoritesList extends LitElement {
     return html`
       <mwc-list multi class="list">
         ${itemsWithFallbacks(this.items, this.config).map((item) => {
-          return html` <sonos-media-row @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))} .item=${item}></sonos-media-row> `;
+          return html`
+            <sonos-media-row @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))} .item=${item} .store=${this.store}></sonos-media-row>
+          `;
         })}
       </mwc-list>
     `;

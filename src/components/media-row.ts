@@ -31,7 +31,11 @@ class MediaRow extends LitElement {
     const { itemBackgroundColor, itemTextColor, selectedItemBackgroundColor, selectedItemTextColor } = this.store?.config?.queue ?? {};
     const bgColor = this.selected ? selectedItemBackgroundColor : itemBackgroundColor;
     const textColor = this.selected ? selectedItemTextColor : itemTextColor;
-    const cssVars = (bgColor ? `--secondary-background-color: ${bgColor};` : '') + (textColor ? `--secondary-text-color: ${textColor};` : '');
+    const listItemHeight = this.store.config.listItemHeight;
+    const cssVars =
+      (bgColor ? `--secondary-background-color: ${bgColor};` : '') +
+      (textColor ? `--secondary-text-color: ${textColor};` : '') +
+      (listItemHeight ? `height: ${listItemHeight}rem;` : '');
     const hasBadges = this.showFavoriteBadge || this.showLibraryBadge || this.isFavorite !== null || this.isInLibrary !== null;
     const showClickableHeart = this.isFavorite !== null;
     const showClickableLibrary = this.isInLibrary !== null;
@@ -146,7 +150,7 @@ class MediaRow extends LitElement {
         .button {
           margin: 0.3rem;
           border-radius: 0.3rem;
-          height: 25px;
+          height: 1.8rem;
           padding-inline: 0.1rem;
         }
 

@@ -91,6 +91,12 @@ export const COMMON_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'listItemHeight',
+    type: 'float',
+    help: 'Height of list items in rem (e.g., media browser rows, queue rows)',
+    valueMin: 0.1,
+  },
+  {
     name: 'mediaTitleRegexToReplace',
     type: 'string',
   },
