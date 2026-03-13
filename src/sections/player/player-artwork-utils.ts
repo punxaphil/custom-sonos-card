@@ -75,7 +75,11 @@ export function getArtworkImage(store: Store, resolvedImageUrl?: string) {
     sizePercentage = override?.sizePercentage ?? sizePercentage;
   }
   if (!override) {
-    const matchingFavorite = findMatchingCustomFavorite(store.config.mediaBrowser?.favorites?.customFavorites, store.activePlayer.attributes.media_content_id);
+    const matchingFavorite = findMatchingCustomFavorite(
+      store.config.mediaBrowser?.favorites?.customFavorites,
+      store.activePlayer.attributes.media_content_id,
+      store.activePlayer.id,
+    );
     if (matchingFavorite?.useThumbnailAsArtwork && matchingFavorite.thumbnail) {
       entityImage = matchingFavorite.thumbnail;
     }

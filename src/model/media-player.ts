@@ -48,7 +48,7 @@ export class MediaPlayer {
   }
 
   getCurrentTrack() {
-    const matchingFavorite = findMatchingCustomFavorite(this.config.mediaBrowser?.favorites?.customFavorites, this.attributes.media_content_id);
+    const matchingFavorite = findMatchingCustomFavorite(this.config.mediaBrowser?.favorites?.customFavorites, this.attributes.media_content_id, this.id);
     if (matchingFavorite?.useTitleAsMediaTitle) {
       return matchingFavorite.title;
     }
