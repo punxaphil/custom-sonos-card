@@ -324,6 +324,7 @@ mediaBrowser:
           media_content_id: media-source://radio_browser/98adecf7-2683-4408-9be7-02d3f9098eb8
           media_content_type: music
           thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+          contentIdRegexp: .*radio-name.* # Optional: use this when your favorite is not a directly playable media file (i.e. an mp3). For example: when using radio-browser. Otherwise it will fail to replace title and artwork with the options below
           useTitleAsMediaTitle: true # Optional: use this favorite's title as the player media title when playing. Useful for streams that show a URL instead of a name.
           useThumbnailAsArtwork: true # Optional: use this favorite's thumbnail as the player artwork when playing. Avoids having to duplicate config in mediaArtworkOverrides.
     customThumbnails:
@@ -542,6 +543,7 @@ mediaBrowser:
           media_content_id: x-rincon-mp3radio://http://stream.live.vc.bbcmedia.co.uk/bbc_world_service
           media_content_type: music
           thumbnail: http://cdn-profiles.tunein.com/s24948/images/logoq.jpg?t=1
+          contentIdRegexp: .*radio-name.* # Optional: use this when your favorite is not a directly playable media file (i.e. an mp3). For example: when using radio-browser. Otherwise it will fail to replace title and artwork with the options below
           useTitleAsMediaTitle: true # Optional: use this favorite's title as the player media title when playing
           useThumbnailAsArtwork: true # Optional: use this favorite's thumbnail as the player artwork when playing
 ```
