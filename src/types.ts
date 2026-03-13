@@ -254,6 +254,7 @@ export interface CustomFavorite {
   thumbnail?: string;
   media_content_id?: string;
   media_content_type?: string;
+  contentIdRegexpForUseAs?: string;
   useTitleAsMediaTitle?: boolean;
   useThumbnailAsArtwork?: boolean;
 }

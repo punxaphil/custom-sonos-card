@@ -1,13 +1,28 @@
 import { CardConfig, CustomFavorite, CustomFavorites, CustomFavoriteThumbnails, MediaPlayerItem } from '../types';
 
-export function findMatchingCustomFavorite(customFavorites: CustomFavorites | undefined, mediaContentId: string | undefined): CustomFavorite | undefined {
+export function findMatchingCustomFavorite(
+  customFavorites: CustomFavorites | undefined,
+  mediaContentId: string | undefined,
+  playerId?: string,
+): CustomFavorite | undefined {
   if (!customFavorites || !mediaContentId) {
     return undefined;
   }
-  for (const key in customFavorites) {
-    const match = customFavorites[key].find((f) => f.media_content_id === mediaContentId);
-    if (match) {
-      return match;
+  const keys = playerId ? [playerId, 'all'] : Object.keys(customFavorites);
+  for (const key of keys) {
+    for (const favorite of customFavorites[key] ?? []) {
+      if (favorite.media_content_id === mediaContentId) {
+        return favorite;
+      }
+      if (favorite.contentIdRegexpForUseAs) {
+        try {
+          if (new RegExp(favorite.contentIdRegexpForUseAs).test(mediaContentId)) {
+            return favorite;
+          }
+        } catch {
+          continue;
+        }
+      }
     }
   }
   return undefined;
