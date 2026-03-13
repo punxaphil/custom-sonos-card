@@ -209,6 +209,7 @@ export interface CardConfig extends LovelaceCardConfig {
   showNonSonosPlayers?: boolean;
   storePlayerInSessionStorage?: boolean;
   title?: string;
+  volumeSliderHeight?: number;
   volumeStepSize?: number;
   widthPercentage?: number;
   // Section configs

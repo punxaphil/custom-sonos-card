@@ -33,21 +33,23 @@ class Volume extends LitElement {
     const muteIcon = isMuted ? mdiVolumeMute : mdiVolumeHigh;
     const disabled = this.player.ignoreVolume;
 
-    const sliderHeight = this.isPlayer && this.playerConfig.volumeSliderHeight;
-    const muteButtonSize = this.isPlayer && this.playerConfig.volumeMuteButtonSize;
+    const globalSliderHeight = this.config.volumeSliderHeight;
+    const sliderHeight = this.isPlayer ? (this.playerConfig.volumeSliderHeight ?? globalSliderHeight) : globalSliderHeight;
+    const muteButtonSize = this.isPlayer ? this.playerConfig.volumeMuteButtonSize : undefined;
+    const iconButtonSize = muteButtonSize ?? sliderHeight;
+    const buttonStyle = [
+      sliderHeight ? `height: ${sliderHeight}rem;` : '',
+      iconButtonSize ? `--icon-button-size: ${iconButtonSize}rem;--icon-size: ${iconButtonSize * 0.75}rem;` : '',
+    ].join('');
+    const sliderStyle = sliderHeight ? `--control-slider-thickness: ${sliderHeight}rem;` : '';
     return html`
-      <style>
-        :host {
-          ${sliderHeight ? `--control-slider-thickness: ${sliderHeight}rem;` : ''}
-          ${muteButtonSize ? `--icon-button-size: ${muteButtonSize}rem; --icon-size: ${muteButtonSize * 0.75}rem;` : ''}
-        }
-      </style>
       <div class="volume" slim=${this.slim || nothing}>
         <sonos-icon-button
           .disabled=${disabled}
           @click=${this.mute}
           .path=${muteIcon}
           hide=${(this.isPlayer && this.playerConfig.hideVolumeMuteButton) || nothing}
+          style=${buttonStyle}
         >
         </sonos-icon-button>
         <div class="volume-slider">
@@ -58,6 +60,7 @@ class Volume extends LitElement {
             @slider-moved=${this.sliderMoved}
             .disabled=${disabled}
             class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
+            style=${sliderStyle}
           ></ha-control-slider>
           <div class="volume-level" hide=${(this.isPlayer && this.playerConfig.hideVolumePercentage) || nothing}>
             <div style="flex: ${volume}">${volume > 0 ? '0%' : ''}</div>
@@ -66,7 +69,7 @@ class Volume extends LitElement {
           </div>
         </div>
         <div class="percentage-slim" hide=${this.slim && nothing}>${volume}%</div>
-        <sonos-icon-button hide=${this.store.hidePower()} @click=${this.togglePower} .path=${mdiPower}></sonos-icon-button>
+        <sonos-icon-button hide=${this.store.hidePower()} @click=${this.togglePower} .path=${mdiPower} style=${buttonStyle}></sonos-icon-button>
       </div>
     `;
   }
@@ -118,7 +121,6 @@ class Volume extends LitElement {
       }
 
       *[slim] * {
-        --control-slider-thickness: 10px;
         --icon-button-size: 30px;
         --icon-size: 20px;
       }

@@ -115,6 +115,12 @@ export const COMMON_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'volumeSliderHeight',
+    type: 'float',
+    help: 'Global height of volume sliders (rem)',
+    valueMin: 0.1,
+  },
+  {
     name: 'volumeStepSize',
     type: 'integer',
     valueMin: 1,

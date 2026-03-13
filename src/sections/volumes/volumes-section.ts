@@ -31,6 +31,8 @@ export class Volumes extends LitElement {
     const volDown = async () => await this.store.mediaControlService.volumeDown(player, updateMembers);
     const volUp = async () => await this.store.mediaControlService.volumeUp(player, updateMembers);
     const hideSwitches = updateMembers || !this.showSwitches[player.id];
+    const sliderHeight = this.store.config.volumeSliderHeight;
+    const buttonStyle = sliderHeight ? `height: ${sliderHeight}rem;--icon-button-size: ${sliderHeight}rem;--icon-size: ${sliderHeight * 0.75}rem;` : '';
     return html` <div class="row">
       <div class="volume-name">
         ${updateMembers && groupName
@@ -49,14 +51,22 @@ export class Volumes extends LitElement {
           ?hidden=${!showVolumeUpAndDownButtons}
           @click=${volDown}
           .path=${mdiVolumeMinus}
+          style=${buttonStyle}
         ></sonos-icon-button>
         <sonos-volume .store=${this.store} .player=${player} .updateMembers=${updateMembers}></sonos-volume>
-        <sonos-icon-button .disabled=${player.ignoreVolume} ?hidden=${!showVolumeUpAndDownButtons} @click=${volUp} .path=${mdiVolumePlus}></sonos-icon-button>
+        <sonos-icon-button
+          .disabled=${player.ignoreVolume}
+          ?hidden=${!showVolumeUpAndDownButtons}
+          @click=${volUp}
+          .path=${mdiVolumePlus}
+          style=${buttonStyle}
+        ></sonos-icon-button>
         <sonos-icon-button
           ?hidden=${updateMembers || !!hideCogwheel}
           @click=${() => this.toggleShowSwitches(player)}
           .path=${mdiCog}
           show-switches=${this.showSwitches[player.id] || nothing}
+          style=${buttonStyle}
         ></sonos-icon-button>
       </div>
       <div class="switches" ?hidden=${hideSwitches}>
