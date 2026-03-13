@@ -37,6 +37,7 @@ and more!
 ![grouping.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/grouping.png)
 ![volumes.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/volumes.png)
 ![queue.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/queue.png) <!-- //#ONLY_SONOS_CARD -->
+![search.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/search.png)
 
 ## Support the project
 
