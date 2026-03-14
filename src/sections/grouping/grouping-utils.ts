@@ -36,14 +36,14 @@ export function buildGroupingItems(store: Store, modifiedItems: string[]): Group
   return items;
 }
 
-export function waitForGroupSync(store: Store, mainPlayerId: string, expectedIds: string[]): Promise<void> {
+export function waitForGroupSync(getStore: () => Store, mainPlayerId: string, expectedIds: string[]): Promise<void> {
   return new Promise((resolve) => {
     const timeout = setTimeout(() => {
       clearInterval(poll);
       resolve();
     }, SYNC_TIMEOUT);
     const poll = setInterval(() => {
-      const mainEntity = store.hass.states[mainPlayerId];
+      const mainEntity = getStore().hass.states[mainPlayerId];
       if (mainEntity) {
         const actualIds = getGroupPlayerIds(mainEntity).sort();
         if (actualIds.length === expectedIds.length && actualIds.every((id, i) => id === expectedIds[i])) {

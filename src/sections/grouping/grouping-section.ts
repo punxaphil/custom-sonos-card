@@ -107,7 +107,7 @@ export class Grouping extends LitElement {
     try {
       await this.executeChanges(join, unJoin, newMainPlayer, selectedPG);
       this.switchActivePlayerIfNeeded(activePlayer, newMainPlayer, unJoin);
-      await waitForGroupSync(this.store, newMainPlayer, expectedIds);
+      await waitForGroupSync(() => this.store, newMainPlayer, expectedIds);
       await new Promise((resolve) => setTimeout(resolve, POST_SYNC_DELAY));
     } finally {
       this.applying = false;
