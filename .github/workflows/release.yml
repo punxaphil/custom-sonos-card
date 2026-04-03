@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Build
         run: |
@@ -22,7 +25,7 @@ jobs:
         with:
           body_path: release-notes.md
           prerelease: true
-          files: "${{ github.workspace }}/dist/custom-sonos-card.js"
+          files: '${{ github.workspace }}/dist/custom-sonos-card.js'
 
       - name: Create Release (Mxmp)
         uses: softprops/action-gh-release@v2
@@ -31,5 +34,4 @@ jobs:
           repository: punxaphil/maxi-media-player
           prerelease: true
           token: ${{ secrets.PAT_TOKEN }}
-          files: "${{ github.workspace }}/dist-maxi-media-player/maxi-media-player.js"
-
+          files: '${{ github.workspace }}/dist-maxi-media-player/maxi-media-player.js'
