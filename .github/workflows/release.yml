@@ -9,32 +9,25 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Build Changelog
-        id: build_changelog
-        uses: mikepenz/release-changelog-builder-action@v6
-        with:
-          failOnError: true
-          commitMode: true
-          configuration: ".release-notes-config.json"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build
         run: |
           npm install
           npm run build
 
+      - name: Generate Release Notes
+        run: npm run release:notes -- --tag "${GITHUB_REF_NAME}" --output release-notes.md
+
       - name: Create Release (Sonos)
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{steps.build_changelog.outputs.changelog}}
+          body_path: release-notes.md
           prerelease: true
           files: "${{ github.workspace }}/dist/custom-sonos-card.js"
 
       - name: Create Release (Mxmp)
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{steps.build_changelog.outputs.changelog}}
+          body_path: release-notes.md
           repository: punxaphil/maxi-media-player
           prerelease: true
           token: ${{ secrets.PAT_TOKEN }}
