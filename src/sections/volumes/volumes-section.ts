@@ -70,7 +70,7 @@ export class Volumes extends LitElement {
         ></sonos-icon-button>
       </div>
       <div class="switches" ?hidden=${hideSwitches}>
-        <sonos-source .store=${this.store}> </sonos-source>
+        <sonos-source .store=${this.store} .player=${player}> </sonos-source>
         ${until(this.getAdditionalControls(hideSwitches, player))}
         <sonos-sleep-timer .store=${this.store} .player=${player}></sonos-sleep-timer>
       </div>
