@@ -60,6 +60,19 @@ type ResourceOperation = ResourceUpdate | ResourceCreate;
 
 const CARD_NAMES = ['custom-sonos-card', 'maxi-media-player'];
 
+function getNextVersionedUrl(currentUrl: string, resourcePrefix: string, cardName: string): string {
+  const expectedPath = `${resourcePrefix}/${cardName}/${cardName}.js`;
+  const normalizedUrl = currentUrl.startsWith(expectedPath) ? currentUrl : expectedPath;
+  const parsedUrl = new URL(normalizedUrl, 'http://localhost');
+  const currentTag = parseInt(parsedUrl.searchParams.get('hacstag') ?? '0', 10);
+  const nextTag = Number.isFinite(currentTag) && currentTag > 0 ? currentTag + 1 : 1;
+
+  parsedUrl.pathname = expectedPath;
+  parsedUrl.searchParams.set('hacstag', String(nextTag));
+
+  return `${parsedUrl.pathname}?${parsedUrl.searchParams.toString()}`;
+}
+
 async function updateHacstags(): Promise<void> {
   const env = loadEnv();
   const token = loadToken(env);
@@ -172,21 +185,11 @@ function buildOperations(msg: HaMessage): ResourceOperation[] {
       continue;
     }
 
-    const match = resource.url.match(/hacstag=(\d+)/);
-    if (!match) {
-      console.warn(`⚠️  No hacstag found in URL for ${cardName}: ${resource.url} — skipping`);
-      continue;
+    if (!resource.url.includes('hacstag=')) {
+      console.log(`Resource for ${cardName} has no hacstag — will normalize it`);
     }
 
-    const currentTag = parseInt(match[1], 10);
-    const newTag = currentTag + 1;
-    let newUrl = resource.url.replace(`hacstag=${currentTag}`, `hacstag=${newTag}`);
-
-    // Fix resource prefix if it doesn't match the expected one
-    const expectedPath = `${resourcePrefix}/${cardName}/${cardName}.js`;
-    if (!newUrl.startsWith(expectedPath)) {
-      newUrl = `${expectedPath}?hacstag=${newTag}`;
-    }
+    const newUrl = getNextVersionedUrl(resource.url, resourcePrefix, cardName);
 
     operations.push({ action: 'update', cardName, resourceId: resource.id, currentUrl: resource.url, newUrl });
   }
