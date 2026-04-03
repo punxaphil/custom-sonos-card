@@ -34,7 +34,28 @@ function getLatestVersion(): string {
   }
 }
 
+function getLatestTag(): string | undefined {
+  try {
+    return exec('git describe --tags --abbrev=0');
+  } catch {
+    return undefined;
+  }
+}
+
+function getCommitsSinceLastRelease(): string[] {
+  const latestTag = getLatestTag();
+  const range = latestTag ? `${latestTag}..HEAD` : 'HEAD';
+
+  try {
+    const output = exec(`git log --pretty=format:"%h %s" ${range}`);
+    return output ? output.split('\n').filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
 const currentVersion = getLatestVersion();
+const commitsSinceLastRelease = getCommitsSinceLastRelease();
 
 function dryExec(command: string, description: string): void {
   if (dryRun) {
@@ -69,7 +90,7 @@ async function prompt(question: string): Promise<string> {
   });
 
   return new Promise((resolve) => {
-    rl.question(question, (answer) => {
+    rl.question(question, (answer: string) => {
       rl.close();
       resolve(answer.trim());
     });
@@ -87,47 +108,83 @@ function getDefaultChoiceIndex(current: string): number {
   return current.includes('-') ? 6 : 0;
 }
 
+function printCommitPreview(commits: string[], showAll: boolean): void {
+  if (commits.length === 0) {
+    console.log('No commits since last release.\n');
+    return;
+  }
+
+  const maxVisible = 5;
+  const visibleCommits = showAll ? commits : commits.slice(0, maxVisible);
+  const latestTag = getLatestTag();
+  const heading = latestTag ? `Commits since ${latestTag}:` : 'Commits in current history:';
+
+  console.log(`${heading}\n`);
+  visibleCommits.forEach((commit) => console.log(`  ${commit}`));
+
+  if (!showAll && commits.length > maxVisible) {
+    console.log(`\n  ...and ${commits.length - maxVisible} more`);
+  }
+
+  console.log('');
+}
+
 async function selectVersion(): Promise<string> {
   const choices = getVersionChoices(currentVersion);
   const defaultIndex = getDefaultChoiceIndex(currentVersion);
   const defaultChoice = choices[defaultIndex];
 
-  console.log(`\nCurrent version: ${currentVersion}\n`);
-  console.log('Select a new version:\n');
+  let showAllCommits = false;
 
-  choices.forEach((choice, index) => {
-    const marker = index === defaultIndex ? '→' : ' ';
-    console.log(`${marker} ${index + 1}) ${choice.name}`);
-  });
+  while (true) {
+    console.log(`\nCurrent version: ${currentVersion}\n`);
+    printCommitPreview(commitsSinceLastRelease, showAllCommits);
+    console.log('Select a new version:\n');
 
-  console.log('');
+    choices.forEach((choice, index) => {
+      const marker = index === defaultIndex ? '→' : ' ';
+      console.log(`${marker} ${index + 1}) ${choice.name}`);
+    });
 
-  const answer = await prompt(`Enter choice (1-${choices.length}) [${defaultIndex + 1}]: `);
-  
-  // If empty, use default
-  if (answer === '') {
-    return defaultChoice.value;
-  }
-  
-  const index = parseInt(answer, 10) - 1;
+    if (commitsSinceLastRelease.length > 5) {
+      console.log(`  a) ${showAllCommits ? 'show fewer commits' : 'show all commits'}`);
+    }
 
-  if (isNaN(index) || index < 0 || index >= choices.length) {
-    console.error('Invalid choice');
-    process.exit(1);
-  }
+    console.log('');
 
-  const selected = choices[index];
+    const answer = await prompt(`Enter choice (1-${choices.length}${commitsSinceLastRelease.length > 5 ? ', a' : ''}) [${defaultIndex + 1}]: `);
 
-  if (selected.value === 'custom') {
-    const customVersion = await prompt('Enter custom version: ');
-    if (!valid(customVersion)) {
-      console.error('Invalid semver version');
+    if (answer.toLowerCase() === 'a' && commitsSinceLastRelease.length > 5) {
+      showAllCommits = !showAllCommits;
+      console.log('');
+      continue;
+    }
+
+    // If empty, use default
+    if (answer === '') {
+      return defaultChoice.value;
+    }
+
+    const index = parseInt(answer, 10) - 1;
+
+    if (isNaN(index) || index < 0 || index >= choices.length) {
+      console.error('Invalid choice');
       process.exit(1);
     }
-    return customVersion;
-  }
 
-  return selected.value;
+    const selected = choices[index];
+
+    if (selected.value === 'custom') {
+      const customVersion = await prompt('Enter custom version: ');
+      if (!valid(customVersion)) {
+        console.error('Invalid semver version');
+        process.exit(1);
+      }
+      return customVersion;
+    }
+
+    return selected.value;
+  }
 }
 
 async function main() {
