@@ -4,8 +4,9 @@ import Store from '../../../model/store';
 import { FavoritesConfig, MediaBrowserConfig, MediaPlayerItem } from '../../../types';
 import { customEvent } from '../../../utils/utils';
 import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../../../constants';
-import { itemsWithFallbacks, renderFavoritesItem } from '../../../utils/media-browse-utils';
+import { itemsWithFallbacks } from '../../../utils/media-browse-utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { mediaGridCardStyles, renderMediaGridCard } from '../utils';
 
 export class FavoritesIcons extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -18,20 +19,12 @@ export class FavoritesIcons extends LitElement {
     const items = itemsWithFallbacks(this.items, this.store.config);
     let prevType: string | undefined = '';
     this.sortItemsByFavoriteTypeIfConfigured(items, favoritesConfig);
-    const iconTitleColor = favoritesConfig.iconTitleColor;
-    const iconTitleBgColor = favoritesConfig.iconTitleBackgroundColor;
-    const border = favoritesConfig.iconBorder;
-    const padding = favoritesConfig.iconPadding;
     const typeColor = favoritesConfig.typeColor;
     const typeFontSize = favoritesConfig.typeFontSize;
     const typeFontWeight = favoritesConfig.typeFontWeight;
     const typeMarginBottom = favoritesConfig.typeMarginBottom;
     return html`
       <style>
-        ha-control-button {
-          ${border ? `border: ${border};` : ''}
-          ${padding !== undefined ? `--control-button-padding: ${padding}rem;` : ''}
-        }
         .favorite-type {
           ${typeColor ? `color: ${typeColor};` : ''}
           ${typeFontSize ? `font-size: ${typeFontSize};` : ''}
@@ -42,14 +35,29 @@ export class FavoritesIcons extends LitElement {
       <div class="icons">
         ${items.map((item) => {
           const showFavoriteType = (favoritesConfig.sortByType && item.favoriteType !== prevType) || nothing;
+          const showTitle = !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons;
+          const thumbnailInset = favoritesConfig.iconPadding !== undefined ? `${favoritesConfig.iconPadding}rem` : undefined;
+          const imageStyle = [
+            thumbnailInset ? `top:${thumbnailInset};right:${thumbnailInset};bottom:${thumbnailInset};left:${thumbnailInset};` : '',
+            item.thumbnail ? `background-image:url(${item.thumbnail})` : '',
+          ].join(' ');
+          const titleStyle = styleMap({
+            color: favoritesConfig.iconTitleColor ?? '',
+            backgroundColor: favoritesConfig.iconTitleBackgroundColor ?? '',
+          });
           const toRender = html`
             <div class="favorite-type" show=${showFavoriteType}>${item.favoriteType}</div>
-            <ha-control-button
-              style=${this.buttonStyle(mediaBrowserConfig.itemsPerRow || 4)}
-              @click=${() => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item))}
-            >
-              ${renderFavoritesItem(item, !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons, iconTitleColor, iconTitleBgColor)}
-            </ha-control-button>
+            <div style=${this.buttonStyle(mediaBrowserConfig.itemsPerRow || 4)}>
+              ${renderMediaGridCard({
+                item,
+                onClick: () => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item)),
+                thumbnailContent: item.thumbnail
+                  ? html`<div class="image" style=${imageStyle}></div>`
+                  : html`<div class="image image-placeholder" style=${thumbnailInset ? imageStyle : ''}></div>`,
+                titleContent: showTitle ? html`<div class="title" style=${titleStyle}>${item.title}</div>` : undefined,
+                cardStyle: favoritesConfig.iconBorder ? `border:${favoritesConfig.iconBorder};` : '',
+              })}
+            </div>
           `;
           prevType = item.favoriteType;
           return toRender;
@@ -71,7 +79,6 @@ export class FavoritesIcons extends LitElement {
     const size = `calc(100% / ${favoritesItemsPerRow} - ${margin} * 2)`;
     return styleMap({
       width: size,
-      height: size,
       margin: margin,
     });
   }
@@ -79,28 +86,15 @@ export class FavoritesIcons extends LitElement {
   static get styles() {
     return [
       mediaItemTitleStyle,
+      mediaGridCardStyles,
       css`
         .icons {
           display: flex;
           flex-wrap: wrap;
         }
 
-        .thumbnail {
-          width: 100%;
-          padding-bottom: 100%;
-          margin: 0;
-          background-size: 100%;
-          background-repeat: no-repeat;
-          background-position: center;
-        }
-
-        .title {
-          font-size: calc(var(--sonos-font-size, 1rem) * 0.8);
-          position: absolute;
-          width: 100%;
-          line-height: 160%;
-          bottom: 0;
-          background-color: rgba(var(--rgb-card-background-color), 0.733);
+        .image-placeholder {
+          background: var(--secondary-background-color);
         }
 
         .favorite-type {
