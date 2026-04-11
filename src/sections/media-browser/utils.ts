@@ -84,7 +84,7 @@ export function renderMediaGridCard(params: {
   onClick: (event: MouseEvent) => void;
   thumbnailContent: TemplateResult;
   actionContent?: TemplateResult;
-  titleContent?: TemplateResult;
+  titleContent?: TemplateResult | typeof nothing;
   cardStyle?: string;
 }) {
   const { item, onClick, thumbnailContent, actionContent = nothing, titleContent, cardStyle } = params;
@@ -92,7 +92,7 @@ export function renderMediaGridCard(params: {
     <div class="child" .item=${item} @click=${onClick}>
       <ha-card outlined style=${cardStyle ?? ''}>
         <div class="thumbnail">${thumbnailContent} ${actionContent}</div>
-        ${titleContent ?? html`<div class="title">${item.title}</div>`}
+        ${titleContent !== undefined ? titleContent : html`<div class="title">${item.title}</div>`}
       </ha-card>
     </div>
   `;
