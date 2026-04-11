@@ -54,7 +54,7 @@ export class FavoritesIcons extends LitElement {
                 thumbnailContent: item.thumbnail
                   ? html`<div class="image" style=${imageStyle}></div>`
                   : html`<div class="image image-placeholder" style=${thumbnailInset ? imageStyle : ''}></div>`,
-                titleContent: showTitle ? html`<div class="title" style=${titleStyle}>${item.title}</div>` : undefined,
+                titleContent: showTitle ? html`<div class="title" style=${titleStyle}>${item.title}</div>` : nothing,
                 cardStyle: favoritesConfig.iconBorder ? `border:${favoritesConfig.iconBorder};` : '',
               })}
             </div>
