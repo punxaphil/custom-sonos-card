@@ -21,14 +21,14 @@ jobs:
         run: npm run release:notes -- --tag "${GITHUB_REF_NAME}" --output release-notes.md
 
       - name: Create Release (Sonos)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: release-notes.md
           prerelease: true
           files: '${{ github.workspace }}/dist/custom-sonos-card.js'
 
       - name: Create Release (Mxmp)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body_path: release-notes.md
           repository: punxaphil/maxi-media-player
