@@ -95,17 +95,17 @@ export function getBackgroundImage(store: Store, imageLoaded: boolean, resolvedI
   const image = getArtworkImage(store, resolvedImageUrl);
   if (image?.entityImage && imageLoaded) {
     const sizeStyle = image.sizePercentage ? `; background-size: ${image.sizePercentage}%` : '';
-    return `background-image: url(${encodeURI(image.entityImage)})${sizeStyle}`;
+    return `background-image: url(${image.entityImage.replace(/ /g, '%20')})${sizeStyle}`;
   }
-  return `background-image: url(${encodeURI(getFallbackImage(store))})`;
+  return `background-image: url(${getFallbackImage(store).replace(/ /g, '%20')})`;
 }
 
 export function getBackgroundImageUrl(store: Store, imageLoaded: boolean, resolvedImageUrl?: string) {
   const image = getArtworkImage(store, resolvedImageUrl);
   if (image?.entityImage && imageLoaded) {
-    return `url(${encodeURI(image.entityImage)})`;
+    return `url(${image.entityImage.replace(/ /g, '%20')})`;
   }
-  return `url(${encodeURI(getFallbackImage(store))})`;
+  return `url(${getFallbackImage(store).replace(/ /g, '%20')})`;
 }
 
 export function getArtworkStyle(store: Store, imageLoaded: boolean, resolvedImageUrl?: string) {

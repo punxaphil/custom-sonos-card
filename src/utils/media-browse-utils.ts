@@ -110,7 +110,7 @@ export function renderFavoritesItem(item: MediaPlayerItem, showTitle = true, tit
     backgroundColor: titleBgColor ?? '',
   });
   return html`
-    <div class="thumbnail" ?hidden=${!item.thumbnail} style="background-image: url(${item.thumbnail ? encodeURI(item.thumbnail) : ''})"></div>
+    <div class="thumbnail" ?hidden=${!item.thumbnail} style="background-image: url(${item.thumbnail?.replace(/ /g, '%20')})"></div>
     <div class="title" ?hidden=${!showTitle} style=${titleStyle}>${item.title}</div>
   `;
 }
