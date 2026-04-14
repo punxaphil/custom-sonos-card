@@ -5,8 +5,8 @@
   "main": "src/main.js",
   "module": "src/main.js",
   "repository": "",
-  "author": "",
-  "license": "",
+  "author": "punxaphil",
+  "license": "Apache-2.0",
   "dependencies": {
     "@lit-labs/virtualizer": "^2.1.1",
     "@mdi/js": "^7.4.47",
