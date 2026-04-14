@@ -39,7 +39,7 @@ export class FavoritesIcons extends LitElement {
           const thumbnailInset = favoritesConfig.iconPadding !== undefined ? `${favoritesConfig.iconPadding}rem` : undefined;
           const imageStyle = [
             thumbnailInset ? `top:${thumbnailInset};right:${thumbnailInset};bottom:${thumbnailInset};left:${thumbnailInset};` : '',
-            item.thumbnail ? `background-image:url(${encodeURI(item.thumbnail)})` : '',
+            item.thumbnail ? `background-image:url("${item.thumbnail}")` : '',
           ].join(' ');
           const titleStyle = styleMap({
             color: favoritesConfig.iconTitleColor ?? '',
