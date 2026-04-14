@@ -1,0 +1,76 @@
+name: Sync Release Status With MXMP
+
+on:
+  release:
+    types:
+      - edited
+      - released
+      - prereleased
+
+permissions:
+  contents: read
+
+jobs:
+  sync-release-status:
+    if: github.repository == 'punxaphil/custom-sonos-card'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sync prerelease and latest flags to MXMP release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            const sourceOwner = context.repo.owner;
+            const sourceRepo = context.repo.repo;
+            const targetOwner = 'punxaphil';
+            const targetRepo = 'maxi-media-player';
+            const sourceRelease = context.payload.release;
+
+            if (!sourceRelease) {
+              core.setFailed('No release payload found in event context.');
+              return;
+            }
+
+            const tag = sourceRelease.tag_name;
+            core.info(`Syncing release status for tag ${tag}`);
+
+            let targetRelease;
+            try {
+              const targetReleaseByTag = await github.rest.repos.getReleaseByTag({
+                owner: targetOwner,
+                repo: targetRepo,
+                tag,
+              });
+              targetRelease = targetReleaseByTag.data;
+            } catch (error) {
+              if (error.status === 404) {
+                core.setFailed(`No matching release with tag ${tag} found in ${targetOwner}/${targetRepo}.`);
+                return;
+              }
+              throw error;
+            }
+
+            const latestSourceRelease = await github.rest.repos.getLatestRelease({
+              owner: sourceOwner,
+              repo: sourceRepo,
+            });
+            const shouldBeLatest = latestSourceRelease.data.tag_name === tag;
+
+            const updatePayload = {
+              owner: targetOwner,
+              repo: targetRepo,
+              release_id: targetRelease.id,
+              prerelease: sourceRelease.prerelease,
+            };
+
+            // GitHub only allows make_latest on non-draft, non-prerelease releases.
+            if (!sourceRelease.draft && !sourceRelease.prerelease) {
+              updatePayload.make_latest = shouldBeLatest ? 'true' : 'false';
+            }
+
+            const updatedRelease = await github.rest.repos.updateRelease(updatePayload);
+
+            core.info(
+              `Updated ${targetOwner}/${targetRepo}@${tag}: prerelease=${updatedRelease.data.prerelease}, draft=${updatedRelease.data.draft}`
+            );
