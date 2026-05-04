@@ -64,7 +64,7 @@ export class Search extends LitElement {
   private async discoverConfigEntry() {
     const { massConfigEntryId: configuredId } = this.searchConfig;
     this.massConfigEntryId = configuredId ?? (await this.musicAssistantService.discoverConfigEntryId());
-    this.massQueueConfigEntryId = await this.musicAssistantService.discoverMassQueueConfigEntryId();
+    this.massQueueConfigEntryId = (await this.musicAssistantService.discoverMassQueueConfigEntryId()) ?? '';
     this.discoveryComplete = true;
     if (this.searchText && this.massConfigEntryId) {
       this.searchService!.execute(this.searchText, this.mediaTypes, this.libraryFilter, this.searchConfig);

@@ -43,17 +43,13 @@ export class MusicAssistantService {
    * Discover the mass_queue config entry ID (needed for send_command)
    * Returns the first found mass_queue integration ID, or null if not found
    */
-  async discoverMassQueueConfigEntryId(): Promise<string> {
+  async discoverMassQueueConfigEntryId(): Promise<string | null> {
     const entries = await this.hass.callWS<ConfigEntry[]>({
       type: 'config_entries/get',
     });
 
     const massQueue = entries.find((entry) => entry.domain === 'mass_queue' && entry.state === 'loaded');
-
-    if (!massQueue?.entry_id) {
-      throw new Error(MASS_QUEUE_NOT_INSTALLED);
-    }
-    return massQueue.entry_id;
+    return massQueue?.entry_id ?? null;
   }
 
   /**
