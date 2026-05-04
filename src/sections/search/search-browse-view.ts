@@ -65,9 +65,9 @@ export class SearchBrowseView extends LitElement {
         <span class="browse-title" title=${this.item.title}>${this.item.title}</span>
         <sonos-icon-button .path=${typeIcon} disabled class="type-indicator"></sonos-icon-button>
       </div>
-      <div class="loading" ?hidden=${!this.browseLoading}><ha-spinner></ha-spinner></div>
+      <div class="loading" ?hidden=${!this.browseLoading || this.browseResults.length > 0}><ha-spinner></ha-spinner></div>
       <div class="no-results" ?hidden=${this.browseLoading || this.browseResults.length > 0}>No items found</div>
-      <div class="list" ?hidden=${this.browseLoading || this.browseResults.length === 0}>
+      <div class="list" ?hidden=${this.browseResults.length === 0}>
         <mwc-list multi>
           ${repeat(
             this.browseResults,
