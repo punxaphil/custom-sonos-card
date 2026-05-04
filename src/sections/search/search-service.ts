@@ -26,7 +26,6 @@ export class SearchService {
       this.updateHost({ results: [], loading: false });
       return;
     }
-    this.updateHost({ loading: true, results: [] });
     this.debounceTimer = setTimeout(() => this.execute(searchText, mediaTypes, libraryFilter, config), autoSearchDebounceMs);
   }
 

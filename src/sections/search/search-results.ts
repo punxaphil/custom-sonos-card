@@ -1,5 +1,6 @@
 import { html, LitElement, css } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import Store from '../../model/store';
 import { MEDIA_ITEM_SELECTED } from '../../constants';
 import { customEvent } from '../../utils/utils';
@@ -73,25 +74,29 @@ export class SearchResults extends LitElement {
     return html`
       <div class="list" ?hidden=${!hasContent}>
         <mwc-list multi>
-          ${this.results.map((item, index) => {
-            const mediaPlayerItem = toMediaPlayerItem(item);
-            return html`
-              <sonos-media-row
-                @click=${() => this.onItemClick(index)}
-                .item=${mediaPlayerItem}
-                .showCheckbox=${this.selectMode}
-                .checked=${this.selectedIndices.has(index)}
-                .isFavorite=${item.favorite ?? null}
-                .favoriteLoading=${this.favoriteLoadingIndices.has(index)}
-                .isInLibrary=${item.inLibrary ?? null}
-                .libraryLoading=${this.libraryLoadingIndices.has(index)}
-                @checkbox-change=${(e: CustomEvent) => this.onCheckboxChange(index, e.detail.checked)}
-                @favorite-toggle=${() => this.toggleItemState(index, 'favorite')}
-                @library-toggle=${() => this.toggleItemState(index, 'library')}
-                .store=${this.store}
-              ></sonos-media-row>
-            `;
-          })}
+          ${repeat(
+            this.results,
+            (item) => item.uri,
+            (item, index) => {
+              const mediaPlayerItem = toMediaPlayerItem(item);
+              return html`
+                <sonos-media-row
+                  @click=${() => this.onItemClick(index)}
+                  .item=${mediaPlayerItem}
+                  .showCheckbox=${this.selectMode}
+                  .checked=${this.selectedIndices.has(index)}
+                  .isFavorite=${item.favorite ?? null}
+                  .favoriteLoading=${this.favoriteLoadingIndices.has(index)}
+                  .isInLibrary=${item.inLibrary ?? null}
+                  .libraryLoading=${this.libraryLoadingIndices.has(index)}
+                  @checkbox-change=${(e: CustomEvent) => this.onCheckboxChange(index, e.detail.checked)}
+                  @favorite-toggle=${() => this.toggleItemState(index, 'favorite')}
+                  @library-toggle=${() => this.toggleItemState(index, 'library')}
+                  .store=${this.store}
+                ></sonos-media-row>
+              `;
+            },
+          )}
         </mwc-list>
       </div>
     `;
@@ -102,28 +107,32 @@ export class SearchResults extends LitElement {
     return html`
       <div class="grid-scroll" ?hidden=${!hasContent}>
         <div class="grid" style="grid-template-columns: repeat(${columns}, minmax(0, 1fr))">
-          ${this.results.map((item, index) => {
-            const selected = this.selectedIndices.has(index);
-            return html`
-              <div class="grid-tile ${selected ? 'selected' : ''}" @click=${() => this.onItemClick(index)}>
-                ${this.selectMode
-                  ? html`<ha-checkbox
-                      class="grid-checkbox"
-                      .checked=${selected}
-                      @change=${(e: Event) => this.onCheckboxChange(index, (e.target as HTMLInputElement).checked)}
-                      @click=${(e: Event) => e.stopPropagation()}
-                    ></ha-checkbox>`
-                  : ''}
-                ${item.imageUrl
-                  ? html`<img class="grid-img" src="${item.imageUrl}" alt="${item.title}" loading="lazy" />`
-                  : html`<div class="grid-placeholder"><ha-svg-icon .path=${getMediaTypeIcon(item.mediaType)}></ha-svg-icon></div>`}
-                <div class="grid-info">
-                  <div class="grid-title">${item.title}</div>
-                  ${item.subtitle ? html`<div class="grid-subtitle">${item.subtitle}</div>` : ''}
+          ${repeat(
+            this.results,
+            (item) => item.uri,
+            (item, index) => {
+              const selected = this.selectedIndices.has(index);
+              return html`
+                <div class="grid-tile ${selected ? 'selected' : ''}" @click=${() => this.onItemClick(index)}>
+                  ${this.selectMode
+                    ? html`<ha-checkbox
+                        class="grid-checkbox"
+                        .checked=${selected}
+                        @change=${(e: Event) => this.onCheckboxChange(index, (e.target as HTMLInputElement).checked)}
+                        @click=${(e: Event) => e.stopPropagation()}
+                      ></ha-checkbox>`
+                    : ''}
+                  ${item.imageUrl
+                    ? html`<img class="grid-img" src="${item.imageUrl}" alt="${item.title}" loading="lazy" />`
+                    : html`<div class="grid-placeholder"><ha-svg-icon .path=${getMediaTypeIcon(item.mediaType)}></ha-svg-icon></div>`}
+                  <div class="grid-info">
+                    <div class="grid-title">${item.title}</div>
+                    ${item.subtitle ? html`<div class="grid-subtitle">${item.subtitle}</div>` : ''}
+                  </div>
                 </div>
-              </div>
-            `;
-          })}
+              `;
+            },
+          )}
         </div>
       </div>
     `;
