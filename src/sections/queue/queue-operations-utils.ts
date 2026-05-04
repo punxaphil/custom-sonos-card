@@ -114,7 +114,12 @@ export async function handleItemPlayAction(ctrl: QueueController, itemIndex: num
     await ctrl.store.mediaControlService.playQueue(ctrl.activePlayer, itemIndex, item.queueItemId);
     return;
   }
-  await ctrl.store.mediaControlService.playMedia(ctrl.activePlayer, item, action.enqueue as 'add' | 'next' | 'replace');
+  if (action.enqueue === 'next') {
+    await ctrl.store.mediaControlService.moveQueueItemAfterCurrent(ctrl.activePlayer, item, itemIndex, ctrl.selectedQueueIndex);
+    await refreshAfterOperation(ctrl, true);
+    return;
+  }
+  await ctrl.store.mediaControlService.playMedia(ctrl.activePlayer, item, action.enqueue as 'add' | 'replace');
 }
 
 export async function clearQueue(ctrl: QueueController): Promise<void> {
