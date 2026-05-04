@@ -1,5 +1,6 @@
 import { css, html, LitElement, PropertyValues } from 'lit';
 import { property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import Store from '../../model/store';
 import { listStyle, MEDIA_ITEM_SELECTED } from '../../constants';
 import { customEvent } from '../../utils/utils';
@@ -64,14 +65,18 @@ export class SearchBrowseView extends LitElement {
         <span class="browse-title" title=${this.item.title}>${this.item.title}</span>
         <sonos-icon-button .path=${typeIcon} disabled class="type-indicator"></sonos-icon-button>
       </div>
-      <div class="loading" ?hidden=${!this.browseLoading}><ha-spinner></ha-spinner></div>
+      <div class="loading" ?hidden=${!this.browseLoading || this.browseResults.length > 0}><ha-spinner></ha-spinner></div>
       <div class="no-results" ?hidden=${this.browseLoading || this.browseResults.length > 0}>No items found</div>
-      <div class="list" ?hidden=${this.browseLoading || this.browseResults.length === 0}>
+      <div class="list" ?hidden=${this.browseResults.length === 0}>
         <mwc-list multi>
-          ${this.browseResults.map((browseItem, index) => {
-            const mediaPlayerItem = toMediaPlayerItem(browseItem);
-            return html` <sonos-media-row @click=${() => this.onBrowseItemClick(index)} .item=${mediaPlayerItem} .store=${this.store}></sonos-media-row> `;
-          })}
+          ${repeat(
+            this.browseResults,
+            (browseItem) => browseItem.uri,
+            (browseItem, index) => {
+              const mediaPlayerItem = toMediaPlayerItem(browseItem);
+              return html` <sonos-media-row @click=${() => this.onBrowseItemClick(index)} .item=${mediaPlayerItem} .store=${this.store}></sonos-media-row> `;
+            },
+          )}
         </mwc-list>
       </div>
     `;
@@ -79,7 +84,6 @@ export class SearchBrowseView extends LitElement {
 
   private async loadCollection() {
     this.browseLoading = true;
-    this.browseResults = [];
     try {
       this.browseResults = await this.musicAssistantService.getCollectionItems(this.item!.uri, this.item!.mediaType, this.massQueueConfigEntryId);
     } catch (e) {
