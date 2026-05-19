@@ -17,7 +17,7 @@
     "@babel/core": "^7.29.0",
     "@eslint/js": "^9.39.4",
     "@types/eslint__js": "^9.14.0",
-    "@types/node": "^25.7.0",
+    "@types/node": "^25.9.0",
     "@types/semver": "^7.7.1",
     "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.1.6",
@@ -27,12 +27,12 @@
     "jsdom": "^29.1.1",
     "prettier": "^3.8.3",
     "semver": "^7.8.0",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.3",
-    "vite": "^8.0.12",
+    "typescript-eslint": "^8.59.4",
+    "vite": "^8.0.13",
     "vitest": "^4.0.4",
-    "ws": "^8.20.0"
+    "ws": "^8.20.1"
   },
   "scripts": {
     "build": "npm run lint -- --fix && tsc --noEmit && vite build && bash create-dist-maxi-media-player.sh",
