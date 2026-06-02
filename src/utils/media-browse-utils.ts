@@ -85,8 +85,25 @@ export function stringContainsAnyItemInArray(array: string[], str: string) {
 
 const IGNORED_MEDIA_SOURCES = ['media-source://tts', 'media-source://camera', 'media-source://image', 'media-source://image_upload'];
 
-export function filterOutIgnoredMediaSources<T extends { media_content_id?: string }>(items: T[]): T[] {
-  return items.filter((item) => !IGNORED_MEDIA_SOURCES.some((src) => item.media_content_id?.startsWith(src)));
+export interface MediaBrowserFilter {
+  showOnlyItems?: string[];
+  hideItems?: string[];
+}
+
+export function filterOutIgnoredMediaSources<T extends { media_content_id?: string; title?: string }>(items: T[], filter?: MediaBrowserFilter): T[] {
+  let filtered = items.filter((item) => !IGNORED_MEDIA_SOURCES.some((src) => item.media_content_id?.startsWith(src)));
+
+  // Apply showOnlyItems filter (whitelist) - case-insensitive match. Takes precedence over hideItems.
+  if (filter?.showOnlyItems && filter.showOnlyItems.length > 0) {
+    const showOnlyLower = filter.showOnlyItems.map((s) => s.toLowerCase());
+    filtered = filtered.filter((item) => item.title && showOnlyLower.includes(item.title.toLowerCase()));
+  } else if (filter?.hideItems && filter.hideItems.length > 0) {
+    // Apply hideItems filter (blacklist) - case-insensitive match. Only used when showOnlyItems is not set.
+    const hideItemsLower = filter.hideItems.map((s) => s.toLowerCase());
+    filtered = filtered.filter((item) => !item.title || !hideItemsLower.includes(item.title.toLowerCase()));
+  }
+
+  return filtered;
 }
 
 export function getGridItemSize(_itemsPerRow: number | undefined, isPortrait: boolean): { width: string; height: string } {

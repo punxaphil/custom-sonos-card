@@ -18,6 +18,22 @@ export const MEDIA_BROWSER_SCHEMA = [
   },
 ];
 
+export const SHOW_ONLY_ITEMS_SCHEMA = [
+  {
+    name: 'showOnlyItems',
+    type: 'string',
+    help: 'Comma-separated whitelist of top-level items to show (e.g., Playlists, Radio stations)',
+  },
+];
+
+export const HIDE_ITEMS_SCHEMA = [
+  {
+    name: 'hideItems',
+    type: 'string',
+    help: 'Comma-separated blacklist of top-level items to hide (e.g., Radio Browser, Audiobooks)',
+  },
+];
+
 export const SHORTCUT_SUB_SCHEMA = [
   {
     name: 'media_content_id',

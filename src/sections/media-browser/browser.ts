@@ -144,6 +144,8 @@ export class MediaBrowserBrowser extends LitElement {
           .navigateIds=${this.navigateIds}
           .preferredLayout=${this.layout}
           .itemsPerRow=${config.itemsPerRow}
+          .showOnlyItems=${config.showOnlyItems}
+          .hideItems=${config.hideItems}
           .action=${'play'}
           @media-picked=${this.onMediaPicked}
           @media-browsed=${this.onMediaBrowsed}

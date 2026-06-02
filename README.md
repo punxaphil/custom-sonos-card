@@ -310,6 +310,11 @@ player:
 mediaBrowser:
   hideHeader: true # default is false. Hides the header of the media browser section (title and navigation buttons).
   hideActivePlayerName: true # default is false. Hides the current player/group name in the media browser header.
+  hideItems: # Blacklist: hide specific top-level items in the media browser. Case-insensitive. Ignored if showOnlyItems is set.
+    - Radio Browser
+    - Audiobooks
+    - My media
+    - AI Generated Images
   itemsPerRow: 1 # default is 4. Use this to show items as list. Applies to both favorites and media browser.
   onlyFavorites: true # default is false. Hides the media browser button, showing only favorites.
   shortcut: # Optional shortcut button for quick access to a specific folder in the media browser. media_content_id, media_content_type, and name are required.
@@ -317,6 +322,10 @@ mediaBrowser:
     media_content_type: 'spotify://library' # Required: The content type
     icon: 'mdi:spotify' # Optional: Icon for the shortcut button (default is bookmark icon)
     name: 'Made for You' # Required: Tooltip/name for the shortcut button
+  showOnlyItems: # Whitelist: show only these top-level items in the media browser. Case-insensitive. Takes precedence over hideItems.
+    - Playlists
+    - Radio stations
+    - Podcasts
   favorites: # Settings specific to the favorites view within media browser
     title: My favorites # default is 'Favorites'. Use this to change the title for the favorites view.
     customFavorites: # Read more in 'Custom Favorites' section below

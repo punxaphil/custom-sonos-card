@@ -129,9 +129,11 @@ export interface MediaBrowserConfig {
   favorites?: FavoritesConfig;
   hideHeader?: boolean;
   hideActivePlayerName?: boolean;
+  hideItems?: string[];
   itemsPerRow?: number;
   onlyFavorites?: boolean;
   shortcut?: MediaBrowserShortcut;
+  showOnlyItems?: string[];
 }
 
 export interface GroupsConfig {

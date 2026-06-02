@@ -1,6 +1,6 @@
 import { css, html, TemplateResult } from 'lit';
 import { BaseEditor } from '../base-editor';
-import { FAVORITES_SUB_SCHEMA, MEDIA_BROWSER_SCHEMA, SHORTCUT_SUB_SCHEMA } from '../schema/media-browser-schema';
+import { FAVORITES_SUB_SCHEMA, HIDE_ITEMS_SCHEMA, MEDIA_BROWSER_SCHEMA, SHORTCUT_SUB_SCHEMA, SHOW_ONLY_ITEMS_SCHEMA } from '../schema/media-browser-schema';
 import { MediaBrowserShortcut } from '../../types';
 
 class MediaBrowserTab extends BaseEditor {
@@ -10,10 +10,19 @@ class MediaBrowserTab extends BaseEditor {
     const shortcutConfig = mediaBrowserConfig.shortcut ?? {};
     const exclude = favoritesConfig.exclude ?? [];
     const topItems = favoritesConfig.topItems ?? [];
+    const showOnlyItems = mediaBrowserConfig.showOnlyItems ?? [];
+    const hideItems = mediaBrowserConfig.hideItems ?? [];
 
-    const mediaBrowserData = { ...mediaBrowserConfig };
+    const mediaBrowserData = {
+      ...mediaBrowserConfig,
+      showOnlyItems: showOnlyItems.join(', '),
+      hideItems: hideItems.join(', '),
+    };
     const favoritesData = { ...favoritesConfig, exclude: exclude.join(', '), topItems: topItems.join(', ') };
     const shortcutData = { ...shortcutConfig };
+
+    const hasShowOnly = showOnlyItems.length > 0;
+    const hasHideItems = hideItems.length > 0;
 
     return html`
       <sonos-card-editor-form
@@ -23,6 +32,27 @@ class MediaBrowserTab extends BaseEditor {
         .data=${mediaBrowserData}
         .changed=${this.mediaBrowserChanged}
       ></sonos-card-editor-form>
+
+      <div class="filter-fields">
+        <div class=${hasHideItems ? 'disabled' : ''}>
+          <sonos-card-editor-form
+            .schema=${SHOW_ONLY_ITEMS_SCHEMA}
+            .config=${this.config}
+            .hass=${this.hass}
+            .data=${mediaBrowserData}
+            .changed=${this.mediaBrowserChanged}
+          ></sonos-card-editor-form>
+        </div>
+        <div class=${hasShowOnly ? 'disabled' : ''}>
+          <sonos-card-editor-form
+            .schema=${HIDE_ITEMS_SCHEMA}
+            .config=${this.config}
+            .hass=${this.hass}
+            .data=${mediaBrowserData}
+            .changed=${this.mediaBrowserChanged}
+          ></sonos-card-editor-form>
+        </div>
+      </div>
 
       <h3>Shortcut</h3>
       <sonos-card-editor-form
@@ -55,11 +85,15 @@ class MediaBrowserTab extends BaseEditor {
 
   private mediaBrowserChanged = (ev: CustomEvent) => {
     const changed = ev.detail.value;
+    const showOnlyItems = changed.showOnlyItems?.split(/ *, */).filter(Boolean) ?? [];
+    const hideItems = changed.hideItems?.split(/ *, */).filter(Boolean) ?? [];
     this.config = {
       ...this.config,
       mediaBrowser: {
         ...(this.config.mediaBrowser ?? {}),
         ...changed,
+        showOnlyItems: showOnlyItems.length > 0 ? showOnlyItems : undefined,
+        hideItems: showOnlyItems.length > 0 ? undefined : hideItems.length > 0 ? hideItems : undefined,
       },
     };
     this.configChanged();
@@ -116,6 +150,10 @@ class MediaBrowserTab extends BaseEditor {
       }
       .yaml-note {
         margin-top: 20px;
+      }
+      .filter-fields .disabled {
+        opacity: 0.4;
+        pointer-events: none;
       }
     `;
   }

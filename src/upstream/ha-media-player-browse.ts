@@ -84,6 +84,10 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property({ attribute: false }) public hideContentType = false;
 
+  @property({ attribute: false }) public showOnlyItems?: string[];
+
+  @property({ attribute: false }) public hideItems?: string[];
+
   @property({ attribute: false }) public contentIdHelper?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
@@ -313,7 +317,10 @@ export class HaMediaPlayerBrowse extends LitElement {
     const currentItem = this._currentItem;
 
     const subtitle = this.hass.localize(`ui.components.media-browser.class.${currentItem.media_class}`);
-    let children = filterOutIgnoredMediaSources(currentItem.children || []);
+    // Apply showOnlyItems/hideItems filter only at root level (when navigateIds has only the root entry)
+    const isRootLevel = this.navigateIds.length === 1 && !this.navigateIds[0]?.media_content_id;
+    const filter = isRootLevel ? { showOnlyItems: this.showOnlyItems, hideItems: this.hideItems } : undefined;
+    let children = filterOutIgnoredMediaSources(currentItem.children || [], filter);
     const canPlayChildren = new Set<string>();
 
     // Filter children based on accept property if provided
