@@ -14,10 +14,10 @@
     "lit": "^3.3.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
+    "@babel/core": "^8.0.1",
     "@eslint/js": "^9.39.4",
     "@types/eslint__js": "^9.14.0",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.0",
     "@types/semver": "^7.7.1",
     "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.1.9",
@@ -26,10 +26,10 @@
     "eslint-plugin-prettier": "^5.5.6",
     "jsdom": "^29.1.1",
     "prettier": "^3.8.4",
-    "semver": "^7.8.4",
+    "semver": "^7.8.5",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.61.0",
+    "typescript-eslint": "^8.61.1",
     "vite": "^8.0.16",
     "vitest": "^4.0.4",
     "ws": "^8.21.0"
