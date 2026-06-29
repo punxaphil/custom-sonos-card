@@ -31,7 +31,7 @@ export default class MediaControlService {
   async activatePredefinedGroup(pg: PredefinedGroup) {
     for (const pgp of pg.entities) {
       const volume = pgp.volume ?? pg.volume;
-      if (volume) {
+      if (volume !== undefined) {
         await this.volumeSetSinglePlayer(pgp.player, volume);
       }
       if (pg.unmuteWhenGrouped) {
