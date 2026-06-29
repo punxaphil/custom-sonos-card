@@ -3,6 +3,7 @@ import { performMassSearch, saveSearchState } from './search-utils';
 
 export class SearchService {
   private debounceTimer?: ReturnType<typeof setTimeout>;
+  private searchRequestId = 0;
 
   constructor(private host: SearchHost) {}
 
@@ -11,6 +12,8 @@ export class SearchService {
   }
 
   dispose() {
+    this.searchRequestId += 1;
+
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
@@ -18,6 +21,7 @@ export class SearchService {
 
   scheduleSearch(searchText: string, mediaTypes: Set<SearchMediaType>, libraryFilter: LibraryFilter, config: SearchConfig) {
     saveSearchState(mediaTypes, searchText, libraryFilter);
+    this.searchRequestId += 1;
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
     }
@@ -33,15 +37,32 @@ export class SearchService {
     if (!searchText.trim() || !this.host.massConfigEntryId) {
       return;
     }
+
+    const requestId = ++this.searchRequestId;
     this.updateHost({ loading: true, error: null });
     const { searchLimit = 50 } = config;
+
     try {
-      const results = await performMassSearch(this.host.musicAssistantService, this.host.massConfigEntryId, searchText, mediaTypes, libraryFilter, searchLimit);
-      this.updateHost({ results });
+      const results = await performMassSearch(
+          this.host.musicAssistantService,
+          this.host.massConfigEntryId,
+          searchText,
+          mediaTypes,
+          libraryFilter,
+          searchLimit,
+      );
+
+      if (requestId === this.searchRequestId) {
+        this.updateHost({ results });
+      }
     } catch (e) {
-      this.updateHost({ error: `Search failed: ${e instanceof Error ? e.message : 'Unknown error'}`, results: [] });
+      if (requestId === this.searchRequestId) {
+        this.updateHost({ error: `Search failed: ${e instanceof Error ? e.message : 'Unknown error'}`, results: [] });
+      }
     } finally {
-      this.updateHost({ loading: false });
+      if (requestId === this.searchRequestId) {
+        this.updateHost({ loading: false });
+      }
     }
   }
 
