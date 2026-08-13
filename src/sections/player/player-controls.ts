@@ -27,6 +27,7 @@ class PlayerControls extends LitElement {
       controlsColor,
       controlsLargeIcons,
       showVolumeUpAndDownButtons,
+      hideControlFavoriteButton,
       hideControlShuffleButton,
       hideControlPrevTrackButton,
       showFastForwardAndRewindButtons,
@@ -47,7 +48,7 @@ class PlayerControls extends LitElement {
       <div class="main" id="mediaControls" style=${controlsColorStyle || nothing}>
         <div class="icons ${controlsLargeIcons ? 'large-icons' : ''}">
           <div class="flex-1">
-            <sonos-player-favorite-button .store=${this.store}></sonos-player-favorite-button>
+            <sonos-player-favorite-button ?hidden=${!!hideControlFavoriteButton} .store=${this.store}></sonos-player-favorite-button>
           </div>
           <sonos-icon-button ?hidden=${!showVolumeUpAndDownButtons} @click=${this.volDown} .path=${mdiVolumeMinus}></sonos-icon-button>
           <sonos-shuffle ?hidden=${!!hideControlShuffleButton} .store=${this.store}></sonos-shuffle>

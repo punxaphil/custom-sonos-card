@@ -72,6 +72,7 @@ export interface PlayerConfig {
   hideArtistAlbum?: boolean;
   hideArtwork?: boolean;
   hideControlNextTrackButton?: boolean;
+  hideControlFavoriteButton?: boolean;
   hideControlPowerButton?: boolean;
   hideControlPrevTrackButton?: boolean;
   hideControlRepeatButton?: boolean;
