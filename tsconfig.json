@@ -3,14 +3,8 @@
     "target": "es2017",
     "module": "esnext",
     "moduleResolution": "bundler",
-    "lib": [
-      "es2021",
-      "dom",
-      "dom.iterable"
-    ],
-    "types": [
-      "node"
-    ],
+    "lib": ["es2021", "dom", "dom.iterable"],
+    "types": ["node"],
     "noEmit": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
@@ -23,12 +17,5 @@
     "noUnusedLocals": true,
     "esModuleInterop": true
   },
-  "include": [
-    "./src/**/*",
-    "./test/**/*",
-    "./scripts/deploy.ts"
-  ],
-  "exclude": [
-    "./src/upstream/**/*"
-  ]
+  "include": ["./src/**/*", "./test/**/*", "./scripts/deploy.ts"]
 }
