@@ -79,6 +79,10 @@ export const PLAYER_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'hideControlFavoriteButton',
+    selector: { boolean: {} },
+  },
+  {
     name: 'hideControls',
     selector: { boolean: {} },
   },
