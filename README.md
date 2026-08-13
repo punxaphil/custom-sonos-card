@@ -281,7 +281,7 @@ player:
   headerEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
   headerSongFontSize: 1.2 # default is 1.15. Unit is 'rem'. Use this to change the font size of the song title in the player header.
   hideArtistAlbum: true # default is false. Hides the artist/album text in the player header.
-  hideControlFavoriteButton: true # default is false, hides player control favorite/heart button.
+  hideControlFavoriteButton: true # default is false, hides player control favorite/heart button. Note: only applicable if using Music Assistant.
   hideControlNextTrackButton: true # default is false, hides player control next track button.
   hideControlPowerButton: true # default is false, hides player control power button if media player TURN_ON feature is enabled.  This setting does nothing if media player TURN_ON feature is not supported.
   hideControlPrevTrackButton: true # default is false, hides player control previous track button.
