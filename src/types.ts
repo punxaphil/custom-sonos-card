@@ -1,4 +1,5 @@
 import { HomeAssistant, LovelaceCardConfig } from 'custom-card-helpers';
+import { HassEntity } from 'home-assistant-js-websocket';
 import { MediaPlayer } from './model/media-player';
 import { MediaPlayerItem as UpstreamMediaPlayerItem } from './upstream/data/media-player';
 import type { SearchConfig } from './sections/search/search.types';
@@ -306,6 +307,12 @@ export interface HomeAssistantWithEntities extends HomeAssistant {
   entities: {
     [entity_id: string]: HassEntityExtended;
   };
+}
+
+export type EntityNameItem = { type: 'entity' | 'device' | 'parent_device' | 'area' | 'floor' } | { type: 'text'; text: string };
+
+export interface HomeAssistantWithEntityNames extends HomeAssistant {
+  formatEntityName: (hassEntity: HassEntity, name?: EntityNameItem | EntityNameItem[]) => string | undefined;
 }
 
 export type GetQueueResponse = {

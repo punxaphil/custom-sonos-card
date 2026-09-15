@@ -4,6 +4,7 @@ import { mdiCheck, mdiDelete } from '@mdi/js';
 import { BaseEditor } from '../base-editor';
 import { PREDEFINED_GROUP_SCHEMA } from '../schema/common-schema';
 import { ConfigPredefinedGroupPlayer, PredefinedGroup } from '../../types';
+import { getEntityName } from '../../utils/entity-name-utils';
 
 class PredefinedGroupEditor extends BaseEditor {
   @property({ type: Number }) index!: number;
@@ -50,7 +51,7 @@ class PredefinedGroupEditor extends BaseEditor {
   }
 
   private renderVolumeField(player: string, volume?: number) {
-    const label = `${this.hass.states[player]?.attributes.friendly_name ?? player}${volume !== undefined ? `: ${volume}` : ''}`;
+    const label = `${getEntityName(this.hass, this.hass.states[player]) || player}${volume !== undefined ? `: ${volume}` : ''}`;
     const schema = [{ type: 'integer', name: 'volume', label, valueMin: 0, valueMax: 100 }];
     return html`
       <sonos-card-editor-form

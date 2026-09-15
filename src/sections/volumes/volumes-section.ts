@@ -5,6 +5,7 @@ import { until } from 'lit-html/directives/until.js';
 import { mdiCog, mdiVolumeMinus, mdiVolumePlus } from '@mdi/js';
 import { MediaPlayer } from '../../model/media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
+import { getEntityNameWithoutDevice } from '../../utils/entity-name-utils';
 import { getSpeakerList } from '../../utils/utils';
 import './sleep-timer';
 import '../../components/icon-button';
@@ -89,10 +90,11 @@ export class Volumes extends LitElement {
     const relatedEntities = await this.store.hassService.getRelatedEntities(player, 'switch', 'number', 'sensor');
     const { additionalControlsFontSize: fontSize = 0.75 } = this.store.config.volumes ?? {};
     return relatedEntities.map((relatedEntity: HassEntity) => {
-      relatedEntity.attributes.friendly_name = relatedEntity.attributes.friendly_name?.replaceAll(player.name, '')?.trim() ?? '';
+      const entityName = getEntityNameWithoutDevice(this.store.hass, relatedEntity, player.name);
+      const stateObj = { ...relatedEntity, attributes: { ...relatedEntity.attributes, friendly_name: entityName } };
       return html`
         <div style="--ha-font-size-m: ${fontSize}rem">
-          <state-card-content .stateObj=${relatedEntity} .hass=${this.store.hass}></state-card-content>
+          <state-card-content .stateObj=${stateObj} .hass=${this.store.hass}></state-card-content>
         </div>
       `;
     });

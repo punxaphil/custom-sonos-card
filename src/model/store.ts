@@ -157,7 +157,7 @@ export default class Store {
 
   private createPlayerGroup(hassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]): MediaPlayer | undefined {
     try {
-      return new MediaPlayer(hassEntity, this.config, mediaPlayerHassEntities);
+      return new MediaPlayer(hassEntity, this.config, mediaPlayerHassEntities, this.hass);
     } catch (e) {
       console.error('Failed to create group', JSON.stringify(hassEntity), e);
       return undefined;
