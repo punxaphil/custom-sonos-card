@@ -1,5 +1,7 @@
+import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { CardConfig } from '../types';
+import { getEntityName } from '../utils/entity-name-utils';
 import { findMatchingCustomFavorite } from '../utils/media-browse-utils';
 import { findPlayer, getGroupPlayerIds } from '../utils/utils';
 
@@ -10,13 +12,15 @@ export class MediaPlayer {
   members: MediaPlayer[];
   attributes: HassEntity['attributes'];
   private readonly config: CardConfig;
+  private readonly hass?: HomeAssistant;
   volumePlayer: MediaPlayer;
   ignoreVolume: boolean;
 
-  constructor(hassEntity: HassEntity, config: CardConfig, mediaPlayerHassEntities?: HassEntity[]) {
+  constructor(hassEntity: HassEntity, config: CardConfig, mediaPlayerHassEntities?: HassEntity[], hass?: HomeAssistant) {
     this.id = hassEntity.entity_id;
     this.config = config;
-    this.name = this.getEntityName(hassEntity);
+    this.hass = hass;
+    this.name = this.getPlayerName(hassEntity);
     this.state = hassEntity.state;
     this.attributes = hassEntity.attributes;
     this.members = mediaPlayerHassEntities ? this.createGroupMembers(hassEntity, mediaPlayerHassEntities) : [this];
@@ -63,8 +67,8 @@ export class MediaPlayer {
     return track;
   }
 
-  private getEntityName(hassEntity: HassEntity) {
-    const name = hassEntity.attributes.friendly_name || '';
+  private getPlayerName(hassEntity: HassEntity) {
+    const name = getEntityName(this.hass, hassEntity);
     if (this.config.entityNameRegexToReplace) {
       return name.replace(new RegExp(this.config.entityNameRegexToReplace, 'g'), this.config.entityNameReplacement || '');
     }
@@ -75,7 +79,7 @@ export class MediaPlayer {
     const groupPlayerIds = getGroupPlayerIds(mainHassEntity);
     return mediaPlayerHassEntities.reduce((players: MediaPlayer[], hassEntity) => {
       if (groupPlayerIds.includes(hassEntity.entity_id)) {
-        return [...players, new MediaPlayer(hassEntity, this.config)];
+        return [...players, new MediaPlayer(hassEntity, this.config, undefined, this.hass)];
       }
       return players;
     }, []);
