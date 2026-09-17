@@ -309,7 +309,7 @@ export interface HomeAssistantWithEntities extends HomeAssistant {
   };
 }
 
-export type EntityNameItem = { type: 'entity' | 'device' | 'parent_device' | 'area' | 'floor' } | { type: 'text'; text: string };
+export type EntityNameItem = { type: 'entity' | 'device' | 'area' | 'floor' } | { type: 'text'; text: string };
 
 export interface HomeAssistantWithEntityNames extends HomeAssistant {
   formatEntityName: (hassEntity: HassEntity, name?: EntityNameItem | EntityNameItem[]) => string | undefined;
