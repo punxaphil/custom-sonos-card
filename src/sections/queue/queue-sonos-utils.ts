@@ -64,6 +64,41 @@ export async function queueSelectedAfterCurrent(
   }
 }
 
+export async function queueSelectedAtEnd(
+  store: Store,
+  activePlayer: MediaPlayer,
+  queueItems: MediaPlayerItem[],
+  selectedIndices: Set<number>,
+  setProgress: (p: OperationProgress | null) => void,
+  shouldCancel: () => boolean,
+  onDone: () => Promise<void>,
+) {
+  const queuePosition = activePlayer.attributes.queue_position;
+  const currentIndex = queuePosition ? queuePosition - 1 : -1;
+  const indices = Array.from(selectedIndices)
+    .filter((i) => i !== currentIndex)
+    .sort((a, b) => a - b);
+  if (indices.length === 0) {
+    return;
+  }
+  const total = indices.length;
+  setProgress({ current: 0, total, label: 'Moving' });
+  try {
+    await store.mediaControlService.moveQueueItemsToEnd(
+      activePlayer,
+      queueItems,
+      indices,
+      (completed) => setProgress({ current: completed, total, label: 'Moving' }),
+      shouldCancel,
+    );
+    if (!shouldCancel()) {
+      await onDone();
+    }
+  } finally {
+    setProgress(null);
+  }
+}
+
 export async function playSelected(
   store: Store,
   activePlayer: MediaPlayer,

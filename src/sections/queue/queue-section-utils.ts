@@ -51,14 +51,28 @@ export function shouldSwitchToPlayerSection(action: PlayMenuAction): boolean {
   return action.enqueue === 'replace' || (action.enqueue === 'play' && !action.radioMode);
 }
 
-export async function fetchQueueData(store: Store, activePlayer: MediaPlayer, forceRefresh: boolean, lastQueueHash: string): Promise<QueueFetchResult> {
+export function queueItemsEqual(current: MediaPlayerItem[], next: MediaPlayerItem[]): boolean {
+  return (
+    current.length === next.length &&
+    current.every((item, index) => {
+      const nextItem = next[index];
+      return (
+        item.title === nextItem.title &&
+        item.queueItemId === nextItem.queueItemId &&
+        item.media_content_id === nextItem.media_content_id &&
+        item.media_content_type === nextItem.media_content_type &&
+        item.thumbnail === nextItem.thumbnail
+      );
+    })
+  );
+}
+
+export async function fetchQueueData(store: Store, activePlayer: MediaPlayer): Promise<QueueFetchResult> {
   const [queueItems, currentQueueItemId] = await Promise.all([
     store.hassService.getQueue(activePlayer),
     store.hassService.musicAssistantService.getCurrentQueueItemId(activePlayer),
   ]);
-  const queueHash = queueItems.map((item) => item.title).join('|');
-  const updatedQueueItems = forceRefresh || queueHash !== lastQueueHash ? queueItems : undefined;
-  return { queueItems: updatedQueueItems, queueHash, currentQueueItemId, clearError: true };
+  return { queueItems, currentQueueItemId, clearError: true };
 }
 
 export function applyQueueSearchAction(action: QueueSearchAction, searchMatchIndices: number[], selectedIndices: Set<number>): QueueSearchUpdate {

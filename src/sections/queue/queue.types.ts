@@ -44,7 +44,6 @@ export type QueueHost = import('lit').ReactiveControllerHost & HTMLElement;
 
 export interface QueueFetchResult {
   queueItems?: import('../../types').MediaPlayerItem[];
-  queueHash?: string;
   currentQueueItemId?: string | null;
   clearError: boolean;
 }

@@ -12,6 +12,7 @@ import {
   getSelectedQueueIndex,
   MASS_QUEUE_INSTALL_MESSAGE,
   QUEUE_DEBOUNCE_MS,
+  queueItemsEqual,
   queueNotManagedByMusicAssistant,
   shouldShowConfigMessage,
 } from './queue-section-utils';
@@ -32,8 +33,9 @@ export class QueueController implements ReactiveController {
   errorMessage: string | null = null;
   currentQueueItemId: string | null = null;
   playMenuItemIndex: number | null = null;
-  lastQueueHash = '';
   private fetchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+  private fetchGeneration = 0;
+  private lifecycleFetches = new Map<string, { queued: boolean }>();
   private lastActivePlayerId: string | null = null;
   private lastStoreRef: Store | null = null;
 
@@ -64,9 +66,18 @@ export class QueueController implements ReactiveController {
   }
 
   async fetchQueue(forceRefresh = false): Promise<void> {
+    const generation = ++this.fetchGeneration;
+    const activePlayer = this.store.activePlayer;
     try {
-      this.applyFetchResult(await fetchQueueData(this.store, this.store.activePlayer, forceRefresh, this.lastQueueHash));
+      const result = await fetchQueueData(this.store, activePlayer);
+      if (!this.isCurrentFetch(generation, activePlayer.id)) {
+        return;
+      }
+      this.applyFetchResult(result, forceRefresh);
     } catch (error) {
+      if (!this.isCurrentFetch(generation, activePlayer.id)) {
+        return;
+      }
       this.handleFetchError(error as Error);
     }
     if (this.loading) {
@@ -116,29 +127,65 @@ export class QueueController implements ReactiveController {
 
     const playerChanged = store.activePlayer.id !== this.lastActivePlayerId;
     if (playerChanged) {
+      if (this.fetchDebounceTimer) {
+        clearTimeout(this.fetchDebounceTimer);
+        this.fetchDebounceTimer = null;
+      }
       this.lastActivePlayerId = store.activePlayer.id;
-      this.lastQueueHash = '';
       this.loading = true;
-      void this.fetchQueue();
+      this.requestLifecycleFetch();
       return;
     }
     if (this.fetchDebounceTimer) {
-      clearTimeout(this.fetchDebounceTimer);
+      return;
     }
-    this.fetchDebounceTimer = setTimeout(() => void this.fetchQueue(), QUEUE_DEBOUNCE_MS);
+    this.fetchDebounceTimer = setTimeout(() => {
+      this.fetchDebounceTimer = null;
+      this.requestLifecycleFetch();
+    }, QUEUE_DEBOUNCE_MS);
   }
 
   hostDisconnected(): void {
+    this.fetchGeneration++;
+    for (const state of this.lifecycleFetches.values()) {
+      state.queued = false;
+    }
+    this.lifecycleFetches.clear();
     if (this.fetchDebounceTimer) {
       clearTimeout(this.fetchDebounceTimer);
+      this.fetchDebounceTimer = null;
     }
   }
 
-  private applyFetchResult(result: QueueFetchResult): void {
-    if (result.queueHash !== undefined) {
-      this.lastQueueHash = result.queueHash;
+  private requestLifecycleFetch(): void {
+    const playerId = this.store.activePlayer.id;
+    const pending = this.lifecycleFetches.get(playerId);
+    if (pending) {
+      pending.queued = true;
+      return;
     }
-    if (result.queueItems !== undefined) {
+    const state = { queued: false };
+    this.lifecycleFetches.set(playerId, state);
+    void (async () => {
+      try {
+        do {
+          state.queued = false;
+          await this.fetchQueue();
+        } while (state.queued && this.store.activePlayer.id === playerId);
+      } finally {
+        if (this.lifecycleFetches.get(playerId) === state) {
+          this.lifecycleFetches.delete(playerId);
+        }
+      }
+    })();
+  }
+
+  private isCurrentFetch(generation: number, playerId: string): boolean {
+    return generation === this.fetchGeneration && playerId === this.store.activePlayer.id;
+  }
+
+  private applyFetchResult(result: QueueFetchResult, forceRefresh: boolean): void {
+    if (result.queueItems !== undefined && (forceRefresh || !queueItemsEqual(this.queueItems, result.queueItems))) {
       this.queueItems = result.queueItems;
     }
     if (result.currentQueueItemId !== undefined) {

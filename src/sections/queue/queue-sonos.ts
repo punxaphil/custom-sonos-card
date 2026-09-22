@@ -11,7 +11,8 @@ import type { QueueHeaderAction, QueueListAction, QueueSearchAction } from './qu
 import type { QueueList } from './queue-list';
 import { clearSelection, invertSelection, updateSelection } from '../../utils/selection-utils';
 import { queueStyles } from './styles';
-import { queueAfterCurrent, queueSelectedAfterCurrent, playSelected, deleteSelected } from './queue-sonos-utils';
+import { queueAfterCurrent, queueSelectedAfterCurrent, queueSelectedAtEnd, playSelected, deleteSelected } from './queue-sonos-utils';
+import { queueItemsEqual } from './queue-section-utils';
 
 export class QueueSonos extends LitElement {
   @property() store!: Store;
@@ -25,7 +26,8 @@ export class QueueSonos extends LitElement {
   @state() private loading = true;
   @state() private operationProgress: OperationProgress | null = null;
   @state() private cancelOperation = false;
-  private lastQueueHash = '';
+  private fetchGeneration = 0;
+  private lifecycleFetches = new Map<string, { queued: boolean }>();
 
   private get queueTitle(): string {
     if (this.store.config.queue?.title) {
@@ -46,22 +48,64 @@ export class QueueSonos extends LitElement {
 
   protected willUpdate(changed: PropertyValues): void {
     if (changed.has('store')) {
-      this.fetchQueue();
+      this.requestLifecycleFetch();
     }
   }
 
   private async fetchQueue() {
+    const generation = ++this.fetchGeneration;
+    const activePlayer = this.store.activePlayer;
     try {
-      const queue = await this.store.hassService.getQueue(this.store.activePlayer);
-      const hash = queue.map((item) => item.title).join('|');
-      if (hash !== this.lastQueueHash) {
-        this.lastQueueHash = hash;
+      const queue = await this.store.hassService.getQueue(activePlayer);
+      if (!this.isCurrentFetch(generation, activePlayer.id)) {
+        return;
+      }
+      if (!queueItemsEqual(this.queueItems, queue)) {
         this.queueItems = queue;
       }
     } catch (e) {
+      if (!this.isCurrentFetch(generation, activePlayer.id)) {
+        return;
+      }
       console.warn('Error getting queue', e);
     }
     this.loading = false;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.fetchGeneration++;
+    for (const state of this.lifecycleFetches.values()) {
+      state.queued = false;
+    }
+    this.lifecycleFetches.clear();
+  }
+
+  private requestLifecycleFetch(): void {
+    const playerId = this.store.activePlayer.id;
+    const pending = this.lifecycleFetches.get(playerId);
+    if (pending) {
+      pending.queued = true;
+      return;
+    }
+    const state = { queued: false };
+    this.lifecycleFetches.set(playerId, state);
+    void (async () => {
+      try {
+        do {
+          state.queued = false;
+          await this.fetchQueue();
+        } while (state.queued && this.store.activePlayer.id === playerId);
+      } finally {
+        if (this.lifecycleFetches.get(playerId) === state) {
+          this.lifecycleFetches.delete(playerId);
+        }
+      }
+    })();
+  }
+
+  private isCurrentFetch(generation: number, playerId: string): boolean {
+    return generation === this.fetchGeneration && playerId === this.store.activePlayer.id;
   }
 
   render() {
@@ -118,15 +162,16 @@ export class QueueSonos extends LitElement {
   };
 
   private onHeaderAction = (e: CustomEvent<QueueHeaderAction>) => {
-    const handlers: Record<string, () => void | Promise<void>> = {
+    const handlers: Record<QueueHeaderAction['type'], () => void | Promise<void>> = {
       'toggle-select-mode': this.toggleSelectMode,
       'invert-selection': this.invertSelection,
       'play-selected': this.handlePlaySelected,
       'queue-selected-after-current': this.handleQueueAfterCurrent,
+      'queue-selected-at-end': this.handleQueueAtEnd,
       'delete-selected': this.handleDeleteSelected,
       'clear-queue': this.clearQueue,
     };
-    handlers[e.detail.type]?.();
+    return handlers[e.detail.type]();
   };
 
   private onListAction = (e: CustomEvent<QueueListAction>) => {
@@ -151,6 +196,7 @@ export class QueueSonos extends LitElement {
   }
 
   private handleQueueAfterCurrent = () => this.runBatchOp(queueSelectedAfterCurrent, () => this.exitAndRefetch());
+  private handleQueueAtEnd = () => this.runBatchOp(queueSelectedAtEnd, () => this.exitAndRefetch());
   private handlePlaySelected = () => this.runBatchOp(playSelected, () => this.exitAndRefetch());
   private handleDeleteSelected = () => this.runBatchOp(deleteSelected, () => this.exitAndRefetch());
   private async runBatchOp(fn: typeof queueSelectedAfterCurrent, onDone: () => Promise<void>) {
