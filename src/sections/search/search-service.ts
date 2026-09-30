@@ -43,14 +43,7 @@ export class SearchService {
     const { searchLimit = 50 } = config;
 
     try {
-      const results = await performMassSearch(
-          this.host.musicAssistantService,
-          this.host.massConfigEntryId,
-          searchText,
-          mediaTypes,
-          libraryFilter,
-          searchLimit,
-      );
+      const results = await performMassSearch(this.host.musicAssistantService, this.host.massConfigEntryId, searchText, mediaTypes, libraryFilter, searchLimit);
 
       if (requestId === this.searchRequestId) {
         this.updateHost({ results });
