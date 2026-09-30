@@ -106,7 +106,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query('.content') private _content?: HTMLDivElement;
 
-  @query('lit-virtualizer') private _virtualizer?: any;
+  @query('sonos-lit-virtualizer') private _virtualizer?: any;
 
   private _observed = false;
 
@@ -459,14 +459,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                       : this.preferredLayout === 'list'
                         ? html`
                             <ha-list>
-                              <lit-virtualizer
+                              <sonos-lit-virtualizer
                                 scroller
                                 .items=${children}
                                 style=${styleMap({
                                   height: `${children.length * 72 + 26}px`,
                                 })}
                                 .renderItem=${this._renderListItem}
-                              ></lit-virtualizer>
+                              ></sonos-lit-virtualizer>
                               ${currentItem.not_shown
                                 ? html`
                                     <ha-list-item noninteractive class="not-shown" .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
@@ -499,7 +499,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             `
                           : this.preferredLayout === 'grid' || (this.preferredLayout === 'auto' && childrenMediaClass.layout === 'grid')
                             ? html`
-                                <lit-virtualizer
+                                <sonos-lit-virtualizer
                                   scroller
                                   .layout=${grid({
                                     itemSize: getGridItemSize(this.itemsPerRow, childrenMediaClass.thumbnail_ratio === 'portrait'),
@@ -514,7 +514,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     portrait: childrenMediaClass.thumbnail_ratio === 'portrait',
                                     not_shown: !!currentItem.not_shown,
                                   })}"
-                                ></lit-virtualizer>
+                                ></sonos-lit-virtualizer>
                                 ${currentItem.not_shown
                                   ? html`
                                       <div class="grid not-shown">
@@ -529,14 +529,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                               `
                             : html`
                                 <ha-list>
-                                  <lit-virtualizer
+                                  <sonos-lit-virtualizer
                                     scroller
                                     .items=${children}
                                     style=${styleMap({
                                       height: `${children.length * 72 + 26}px`,
                                     })}
                                     .renderItem=${this._renderListItem}
-                                  ></lit-virtualizer>
+                                  ></sonos-lit-virtualizer>
                                   ${currentItem.not_shown
                                     ? html`
                                         <ha-list-item noninteractive class="not-shown" .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
@@ -1278,13 +1278,13 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-theme-secondary: rgba(var(--rgb-primary-color), 0.5);
         }
 
-        lit-virtualizer {
+        sonos-lit-virtualizer {
           display: block;
           height: 100%;
           overflow: auto !important;
         }
 
-        lit-virtualizer.not_shown {
+        sonos-lit-virtualizer.not_shown {
           height: calc(100% - 36px);
         }
 
