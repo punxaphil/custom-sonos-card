@@ -21,8 +21,8 @@ export class Search extends LitElement {
   @state() results: SearchResultItem[] = [];
   @state() loading = false;
   @state() error: string | null = null;
-  @state() massConfigEntryId!: string;
-  @state() private massQueueConfigEntryId!: string;
+  @state() massConfigEntryId = '';
+  @state() private massQueueConfigEntryId = '';
   @state() private discoveryComplete = false;
   @state() private browsingItem: SearchResultItem | null = null;
   @state() private selectMode = false;
@@ -63,9 +63,18 @@ export class Search extends LitElement {
 
   private async discoverConfigEntry() {
     const { massConfigEntryId: configuredId } = this.searchConfig;
-    this.massConfigEntryId = configuredId ?? (await this.musicAssistantService.discoverConfigEntryId());
-    this.massQueueConfigEntryId = (await this.musicAssistantService.discoverMassQueueConfigEntryId()) ?? '';
-    this.discoveryComplete = true;
+
+    try {
+      this.massConfigEntryId = configuredId ?? (await this.musicAssistantService.discoverConfigEntryId());
+      this.massQueueConfigEntryId = (await this.musicAssistantService.discoverMassQueueConfigEntryId()) ?? '';
+    } catch (error) {
+      console.warn('Failed to discover Music Assistant configuration:', error);
+      this.massConfigEntryId = '';
+      this.massQueueConfigEntryId = '';
+    } finally {
+      this.discoveryComplete = true;
+    }
+
     if (this.searchText && this.massConfigEntryId) {
       this.searchService!.execute(this.searchText, this.mediaTypes, this.libraryFilter, this.searchConfig);
     }
