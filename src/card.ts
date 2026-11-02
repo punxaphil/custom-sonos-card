@@ -257,6 +257,9 @@ export class Card extends LitElement {
       }
     }
     this.configError = this.getConfigError(newConfig);
+    if (this.config && newConfig.entityId && newConfig.entityId !== this.config.entityId) {
+      this.activePlayerId = newConfig.entityId;
+    }
     this.config = newConfig;
   }
 

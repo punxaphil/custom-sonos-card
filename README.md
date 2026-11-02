@@ -642,6 +642,8 @@ You can change this behavior to use the browser's session storage by setting `st
 
 If `entityId` is configured for the card, both the URL hash and session storage will be ignored on initial load. See more in the Usage section above.
 
+When a wrapper card updates the configuration with a different, nonempty `entityId`, that player is selected. Unchanged or removed `entityId` values preserve the current selection.
+
 If you never want to remember the selected player, you can set `doNotRememberSelectedPlayer: true` to an empty string.
 
 ## Sort order of entities
