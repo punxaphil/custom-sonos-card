@@ -174,7 +174,7 @@ export const ENTITIES_SCHEMA = [
   },
   {
     name: 'entityName',
-    help: 'Choose the area, device, entity, or other name parts shown for each player',
+    label: 'Entity name',
     selector: { entity_name: {} },
   },
   {
