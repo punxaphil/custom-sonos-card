@@ -28,7 +28,11 @@ export const getPlayerName = (hass: HomeAssistant | undefined, hassEntity: HassE
   const displayName = config.entityNameRegexToReplace
     ? name.replace(new RegExp(config.entityNameRegexToReplace, 'g'), config.entityNameReplacement || '')
     : name;
-  return config.entityName !== undefined && !displayName.trim() ? getEntityName(hass, hassEntity) || hassEntity?.entity_id || '' : displayName;
+  if (config.entityName === undefined || displayName.trim()) {
+    return displayName;
+  }
+  const defaultName = getEntityName(hass, hassEntity);
+  return defaultName.trim() ? defaultName : hassEntity?.entity_id || '';
 };
 
 export const getEntityNameWithoutDevice = (hass: HomeAssistant | undefined, hassEntity: HassEntity, deviceName: string): string => {
