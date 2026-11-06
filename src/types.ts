@@ -196,6 +196,7 @@ export interface CardConfig extends LovelaceCardConfig {
   entities?: string[];
   entitiesToIgnoreVolumeLevelFor?: string[];
   entityId?: string;
+  entityName?: EntityName;
   entityNameRegexToReplace?: string;
   entityNameReplacement?: string;
   entityPlatform?: string;
@@ -309,10 +310,12 @@ export interface HomeAssistantWithEntities extends HomeAssistant {
   };
 }
 
-export type EntityNameItem = { type: 'entity' | 'device' | 'area' | 'floor' } | { type: 'text'; text: string };
+export type EntityNameItem = { type: 'entity' | 'device' | 'parent_device' | 'area' | 'floor' } | { type: 'text'; text: string };
+
+export type EntityName = string | EntityNameItem | EntityNameItem[];
 
 export interface HomeAssistantWithEntityNames extends HomeAssistant {
-  formatEntityName: (hassEntity: HassEntity, name?: EntityNameItem | EntityNameItem[]) => string | undefined;
+  formatEntityName: (hassEntity: HassEntity, name?: EntityName) => string | undefined;
 }
 
 export type GetQueueResponse = {
