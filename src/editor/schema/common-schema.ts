@@ -173,6 +173,11 @@ export const ENTITIES_SCHEMA = [
     selector: { text: {} },
   },
   {
+    name: 'entityName',
+    help: 'Choose the area, device, entity, or other name parts shown for each player',
+    selector: { entity_name: {} },
+  },
+  {
     name: 'entityNameRegexToReplace',
     type: 'string',
   },

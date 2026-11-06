@@ -146,6 +146,9 @@ sections: # see explanation further up
 baseFontSize: 1.5 # default is 1. Unit is 'rem'. Use this to change the base font size for the entire card.
 doNotRememberSelectedPlayer: true # default is false. If set to true, the selected player will not be remembered in URL hash or session storage.
 entityId: media_player.bedroom # Forces this player to be the selected one on loading the card (overrides url param etc)
+entityName: # Optional player name parts, in display order (Home Assistant 2026.4+).
+  - type: area
+  - type: entity
 entityNameRegexToReplace: ' PLAYER' # Regex pattern to replace parts of the entity names
 entityNameReplacement: ''
 fontFamily: 'Roboto, sans-serif' # Use this to change the font family for the entire card.
@@ -214,6 +217,41 @@ predefinedGroups: # defaults to empty. More advanced features in separate sectio
       - media_player.bedroom
       - media_player.hall
 ```
+
+### Player name parts
+
+Use `entityName` to choose which parts of each player's name are displayed. This uses Home Assistant's native name formatter and selector, just like standard HA cards, and is available in the visual editor under **Common → Entities**.
+
+For example, display only the assigned area:
+
+```yaml
+entityName:
+  type: area
+```
+
+Or combine the area and entity name, with an optional separator and the parts in your chosen order:
+
+```yaml
+entityName:
+  - type: area
+  - type: text
+    text: '·'
+  - type: entity
+```
+
+Supported parts follow Home Assistant's name selector: `area`, `floor`, `parent_device`, `device`, `entity`, and custom `text`. A single part, an ordered list of parts, or a custom string can be supplied. Area names honor entity-level area overrides before the device's area; they are not inferred from entity IDs.
+
+Use `device` for the device name and `entity` for the entity-specific name. The entity-specific part may be empty for a device's main entity; select `device` too if you want its name included.
+
+To supply a custom name instead of composed parts:
+
+```yaml
+entityName: My speaker
+```
+
+The setting applies to player headers, volume sliders, group/grouping labels, and predefined-group volume labels in the editor. Leave it unset to retain the existing default naming behavior. On older Home Assistant versions or while the native formatter is unavailable, names fall back to the existing friendly-name behavior and the visual editor hides this setting.
+
+The existing `entityNameRegexToReplace` and `entityNameReplacement` options apply **after** the selected parts are formatted. For area-only names, remove any old device-name stripping regex you no longer need. If a configured name produces no visible text (for example, the player has no area or the regex removes the entire result), the card uses its unmodified default name, or its entity ID if no default name is available.
 
 ### Player Configuration
 

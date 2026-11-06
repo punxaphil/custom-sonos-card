@@ -3,6 +3,7 @@ import { state } from 'lit/decorators.js';
 import { mdiPen, mdiPlus } from '@mdi/js';
 import { BaseEditor } from '../base-editor';
 import { COMMON_SCHEMA, ENTITIES_SCHEMA } from '../schema/common-schema';
+import { supportsEntityNames } from '../../utils/entity-name-utils';
 import './predefined-group-editor';
 
 class CommonTab extends BaseEditor {
@@ -32,10 +33,11 @@ class CommonTab extends BaseEditor {
   private renderEntitiesForm() {
     const useMusicAssistant = this.config.entityPlatform === 'music_assistant';
     const data = { ...this.config, useMusicAssistant };
+    const schema = supportsEntityNames(this.hass) ? ENTITIES_SCHEMA : ENTITIES_SCHEMA.filter(({ name }) => name !== 'entityName');
 
     return html`
       <sonos-card-editor-form
-        .schema=${ENTITIES_SCHEMA}
+        .schema=${schema}
         .config=${this.config}
         .hass=${this.hass}
         .data=${data}

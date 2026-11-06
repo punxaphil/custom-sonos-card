@@ -1,7 +1,7 @@
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { CardConfig } from '../types';
-import { getEntityName } from '../utils/entity-name-utils';
+import { getPlayerName } from '../utils/entity-name-utils';
 import { findMatchingCustomFavorite } from '../utils/media-browse-utils';
 import { findPlayer, getGroupPlayerIds } from '../utils/utils';
 
@@ -20,7 +20,7 @@ export class MediaPlayer {
     this.id = hassEntity.entity_id;
     this.config = config;
     this.hass = hass;
-    this.name = this.getPlayerName(hassEntity);
+    this.name = getPlayerName(hass, hassEntity, config);
     this.state = hassEntity.state;
     this.attributes = hassEntity.attributes;
     this.members = mediaPlayerHassEntities ? this.createGroupMembers(hassEntity, mediaPlayerHassEntities) : [this];
@@ -65,14 +65,6 @@ export class MediaPlayer {
       track = track.replace(new RegExp(this.config.mediaTitleRegexToReplace, 'g'), this.config.mediaTitleReplacement || '');
     }
     return track;
-  }
-
-  private getPlayerName(hassEntity: HassEntity) {
-    const name = getEntityName(this.hass, hassEntity);
-    if (this.config.entityNameRegexToReplace) {
-      return name.replace(new RegExp(this.config.entityNameRegexToReplace, 'g'), this.config.entityNameReplacement || '');
-    }
-    return name;
   }
 
   private createGroupMembers(mainHassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]): MediaPlayer[] {
