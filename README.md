@@ -220,7 +220,7 @@ predefinedGroups: # defaults to empty. More advanced features in separate sectio
 
 ### Player name parts
 
-Use `entityName` to choose which parts of each player's name are displayed. This uses Home Assistant's native name formatter and selector, just like standard HA cards, and is available in the visual editor under **Common → Entities**. There is no hardcoded area/device combination or Sonos label.
+Use `entityName` to choose which parts of each player's name are displayed. This uses Home Assistant's native name formatter and selector, just like standard HA cards, and is available in the visual editor under **Common → Entities**.
 
 For example, display only the assigned area:
 
