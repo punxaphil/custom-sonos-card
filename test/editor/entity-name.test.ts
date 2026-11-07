@@ -46,6 +46,18 @@ describe('entity name editor', () => {
     expect(form.schema.find(({ name }) => name === 'entityName')).toMatchObject({ selector: { entity_name: {} } });
   });
 
+  it('labels the native picker Entity name without explanatory text', async () => {
+    const element = await editor('sonos-card-common-tab', hass('2026.4.0', vi.fn()));
+    const form = element.shadowRoot!.querySelector('sonos-card-editor-form') as EditorForm & BaseEditor;
+    await form.updateComplete;
+    const nativeForm = form.shadowRoot!.querySelector('ha-form') as HTMLElement & {
+      computeLabel: (schema: EditorForm['schema'][number]) => string;
+    };
+    const schema = form.schema.find(({ name }) => name === 'entityName')!;
+    expect(nativeForm.computeLabel(schema)).toBe('Entity name');
+    expect(schema).not.toHaveProperty('help');
+  });
+
   it.each([
     ['2026.3.0', vi.fn()],
     ['2026.4.0', undefined],
