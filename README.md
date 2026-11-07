@@ -356,6 +356,7 @@ mediaBrowser:
     - AI Generated Images
   itemsPerRow: 1 # default is 4. Use this to show items as list. Applies to both favorites and media browser.
   onlyFavorites: true # default is false. Hides the media browser button, showing only favorites.
+  alphabetIndex: false # default is true. Shows an A–Z rail (tap or slide a finger) on long alphabetical lists such as artists or albums.
   shortcut: # Optional shortcut button for quick access to a specific folder in the media browser. media_content_id, media_content_type, and name are required.
     media_content_id: 'media-source://spotify/library/made-for-you' # Required: The content ID of the folder
     media_content_type: 'spotify://library' # Required: The content type

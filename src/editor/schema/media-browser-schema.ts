@@ -16,6 +16,12 @@ export const MEDIA_BROWSER_SCHEMA = [
     name: 'onlyFavorites',
     selector: { boolean: {} },
   },
+  {
+    name: 'alphabetIndex',
+    selector: { boolean: {} },
+    default: true,
+    help: 'Show an A–Z rail on long alphabetical lists',
+  },
 ];
 
 export const SHOW_ONLY_ITEMS_SCHEMA = [
