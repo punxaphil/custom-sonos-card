@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from '@mdi/js';
+import { mdiArrowUpRight, mdiChevronRight, mdiKeyboard, mdiPlay, mdiPlus } from '@mdi/js';
 import type { CSSResultGroup, PropertyValues, TemplateResult } from 'lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { customElement, eventOptions, property, query, state } from 'lit/decorators.js';
@@ -26,6 +26,7 @@ import '../components/alpha-rail';
 import '../components/virtual-grid';
 import { browserText } from '../sections/media-browser/i18n';
 import { BrowseIndex, buildBrowseIndex, filterByText, indexForLetter, MIN_ITEMS_FOR_INDEX, sortByTitle } from '../utils/browse-index-utils';
+import { completeSonosList, isTruncatedSonosList } from '../utils/sonos-list-completion';
 // HA components are available at runtime - no need to import
 import type { ManualMediaPickedEvent } from './ha-browse-media-manual';
 import type { TtsMediaPickedEvent } from './ha-browse-media-tts';
@@ -62,6 +63,11 @@ const thumbnailPending = new Map<string, Promise<string>>();
 // waiting for the speaker to list the whole library again.
 const BROWSE_CACHE_MS = 10 * 60 * 1000;
 const browseCache = new Map<string, { time: number; promise: Promise<MediaPlayerItem> }>();
+
+// sonos-card: Sonos returns at most 1000 items per folder; the rest is fetched letter by letter.
+const completions = new Map<string, MediaPlayerItem>();
+const completionsRunning = new Set<string>();
+const completionEvents = new EventTarget();
 
 function navigateKey(ids: MediaPlayerItemId[]): string {
   return ids.map((id) => `${id.media_content_type ?? ''}|${id.media_content_id ?? ''}`).join('>');
@@ -154,8 +160,16 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _onCompletion = (ev: Event) => {
+    const item = (ev as CustomEvent<MediaPlayerItem>).detail;
+    if (this._currentItem && this._currentItem.media_content_id === item.media_content_id) {
+      this._currentItem = item;
+    }
+  };
+
   public connectedCallback(): void {
     super.connectedCallback();
+    completionEvents.addEventListener('progress', this._onCompletion);
     this.updateComplete.then(() => this._attachResizeObserver());
   }
 
@@ -266,6 +280,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    completionEvents.removeEventListener('progress', this._onCompletion);
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
@@ -655,7 +670,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           .renderItem=${this._renderGridItem}
           .columns=${this.itemsPerRow ?? 0}
           .aspect=${childrenMediaClass.thumbnail_ratio === 'portrait' ? 1.5 : 1}
-          .extraHeight=${32}
+          .extraHeight=${50}
           @visible-changed=${this._onVisibilityChanged}
         ></sonos-virtual-grid>
         ${notShown}
@@ -674,84 +689,62 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   }
 
-  private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
-    const backgroundImage = this._thumbnailStyle(child.thumbnail);
+  /** sonos-card: icon shown when an item has no artwork. */
+  private _iconFor(child: MediaPlayerItem): string {
+    return (
+      child.iconPath ||
+      MediaClassBrowserSettings[child.media_class === 'directory' ? child.children_media_class || child.media_class : child.media_class]?.icon ||
+      MediaClassBrowserSettings.directory.icon
+    );
+  }
 
-    return renderMediaGridCard({
-      item: child,
-      onClick: this._childClicked,
-      thumbnailContent: child.thumbnail
-        ? html`
-            <div
-              class="${classMap({
-                'centered-image': ['app', 'directory'].includes(child.media_class),
-                'brand-image': isBrandUrl(child.thumbnail),
-              })} image"
-              style="background-image: ${backgroundImage}"
-            ></div>
-          `
-        : html`
-            <div class="icon-holder image">
-              <ha-svg-icon
-                class=${child.iconPath ? 'icon' : 'folder'}
-                .path=${child.iconPath ||
-                MediaClassBrowserSettings[child.media_class === 'directory' ? child.children_media_class || child.media_class : child.media_class].icon}
-              ></ha-svg-icon>
-            </div>
-          `,
-      actionContent: child.can_play
-        ? html`
-            <ha-icon-button
-              class="play ${classMap({ can_expand: child.can_expand })}"
-              .item=${child}
-              .label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`)}
-              .path=${this.action === 'play' ? mdiPlay : mdiPlus}
-              @click=${this._actionClicked}
-            ></ha-icon-button>
-          `
-        : nothing,
-      titleContent: html`
-        <ha-tooltip .for="grid-${slugify(child.title)}" distance="-4"> ${child.title} </ha-tooltip>
-        <div .id="grid-${slugify(child.title)}" class="title">${child.title}</div>
-      `,
-    });
+  /**
+   * sonos-card: self-styled tile (no ha-card / tooltip), so the title is always visible whatever
+   * the theme or Home Assistant version. Tap the tile to open it, the round button to play it.
+   */
+  private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
+    const background = this._thumbnailStyle(child.thumbnail);
+    return html`
+      <div class="tile" .item=${child} @click=${this._childClicked} role="button" tabindex="0" title=${child.title}>
+        <div class="tile-art ${classMap({ 'brand-image': !!child.thumbnail && isBrandUrl(child.thumbnail) })}" style="background-image: ${background}">
+          ${child.thumbnail ? nothing : html`<ha-svg-icon class="tile-icon" .path=${this._iconFor(child)}></ha-svg-icon>`}
+          ${child.can_play
+            ? html`<button
+                class="tile-play"
+                .item=${child}
+                @click=${this._actionClicked}
+                aria-label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`) || 'Play'}
+              >
+                <ha-svg-icon .path=${this.action === 'play' ? mdiPlay : mdiPlus}></ha-svg-icon>
+              </button>`
+            : nothing}
+        </div>
+        <div class="tile-title">${child.title}</div>
+      </div>
+    `;
   };
 
+  /** sonos-card: self-styled 72px row: artwork or icon, title, play button, chevron for folders. */
   private _renderListItem = (child: MediaPlayerItem): TemplateResult => {
-    const currentItem = this._currentItem;
-    const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
-
-    const backgroundImage = mediaClass.show_list_images && child.thumbnail ? this._thumbnailStyle(child.thumbnail) : 'none';
-
+    const background = child.thumbnail ? this._thumbnailStyle(child.thumbnail) : 'none';
     return html`
-      <ha-list-item @click=${this._childClicked} .item=${child} .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
-        ${backgroundImage === 'none' && !child.can_play
-          ? html`<ha-svg-icon
-              .path=${MediaClassBrowserSettings[child.media_class === 'directory' ? child.children_media_class || child.media_class : child.media_class].icon}
-              slot="graphic"
-            ></ha-svg-icon>`
-          : html`<div
-              class=${classMap({
-                graphic: true,
-                thumbnail: mediaClass.show_list_images === true,
-              })}
-              style="background-image: ${backgroundImage}"
-              slot="graphic"
+      <div class="row" .item=${child} @click=${this._childClicked} role="button" tabindex="0">
+        <div class="row-art" style="background-image: ${background}">
+          ${child.thumbnail ? nothing : html`<ha-svg-icon .path=${this._iconFor(child)}></ha-svg-icon>`}
+        </div>
+        <div class="row-title">${child.title}</div>
+        ${child.can_play
+          ? html`<button
+              class="row-play"
+              .item=${child}
+              @click=${this._actionClicked}
+              aria-label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`) || 'Play'}
             >
-              ${child.can_play
-                ? html`<ha-icon-button
-                    class="play ${classMap({
-                      show: !mediaClass.show_list_images || !child.thumbnail,
-                    })}"
-                    .item=${child}
-                    .label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`)}
-                    .path=${this.action === 'play' ? mdiPlay : mdiPlus}
-                    @click=${this._actionClicked}
-                  ></ha-icon-button>`
-                : nothing}
-            </div>`}
-        <span class="title">${child.title}</span>
-      </ha-list-item>
+              <ha-svg-icon .path=${this.action === 'play' ? mdiPlay : mdiPlus}></ha-svg-icon>
+            </button>`
+          : nothing}
+        ${child.can_expand ? html`<ha-svg-icon class="row-chevron" .path=${mdiChevronRight}></ha-svg-icon>` : nothing}
+      </div>
     `;
   };
 
@@ -848,8 +841,9 @@ export class HaMediaPlayerBrowse extends LitElement {
     const cached = browseCache.get(cacheKey);
     let prom: Promise<MediaPlayerItem>;
     if (useCache && cached && Date.now() - cached.time < BROWSE_CACHE_MS) {
-      prom = cached.promise.then((item) => ({ ...item }));
+      prom = cached.promise.then((item) => ({ ...(completions.get(cacheKey) ?? item) }));
     } else {
+      completions.delete(cacheKey);
       const request =
         entityId && entityId !== BROWSER_PLAYER
           ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
@@ -862,6 +856,18 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
       });
       prom = request.then((item) => ({ ...item }));
+    }
+    if (entityId && entityId !== BROWSER_PLAYER) {
+      prom = prom.then((item) => {
+        if (isTruncatedSonosList(item) && !completionsRunning.has(cacheKey) && !completions.has(cacheKey)) {
+          completionsRunning.add(cacheKey);
+          completeSonosList(item, (id) => browseMediaPlayer(this.hass, entityId, id, item.media_content_type), (merged) => {
+            completions.set(cacheKey, merged);
+            completionEvents.dispatchEvent(new CustomEvent('progress', { detail: merged }));
+          }).finally(() => completionsRunning.delete(cacheKey));
+        }
+        return item;
+      });
     }
 
     return prom.then((item) => {
@@ -1454,6 +1460,144 @@ export class HaMediaPlayerBrowse extends LitElement {
           font: inherit;
           font-weight: 600;
           cursor: pointer;
+        }
+        /* sonos-card: tiles */
+        .tile {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+        .tile-art {
+          position: relative;
+          flex: 1;
+          min-height: 0;
+          border-radius: 14px;
+          background-color: rgba(127, 127, 127, 0.16);
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          transition:
+            transform 0.12s,
+            filter 0.12s;
+        }
+        .tile-art.brand-image {
+          background-size: 45%;
+        }
+        .tile:active .tile-art {
+          transform: scale(0.97);
+          filter: brightness(0.85);
+        }
+        .tile-icon {
+          --mdc-icon-size: 56px;
+          color: var(--secondary-text-color);
+          opacity: 0.85;
+        }
+        .tile-play,
+        .row-play {
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .tile-play {
+          position: absolute;
+          right: 8px;
+          bottom: 8px;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.55);
+          color: #fff;
+        }
+        .tile-play ha-svg-icon {
+          --mdc-icon-size: 26px;
+        }
+        .tile-title {
+          flex: none;
+          height: 42px;
+          padding: 6px 4px 0;
+          box-sizing: border-box;
+          color: var(--primary-text-color);
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.85);
+          line-height: 1.2;
+          text-align: center;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          word-break: break-word;
+        }
+        /* sonos-card: rows */
+        .row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          height: 72px;
+          padding: 0 8px 0 12px;
+          box-sizing: border-box;
+          border-bottom: 1px solid var(--divider-color);
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+        .row:active {
+          background: rgba(127, 127, 127, 0.14);
+        }
+        .row-art {
+          flex: none;
+          width: 52px;
+          height: 52px;
+          border-radius: 8px;
+          background-color: rgba(127, 127, 127, 0.16);
+          background-size: cover;
+          background-position: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--secondary-text-color);
+        }
+        .row-art ha-svg-icon {
+          --mdc-icon-size: 28px;
+        }
+        .row-title {
+          flex: 1;
+          min-width: 0;
+          color: var(--primary-text-color);
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.95);
+          line-height: 1.25;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          word-break: break-word;
+        }
+        .row-play {
+          flex: none;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(127, 127, 127, 0.16);
+          color: var(--primary-text-color);
+        }
+        .row-play ha-svg-icon {
+          --mdc-icon-size: 24px;
+        }
+        .row-chevron {
+          flex: none;
+          --mdc-icon-size: 22px;
+          color: var(--secondary-text-color);
+          opacity: 0.7;
         }
         sonos-virtual-grid .vg-cell > * {
           height: 100%;
