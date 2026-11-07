@@ -26,8 +26,10 @@ export function renderMenuPanel(params: {
   rows: MenuRow[];
   onClose: () => void;
   footer?: TemplateResult | typeof nothing;
+  /** Rendered right after the layout control. */
+  extra?: TemplateResult | typeof nothing;
 }) {
-  const { hass, layout, onLayout, rows, onClose, footer = nothing } = params;
+  const { hass, layout, onLayout, rows, onClose, footer = nothing, extra = nothing } = params;
   const layouts: { value: LayoutType; icon: string; label: string }[] = [
     { value: 'auto', icon: mdiAlphaABoxOutline, label: browserText(hass, 'layoutAuto') },
     { value: 'grid', icon: mdiGrid, label: browserText(hass, 'layoutGrid') },
@@ -47,7 +49,7 @@ export function renderMenuPanel(params: {
           `,
         )}
       </div>
-      ${rows.length ? html`<div class="menu-sep"></div>` : nothing}
+      ${extra} ${rows.length ? html`<div class="menu-sep"></div>` : nothing}
       ${rows.map(
         (row) => html`
           <button class="menu-row ${classMap({ accent: !!row.accent })}" role="menuitem" @click=${row.onClick}>
@@ -136,6 +138,11 @@ export const menuStyles = css`
     color: var(--accent-color, var(--primary-color));
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
     font-weight: 600;
+  }
+  .menu-hint {
+    font-size: 0.75rem;
+    color: var(--secondary-text-color);
+    padding: 8px 8px 0;
   }
   .menu-sep {
     height: 1px;

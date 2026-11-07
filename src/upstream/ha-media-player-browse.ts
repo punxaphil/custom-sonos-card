@@ -25,6 +25,7 @@ import { mediaGridCardStyles, renderMediaGridCard } from '../sections/media-brow
 import '../components/alpha-rail';
 import '../components/virtual-grid';
 import { browserText } from '../sections/media-browser/i18n';
+import { LongPress } from '../utils/long-press';
 import { BrowseIndex, buildBrowseIndex, filterByText, indexForLetter, MIN_ITEMS_FOR_INDEX, sortByTitle } from '../utils/browse-index-utils';
 import { completeSonosList, isTruncatedSonosList } from '../utils/sonos-list-completion';
 // HA components are available at runtime - no need to import
@@ -133,6 +134,11 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _pendingRestore?: number;
 
   private _sortedChildren?: MediaPlayerItem[];
+
+  /** sonos-card: long press on a tile/row asks the host to show the item's actions. */
+  private _longPress = new LongPress<MediaPlayerItem>((item) => {
+    fireEvent(this, 'item-long-press' as any, { item } as any);
+  });
 
   @property({ attribute: false }) public contentIdHelper?: string;
 
@@ -705,7 +711,20 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
     const background = this._thumbnailStyle(child.thumbnail);
     return html`
-      <div class="tile" .item=${child} @click=${this._childClicked} role="button" tabindex="0" title=${child.title}>
+      <div
+        class="tile"
+        .item=${child}
+        @click=${this._childClicked}
+        @pointerdown=${this._longPress.down}
+        @pointermove=${this._longPress.move}
+        @pointerup=${this._longPress.up}
+        @pointercancel=${this._longPress.up}
+        @pointerleave=${this._longPress.up}
+        @contextmenu=${this._longPress.contextmenu}
+        role="button"
+        tabindex="0"
+        title=${child.title}
+      >
         <div class="tile-art ${classMap({ 'brand-image': !!child.thumbnail && isBrandUrl(child.thumbnail) })}" style="background-image: ${background}">
           ${child.thumbnail ? nothing : html`<ha-svg-icon class="tile-icon" .path=${this._iconFor(child)}></ha-svg-icon>`}
           ${child.can_play
@@ -728,7 +747,19 @@ export class HaMediaPlayerBrowse extends LitElement {
   private _renderListItem = (child: MediaPlayerItem): TemplateResult => {
     const background = child.thumbnail ? this._thumbnailStyle(child.thumbnail) : 'none';
     return html`
-      <div class="row" .item=${child} @click=${this._childClicked} role="button" tabindex="0">
+      <div
+        class="row"
+        .item=${child}
+        @click=${this._childClicked}
+        @pointerdown=${this._longPress.down}
+        @pointermove=${this._longPress.move}
+        @pointerup=${this._longPress.up}
+        @pointercancel=${this._longPress.up}
+        @pointerleave=${this._longPress.up}
+        @contextmenu=${this._longPress.contextmenu}
+        role="button"
+        tabindex="0"
+      >
         <div class="row-art" style="background-image: ${background}">
           ${child.thumbnail ? nothing : html`<ha-svg-icon .path=${this._iconFor(child)}></ha-svg-icon>`}
         </div>
@@ -790,6 +821,9 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _actionClicked = (ev: MouseEvent): void => {
     ev.stopPropagation();
+    if (this._longPress.consumeClick()) {
+      return;
+    }
     const item = (ev.currentTarget as any).item;
 
     this._runAction(item);
@@ -818,6 +852,9 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _childClicked = async (ev: MouseEvent): Promise<void> => {
+    if (this._longPress.consumeClick()) {
+      return;
+    }
     const target = ev.currentTarget as any;
     const item: MediaPlayerItem = target.item;
 
@@ -1462,6 +1499,12 @@ export class HaMediaPlayerBrowse extends LitElement {
           cursor: pointer;
         }
         /* sonos-card: tiles */
+        .tile,
+        .row {
+          -webkit-touch-callout: none;
+          user-select: none;
+          -webkit-user-select: none;
+        }
         .tile {
           display: flex;
           flex-direction: column;

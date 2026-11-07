@@ -3,6 +3,7 @@ import { mdiBookmark } from '@mdi/js';
 import Store from '../../model/store';
 import { MediaBrowserShortcut, MediaPlayerItem } from '../../types';
 import '../../components/icon-button';
+import { LongPress } from '../../utils/long-press';
 
 export const mediaGridCardStyles = css`
   .child {
@@ -86,8 +87,30 @@ export function renderMediaGridCard(params: {
   actionContent?: TemplateResult;
   titleContent?: TemplateResult | typeof nothing;
   cardStyle?: string;
+  longPress?: LongPress<MediaPlayerItem>;
 }) {
-  const { item, onClick, thumbnailContent, actionContent = nothing, titleContent, cardStyle } = params;
+  const { item, onClick, thumbnailContent, actionContent = nothing, titleContent, cardStyle, longPress } = params;
+  if (longPress) {
+    return html`
+      <div
+        class="child"
+        .item=${item}
+        @click=${(ev: MouseEvent) => !longPress.consumeClick() && onClick(ev)}
+        @pointerdown=${longPress.down}
+        @pointermove=${longPress.move}
+        @pointerup=${longPress.up}
+        @pointercancel=${longPress.up}
+        @pointerleave=${longPress.up}
+        @contextmenu=${longPress.contextmenu}
+        style="-webkit-touch-callout:none;user-select:none;-webkit-user-select:none"
+      >
+        <ha-card outlined style=${cardStyle ?? ''}>
+          <div class="thumbnail">${thumbnailContent} ${actionContent}</div>
+          ${titleContent !== undefined ? titleContent : html`<div class="title">${item.title}</div>`}
+        </ha-card>
+      </div>
+    `;
+  }
   return html`
     <div class="child" .item=${item} @click=${onClick}>
       <ha-card outlined style=${cardStyle ?? ''}>

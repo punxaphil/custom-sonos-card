@@ -14,6 +14,10 @@ import { browserText } from './i18n';
 import { classMap } from 'lit/directives/class-map.js';
 import { renderShortcutButton } from './utils';
 import { LayoutType, ViewType } from './media-browser.types';
+import '../../components/item-actions-sheet';
+import { ItemAction } from '../../components/item-actions-sheet';
+import { MediaPlayerItem } from '../../types';
+import { addPinnedFavorite, getPinnedFavorites, isPinned, removePinnedFavorite } from '../../services/pinned-favorites';
 
 const START_PATH_KEY = 'sonos-card-media-browser-start';
 const LAYOUT_KEY = 'sonos-card-media-browser-layout';
@@ -27,10 +31,15 @@ export class MediaBrowser extends LitElement {
   @state() private layout: LayoutType = 'auto';
   @state() private view: ViewType = 'favorites';
   @state() private menuOpen = false;
+  @state() private sheetItem?: MediaPlayerItem;
+  @state() private sheetPinned = false;
+  @state() private toast = '';
+  private toastTimer?: ReturnType<typeof setTimeout>;
   @query('sonos-media-browser-browser') private browserComponent?: MediaBrowserBrowser;
 
   connectedCallback() {
     super.connectedCallback();
+    this.addEventListener('item-long-press', this.onItemLongPress as unknown as EventListener);
     this.initializeView();
     this.loadLayout();
   }
@@ -117,7 +126,93 @@ export class MediaBrowser extends LitElement {
   };
 
   render() {
-    return this.view === 'favorites' ? this.renderFavorites() : this.renderBrowser();
+    return html`
+      ${this.view === 'favorites' ? this.renderFavorites() : this.renderBrowser()}
+      ${
+        this.sheetItem
+          ? html`<sonos-item-actions
+              .hass=${this.store.hass}
+              .item=${this.sheetItem}
+              .pinned=${this.sheetPinned}
+              @item-action=${this.onItemAction}
+              @close=${() => (this.sheetItem = undefined)}
+            ></sonos-item-actions>`
+          : ''
+      }
+      ${this.toast ? html`<div class="toast" role="status">${this.toast}</div>` : ''}
+    `;
+  }
+
+  // ---------- long press: actions on an item ----------
+
+  private onItemLongPress = async (ev: CustomEvent<{ item: MediaPlayerItem }>) => {
+    ev.stopPropagation();
+    await getPinnedFavorites(this.store.hass);
+    this.sheetPinned = isPinned(ev.detail.item);
+    this.sheetItem = ev.detail.item;
+  };
+
+  private showToast(text: string) {
+    this.toast = text;
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => (this.toast = ''), 2800);
+  }
+
+  private onItemAction = async (ev: CustomEvent<{ action: ItemAction; item: MediaPlayerItem }>) => {
+    const { action, item } = ev.detail;
+    this.sheetItem = undefined;
+    const t = (key: Parameters<typeof browserText>[1], vars?: Record<string, string>) => browserText(this.store.hass, key, vars);
+    const player = this.store.activePlayer;
+    const title = item.title ?? '';
+    try {
+      switch (action) {
+        case 'replace':
+        case 'shuffle':
+          await this.store.mediaControlService.playMedia(player, item, 'replace');
+          if (action === 'shuffle') {
+            await this.store.hassService.callMediaService('shuffle_set', { entity_id: player.id, shuffle: true });
+          }
+          this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item));
+          break;
+        case 'next':
+          await this.store.mediaControlService.playMedia(player, item, 'next');
+          this.showToast(t('toastNext', { title }));
+          break;
+        case 'add':
+          await this.store.mediaControlService.playMedia(player, item, 'add');
+          this.showToast(t('toastAdd', { title }));
+          break;
+        case 'open':
+          await this.openItem(item);
+          break;
+        case 'favorite-add':
+          await addPinnedFavorite(this.store.hass, item);
+          this.showToast(t('toastFavoriteAdd'));
+          break;
+        case 'favorite-remove':
+          await removePinnedFavorite(this.store.hass, item);
+          this.showToast(t('toastFavoriteRemove'));
+          break;
+      }
+    } catch (e) {
+      console.error('Item action failed', action, e);
+      this.showToast(t('toastError'));
+    }
+  };
+
+  private async openItem(item: MediaPlayerItem) {
+    if (this.view === 'browser' && this.browserComponent) {
+      this.browserComponent.openChild(item);
+      return;
+    }
+    this.view = 'browser';
+    currentView = 'browser';
+    await this.updateComplete;
+    this.browserComponent?.navigateToShortcut({
+      media_content_id: item.media_content_id ?? '',
+      media_content_type: item.media_content_type ?? '',
+      name: item.title ?? '',
+    });
   }
 
   private renderFavorites() {
@@ -197,6 +292,31 @@ export class MediaBrowser extends LitElement {
       css`
         :host {
           position: relative;
+        }
+        .toast {
+          position: absolute;
+          left: 50%;
+          bottom: 20px;
+          transform: translateX(-50%);
+          z-index: 40;
+          max-width: calc(100% - 32px);
+          padding: 12px 20px;
+          border-radius: 24px;
+          background: rgba(20, 20, 20, 0.92);
+          color: #fff;
+          font-size: 0.95rem;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          pointer-events: none;
+          animation: toast-in 0.2s ease-out;
+        }
+        @keyframes toast-in {
+          from {
+            opacity: 0;
+            transform: translate(-50%, 10px);
+          }
         }
       `,
     ];

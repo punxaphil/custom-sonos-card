@@ -1,6 +1,20 @@
 import { css, html, LitElement, nothing, PropertyValues } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import { mdiArrowLeft, mdiChevronRight, mdiClose, mdiDotsVertical, mdiFolderStar, mdiFolderStarOutline, mdiHome, mdiMagnify, mdiPlay, mdiStar } from '@mdi/js';
+import {
+  mdiArrowLeft,
+  mdiChevronRight,
+  mdiClose,
+  mdiDotsVertical,
+  mdiFolderStar,
+  mdiFolderStarOutline,
+  mdiHome,
+  mdiMagnify,
+  mdiPlay,
+  mdiPlayBoxMultiple,
+  mdiPlaylistPlus,
+  mdiSkipNext,
+  mdiStar,
+} from '@mdi/js';
 import Store from '../../model/store';
 import '../../upstream/ha-media-player-browse';
 import '../../components/icon-button';
@@ -15,6 +29,7 @@ import { playAll, renderShortcutButton } from './utils';
 import { MenuRow, menuStyles, navHeaderStyles, renderMenuPanel } from './browse-menu';
 import { browserText, BrowserStringKey } from './i18n';
 import { LayoutType } from './media-browser.types';
+import { getTapAction, setTapAction, TapAction } from './play-action';
 
 interface NavigateId {
   media_content_id?: string;
@@ -53,6 +68,9 @@ export class MediaBrowserBrowser extends LitElement {
   @state() private confirmPlayAll = false;
   @state() private displayedCount = 0;
   @state() private swipeOffset = 0;
+  @state() private toast = '';
+  @state() private tapAction: TapAction = getTapAction();
+  private toastTimer?: ReturnType<typeof setTimeout>;
   @query('sonos-ha-media-player-browse') private mediaBrowser?: HaMediaPlayerBrowse;
   @query('.filter-input') private filterInput?: HTMLInputElement;
   @query('.crumbs') private crumbs?: HTMLElement;
@@ -106,6 +124,11 @@ export class MediaBrowserBrowser extends LitElement {
   private restoreFilter() {
     this.filterText = filterMemory.get(pathKey(this.navigateIds)) ?? '';
     this.searchOpen = !!this.filterText;
+  }
+
+  /** Open a child of the current folder (long-press "Open"). */
+  openChild(item: MediaPlayerItem) {
+    this.setNavigateIds([...this.navigateIds, { media_content_id: item.media_content_id, media_content_type: item.media_content_type, title: item.title }]);
   }
 
   navigateToShortcut(shortcut: MediaBrowserShortcut) {
@@ -243,7 +266,7 @@ export class MediaBrowserBrowser extends LitElement {
             : nothing
         }
       </div>
-      ${this.menuOpen ? this.renderMenu() : nothing}
+      ${this.menuOpen ? this.renderMenu() : nothing} ${this.toast ? html`<div class="toast" role="status">${this.toast}</div>` : nothing}
     `;
   }
 
@@ -378,7 +401,33 @@ export class MediaBrowserBrowser extends LitElement {
           </div>
         </div>`
       : nothing;
+    const tapActions: { value: TapAction; icon: string; label: BrowserStringKey }[] = [
+      { value: 'replace', icon: mdiPlayBoxMultiple, label: 'tapReplace' },
+      { value: 'next', icon: mdiSkipNext, label: 'tapNext' },
+      { value: 'add', icon: mdiPlaylistPlus, label: 'tapAdd' },
+    ];
+    const extra = html`
+      <div class="menu-label" style="margin-top:14px">${this.t('tapAction')}</div>
+      <div class="segmented" role="radiogroup">
+        ${tapActions.map(
+          (a) =>
+            html`<button
+              role="radio"
+              aria-checked=${this.tapAction === a.value}
+              class=${classMap({ selected: this.tapAction === a.value })}
+              @click=${() => {
+                this.tapAction = a.value;
+                setTapAction(a.value);
+              }}
+            >
+              <ha-svg-icon .path=${a.icon}></ha-svg-icon><span>${this.t(a.label)}</span>
+            </button>`,
+        )}
+      </div>
+      <div class="menu-hint">${this.t('longPressHint')}</div>
+    `;
     return renderMenuPanel({
+      extra,
       hass: this.store.hass,
       layout: this.layout as LayoutType,
       onLayout: (layout) => {
@@ -476,9 +525,26 @@ export class MediaBrowserBrowser extends LitElement {
 
   private onMediaPicked = async (event: CustomEvent) => {
     const mediaItem = event.detail.item as MediaPlayerItem;
-    await this.store.mediaControlService.playMedia(this.store.activePlayer, mediaItem);
-    this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, mediaItem));
+    const tapAction = getTapAction();
+    if (tapAction === 'replace') {
+      await this.store.mediaControlService.playMedia(this.store.activePlayer, mediaItem);
+      this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, mediaItem));
+      return;
+    }
+    try {
+      await this.store.mediaControlService.playMedia(this.store.activePlayer, mediaItem, tapAction);
+      this.showToast(this.t(tapAction === 'next' ? 'toastNext' : 'toastAdd', { title: mediaItem.title ?? '' }));
+    } catch (e) {
+      console.error(e);
+      this.showToast(this.t('toastError'));
+    }
   };
+
+  private showToast(text: string) {
+    this.toast = text;
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => (this.toast = ''), 2800);
+  }
 
   private onMediaBrowsed = (event: CustomEvent) => {
     const ids = event.detail.ids as NavigateId[];
@@ -660,6 +726,24 @@ export class MediaBrowserBrowser extends LitElement {
           color: var(--text-primary-color, #fff);
           pointer-events: none;
           transition: opacity 0.15s;
+        }
+        .toast {
+          position: absolute;
+          left: 50%;
+          bottom: 20px;
+          transform: translateX(-50%);
+          z-index: 40;
+          max-width: calc(100% - 32px);
+          padding: 12px 20px;
+          border-radius: 24px;
+          background: rgba(20, 20, 20, 0.92);
+          color: #fff;
+          font-size: 0.95rem;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          pointer-events: none;
         }
         .no-results {
           position: absolute;
