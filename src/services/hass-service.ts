@@ -6,6 +6,16 @@ import { MediaPlayer } from '../model/media-player';
 import { customEvent } from '../utils/utils';
 import { MusicAssistantService } from './music-assistant-service';
 
+interface QueueCacheEntry {
+  key: string;
+  time: number;
+  promise: Promise<MediaPlayerItem[]>;
+  failed?: boolean;
+}
+const sonosQueueCache = new Map<string, QueueCacheEntry>();
+const QUEUE_CACHE_MS = 120_000;
+const QUEUE_ERROR_BACKOFF_MS = 60_000;
+
 export default class HassService {
   private readonly hass: HomeAssistant;
   private readonly currentSection: Section;
@@ -68,11 +78,28 @@ export default class HassService {
     return this.musicAssistantService.isMusicAssistantPlayer(mediaPlayer);
   }
 
-  async getQueue(mediaPlayer: MediaPlayer): Promise<MediaPlayerItem[]> {
+  /**
+   * Sonos queues can hold thousands of tracks, and every sonos.get_queue call makes the speaker
+   * serialise the whole queue (several seconds for 5000 tracks). The card used to ask again on every
+   * Home Assistant state change, which overloaded the speaker. Results are now shared between all
+   * cards and only re-fetched when the queue size or shuffle changes, every 2 minutes at most, or
+   * when `force` is set (after the user edits the queue). Failures back off for a minute.
+   */
+  async getQueue(mediaPlayer: MediaPlayer, force = false): Promise<MediaPlayerItem[]> {
     if (this.isMusicAssistant(mediaPlayer)) {
       return await this.musicAssistantService.getQueue(mediaPlayer);
     }
-    return await this.getSonosQueue(mediaPlayer);
+    const attributes = mediaPlayer.attributes ?? {};
+    const key = `${attributes.queue_size ?? ''}|${attributes.shuffle ?? ''}`;
+    const now = Date.now();
+    const cached = sonosQueueCache.get(mediaPlayer.id);
+    if (!force && cached && cached.key === key && now - cached.time < (cached.failed ? QUEUE_ERROR_BACKOFF_MS : QUEUE_CACHE_MS)) {
+      return cached.promise;
+    }
+    const entry: QueueCacheEntry = { key, time: now, promise: this.getSonosQueue(mediaPlayer) };
+    entry.promise.catch(() => (entry.failed = true));
+    sonosQueueCache.set(mediaPlayer.id, entry);
+    return entry.promise;
   }
 
   private async getSonosQueue(mediaPlayer: MediaPlayer): Promise<MediaPlayerItem[]> {

@@ -130,3 +130,17 @@ export function filterByText<T extends TitledItem>(items: T[], text: string | un
     return words.every((word) => title.includes(word));
   });
 }
+
+const titleCollator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true, ignorePunctuation: false });
+
+/** Copy of the items sorted by title: accent/case-insensitive, numbers in natural order, '#' items first. */
+export function sortByTitle<T extends TitledItem>(items: T[]): T[] {
+  return [...items].sort((a, b) => {
+    const la = indexLetter(a.title);
+    const lb = indexLetter(b.title);
+    if ((la === INDEX_SYMBOL) !== (lb === INDEX_SYMBOL)) {
+      return la === INDEX_SYMBOL ? -1 : 1;
+    }
+    return titleCollator.compare(normalizeText(a.title), normalizeText(b.title));
+  });
+}

@@ -454,7 +454,7 @@ export class MediaBrowserBrowser extends LitElement {
         let lastCount = 0;
         for (let attempt = 0; attempt < 4; attempt++) {
           await new Promise((resolve) => setTimeout(resolve, 1500));
-          const queue = await this.store.hassService.getQueue(this.store.activePlayer);
+          const queue = await this.store.hassService.getQueue(this.store.activePlayer, true);
           if (queue.length >= children.length) {
             break;
           }

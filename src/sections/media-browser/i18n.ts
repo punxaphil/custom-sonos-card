@@ -27,6 +27,8 @@ const STRINGS = {
     unsetStart: 'Default start page',
     shortcut: 'Shortcut',
     items: '{count} items',
+    speakerTimeout: 'The speaker did not answer in time. Large folders can take a while.',
+    retry: 'Try again',
   },
   fr: {
     library: 'Bibliothèque',
@@ -54,6 +56,8 @@ const STRINGS = {
     unsetStart: 'Page de départ par défaut',
     shortcut: 'Raccourci',
     items: '{count} éléments',
+    speakerTimeout: 'L’enceinte n’a pas répondu à temps. Les gros dossiers peuvent être longs à charger.',
+    retry: 'Réessayer',
   },
 };
 

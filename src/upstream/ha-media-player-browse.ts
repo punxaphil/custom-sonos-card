@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { grid } from '@lit-labs/virtualizer/layouts/grid.js';
 
 import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from '@mdi/js';
 import type { CSSResultGroup, PropertyValues, TemplateResult } from 'lit';
@@ -17,7 +16,6 @@ import { browseLocalMediaPlayer, isManualMediaSourceContentId, MANUAL_MEDIA_SOUR
 import { isTTSMediaSource } from './data/tts';
 import { showAlertDialog } from './dialogs/show-dialog-box';
 import { haStyle } from './resources/styles';
-import { loadVirtualizer } from './resources/virtualizer';
 import type { HomeAssistant } from 'custom-card-helpers';
 import { brandsUrl, extractDomainFromBrandUrl, isBrandUrl } from './util/brands-url';
 import { documentationUrl } from './util/documentation-url';
@@ -25,7 +23,9 @@ import { filterOutIgnoredMediaSources, getGridItemSize } from '../utils/media-br
 import { mediaGridCardStyles, renderMediaGridCard } from '../sections/media-browser/utils';
 // sonos-card: A–Z rail + quick filter for large libraries
 import '../components/alpha-rail';
-import { BrowseIndex, buildBrowseIndex, filterByText, indexForLetter } from '../utils/browse-index-utils';
+import '../components/virtual-grid';
+import { browserText } from '../sections/media-browser/i18n';
+import { BrowseIndex, buildBrowseIndex, filterByText, indexForLetter, MIN_ITEMS_FOR_INDEX, sortByTitle } from '../utils/browse-index-utils';
 // HA components are available at runtime - no need to import
 import type { ManualMediaPickedEvent } from './ha-browse-media-manual';
 import type { TtsMediaPickedEvent } from './ha-browse-media-tts';
@@ -51,8 +51,17 @@ export interface MediaPlayerItemId {
 
 // sonos-card: remembers the first visible item of every visited folder, so "back" returns to where you were.
 const scrollMemory = new Map<string, number>();
-const GRID_GAP = 8;
 const RAIL_WIDTH = 34;
+
+// sonos-card: thumbnails resolved once and reused, so scrolling back does not fetch/encode them again.
+const THUMBNAIL_CACHE_SIZE = 400;
+const thumbnailCache = new Map<string, string>();
+const thumbnailPending = new Map<string, Promise<string>>();
+
+// sonos-card: browse results kept for a few minutes. Opening "Artists" again is instant instead of
+// waiting for the speaker to list the whole library again.
+const BROWSE_CACHE_MS = 10 * 60 * 1000;
+const browseCache = new Map<string, { time: number; promise: Promise<MediaPlayerItem> }>();
 
 function navigateKey(ids: MediaPlayerItemId[]): string {
   return ids.map((id) => `${id.media_content_type ?? ''}|${id.media_content_id ?? ''}`).join('>');
@@ -117,9 +126,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _pendingRestore?: number;
 
-  private _gridLayoutKey = '';
-
-  private _gridLayout?: unknown;
+  private _sortedChildren?: MediaPlayerItem[];
 
   @property({ attribute: false }) public contentIdHelper?: string;
 
@@ -139,7 +146,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query('.content') private _content?: HTMLDivElement;
 
-  @query('sonos-lit-virtualizer') private _virtualizer?: any;
+  @query('sonos-virtual-grid') private _virtualizer?: any;
 
   private _observed = false;
 
@@ -171,11 +178,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!virtualizer) {
       return;
     }
-    if (index <= 0) {
-      virtualizer.scrollTop = 0;
-    } else {
-      virtualizer.element?.(index)?.scrollIntoView({ block: 'start' });
-    }
+    virtualizer.scrollToIndex(index);
     this._firstVisible = Math.max(0, index);
     this._updateRailCurrent();
   }
@@ -191,8 +194,8 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   };
 
-  private _onVisibilityChanged = (ev: Event & { first: number }) => {
-    this._firstVisible = ev.first;
+  private _onVisibilityChanged = (ev: CustomEvent<{ first: number }>) => {
+    this._firstVisible = ev.detail.first;
     this._updateRailCurrent();
   };
 
@@ -203,43 +206,62 @@ export class HaMediaPlayerBrowse extends LitElement {
     }
   }
 
-  private _getIndex(currentItem: MediaPlayerItem, children: MediaPlayerItem[]): BrowseIndex | undefined {
+  /**
+   * sonos-card: A–Z index of the shown items. Long lists that are not in alphabetical order (some
+   * folder listings) are sorted by title first, so the rail works there too. Track lists are left in
+   * their order (album order, playlists).
+   */
+  private _getIndex(currentItem: MediaPlayerItem, children: MediaPlayerItem[]): { index?: BrowseIndex; items: MediaPlayerItem[] } {
     if (!this.alphaIndex) {
-      return undefined;
+      return { items: children };
     }
     const key = [currentItem, this.filterText, children.length];
     if (!this._indexKey || key.some((value, i) => value !== this._indexKey![i])) {
       this._indexKey = key;
-      this._index = buildBrowseIndex(children);
+      let items = children;
+      let index = buildBrowseIndex(items);
+      const isTrackList = children.filter((child) => child.media_class === 'track').length > children.length / 2;
+      if (!index.useful && !isTrackList && children.length >= MIN_ITEMS_FOR_INDEX) {
+        items = sortByTitle(children);
+        index = buildBrowseIndex(items);
+      }
+      this._index = index;
+      this._sortedChildren = items;
     }
-    return this._index;
+    return { index: this._index, items: this._sortedChildren ?? children };
   }
 
-  /** Grid layout with exactly `itemsPerRow` columns, virtualized so huge folders stay smooth. */
-  private _getGridLayout(isPortrait: boolean, withRail: boolean) {
-    const columns = this.itemsPerRow;
-    const available = this._width - (withRail ? RAIL_WIDTH : 0) - 2 * GRID_GAP;
-    let itemSize: { width: string; height: string };
-    if (columns && available > 0) {
-      const width = Math.max(40, (available + GRID_GAP) / columns - GRID_GAP - 0.5);
-      // card = square thumbnail (or 3:2 portrait) + title line
-      const height = (isPortrait ? width * 1.5 : width) + 30;
-      itemSize = { width: `${width.toFixed(1)}px`, height: `${height.toFixed(1)}px` };
-    } else {
-      itemSize = getGridItemSize(columns, isPortrait);
+  /** sonos-card: thumbnail as a ready string when cached, otherwise a promise for `until`. */
+  private _thumbnailStyle(thumbnail: string | undefined) {
+    if (!thumbnail) {
+      return 'none';
     }
-    const key = `${itemSize.width}x${itemSize.height}`;
-    if (key !== this._gridLayoutKey) {
-      this._gridLayoutKey = key;
-      this._gridLayout = grid({
-        itemSize,
-        gap: `${GRID_GAP}px`,
-        flex: { preserve: 'aspect-ratio' },
-        justify: 'space-evenly',
-        direction: 'vertical',
-      });
+    const cached = thumbnailCache.get(thumbnail);
+    if (cached !== undefined) {
+      return `url(${cached})`;
     }
-    return this._gridLayout;
+    let pending = thumbnailPending.get(thumbnail);
+    if (!pending) {
+      pending = this._getThumbnailURLorBase64(thumbnail).then(
+        (value) => {
+          thumbnailPending.delete(thumbnail);
+          if (thumbnailCache.size >= THUMBNAIL_CACHE_SIZE) {
+            thumbnailCache.delete(thumbnailCache.keys().next().value!);
+          }
+          thumbnailCache.set(thumbnail, value);
+          return value;
+        },
+        () => {
+          thumbnailPending.delete(thumbnail);
+          return '';
+        },
+      );
+      thumbnailPending.set(thumbnail, pending);
+    }
+    return until(
+      pending.then((value) => `url(${value})`),
+      '',
+    );
   }
 
   public disconnectedCallback(): void {
@@ -252,7 +274,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   public async refresh() {
     const currentId = this.navigateIds[this.navigateIds.length - 1];
     try {
-      this._currentItem = await this._fetchData(this.entityId, currentId.media_content_id, currentId.media_content_type);
+      this._currentItem = await this._fetchData(this.entityId, currentId.media_content_id, currentId.media_content_type, false);
       // Update the parent with latest item.
       fireEvent(this, 'media-browsed', {
         ids: this.navigateIds,
@@ -272,9 +294,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
 
     if (changedProps.has('entityId')) {
       this._setError(undefined);
@@ -489,7 +508,10 @@ export class HaMediaPlayerBrowse extends LitElement {
     // sonos-card: quick filter + A–Z index
     children = filterByText(children, this.filterText);
     this._displayed = children;
-    const index = this._getIndex(currentItem, children);
+    const indexed = this._getIndex(currentItem, children);
+    const index = indexed.index;
+    children = indexed.items;
+    this._displayed = children;
     const showRail = !!index?.useful && !isManualMediaSourceContentId(currentItem.media_content_id) && !isTTSMediaSource(currentItem.media_content_id);
 
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
@@ -626,34 +648,34 @@ export class HaMediaPlayerBrowse extends LitElement {
       : '';
     if (useGrid) {
       return html`
-        <sonos-lit-virtualizer
-          scroller
-          .layout=${this._getGridLayout(childrenMediaClass.thumbnail_ratio === 'portrait', showRail)}
+        <sonos-virtual-grid
+          layout="grid"
+          class="children ${classMap({ not_shown: !!currentItem.not_shown })}"
           .items=${children}
           .renderItem=${this._renderGridItem}
-          @visibilityChanged=${this._onVisibilityChanged}
-          class="children ${classMap({
-            portrait: childrenMediaClass.thumbnail_ratio === 'portrait',
-            not_shown: !!currentItem.not_shown,
-          })}"
-        ></sonos-lit-virtualizer>
+          .columns=${this.itemsPerRow ?? 0}
+          .aspect=${childrenMediaClass.thumbnail_ratio === 'portrait' ? 1.5 : 1}
+          .extraHeight=${32}
+          @visible-changed=${this._onVisibilityChanged}
+        ></sonos-virtual-grid>
         ${notShown}
       `;
     }
     return html`
-      <sonos-lit-virtualizer
-        scroller
+      <sonos-virtual-grid
+        layout="list"
         class="list ${classMap({ not_shown: !!currentItem.not_shown, 'list-images': !!mediaClass.show_list_images })}"
         .items=${children}
         .renderItem=${this._renderListItem}
-        @visibilityChanged=${this._onVisibilityChanged}
-      ></sonos-lit-virtualizer>
+        .rowHeight=${72}
+        @visible-changed=${this._onVisibilityChanged}
+      ></sonos-virtual-grid>
       ${notShown}
     `;
   }
 
   private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
-    const backgroundImage = child.thumbnail ? this._getThumbnailURLorBase64(child.thumbnail).then((value) => `url(${value})`) : 'none';
+    const backgroundImage = this._thumbnailStyle(child.thumbnail);
 
     return renderMediaGridCard({
       item: child,
@@ -665,7 +687,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 'centered-image': ['app', 'directory'].includes(child.media_class),
                 'brand-image': isBrandUrl(child.thumbnail),
               })} image"
-              style="background-image: ${until(backgroundImage, '')}"
+              style="background-image: ${backgroundImage}"
             ></div>
           `
         : html`
@@ -699,8 +721,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     const currentItem = this._currentItem;
     const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
 
-    const backgroundImage =
-      mediaClass.show_list_images && child.thumbnail ? this._getThumbnailURLorBase64(child.thumbnail).then((value) => `url(${value})`) : 'none';
+    const backgroundImage = mediaClass.show_list_images && child.thumbnail ? this._thumbnailStyle(child.thumbnail) : 'none';
 
     return html`
       <ha-list-item @click=${this._childClicked} .item=${child} .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
@@ -714,7 +735,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                 graphic: true,
                 thumbnail: mediaClass.show_list_images === true,
               })}
-              style="background-image: ${until(backgroundImage, '')}"
+              style="background-image: ${backgroundImage}"
               slot="graphic"
             >
               ${child.can_play
@@ -821,11 +842,27 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   };
 
-  private async _fetchData(entityId: string | undefined, mediaContentId?: string, mediaContentType?: string): Promise<MediaPlayerItem> {
-    const prom =
-      entityId && entityId !== BROWSER_PLAYER
-        ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
-        : browseLocalMediaPlayer(this.hass, mediaContentId);
+  private async _fetchData(entityId: string | undefined, mediaContentId?: string, mediaContentType?: string, useCache = true): Promise<MediaPlayerItem> {
+    // sonos-card: reuse recent results (and requests already in flight) for the same folder
+    const cacheKey = `${entityId}|${mediaContentType ?? ''}|${mediaContentId ?? ''}`;
+    const cached = browseCache.get(cacheKey);
+    let prom: Promise<MediaPlayerItem>;
+    if (useCache && cached && Date.now() - cached.time < BROWSE_CACHE_MS) {
+      prom = cached.promise.then((item) => ({ ...item }));
+    } else {
+      const request =
+        entityId && entityId !== BROWSER_PLAYER
+          ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
+          : browseLocalMediaPlayer(this.hass, mediaContentId);
+      const entry = { time: Date.now(), promise: request };
+      browseCache.set(cacheKey, entry);
+      request.catch(() => {
+        if (browseCache.get(cacheKey) === entry) {
+          browseCache.delete(cacheKey);
+        }
+      });
+      prom = request.then((item) => ({ ...item }));
+    }
 
     return prom.then((item) => {
       if (!mediaContentId && this.action === 'pick') {
@@ -887,8 +924,16 @@ export class HaMediaPlayerBrowse extends LitElement {
         </p>
       `;
     }
-    return html`<span class="error">${err.message}</span>`;
+    // sonos-card: explain timeouts and offer a retry instead of a bare "Unknown error"
+    return html`<span class="error">${err.code === 'unknown_error' ? browserText(this.hass, 'speakerTimeout') : err.message}</span>
+      <button class="retry" @click=${this._retry}>${browserText(this.hass, 'retry')}</button>`;
   }
+
+  private _retry = () => {
+    this._error = undefined;
+    this._currentItem = undefined;
+    this.refresh();
+  };
 
   private async _setHeaderHeight() {
     await this.updateComplete;
@@ -1388,20 +1433,41 @@ export class HaMediaPlayerBrowse extends LitElement {
         .content {
           position: relative;
         }
-        .content.with-rail sonos-lit-virtualizer {
+        .content.with-rail sonos-virtual-grid {
           width: calc(100% - ${RAIL_WIDTH}px);
         }
-        sonos-lit-virtualizer.list {
+        sonos-virtual-grid.list {
           --mdc-list-vertical-padding: 0;
           --mdc-list-item-graphic-margin: 0;
           --mdc-theme-text-icon-on-background: var(--secondary-text-color);
           overscroll-behavior: contain;
         }
-        sonos-lit-virtualizer.children {
-          overscroll-behavior: contain;
+        .retry {
+          display: block;
+          margin-top: 12px;
+          height: 44px;
+          padding: 0 22px;
+          border: none;
+          border-radius: 22px;
+          background: var(--accent-color, var(--primary-color));
+          color: var(--text-primary-color, #fff);
+          font: inherit;
+          font-weight: 600;
+          cursor: pointer;
         }
-        sonos-lit-virtualizer.list ha-list-item {
+        sonos-virtual-grid .vg-cell > * {
+          height: 100%;
+          box-sizing: border-box;
+        }
+        sonos-virtual-grid .vg-cell .child ha-card {
+          height: 100%;
+        }
+        sonos-virtual-grid.list ha-list-item {
+          height: 72px;
           border-bottom: 1px solid var(--divider-color);
+        }
+        sonos-virtual-grid.not_shown {
+          height: calc(100% - 36px);
         }
 
         ha-browse-media-tts {
