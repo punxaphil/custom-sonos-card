@@ -5,6 +5,8 @@ import type { MediaPlayerItem } from '../../types';
 import { customEvent } from '../../utils/utils';
 import type { QueueListAction } from './queue.types';
 import '../../components/media-row';
+import '../../components/fast-scroller';
+import type { FastScroller } from '../../components/fast-scroller';
 
 export class QueueList extends LitElement {
   @property({ type: Boolean }) loading = false;
@@ -22,8 +24,19 @@ export class QueueList extends LitElement {
     this.shadowRoot?.querySelectorAll('sonos-media-row')?.[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
+  protected updated() {
+    // wide touch scroll handle next to the queue (the native scrollbar is a few px wide)
+    const scroller = this.shadowRoot?.querySelector<FastScroller>('sonos-fast-scroller');
+    const list = this.shadowRoot?.querySelector<HTMLElement>('.list');
+    if (scroller && list) {
+      scroller.target = list;
+      requestAnimationFrame(() => scroller.sync());
+    }
+  }
+
   render() {
     return html`
+      <sonos-fast-scroller .total=${this.displayItems.length}></sonos-fast-scroller>
       <div class="list ${this.searchExpanded ? 'search-active' : ''}">
         <div class="loading" ?hidden=${!this.loading}><ha-spinner></ha-spinner></div>
         <mwc-list multi ?hidden=${this.loading}>
@@ -68,6 +81,10 @@ export class QueueList extends LitElement {
       flex: 1;
       min-height: 0;
       overflow: hidden;
+      position: relative;
+    }
+    sonos-fast-scroller:not([hidden]) + .list {
+      padding-right: 34px;
     }
     [hidden] {
       display: none !important;
@@ -75,6 +92,8 @@ export class QueueList extends LitElement {
     .list {
       overflow-y: auto;
       overflow-x: hidden;
+      scrollbar-width: none;
+      box-sizing: border-box;
       position: relative;
       flex: 1;
       --mdc-icon-button-size: 1.5em;
@@ -82,6 +101,9 @@ export class QueueList extends LitElement {
     }
     .list.search-active {
       padding-top: 3rem;
+    }
+    .list::-webkit-scrollbar {
+      display: none;
     }
     .loading {
       display: flex;

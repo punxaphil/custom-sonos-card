@@ -24,6 +24,7 @@ import { mediaGridCardStyles, renderMediaGridCard } from '../sections/media-brow
 // sonos-card: A–Z rail + quick filter for large libraries
 import '../components/alpha-rail';
 import '../components/virtual-grid';
+import '../components/fast-scroller';
 import { browserText } from '../sections/media-browser/i18n';
 import { LongPress } from '../utils/long-press';
 import { BrowseIndex, buildBrowseIndex, filterByText, indexForLetter, MIN_ITEMS_FOR_INDEX, sortByTitle } from '../utils/browse-index-utils';
@@ -457,6 +458,11 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (changedProps.has('_currentItem') || changedProps.has('filterText')) {
       fireEvent(this, 'displayed-changed' as any, { count: this._displayed.length } as any);
     }
+    const scroller = this.renderRoot?.querySelector('sonos-fast-scroller') as (HTMLElement & { target?: HTMLElement; sync(): void }) | null;
+    if (scroller && this._virtualizer) {
+      scroller.target = this._virtualizer;
+      requestAnimationFrame(() => scroller.sync());
+    }
 
     if (changedProps.has('_scrolled')) {
       this._animateHeaderHeight();
@@ -533,7 +539,10 @@ export class HaMediaPlayerBrowse extends LitElement {
     const index = indexed.index;
     children = indexed.items;
     this._displayed = children;
-    const showRail = !!index?.useful && !isManualMediaSourceContentId(currentItem.media_content_id) && !isTTSMediaSource(currentItem.media_content_id);
+    const isSpecial = isManualMediaSourceContentId(currentItem.media_content_id) || isTTSMediaSource(currentItem.media_content_id);
+    const showRail = !!index?.useful && !isSpecial;
+    // sonos-card: without letters, a wide touch scroll handle replaces the thin native scrollbar
+    const showScroller = !showRail && !isSpecial && children.length > 0;
 
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
@@ -593,7 +602,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                   : ''
               }
           <div
-            class="content ${classMap({ 'with-rail': showRail })}"
+            class="content ${classMap({ 'with-rail': showRail || showScroller })}"
             @scroll=${this._scroll}
             @touchmove=${this._scroll}
           >
@@ -603,7 +612,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                   .current=${index!.letters[Math.min(this._firstVisible, index!.letters.length - 1)] ?? ''}
                   @letter-selected=${this._onLetterSelected}
                 ></sonos-alpha-rail>`
-              : nothing}
+              : showScroller
+                ? html`<sonos-fast-scroller .total=${children.length}></sonos-fast-scroller>`
+                : nothing}
             ${
               this._error
                 ? html`
@@ -1641,6 +1652,12 @@ export class HaMediaPlayerBrowse extends LitElement {
           --mdc-icon-size: 22px;
           color: var(--secondary-text-color);
           opacity: 0.7;
+        }
+        sonos-virtual-grid {
+          scrollbar-width: none;
+        }
+        sonos-virtual-grid::-webkit-scrollbar {
+          display: none;
         }
         sonos-virtual-grid .vg-cell > * {
           height: 100%;
