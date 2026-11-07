@@ -10,6 +10,8 @@ updates:
     schedule:
       interval: "weekly"
     ignore:
+      - dependency-name: "typescript"
+        versions: [">=7"]
       - dependency-name: "eslint"
         versions: [">=10"]
       - dependency-name: "@eslint/js"
