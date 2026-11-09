@@ -200,7 +200,11 @@ export default class MediaControlService {
   }
 
   async playMedia(mediaPlayer: MediaPlayer, item: MediaPlayerItem, enqueue?: 'add' | 'next' | 'replace' | 'play') {
-    const mediaContentId = enqueue ? this.transformMediaContentId(item.media_content_id ?? '') : (item.media_content_id ?? '');
+    // The id rewrite (decode + strip the provider prefix) is for Music Assistant only. Sonos needs the
+    // id exactly as browsed: decoding "S://nas/music/Ait%20Menguellet" makes Sonos answer
+    // "Could not find media in library" for folders and multi-word names.
+    const isMusicAssistant = this.config.entityPlatform === 'music_assistant' || this.isMusicAssistant(mediaPlayer);
+    const mediaContentId = enqueue && isMusicAssistant ? this.transformMediaContentId(item.media_content_id ?? '') : (item.media_content_id ?? '');
 
     if (this.config.entityPlatform === 'music_assistant') {
       await this.hassService.callWithLoader(() => this.hassService.musicAssistantService.playMedia(mediaPlayer, mediaContentId, enqueue));

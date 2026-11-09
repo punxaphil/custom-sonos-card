@@ -1,12 +1,10 @@
 // @ts-nocheck
-import { grid } from '@lit-labs/virtualizer/layouts/grid.js';
 
-import { mdiArrowUpRight, mdiKeyboard, mdiPlay, mdiPlus } from '@mdi/js';
+import { mdiArrowUpRight, mdiChevronRight, mdiKeyboard, mdiPlay, mdiPlus } from '@mdi/js';
 import type { CSSResultGroup, PropertyValues, TemplateResult } from 'lit';
 import { css, html, LitElement, nothing } from 'lit';
 import { customElement, eventOptions, property, query, state } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
-import { styleMap } from 'lit/directives/style-map.js';
 import { until } from 'lit/directives/until.js';
 import { fireEvent } from 'custom-card-helpers';
 import { slugify } from './common/slugify';
@@ -18,12 +16,19 @@ import { browseLocalMediaPlayer, isManualMediaSourceContentId, MANUAL_MEDIA_SOUR
 import { isTTSMediaSource } from './data/tts';
 import { showAlertDialog } from './dialogs/show-dialog-box';
 import { haStyle } from './resources/styles';
-import { loadVirtualizer } from './resources/virtualizer';
 import type { HomeAssistant } from 'custom-card-helpers';
 import { brandsUrl, extractDomainFromBrandUrl, isBrandUrl } from './util/brands-url';
 import { documentationUrl } from './util/documentation-url';
 import { filterOutIgnoredMediaSources, getGridItemSize } from '../utils/media-browse-utils';
 import { mediaGridCardStyles, renderMediaGridCard } from '../sections/media-browser/utils';
+// sonos-card: A–Z rail + quick filter for large libraries
+import '../components/alpha-rail';
+import '../components/virtual-grid';
+import '../components/fast-scroller';
+import { browserText } from '../sections/media-browser/i18n';
+import { LongPress } from '../utils/long-press';
+import { BrowseIndex, buildBrowseIndex, filterByText, indexForLetter, MIN_ITEMS_FOR_INDEX, sortByTitle } from '../utils/browse-index-utils';
+import { completeSonosList, isTruncatedSonosList } from '../utils/sonos-list-completion';
 // HA components are available at runtime - no need to import
 import type { ManualMediaPickedEvent } from './ha-browse-media-manual';
 import type { TtsMediaPickedEvent } from './ha-browse-media-tts';
@@ -45,6 +50,29 @@ declare global {
 export interface MediaPlayerItemId {
   media_content_id?: string | undefined;
   media_content_type?: string | undefined;
+}
+
+// sonos-card: remembers the first visible item of every visited folder, so "back" returns to where you were.
+const scrollMemory = new Map<string, number>();
+const RAIL_WIDTH = 34;
+
+// sonos-card: thumbnails resolved once and reused, so scrolling back does not fetch/encode them again.
+const THUMBNAIL_CACHE_SIZE = 400;
+const thumbnailCache = new Map<string, string>();
+const thumbnailPending = new Map<string, Promise<string>>();
+
+// sonos-card: browse results kept for a few minutes. Opening "Artists" again is instant instead of
+// waiting for the speaker to list the whole library again.
+const BROWSE_CACHE_MS = 10 * 60 * 1000;
+const browseCache = new Map<string, { time: number; promise: Promise<MediaPlayerItem> }>();
+
+// sonos-card: Sonos returns at most 1000 items per folder; the rest is fetched letter by letter.
+const completions = new Map<string, MediaPlayerItem>();
+const completionsRunning = new Set<string>();
+const completionEvents = new EventTarget();
+
+function navigateKey(ids: MediaPlayerItemId[]): string {
+  return ids.map((id) => `${id.media_content_type ?? ''}|${id.media_content_id ?? ''}`).join('>');
 }
 
 const MANUAL_ITEM: MediaPlayerItem = {
@@ -88,6 +116,31 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @property({ attribute: false }) public hideItems?: string[];
 
+  /** sonos-card: text typed in the quick filter. */
+  @property({ attribute: false }) public filterText = '';
+
+  /** sonos-card: show the A–Z rail on long alphabetical lists. */
+  @property({ type: Boolean }) public alphaIndex = true;
+
+  @state() private _width = 0;
+
+  private _displayed: MediaPlayerItem[] = [];
+
+  private _index?: BrowseIndex;
+
+  private _indexKey?: unknown[];
+
+  private _firstVisible = 0;
+
+  private _pendingRestore?: number;
+
+  private _sortedChildren?: MediaPlayerItem[];
+
+  /** sonos-card: long press on a tile/row asks the host to show the item's actions. */
+  private _longPress = new LongPress<MediaPlayerItem>((item) => {
+    fireEvent(this, 'item-long-press' as any, { item } as any);
+  });
+
   @property({ attribute: false }) public contentIdHelper?: string;
 
   // @todo Consider reworking to eliminate need for attribute since it is manipulated internally
@@ -106,7 +159,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   @query('.content') private _content?: HTMLDivElement;
 
-  @query('sonos-lit-virtualizer') private _virtualizer?: any;
+  @query('sonos-virtual-grid') private _virtualizer?: any;
 
   private _observed = false;
 
@@ -114,8 +167,16 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _resizeObserver?: ResizeObserver;
 
+  private _onCompletion = (ev: Event) => {
+    const item = (ev as CustomEvent<MediaPlayerItem>).detail;
+    if (this._currentItem && this._currentItem.media_content_id === item.media_content_id) {
+      this._currentItem = item;
+    }
+  };
+
   public connectedCallback(): void {
     super.connectedCallback();
+    completionEvents.addEventListener('progress', this._onCompletion);
     this.updateComplete.then(() => this._attachResizeObserver());
   }
 
@@ -123,11 +184,110 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!this._currentItem?.children) {
       return [];
     }
-    return this._currentItem.children.filter((child) => child.can_play);
+    // sonos-card: respect the quick filter
+    return (this.filterText ? this._displayed : this._currentItem.children).filter((child) => child.can_play);
+  }
+
+  /** sonos-card: number of items currently shown (after filters). */
+  public get displayedCount(): number {
+    return this._displayed.length;
+  }
+
+  /** sonos-card: scroll so that the item at `index` is the first visible one. */
+  public scrollToIndex(index: number): void {
+    const virtualizer = this._virtualizer;
+    if (!virtualizer) {
+      return;
+    }
+    virtualizer.scrollToIndex(index);
+    this._firstVisible = Math.max(0, index);
+    this._updateRailCurrent();
+  }
+
+  private _onLetterSelected = (ev: CustomEvent<{ letter: string }>) => {
+    ev.stopPropagation();
+    if (!this._index) {
+      return;
+    }
+    const target = indexForLetter(this._index, ev.detail.letter);
+    if (target !== undefined) {
+      this.scrollToIndex(target);
+    }
+  };
+
+  private _onVisibilityChanged = (ev: CustomEvent<{ first: number }>) => {
+    this._firstVisible = ev.detail.first;
+    this._updateRailCurrent();
+  };
+
+  private _updateRailCurrent() {
+    const rail = this.renderRoot?.querySelector('sonos-alpha-rail') as (HTMLElement & { current: string }) | null;
+    if (rail && this._index) {
+      rail.current = this._index.letters[Math.min(this._firstVisible, this._index.letters.length - 1)] ?? '';
+    }
+  }
+
+  /**
+   * sonos-card: A–Z index of the shown items. Long lists that are not in alphabetical order (some
+   * folder listings) are sorted by title first, so the rail works there too. Track lists are left in
+   * their order (album order, playlists).
+   */
+  private _getIndex(currentItem: MediaPlayerItem, children: MediaPlayerItem[]): { index?: BrowseIndex; items: MediaPlayerItem[] } {
+    if (!this.alphaIndex) {
+      return { items: children };
+    }
+    const key = [currentItem, this.filterText, children.length];
+    if (!this._indexKey || key.some((value, i) => value !== this._indexKey![i])) {
+      this._indexKey = key;
+      let items = children;
+      let index = buildBrowseIndex(items);
+      const isTrackList = children.filter((child) => child.media_class === 'track').length > children.length / 2;
+      if (!index.useful && !isTrackList && children.length >= MIN_ITEMS_FOR_INDEX) {
+        items = sortByTitle(children);
+        index = buildBrowseIndex(items);
+      }
+      this._index = index;
+      this._sortedChildren = items;
+    }
+    return { index: this._index, items: this._sortedChildren ?? children };
+  }
+
+  /** sonos-card: thumbnail as a ready string when cached, otherwise a promise for `until`. */
+  private _thumbnailStyle(thumbnail: string | undefined) {
+    if (!thumbnail) {
+      return 'none';
+    }
+    const cached = thumbnailCache.get(thumbnail);
+    if (cached !== undefined) {
+      return `url(${cached})`;
+    }
+    let pending = thumbnailPending.get(thumbnail);
+    if (!pending) {
+      pending = this._getThumbnailURLorBase64(thumbnail).then(
+        (value) => {
+          thumbnailPending.delete(thumbnail);
+          if (thumbnailCache.size >= THUMBNAIL_CACHE_SIZE) {
+            thumbnailCache.delete(thumbnailCache.keys().next().value!);
+          }
+          thumbnailCache.set(thumbnail, value);
+          return value;
+        },
+        () => {
+          thumbnailPending.delete(thumbnail);
+          return '';
+        },
+      );
+      thumbnailPending.set(thumbnail, pending);
+    }
+    return until(
+      pending.then((value) => `url(${value})`),
+      '',
+    );
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    completionEvents.removeEventListener('progress', this._onCompletion);
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
     }
@@ -136,7 +296,7 @@ export class HaMediaPlayerBrowse extends LitElement {
   public async refresh() {
     const currentId = this.navigateIds[this.navigateIds.length - 1];
     try {
-      this._currentItem = await this._fetchData(this.entityId, currentId.media_content_id, currentId.media_content_type);
+      this._currentItem = await this._fetchData(this.entityId, currentId.media_content_id, currentId.media_content_type, false);
       // Update the parent with latest item.
       fireEvent(this, 'media-browsed', {
         ids: this.navigateIds,
@@ -156,9 +316,6 @@ export class HaMediaPlayerBrowse extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
 
     if (changedProps.has('entityId')) {
       this._setError(undefined);
@@ -173,6 +330,13 @@ export class HaMediaPlayerBrowse extends LitElement {
     const navigateIds = this.navigateIds;
 
     // We're navigating. Reset the shizzle.
+    // sonos-card: remember where we were in the folder we leave, restore it if we come back.
+    if (oldNavigateIds) {
+      const oldFilter = changedProps.has('filterText') ? (changedProps.get('filterText') ?? '') : this.filterText;
+      scrollMemory.set(`${navigateKey(oldNavigateIds)}?${oldFilter}`, this._firstVisible);
+    }
+    this._pendingRestore = changedProps.has('navigateIds') ? (scrollMemory.get(`${navigateKey(navigateIds)}?${this.filterText}`) ?? 0) : 0;
+    this._firstVisible = 0;
     this._content?.scrollTo(0, 0);
     this.scrolled = false;
     const oldCurrentItem = this._currentItem;
@@ -281,6 +445,25 @@ export class HaMediaPlayerBrowse extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
+    // sonos-card: restore scroll position / reset it when the filter changes
+    if (this._currentItem && this._pendingRestore !== undefined && this._virtualizer) {
+      const target = this._pendingRestore;
+      this._pendingRestore = undefined;
+      if (target > 0) {
+        requestAnimationFrame(() => requestAnimationFrame(() => this.scrollToIndex(target)));
+      }
+    } else if (changedProps.has('filterText') && changedProps.get('filterText') !== undefined) {
+      this.scrollToIndex(0);
+    }
+    if (changedProps.has('_currentItem') || changedProps.has('filterText')) {
+      fireEvent(this, 'displayed-changed' as any, { count: this._displayed.length } as any);
+    }
+    const scroller = this.renderRoot?.querySelector('sonos-fast-scroller') as (HTMLElement & { target?: HTMLElement; sync(): void }) | null;
+    if (scroller && this._virtualizer) {
+      scroller.target = this._virtualizer;
+      requestAnimationFrame(() => scroller.sync());
+    }
+
     if (changedProps.has('_scrolled')) {
       this._animateHeaderHeight();
     } else if (changedProps.has('_currentItem')) {
@@ -349,6 +532,18 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
+    // sonos-card: quick filter + A–Z index
+    children = filterByText(children, this.filterText);
+    this._displayed = children;
+    const indexed = this._getIndex(currentItem, children);
+    const index = indexed.index;
+    children = indexed.items;
+    this._displayed = children;
+    const isSpecial = isManualMediaSourceContentId(currentItem.media_content_id) || isTTSMediaSource(currentItem.media_content_id);
+    const showRail = !!index?.useful && !isSpecial;
+    // sonos-card: without letters, a wide touch scroll handle replaces the thin native scrollbar
+    const showScroller = !showRail && !isSpecial && children.length > 0;
+
     const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
@@ -371,7 +566,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           ${currentItem.thumbnail
                             ? html`
                                 <div class="img" style="background-image: ${until(backgroundImage, '')}">
-                                  ${this.narrow && currentItem?.can_play && (!this.accept || canPlayChildren.has(currentItem.media_content_id))
+                                  ${false && this.narrow && currentItem?.can_play && (!this.accept || canPlayChildren.has(currentItem.media_content_id))
                                     ? html`
                                         <ha-fab mini .item=${currentItem} @click=${this._actionClicked}>
                                           <ha-svg-icon
@@ -391,16 +586,13 @@ export class HaMediaPlayerBrowse extends LitElement {
                               <h1 class="title">${currentItem.title}</h1>
                               ${subtitle ? html` <h2 class="subtitle">${subtitle}</h2> ` : ''}
                             </div>
-                            ${currentItem.can_play && (!currentItem.thumbnail || !this.narrow)
+                            ${currentItem.can_play
                               ? html`
-                                  <ha-button .item=${currentItem} @click=${this._actionClicked}>
-                                    <ha-svg-icon
-                                      .label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`)}
-                                      .path=${this.action === 'play' ? mdiPlay : mdiPlus}
-                                      slot="start"
-                                    ></ha-svg-icon>
-                                    ${this.hass.localize(`ui.components.media-browser.${this.action}`)}
-                                  </ha-button>
+                                  <!-- sonos-card: big touch-friendly play button -->
+                                  <button class="hero-play" .item=${currentItem} @click=${this._actionClicked}>
+                                    <ha-svg-icon .path=${this.action === 'play' ? mdiPlay : mdiPlus}></ha-svg-icon>
+                                    <span>${this.hass.localize(`ui.components.media-browser.${this.action}`) || 'Play'}</span>
+                                  </button>
                                 `
                               : ''}
                           </div>
@@ -410,10 +602,19 @@ export class HaMediaPlayerBrowse extends LitElement {
                   : ''
               }
           <div
-            class="content"
+            class="content ${classMap({ 'with-rail': showRail || showScroller })}"
             @scroll=${this._scroll}
             @touchmove=${this._scroll}
           >
+            ${showRail
+              ? html`<sonos-alpha-rail
+                  .available=${index!.available}
+                  .current=${index!.letters[Math.min(this._firstVisible, index!.letters.length - 1)] ?? ''}
+                  @letter-selected=${this._onLetterSelected}
+                ></sonos-alpha-rail>`
+              : showScroller
+                ? html`<sonos-fast-scroller .total=${children.length}></sonos-fast-scroller>`
+                : nothing}
             ${
               this._error
                 ? html`
@@ -441,7 +642,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                           @tts-picked=${this._ttsPicked}
                         ></ha-browse-media-tts>
                       `
-                    : !children.length && !currentItem.not_shown
+                    : this.filterText && !children.length
+                      ? nothing
+                      : !children.length && !currentItem.not_shown
                       ? html`
                           <div class="container no-items">
                             ${currentItem.media_content_id === 'media-source://media_source/local/.'
@@ -456,100 +659,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                               : this.hass.localize('ui.components.media-browser.no_items')}
                           </div>
                         `
-                      : this.preferredLayout === 'list'
-                        ? html`
-                            <ha-list>
-                              <sonos-lit-virtualizer
-                                scroller
-                                .items=${children}
-                                style=${styleMap({
-                                  height: `${children.length * 72 + 26}px`,
-                                })}
-                                .renderItem=${this._renderListItem}
-                              ></sonos-lit-virtualizer>
-                              ${currentItem.not_shown
-                                ? html`
-                                    <ha-list-item noninteractive class="not-shown" .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
-                                      <span class="title">
-                                        ${this.hass.localize('ui.components.media-browser.not_shown', {
-                                          count: currentItem.not_shown,
-                                        })}
-                                      </span>
-                                    </ha-list-item>
-                                  `
-                                : ''}
-                            </ha-list>
-                          `
-                        : this.itemsPerRow // Use fixed grid when itemsPerRow is specified
-                          ? html`
-                              <div class="children flex-grid" style="--items-per-row: ${this.itemsPerRow}">
-                                ${children.map((child) => this._renderGridItem(child))}
-                              </div>
-                              ${currentItem.not_shown
-                                ? html`
-                                    <div class="grid not-shown">
-                                      <div class="title">
-                                        ${this.hass.localize('ui.components.media-browser.not_shown', {
-                                          count: currentItem.not_shown,
-                                        })}
-                                      </div>
-                                    </div>
-                                  `
-                                : ''}
-                            `
-                          : this.preferredLayout === 'grid' || (this.preferredLayout === 'auto' && childrenMediaClass.layout === 'grid')
-                            ? html`
-                                <sonos-lit-virtualizer
-                                  scroller
-                                  .layout=${grid({
-                                    itemSize: getGridItemSize(this.itemsPerRow, childrenMediaClass.thumbnail_ratio === 'portrait'),
-                                    gap: '8px',
-                                    flex: { preserve: 'aspect-ratio' },
-                                    justify: 'space-evenly',
-                                    direction: 'vertical',
-                                  })}
-                                  .items=${children}
-                                  .renderItem=${this._renderGridItem}
-                                  class="children ${classMap({
-                                    portrait: childrenMediaClass.thumbnail_ratio === 'portrait',
-                                    not_shown: !!currentItem.not_shown,
-                                  })}"
-                                ></sonos-lit-virtualizer>
-                                ${currentItem.not_shown
-                                  ? html`
-                                      <div class="grid not-shown">
-                                        <div class="title">
-                                          ${this.hass.localize('ui.components.media-browser.not_shown', {
-                                            count: currentItem.not_shown,
-                                          })}
-                                        </div>
-                                      </div>
-                                    `
-                                  : ''}
-                              `
-                            : html`
-                                <ha-list>
-                                  <sonos-lit-virtualizer
-                                    scroller
-                                    .items=${children}
-                                    style=${styleMap({
-                                      height: `${children.length * 72 + 26}px`,
-                                    })}
-                                    .renderItem=${this._renderListItem}
-                                  ></sonos-lit-virtualizer>
-                                  ${currentItem.not_shown
-                                    ? html`
-                                        <ha-list-item noninteractive class="not-shown" .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
-                                          <span class="title">
-                                            ${this.hass.localize('ui.components.media-browser.not_shown', {
-                                              count: currentItem.not_shown,
-                                            })}
-                                          </span>
-                                        </ha-list-item>
-                                      `
-                                    : ''}
-                                </ha-list>
-                              `
+                      : this._renderChildren(currentItem, children, mediaClass, childrenMediaClass, showRail)
             }
           </div>
         </div>
@@ -557,85 +667,126 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   }
 
-  private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
-    const backgroundImage = child.thumbnail ? this._getThumbnailURLorBase64(child.thumbnail).then((value) => `url(${value})`) : 'none';
+  /**
+   * sonos-card: list and grid are both virtualized (only visible items are in the DOM),
+   * so folders with thousands of artists/albums scroll smoothly.
+   */
+  private _renderChildren(currentItem: MediaPlayerItem, children: MediaPlayerItem[], mediaClass: any, childrenMediaClass: any, showRail: boolean) {
+    const useGrid = this.preferredLayout === 'grid' || (this.preferredLayout === 'auto' && childrenMediaClass.layout === 'grid');
+    const notShown = currentItem.not_shown
+      ? html`<div class="grid not-shown">
+          <div class="title">${this.hass.localize('ui.components.media-browser.not_shown', { count: currentItem.not_shown })}</div>
+        </div>`
+      : '';
+    if (useGrid) {
+      return html`
+        <sonos-virtual-grid
+          layout="grid"
+          class="children ${classMap({ not_shown: !!currentItem.not_shown })}"
+          .items=${children}
+          .renderItem=${this._renderGridItem}
+          .columns=${this.itemsPerRow ?? 0}
+          .aspect=${childrenMediaClass.thumbnail_ratio === 'portrait' ? 1.5 : 1}
+          .extraHeight=${50}
+          @visible-changed=${this._onVisibilityChanged}
+        ></sonos-virtual-grid>
+        ${notShown}
+      `;
+    }
+    return html`
+      <sonos-virtual-grid
+        layout="list"
+        class="list ${classMap({ not_shown: !!currentItem.not_shown, 'list-images': !!mediaClass.show_list_images })}"
+        .items=${children}
+        .renderItem=${this._renderListItem}
+        .rowHeight=${72}
+        @visible-changed=${this._onVisibilityChanged}
+      ></sonos-virtual-grid>
+      ${notShown}
+    `;
+  }
 
-    return renderMediaGridCard({
-      item: child,
-      onClick: this._childClicked,
-      thumbnailContent: child.thumbnail
-        ? html`
-            <div
-              class="${classMap({
-                'centered-image': ['app', 'directory'].includes(child.media_class),
-                'brand-image': isBrandUrl(child.thumbnail),
-              })} image"
-              style="background-image: ${until(backgroundImage, '')}"
-            ></div>
-          `
-        : html`
-            <div class="icon-holder image">
-              <ha-svg-icon
-                class=${child.iconPath ? 'icon' : 'folder'}
-                .path=${child.iconPath ||
-                MediaClassBrowserSettings[child.media_class === 'directory' ? child.children_media_class || child.media_class : child.media_class].icon}
-              ></ha-svg-icon>
-            </div>
-          `,
-      actionContent: child.can_play
-        ? html`
-            <ha-icon-button
-              class="play ${classMap({ can_expand: child.can_expand })}"
-              .item=${child}
-              .label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`)}
-              .path=${this.action === 'play' ? mdiPlay : mdiPlus}
-              @click=${this._actionClicked}
-            ></ha-icon-button>
-          `
-        : nothing,
-      titleContent: html`
-        <ha-tooltip .for="grid-${slugify(child.title)}" distance="-4"> ${child.title} </ha-tooltip>
-        <div .id="grid-${slugify(child.title)}" class="title">${child.title}</div>
-      `,
-    });
+  /** sonos-card: icon shown when an item has no artwork. */
+  private _iconFor(child: MediaPlayerItem): string {
+    return (
+      child.iconPath ||
+      MediaClassBrowserSettings[child.media_class === 'directory' ? child.children_media_class || child.media_class : child.media_class]?.icon ||
+      MediaClassBrowserSettings.directory.icon
+    );
+  }
+
+  /**
+   * sonos-card: self-styled tile (no ha-card / tooltip), so the title is always visible whatever
+   * the theme or Home Assistant version. Tap the tile to open it, the round button to play it.
+   */
+  private _renderGridItem = (child: MediaPlayerItem): TemplateResult => {
+    const background = this._thumbnailStyle(child.thumbnail);
+    return html`
+      <div
+        class="tile"
+        .item=${child}
+        @click=${this._childClicked}
+        @pointerdown=${this._longPress.down}
+        @pointermove=${this._longPress.move}
+        @pointerup=${this._longPress.up}
+        @pointercancel=${this._longPress.up}
+        @pointerleave=${this._longPress.up}
+        @contextmenu=${this._longPress.contextmenu}
+        role="button"
+        tabindex="0"
+        title=${child.title}
+      >
+        <div class="tile-art ${classMap({ 'brand-image': !!child.thumbnail && isBrandUrl(child.thumbnail) })}" style="background-image: ${background}">
+          ${child.thumbnail ? nothing : html`<ha-svg-icon class="tile-icon" .path=${this._iconFor(child)}></ha-svg-icon>`}
+          ${child.can_play
+            ? html`<button
+                class="tile-play"
+                .item=${child}
+                @click=${this._actionClicked}
+                aria-label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`) || 'Play'}
+              >
+                <ha-svg-icon .path=${this.action === 'play' ? mdiPlay : mdiPlus}></ha-svg-icon>
+              </button>`
+            : nothing}
+        </div>
+        <div class="tile-title">${child.title}</div>
+      </div>
+    `;
   };
 
+  /** sonos-card: self-styled 72px row: artwork or icon, title, play button, chevron for folders. */
   private _renderListItem = (child: MediaPlayerItem): TemplateResult => {
-    const currentItem = this._currentItem;
-    const mediaClass = MediaClassBrowserSettings[currentItem!.media_class];
-
-    const backgroundImage =
-      mediaClass.show_list_images && child.thumbnail ? this._getThumbnailURLorBase64(child.thumbnail).then((value) => `url(${value})`) : 'none';
-
+    const background = child.thumbnail ? this._thumbnailStyle(child.thumbnail) : 'none';
     return html`
-      <ha-list-item @click=${this._childClicked} .item=${child} .graphic=${mediaClass.show_list_images ? 'medium' : 'avatar'}>
-        ${backgroundImage === 'none' && !child.can_play
-          ? html`<ha-svg-icon
-              .path=${MediaClassBrowserSettings[child.media_class === 'directory' ? child.children_media_class || child.media_class : child.media_class].icon}
-              slot="graphic"
-            ></ha-svg-icon>`
-          : html`<div
-              class=${classMap({
-                graphic: true,
-                thumbnail: mediaClass.show_list_images === true,
-              })}
-              style="background-image: ${until(backgroundImage, '')}"
-              slot="graphic"
+      <div
+        class="row"
+        .item=${child}
+        @click=${this._childClicked}
+        @pointerdown=${this._longPress.down}
+        @pointermove=${this._longPress.move}
+        @pointerup=${this._longPress.up}
+        @pointercancel=${this._longPress.up}
+        @pointerleave=${this._longPress.up}
+        @contextmenu=${this._longPress.contextmenu}
+        role="button"
+        tabindex="0"
+      >
+        <div class="row-art" style="background-image: ${background}">
+          ${child.thumbnail ? nothing : html`<ha-svg-icon .path=${this._iconFor(child)}></ha-svg-icon>`}
+        </div>
+        <div class="row-title">${child.title}</div>
+        ${child.can_play
+          ? html`<button
+              class="row-play"
+              .item=${child}
+              @click=${this._actionClicked}
+              aria-label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`) || 'Play'}
             >
-              ${child.can_play
-                ? html`<ha-icon-button
-                    class="play ${classMap({
-                      show: !mediaClass.show_list_images || !child.thumbnail,
-                    })}"
-                    .item=${child}
-                    .label=${this.hass.localize(`ui.components.media-browser.${this.action}-media`)}
-                    .path=${this.action === 'play' ? mdiPlay : mdiPlus}
-                    @click=${this._actionClicked}
-                  ></ha-icon-button>`
-                : nothing}
-            </div>`}
-        <span class="title">${child.title}</span>
-      </ha-list-item>
+              <ha-svg-icon .path=${this.action === 'play' ? mdiPlay : mdiPlus}></ha-svg-icon>
+            </button>`
+          : nothing}
+        ${child.can_expand ? html`<ha-svg-icon class="row-chevron" .path=${mdiChevronRight}></ha-svg-icon>` : nothing}
+      </div>
     `;
   };
 
@@ -681,6 +832,9 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _actionClicked = (ev: MouseEvent): void => {
     ev.stopPropagation();
+    if (this._longPress.consumeClick()) {
+      return;
+    }
     const item = (ev.currentTarget as any).item;
 
     this._runAction(item);
@@ -709,6 +863,9 @@ export class HaMediaPlayerBrowse extends LitElement {
   }
 
   private _childClicked = async (ev: MouseEvent): Promise<void> => {
+    if (this._longPress.consumeClick()) {
+      return;
+    }
     const target = ev.currentTarget as any;
     const item: MediaPlayerItem = target.item;
 
@@ -726,11 +883,40 @@ export class HaMediaPlayerBrowse extends LitElement {
     });
   };
 
-  private async _fetchData(entityId: string | undefined, mediaContentId?: string, mediaContentType?: string): Promise<MediaPlayerItem> {
-    const prom =
-      entityId && entityId !== BROWSER_PLAYER
-        ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
-        : browseLocalMediaPlayer(this.hass, mediaContentId);
+  private async _fetchData(entityId: string | undefined, mediaContentId?: string, mediaContentType?: string, useCache = true): Promise<MediaPlayerItem> {
+    // sonos-card: reuse recent results (and requests already in flight) for the same folder
+    const cacheKey = `${entityId}|${mediaContentType ?? ''}|${mediaContentId ?? ''}`;
+    const cached = browseCache.get(cacheKey);
+    let prom: Promise<MediaPlayerItem>;
+    if (useCache && cached && Date.now() - cached.time < BROWSE_CACHE_MS) {
+      prom = cached.promise.then((item) => ({ ...(completions.get(cacheKey) ?? item) }));
+    } else {
+      completions.delete(cacheKey);
+      const request =
+        entityId && entityId !== BROWSER_PLAYER
+          ? browseMediaPlayer(this.hass, entityId, mediaContentId, mediaContentType)
+          : browseLocalMediaPlayer(this.hass, mediaContentId);
+      const entry = { time: Date.now(), promise: request };
+      browseCache.set(cacheKey, entry);
+      request.catch(() => {
+        if (browseCache.get(cacheKey) === entry) {
+          browseCache.delete(cacheKey);
+        }
+      });
+      prom = request.then((item) => ({ ...item }));
+    }
+    if (entityId && entityId !== BROWSER_PLAYER) {
+      prom = prom.then((item) => {
+        if (isTruncatedSonosList(item) && !completionsRunning.has(cacheKey) && !completions.has(cacheKey)) {
+          completionsRunning.add(cacheKey);
+          completeSonosList(item, (id) => browseMediaPlayer(this.hass, entityId, id, item.media_content_type), (merged) => {
+            completions.set(cacheKey, merged);
+            completionEvents.dispatchEvent(new CustomEvent('progress', { detail: merged }));
+          }).finally(() => completionsRunning.delete(cacheKey));
+        }
+        return item;
+      });
+    }
 
     return prom.then((item) => {
       if (!mediaContentId && this.action === 'pick') {
@@ -743,6 +929,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _measureCard(): void {
     this.narrow = (this.dialog ? window.innerWidth : this.offsetWidth) < 450;
+    this._width = this.offsetWidth;
   }
 
   private async _attachResizeObserver(): Promise<void> {
@@ -791,8 +978,16 @@ export class HaMediaPlayerBrowse extends LitElement {
         </p>
       `;
     }
-    return html`<span class="error">${err.message}</span>`;
+    // sonos-card: explain timeouts and offer a retry instead of a bare "Unknown error"
+    return html`<span class="error">${err.code === 'unknown_error' ? browserText(this.hass, 'speakerTimeout') : err.message}</span>
+      <button class="retry" @click=${this._retry}>${browserText(this.hass, 'retry')}</button>`;
   }
+
+  private _retry = () => {
+    this._error = undefined;
+    this._currentItem = undefined;
+    this.refresh();
+  };
 
   private async _setHeaderHeight() {
     await this.updateComplete;
@@ -1288,8 +1483,282 @@ export class HaMediaPlayerBrowse extends LitElement {
           height: calc(100% - 36px);
         }
 
+        /* sonos-card: virtualized list, A–Z rail */
+        .content {
+          position: relative;
+        }
+        .content.with-rail sonos-virtual-grid {
+          width: calc(100% - ${RAIL_WIDTH}px);
+        }
+        sonos-virtual-grid.list {
+          --mdc-list-vertical-padding: 0;
+          --mdc-list-item-graphic-margin: 0;
+          --mdc-theme-text-icon-on-background: var(--secondary-text-color);
+          overscroll-behavior: contain;
+        }
+        .retry {
+          display: block;
+          margin-top: 12px;
+          height: 44px;
+          padding: 0 22px;
+          border: none;
+          border-radius: 22px;
+          background: var(--accent-color, var(--primary-color));
+          color: var(--text-primary-color, #fff);
+          font: inherit;
+          font-weight: 600;
+          cursor: pointer;
+        }
+        /* sonos-card: tiles */
+        .tile,
+        .row {
+          -webkit-touch-callout: none;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+        .tile {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+        .tile-art {
+          position: relative;
+          flex: 1;
+          min-height: 0;
+          border-radius: 14px;
+          background-color: rgba(127, 127, 127, 0.16);
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          transition:
+            transform 0.12s,
+            filter 0.12s;
+        }
+        .tile-art.brand-image {
+          background-size: 45%;
+        }
+        .tile:active .tile-art {
+          transform: scale(0.97);
+          filter: brightness(0.85);
+        }
+        .tile-icon {
+          --mdc-icon-size: 56px;
+          color: var(--secondary-text-color);
+          opacity: 0.85;
+        }
+        .tile-play,
+        .row-play {
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          -webkit-tap-highlight-color: transparent;
+        }
+        .tile-play {
+          position: absolute;
+          right: 8px;
+          bottom: 8px;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.55);
+          color: #fff;
+        }
+        .tile-play ha-svg-icon {
+          --mdc-icon-size: 26px;
+        }
+        .tile-title {
+          flex: none;
+          height: 42px;
+          padding: 6px 4px 0;
+          box-sizing: border-box;
+          color: var(--primary-text-color);
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.85);
+          line-height: 1.2;
+          text-align: center;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          word-break: break-word;
+        }
+        /* sonos-card: rows */
+        .row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          height: 72px;
+          padding: 0 8px 0 12px;
+          box-sizing: border-box;
+          border-bottom: 1px solid var(--divider-color);
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+        .row:active {
+          background: rgba(127, 127, 127, 0.14);
+        }
+        .row-art {
+          flex: none;
+          width: 52px;
+          height: 52px;
+          border-radius: 8px;
+          background-color: rgba(127, 127, 127, 0.16);
+          background-size: cover;
+          background-position: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--secondary-text-color);
+        }
+        .row-art ha-svg-icon {
+          --mdc-icon-size: 28px;
+        }
+        .row-title {
+          flex: 1;
+          min-width: 0;
+          color: var(--primary-text-color);
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.95);
+          line-height: 1.25;
+          overflow: hidden;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          line-clamp: 2;
+          word-break: break-word;
+        }
+        .row-play {
+          flex: none;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: rgba(127, 127, 127, 0.16);
+          color: var(--primary-text-color);
+        }
+        .row-play ha-svg-icon {
+          --mdc-icon-size: 24px;
+        }
+        .row-chevron {
+          flex: none;
+          --mdc-icon-size: 22px;
+          color: var(--secondary-text-color);
+          opacity: 0.7;
+        }
+        sonos-virtual-grid {
+          scrollbar-width: none;
+        }
+        sonos-virtual-grid::-webkit-scrollbar {
+          display: none;
+        }
+        sonos-virtual-grid .vg-cell > * {
+          height: 100%;
+          box-sizing: border-box;
+        }
+        sonos-virtual-grid .vg-cell .child ha-card {
+          height: 100%;
+        }
+        sonos-virtual-grid.list ha-list-item {
+          height: 72px;
+          border-bottom: 1px solid var(--divider-color);
+        }
+        sonos-virtual-grid.not_shown {
+          height: calc(100% - 36px);
+        }
+
         ha-browse-media-tts {
           direction: var(--direction);
+        }
+
+        /* sonos-card: compact hero for artist/album pages, same on phone and tablet */
+        .header,
+        :host([narrow]) .header,
+        :host([narrow]) .header.no-dialog {
+          display: flex;
+          padding: 12px 16px;
+        }
+        .header-content,
+        :host([narrow]) .header-content {
+          flex-direction: row;
+          flex-wrap: nowrap;
+          align-items: center;
+          gap: 16px;
+        }
+        .header-content .img,
+        :host([narrow]) .header-content .img {
+          flex: none;
+          width: 104px;
+          height: 104px;
+          padding-bottom: 0;
+          margin: 0;
+          border-radius: 10px;
+          background-position: center;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        }
+        :host([narrow]) .header-content .img {
+          width: 84px;
+          height: 84px;
+        }
+        .header-info,
+        :host([narrow]) .header-info {
+          padding: 0;
+          justify-content: center;
+          gap: 12px;
+        }
+        .breadcrumb {
+          padding-top: 0;
+          flex-grow: 0;
+        }
+        .breadcrumb .title,
+        :host([narrow]) .breadcrumb .title {
+          font-size: calc(var(--sonos-font-size, 1rem) * 1.3);
+          line-height: 1.25;
+          -webkit-line-clamp: 2;
+        }
+        .breadcrumb .subtitle,
+        :host([scrolled]) .breadcrumb .subtitle {
+          height: auto;
+          margin: 4px 0 0;
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.75);
+          font-weight: 500;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: var(--secondary-text-color);
+        }
+        .hero-play {
+          align-self: flex-start;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          height: 44px;
+          padding: 0 22px 0 16px;
+          border: none;
+          border-radius: 22px;
+          background: var(--accent-color, var(--primary-color));
+          color: var(--text-primary-color, #fff);
+          font: inherit;
+          font-weight: 600;
+          font-size: calc(var(--sonos-font-size, 1rem) * 0.95);
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+          transition:
+            transform 0.1s,
+            filter 0.15s;
+        }
+        .hero-play:active {
+          transform: scale(0.96);
+          filter: brightness(0.9);
+        }
+        .hero-play ha-svg-icon {
+          --mdc-icon-size: 22px;
         }
       `,
     ];

@@ -25,6 +25,7 @@ export const mediaBrowserStyles = css`
   }
   .title-section {
     flex: 1;
+    contain: inline-size; /* long titles truncate instead of widening the card */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,6 +35,7 @@ export const mediaBrowserStyles = css`
   }
   .title-section .title {
     flex: 0;
+    min-width: 0; /* let long titles truncate instead of widening the card */
     text-align: center;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -41,6 +43,7 @@ export const mediaBrowserStyles = css`
     max-width: 100%;
   }
   .player-name {
+    min-width: 0;
     font-size: calc(var(--sonos-font-size, 1rem) * 0.8);
     color: var(--secondary-text-color);
     overflow: hidden;

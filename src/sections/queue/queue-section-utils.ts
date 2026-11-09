@@ -53,7 +53,7 @@ export function shouldSwitchToPlayerSection(action: PlayMenuAction): boolean {
 
 export async function fetchQueueData(store: Store, activePlayer: MediaPlayer, forceRefresh: boolean, lastQueueHash: string): Promise<QueueFetchResult> {
   const [queueItems, currentQueueItemId] = await Promise.all([
-    store.hassService.getQueue(activePlayer),
+    store.hassService.getQueue(activePlayer, forceRefresh),
     store.hassService.musicAssistantService.getCurrentQueueItemId(activePlayer),
   ]);
   const queueHash = queueItems.map((item) => item.title).join('|');

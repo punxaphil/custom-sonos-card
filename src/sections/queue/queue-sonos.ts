@@ -50,9 +50,9 @@ export class QueueSonos extends LitElement {
     }
   }
 
-  private async fetchQueue() {
+  private async fetchQueue(force = false) {
     try {
-      const queue = await this.store.hassService.getQueue(this.store.activePlayer);
+      const queue = await this.store.hassService.getQueue(this.store.activePlayer, force);
       const hash = queue.map((item) => item.title).join('|');
       if (hash !== this.lastQueueHash) {
         this.lastQueueHash = hash;
@@ -159,7 +159,7 @@ export class QueueSonos extends LitElement {
   }
 
   private async refetchAndScroll() {
-    await this.fetchQueue();
+    await this.fetchQueue(true);
     await this.updateComplete;
     await new Promise((r) => requestAnimationFrame(r));
     const pos = this.store.activePlayer.attributes.queue_position;
@@ -201,7 +201,7 @@ export class QueueSonos extends LitElement {
   private clearQueue = async () => {
     await this.store.hassService.clearQueue(this.store.activePlayer);
     this.exitSelectMode();
-    await this.fetchQueue();
+    await this.fetchQueue(true);
   };
 
   static get styles() {

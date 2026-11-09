@@ -7,10 +7,14 @@ import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../../../constants';
 import { itemsWithFallbacks } from '../../../utils/media-browse-utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { mediaGridCardStyles, renderMediaGridCard } from '../utils';
+import { LongPress } from '../../../utils/long-press';
 
 export class FavoritesIcons extends LitElement {
   @property({ attribute: false }) store!: Store;
   @property({ attribute: false }) items!: MediaPlayerItem[];
+  private longPress = new LongPress<MediaPlayerItem>((item) =>
+    this.dispatchEvent(new CustomEvent('item-long-press', { detail: { item }, bubbles: true, composed: true })),
+  );
 
   render() {
     const mediaBrowserConfig: MediaBrowserConfig = this.store.config.mediaBrowser ?? {};
@@ -51,6 +55,7 @@ export class FavoritesIcons extends LitElement {
               ${renderMediaGridCard({
                 item,
                 onClick: () => this.dispatchEvent(customEvent(MEDIA_ITEM_SELECTED, item)),
+                longPress: this.longPress,
                 thumbnailContent: item.thumbnail
                   ? html`<div class="image" style=${imageStyle}></div>`
                   : html`<div class="image image-placeholder" style=${thumbnailInset ? imageStyle : ''}></div>`,

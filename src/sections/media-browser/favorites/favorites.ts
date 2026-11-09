@@ -8,6 +8,7 @@ import { customEvent } from '../../../utils/utils';
 import { FavoritesConfig, MediaPlayerItem } from '../../../types';
 import { indexOfWithoutSpecialChars } from '../../../utils/media-browse-utils';
 import { LayoutType } from '../media-browser.types';
+import { getPinnedFavorites, PINNED_CHANGED } from '../../../services/pinned-favorites';
 
 export class Favorites extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -15,9 +16,17 @@ export class Favorites extends LitElement {
   @state() private cachedFavorites: MediaPlayerItem[] | null = null;
   private cachedFavoritesPlayerId: string | null = null;
 
+  private onPinnedChanged = () => void this.loadFavorites();
+
   connectedCallback() {
     super.connectedCallback();
+    window.addEventListener(PINNED_CHANGED, this.onPinnedChanged);
     void this.loadFavorites();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener(PINNED_CHANGED, this.onPinnedChanged);
   }
 
   willUpdate(changedProperties: Map<string, unknown>) {
@@ -41,10 +50,13 @@ export class Favorites extends LitElement {
   private async getFavorites() {
     const favoritesConfig: FavoritesConfig = this.store.config.mediaBrowser?.favorites ?? {};
     const player = this.store.activePlayer;
+    // favorites added from the card (long press → Add to favorites) come first
+    const pinned = (await getPinnedFavorites(this.store.hass)) as MediaPlayerItem[];
     let favorites = await this.store.mediaBrowseService.getFavorites(player);
     const topItems = favoritesConfig.topItems ?? [];
     favorites.sort((a, b) => this.sortFavorites(a.title, b.title, topItems));
     favorites = [
+      ...pinned.map((item) => ({ ...item, favoriteType: '★' })),
       ...(favoritesConfig.customFavorites?.[player.id]?.map(Favorites.createFavorite) || []),
       ...(favoritesConfig.customFavorites?.all?.map(Favorites.createFavorite) || []),
       ...favorites,

@@ -129,6 +129,8 @@ export interface MediaBrowserShortcut {
 
 export interface MediaBrowserConfig {
   favorites?: FavoritesConfig;
+  /** Show the A–Z rail on long alphabetical lists (default true). */
+  alphabetIndex?: boolean;
   hideHeader?: boolean;
   hideActivePlayerName?: boolean;
   hideItems?: string[];
