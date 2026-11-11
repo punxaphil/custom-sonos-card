@@ -13,6 +13,7 @@ import {
   Section,
 } from '../types';
 import { entityMatchMxmp, entityMatchSonos, getGroupPlayerIds, isSonosCard, sortEntities, supportsTurnOn } from '../utils/utils';
+import { getAllMediaPlayers } from '../utils/group-member-utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { nothing } from 'lit';
@@ -42,7 +43,7 @@ export default class Store {
     this.config = config;
     const mediaPlayerHassEntities = this.getMediaPlayerHassEntities(this.hass);
     this.allGroups = this.createPlayerGroups(mediaPlayerHassEntities);
-    this.allMediaPlayers = this.allGroups.reduce((previousValue: MediaPlayer[], currentValue) => [...previousValue, ...currentValue.members], []);
+    this.allMediaPlayers = getAllMediaPlayers(this.allGroups, this.config);
     this.activePlayer = this.determineActivePlayer(activePlayerId);
     this.hassService = new HassService(this.hass, currentSection, card);
     this.mediaControlService = new MediaControlService(this.hassService, config);

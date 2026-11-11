@@ -168,6 +168,7 @@ sectionButtonIcons: # customize icons for the section buttons
 startSection: groups # default is player. Use this to set the default section to show.
 storePlayerInSessionStorage: true # default is false. If set to true, the active player will be stored in the session storage instead of URL hash.
 widthPercentage: 75 # default is 100. Use this to change the width of the card.
+allowGroupMembersOutsideOfEntities: true # default is false. For group players that are not a member of their own group (e.g. Music Assistant sync groups), show their members in the volumes and grouping sections even if the members are not in the `entities` list.
 allowPlayerVolumeEntityOutsideOfGroup: true # default is false. Will allow the playerVolumeEntityId to be outside the group of the selected player.
 dynamicVolumeSlider: true # default is false. See more in section further down.
 dynamicVolumeSliderMax: 40 # default is 30. Use this to change the max value for the dynamic volume slider.
