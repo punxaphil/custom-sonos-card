@@ -28,6 +28,11 @@ export const COMMON_SCHEMA = [
     selector: { boolean: {} },
   },
   {
+    name: 'allowGroupMembersOutsideOfEntities',
+    help: 'Show members of group players (e.g. Music Assistant sync groups) in volumes and grouping, even if they are not in the entities list',
+    selector: { boolean: {} },
+  },
+  {
     name: 'allowPlayerVolumeEntityOutsideOfGroup',
     selector: { boolean: {} },
   },
