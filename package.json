@@ -14,7 +14,7 @@
     "lit": "^3.3.3"
   },
   "devDependencies": {
-    "@babel/core": "^8.1.0",
+    "@babel/core": "^8.1.2",
     "@eslint/js": "^9.39.4",
     "@types/eslint__js": "^9.14.0",
     "@types/node": "^26.6.6",
@@ -24,15 +24,15 @@
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
-    "jsdom": "^31.0.0",
-    "prettier": "^3.9.4",
+    "jsdom": "^31.0.1",
+    "prettier": "^3.10.1",
     "semver": "^7.8.6",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.1",
-    "vite": "^8.3.6",
+    "typescript-eslint": "^8.72.2",
+    "vite": "^8.3.8",
     "vitest": "^5.0.5",
-    "ws": "^8.22.1"
+    "ws": "^8.23.0"
   },
   "scripts": {
     "build": "npm run lint -- --fix && tsc --noEmit && vite build && bash create-dist-maxi-media-player.sh",
