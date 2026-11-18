@@ -2,6 +2,7 @@ import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { CardConfig } from '../types';
 import { getPlayerName } from '../utils/entity-name-utils';
+import { getGroupMemberCandidates } from '../utils/group-member-utils';
 import { findMatchingCustomFavorite } from '../utils/media-browse-utils';
 import { findPlayer, getGroupPlayerIds } from '../utils/utils';
 
@@ -69,7 +70,8 @@ export class MediaPlayer {
 
   private createGroupMembers(mainHassEntity: HassEntity, mediaPlayerHassEntities: HassEntity[]): MediaPlayer[] {
     const groupPlayerIds = getGroupPlayerIds(mainHassEntity);
-    return mediaPlayerHassEntities.reduce((players: MediaPlayer[], hassEntity) => {
+    const candidates = getGroupMemberCandidates(this.config, this.hass, mainHassEntity, mediaPlayerHassEntities);
+    return candidates.reduce((players: MediaPlayer[], hassEntity) => {
       if (groupPlayerIds.includes(hassEntity.entity_id)) {
         return [...players, new MediaPlayer(hassEntity, this.config, undefined, this.hass)];
       }

@@ -186,6 +186,7 @@ export interface CardConfig extends LovelaceCardConfig {
   startSection?: Section;
   // Common
   adjustVolumeRelativeToMainPlayer?: boolean;
+  allowGroupMembersOutsideOfEntities?: boolean;
   allowPlayerVolumeEntityOutsideOfGroup?: boolean;
   baseFontSize?: number;
   changeVolumeOnSlide?: boolean;
