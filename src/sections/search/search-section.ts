@@ -69,7 +69,6 @@ export class Search extends LitElement {
       this.massQueueConfigEntryId = (await this.musicAssistantService.discoverMassQueueConfigEntryId()) ?? '';
     } catch (error) {
       console.warn('Failed to discover Music Assistant configuration:', error);
-      this.massConfigEntryId = '';
       this.massQueueConfigEntryId = '';
     } finally {
       this.discoveryComplete = true;
