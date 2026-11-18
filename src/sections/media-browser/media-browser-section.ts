@@ -129,25 +129,29 @@ export class MediaBrowser extends LitElement {
     const hideActivePlayerName = config.hideActivePlayerName ?? false;
 
     return html`
-      ${config.hideHeader
-        ? ''
-        : html`<div class="header">
-            <div class="title-section">
-              <span class="title">${title}</span>
-              <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
-            </div>
-            ${onlyFavorites ? '' : renderShortcutButton(config.shortcut, this.onShortcutClick)}
-            ${onlyFavorites
-              ? ''
-              : html`<sonos-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></sonos-icon-button>
-                  <sonos-icon-button
-                    class=${this.isCurrentPathStart ? 'startpath-active' : ''}
-                    .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
-                    @click=${this.toggleStartPath}
-                    title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
-                  ></sonos-icon-button>`}
-            ${renderLayoutMenu(this.layout, this.handleMenuAction)}
-          </div>`}
+      ${
+        config.hideHeader
+          ? ''
+          : html`<div class="header">
+              <div class="title-section">
+                <span class="title">${title}</span>
+                <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
+              </div>
+              ${onlyFavorites ? '' : renderShortcutButton(config.shortcut, this.onShortcutClick)}
+              ${
+                onlyFavorites
+                  ? ''
+                  : html`<sonos-icon-button .path=${mdiPlayBoxMultiple} @click=${this.goToBrowser} title="Browse Media"></sonos-icon-button>
+                      <sonos-icon-button
+                        class=${this.isCurrentPathStart ? 'startpath-active' : ''}
+                        .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
+                        @click=${this.toggleStartPath}
+                        title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
+                      ></sonos-icon-button>`
+              }
+              ${renderLayoutMenu(this.layout, this.handleMenuAction)}
+            </div>`
+      }
       <sonos-favorites .store=${this.store} .layout=${this.layout} @item-selected=${this.onMediaItemSelected}></sonos-favorites>
     `;
   }

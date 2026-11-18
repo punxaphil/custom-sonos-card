@@ -13,9 +13,11 @@ export class SelectionActions extends LitElement {
 
   render() {
     return html`
-      ${this.showInvert
-        ? html`<sonos-icon-button .path=${mdiSelectInverse} @click=${this.invertSelection} title="Invert selection"></sonos-icon-button>`
-        : nothing}
+      ${
+        this.showInvert
+          ? html`<sonos-icon-button .path=${mdiSelectInverse} @click=${this.invertSelection} title="Invert selection"></sonos-icon-button>`
+          : nothing
+      }
       <sonos-play-menu .hasSelection=${this.hasSelection} .disabled=${this.disabled} @play-menu-action=${this.onPlayMenuAction}></sonos-play-menu>
     `;
   }

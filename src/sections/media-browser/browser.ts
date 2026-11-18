@@ -116,26 +116,30 @@ export class MediaBrowserBrowser extends LitElement {
     return html`
       ${this.playAllLoading ? html`<div class="loading-overlay"><div class="loading-spinner"></div></div>` : nothing}
       ${this.playAllWarning ? html`<div class="play-all-warning">${this.playAllWarning}</div>` : nothing}
-      ${config.hideHeader
-        ? ''
-        : html`<div class="header">
-            ${this.navigateIds.length > 1
-              ? html`<sonos-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></sonos-icon-button>`
-              : html`<div class="spacer"></div>`}
-            <div class="title-section">
-              <span class="title">${this.currentTitle || 'Media Browser'}</span>
-              <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
-            </div>
-            ${this.renderPlayAllButton()} ${renderShortcutButton(shortcut, () => this.navigateToShortcut(shortcut!), this.isShortcutActive(shortcut))}
-            <sonos-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></sonos-icon-button>
-            <sonos-icon-button
-              class=${this.isCurrentPathStart ? 'startpath-active' : ''}
-              .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
-              @click=${this.toggleStartPath}
-              title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
-            ></sonos-icon-button>
-            ${renderLayoutMenu(this.layout, this.handleLayoutChange)}
-          </div>`}
+      ${
+        config.hideHeader
+          ? ''
+          : html`<div class="header">
+              ${
+                this.navigateIds.length > 1
+                  ? html`<sonos-icon-button .path=${mdiArrowLeft} @click=${this.goBack}></sonos-icon-button>`
+                  : html`<div class="spacer"></div>`
+              }
+              <div class="title-section">
+                <span class="title">${this.currentTitle || 'Media Browser'}</span>
+                <span class="player-name" ?hidden=${hideActivePlayerName}>${playerName}</span>
+              </div>
+              ${this.renderPlayAllButton()} ${renderShortcutButton(shortcut, () => this.navigateToShortcut(shortcut!), this.isShortcutActive(shortcut))}
+              <sonos-icon-button .path=${mdiStar} @click=${this.goToFavorites} title="Favorites"></sonos-icon-button>
+              <sonos-icon-button
+                class=${this.isCurrentPathStart ? 'startpath-active' : ''}
+                .path=${this.isCurrentPathStart ? mdiFolderStar : mdiFolderStarOutline}
+                @click=${this.toggleStartPath}
+                title=${this.isCurrentPathStart ? 'Unset start page' : 'Set as start page'}
+              ></sonos-icon-button>
+              ${renderLayoutMenu(this.layout, this.handleLayoutChange)}
+            </div>`
+      }
       ${keyed(
         this.layout,
         html`<sonos-ha-media-player-browse
