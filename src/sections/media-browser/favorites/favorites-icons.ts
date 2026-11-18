@@ -4,9 +4,10 @@ import Store from '../../../model/store';
 import { FavoritesConfig, MediaBrowserConfig, MediaPlayerItem } from '../../../types';
 import { customEvent } from '../../../utils/utils';
 import { MEDIA_ITEM_SELECTED, mediaItemTitleStyle } from '../../../constants';
-import { itemsWithFallbacks } from '../../../utils/media-browse-utils';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { mediaGridCardStyles, renderMediaGridCard } from '../utils';
+import { getFavoriteItems } from './favorites-utils';
+import './favorite-type-header';
 
 export class FavoritesIcons extends LitElement {
   @property({ attribute: false }) store!: Store;
@@ -16,25 +17,10 @@ export class FavoritesIcons extends LitElement {
     const mediaBrowserConfig: MediaBrowserConfig = this.store.config.mediaBrowser ?? {};
     const favoritesConfig: FavoritesConfig = this.store.config.mediaBrowser?.favorites ?? {};
 
-    const items = itemsWithFallbacks(this.items, this.store.config);
-    let prevType: string | undefined = '';
-    this.sortItemsByFavoriteTypeIfConfigured(items, favoritesConfig);
-    const typeColor = favoritesConfig.typeColor;
-    const typeFontSize = favoritesConfig.typeFontSize;
-    const typeFontWeight = favoritesConfig.typeFontWeight;
-    const typeMarginBottom = favoritesConfig.typeMarginBottom;
+    const items = getFavoriteItems(this.items, this.store.config);
     return html`
-      <style>
-        .favorite-type {
-          ${typeColor ? `color: ${typeColor};` : ''}
-          ${typeFontSize ? `font-size: ${typeFontSize};` : ''}
-          ${typeFontWeight ? `font-weight: ${typeFontWeight};` : ''}
-          ${typeMarginBottom ? `margin-bottom: ${typeMarginBottom};` : ''}
-        }
-      </style>
       <div class="icons">
-        ${items.map((item) => {
-          const showFavoriteType = (favoritesConfig.sortByType && item.favoriteType !== prevType) || nothing;
+        ${items.map((item, index) => {
           const showTitle = !item.thumbnail || !favoritesConfig.hideTitleForThumbnailIcons;
           const thumbnailInset = favoritesConfig.iconPadding !== undefined ? `${favoritesConfig.iconPadding}rem` : undefined;
           const imageStyle = [
@@ -45,8 +31,12 @@ export class FavoritesIcons extends LitElement {
             color: favoritesConfig.iconTitleColor ?? '',
             backgroundColor: favoritesConfig.iconTitleBackgroundColor ?? '',
           });
-          const toRender = html`
-            <div class="favorite-type" show=${showFavoriteType}>${item.favoriteType}</div>
+          return html`
+            <sonos-favorite-type-header
+              .store=${this.store}
+              .favoriteType=${item.favoriteType}
+              .previousType=${items[index - 1]?.favoriteType}
+            ></sonos-favorite-type-header>
             <div style=${this.buttonStyle(mediaBrowserConfig.itemsPerRow || 4)}>
               ${renderMediaGridCard({
                 item,
@@ -59,19 +49,9 @@ export class FavoritesIcons extends LitElement {
               })}
             </div>
           `;
-          prevType = item.favoriteType;
-          return toRender;
         })}
       </div>
     `;
-  }
-
-  private sortItemsByFavoriteTypeIfConfigured(items: MediaPlayerItem[], config: FavoritesConfig) {
-    if (config.sortByType) {
-      items.sort((a, b) => {
-        return a.favoriteType?.localeCompare(b.favoriteType ?? '') || a.title.localeCompare(b.title);
-      });
-    }
   }
 
   private buttonStyle(favoritesItemsPerRow: number) {
@@ -95,18 +75,6 @@ export class FavoritesIcons extends LitElement {
 
         .image-placeholder {
           background: var(--secondary-background-color);
-        }
-
-        .favorite-type {
-          width: 100%;
-          display: none;
-          margin-top: 0.2rem;
-          margin-left: 15px;
-          font-weight: bold;
-        }
-
-        .favorite-type[show] {
-          display: block;
         }
       `,
     ];

@@ -397,7 +397,7 @@ mediaBrowser:
     iconTitleBackgroundColor: blue # default is card background with opacity. Use this to change the background color of favorites icon titles.
     iconTitleColor: red # default is theme text color. Use this to change the color of favorites icon titles.
     numberToShow: 10 # Use this to limit the amount of favorites to show.
-    sortByType: true # default is false. Will group favorites by type (e.g. radio, playlist, album).
+    sortByType: true # default is false. Groups favorites by type (e.g. radio, playlist, album) with type headers in both grid and list layouts.
     typeColor: blue # default is theme text color. Color for type headers when sortByType is enabled.
     typeFontSize: 18px # default is inherited. Font size for type headers.
     typeFontWeight: normal # default is bold. Font weight for type headers.
