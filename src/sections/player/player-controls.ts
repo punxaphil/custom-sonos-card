@@ -129,6 +129,9 @@ class PlayerControls extends LitElement {
         display: flex;
         align-items: center;
       }
+      .icons:first-child {
+        color: var(--secondary-text-color);
+      }
       .icons * {
         color: var(--controls-color, inherit);
       }
@@ -136,6 +139,7 @@ class PlayerControls extends LitElement {
         display: none !important;
       }
       .big-icon {
+        color: var(--controls-color, var(--primary-color));
         --icon-button-size: 5rem;
         --icon-size: 5rem;
       }

@@ -26,7 +26,7 @@ export const searchStyles = [
       align-items: center;
     }
     .media-type-icons sonos-icon-button[selected] {
-      color: var(--accent-color);
+      color: var(--primary-color);
     }
     .separator {
       width: 1px;
@@ -40,7 +40,7 @@ export const searchStyles = [
       cursor: pointer;
     }
     .library-filter-btn sonos-icon-button[selected] {
-      color: var(--accent-color);
+      color: var(--primary-color);
     }
     .library-filter-btn .overlay-icon {
       position: absolute;
@@ -48,7 +48,7 @@ export const searchStyles = [
       right: 2px;
       width: 14px;
       height: 14px;
-      fill: var(--accent-color);
+      fill: var(--primary-color);
       pointer-events: none;
     }
     .search-bar {
@@ -114,7 +114,7 @@ export const searchStyles = [
       display: inline-flex;
     }
     .filter-menu-anchor sonos-icon-button[selected] {
-      color: var(--accent-color);
+      color: var(--primary-color);
     }
     .filter-menu {
       position: absolute;
@@ -149,7 +149,7 @@ export const searchStyles = [
     }
     .filter-menu-item .check {
       --mdc-icon-size: 18px;
-      color: var(--accent-color);
+      color: var(--primary-color);
     }
     .filter-menu-divider {
       height: 1px;
@@ -162,7 +162,7 @@ export const searchStyles = [
       justify-content: center;
       padding: 8px 16px;
       cursor: pointer;
-      color: var(--accent-color);
+      color: var(--primary-color);
       font-size: 0.9rem;
       font-weight: 500;
     }

@@ -28,11 +28,11 @@ export class GroupingButton extends LitElement {
     return css`
       ha-control-button {
         width: fit-content;
-        --control-button-background-color: var(--secondary-text-color);
-        --control-button-icon-color: var(--secondary-text-color);
+        --control-button-background-color: var(--grouping-button-color, var(--accent-color));
+        --control-button-icon-color: var(--grouping-button-color, var(--accent-color));
       }
       ha-control-button[selected] {
-        --control-button-icon-color: var(--accent-color);
+        --control-button-background-opacity: 0.3;
       }
 
       span {

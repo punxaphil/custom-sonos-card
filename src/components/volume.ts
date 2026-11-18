@@ -27,7 +27,9 @@ class Volume extends LitElement {
     this.mediaControlService = this.store.mediaControlService;
 
     const volume = this.player.getVolume();
-    const max = this.getMax();
+    const dynamicThreshold = Math.max(0, Math.min(this.config.dynamicVolumeSliderThreshold ?? 20, 100));
+    const max = this.getMax(dynamicThreshold);
+    const overThreshold = this.config.dynamicVolumeSlider && volume >= dynamicThreshold;
 
     const isMuted = this.updateMembers ? this.player.isGroupMuted() : this.player.isMemberMuted();
     const muteIcon = isMuted ? mdiVolumeMute : mdiVolumeHigh;
@@ -59,7 +61,7 @@ class Volume extends LitElement {
             @value-changed=${this.volumeChanged}
             @slider-moved=${this.sliderMoved}
             .disabled=${disabled}
-            class=${this.config.dynamicVolumeSlider && max === 100 ? 'over-threshold' : ''}
+            class=${overThreshold ? 'over-threshold' : ''}
             style=${sliderStyle}
           ></ha-control-slider>
           <div class="volume-level" hide=${(this.isPlayer && this.playerConfig.hideVolumePercentage) || nothing}>
@@ -74,9 +76,8 @@ class Volume extends LitElement {
     `;
   }
 
-  private getMax() {
+  private getMax(dynamicThreshold: number) {
     const volume = this.sliderMoving ? this.startVolumeSliderMoving : this.player.getVolume();
-    const dynamicThreshold = Math.max(0, Math.min(this.config.dynamicVolumeSliderThreshold ?? 20, 100));
     const dynamicMax = Math.max(0, Math.min(this.config.dynamicVolumeSliderMax ?? 30, 100));
     return volume < dynamicThreshold && this.config.dynamicVolumeSlider ? dynamicMax : 100;
   }
@@ -109,11 +110,11 @@ class Volume extends LitElement {
   static get styles() {
     return css`
       ha-control-slider {
-        --control-slider-color: var(--accent-color);
+        --control-slider-color: var(--sonos-volume-slider-color, var(--primary-color));
       }
 
       ha-control-slider.over-threshold {
-        --control-slider-color: var(--primary-text-color);
+        --control-slider-color: var(--error-color);
       }
 
       ha-control-slider[disabled] {

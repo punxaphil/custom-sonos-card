@@ -73,7 +73,7 @@ class PlayerHeader extends LitElement {
         text-overflow: ellipsis;
         font-size: calc(var(--sonos-font-size, 1rem) * 1.15);
         font-weight: 400;
-        color: var(--accent-color);
+        color: var(--primary-color);
       }
 
       .artist-album {

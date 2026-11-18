@@ -23,7 +23,7 @@ export const groupingSectionStyles = [
       padding-top: 0.5rem;
     }
     .apply {
-      --control-button-background-color: var(--accent-color);
+      --control-button-background-color: var(--primary-color);
     }
     [hidden] {
       display: none !important;

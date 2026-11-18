@@ -43,7 +43,7 @@ export class SleepTimer extends LitElement {
       }
 
       #sleepTimerSubmit {
-        color: var(--accent-color);
+        color: var(--primary-color);
       }
 
       #sleepTimer > label {

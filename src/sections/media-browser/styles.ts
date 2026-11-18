@@ -57,10 +57,10 @@ export const mediaBrowserStyles = css`
     margin-top: 50%;
   }
   sonos-icon-button.startpath-active {
-    color: var(--accent-color);
+    color: var(--primary-color);
   }
   sonos-icon-button.shortcut-active {
-    color: var(--accent-color);
+    color: var(--primary-color);
   }
   .play-all-warning {
     padding: 8px 12px;

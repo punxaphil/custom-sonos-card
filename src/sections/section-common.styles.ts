@@ -62,7 +62,7 @@ export const sectionCommonStyles = css`
     --icon-size: 1em;
   }
   sonos-icon-button[selected] {
-    color: var(--accent-color);
+    color: var(--primary-color);
   }
   .loading {
     display: flex;

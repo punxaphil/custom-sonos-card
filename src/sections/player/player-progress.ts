@@ -87,7 +87,7 @@ class PlayerProgress extends LitElement {
       }
 
       .progress-bar {
-        background-color: var(--accent-color);
+        background-color: var(--primary-color);
         height: 50%;
         transition: width 0.1s linear;
       }

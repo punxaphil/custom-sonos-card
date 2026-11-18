@@ -281,7 +281,7 @@ export class Card extends LitElement {
         --mdc-icon-size: 2rem;
       }
       ha-circular-progress {
-        --md-sys-color-primary: var(--accent-color);
+        --md-sys-color-primary: var(--primary-color);
       }
       .loader {
         position: absolute;
@@ -289,7 +289,7 @@ export class Card extends LitElement {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        --mdc-theme-primary: var(--accent-color);
+        --mdc-theme-primary: var(--primary-color);
       }
       .title {
         margin: 0.4rem 0;

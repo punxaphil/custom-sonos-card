@@ -59,7 +59,7 @@ export class OperationOverlay extends LitElement {
         color: var(--primary-text-color, #fff);
       }
       .accent {
-        --control-button-background-color: var(--accent-color);
+        --control-button-background-color: var(--primary-color);
       }
     `;
   }

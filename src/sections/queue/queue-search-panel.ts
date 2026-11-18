@@ -102,7 +102,7 @@ export class QueueSearchPanel extends LitElement {
     }
     input:focus {
       outline: none;
-      border-color: var(--accent-color, #03a9f4);
+      border-color: var(--primary-color, #03a9f4);
     }
     input.no-match {
       border-color: var(--error-color, red);
@@ -118,7 +118,7 @@ export class QueueSearchPanel extends LitElement {
       --icon-size: 1.2rem;
     }
     .search-row sonos-icon-button[selected] {
-      color: var(--accent-color);
+      color: var(--primary-color);
     }
   `;
 }

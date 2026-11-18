@@ -3,7 +3,7 @@ import { mdiAlphaABoxOutline, mdiDotsVertical, mdiGrid, mdiListBoxOutline } from
 import { styleMap } from 'lit/directives/style-map.js';
 import '../../components/icon-button';
 
-const selectedStyle = { color: 'var(--accent-color)' };
+const selectedStyle = { color: 'var(--primary-color)' };
 
 export function renderLayoutMenu(layout: string, onSelect: (ev: CustomEvent<{ item: { value: string } }>) => void) {
   return html`

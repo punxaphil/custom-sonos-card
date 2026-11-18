@@ -36,7 +36,7 @@ export class SectionButton extends LitElement {
   static get styles() {
     return css`
       :host > *[selected] {
-        color: var(--accent-color);
+        color: var(--primary-color);
       }
     `;
   }

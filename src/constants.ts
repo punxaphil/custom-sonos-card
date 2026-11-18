@@ -17,7 +17,7 @@ export const MUSIC_NOTES_BASE64_IMAGE =
 
 export const listStyle = css`
   .list {
-    --mdc-theme-primary: var(--accent-color);
+    --mdc-theme-primary: var(--primary-color);
     --mdc-list-vertical-padding: 0px;
     overflow: hidden;
   }

@@ -67,15 +67,18 @@ fi
 echo -e "${YELLOW}Building...${NC}"
 cd "$PROJECT_ROOT"
 
+gzip -c "$PROJECT_ROOT/dist/custom-sonos-card.js" > "$PROJECT_ROOT/dist/custom-sonos-card.js.gz"
+gzip -c "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" > "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js.gz"
+
 echo -e "${YELLOW}Deploying files to HA server...${NC}"
 if [ "$DEPLOY_LOCAL" = true ]; then
     LOCAL_WWW="$HA_LOCALHOST_CONFIG_PATH/www/community"
     mkdir -p "$LOCAL_WWW/custom-sonos-card" "$LOCAL_WWW/maxi-media-player"
-    cp "$PROJECT_ROOT/dist/custom-sonos-card.js" "$LOCAL_WWW/custom-sonos-card/"
-    cp "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" "$LOCAL_WWW/maxi-media-player/"
+    cp "$PROJECT_ROOT/dist/custom-sonos-card.js" "$PROJECT_ROOT/dist/custom-sonos-card.js.gz" "$LOCAL_WWW/custom-sonos-card/"
+    cp "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js.gz" "$LOCAL_WWW/maxi-media-player/"
 else
-    scp $SCP_PORT_FLAG "$PROJECT_ROOT/dist/custom-sonos-card.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/custom-sonos-card/"
-    scp $SCP_PORT_FLAG "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/maxi-media-player/"
+    scp $SCP_PORT_FLAG "$PROJECT_ROOT/dist/custom-sonos-card.js" "$PROJECT_ROOT/dist/custom-sonos-card.js.gz" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/custom-sonos-card/"
+    scp $SCP_PORT_FLAG "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js" "$PROJECT_ROOT/dist-maxi-media-player/maxi-media-player.js.gz" "$HA_SSH_USER@$HA_SSH_HOST:$HA_SSH_PATH/maxi-media-player/"
 fi
 
 # Check for token in .env

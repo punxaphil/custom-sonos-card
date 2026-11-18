@@ -114,17 +114,21 @@ export class SearchResults extends LitElement {
               const selected = this.selectedIndices.has(index);
               return html`
                 <div class="grid-tile ${selected ? 'selected' : ''}" @click=${() => this.onItemClick(index)}>
-                  ${this.selectMode
-                    ? html`<ha-checkbox
-                        class="grid-checkbox"
-                        .checked=${selected}
-                        @change=${(e: Event) => this.onCheckboxChange(index, (e.target as HTMLInputElement).checked)}
-                        @click=${(e: Event) => e.stopPropagation()}
-                      ></ha-checkbox>`
-                    : ''}
-                  ${item.imageUrl
-                    ? html`<img class="grid-img" src="${item.imageUrl}" alt="${item.title}" loading="lazy" />`
-                    : html`<div class="grid-placeholder"><ha-svg-icon .path=${getMediaTypeIcon(item.mediaType)}></ha-svg-icon></div>`}
+                  ${
+                    this.selectMode
+                      ? html`<ha-checkbox
+                          class="grid-checkbox"
+                          .checked=${selected}
+                          @change=${(e: Event) => this.onCheckboxChange(index, (e.target as HTMLInputElement).checked)}
+                          @click=${(e: Event) => e.stopPropagation()}
+                        ></ha-checkbox>`
+                      : ''
+                  }
+                  ${
+                    item.imageUrl
+                      ? html`<img class="grid-img" src="${item.imageUrl}" alt="${item.title}" loading="lazy" />`
+                      : html`<div class="grid-placeholder"><ha-svg-icon .path=${getMediaTypeIcon(item.mediaType)}></ha-svg-icon></div>`
+                  }
                   <div class="grid-info">
                     <div class="grid-title">${item.title}</div>
                     ${item.subtitle ? html`<div class="grid-subtitle">${item.subtitle}</div>` : ''}
@@ -271,7 +275,7 @@ export class SearchResults extends LitElement {
           outline: 2px solid var(--divider-color, rgba(255, 255, 255, 0.2));
         }
         .grid-tile.selected {
-          outline: 2px solid var(--accent-color);
+          outline: 2px solid var(--primary-color);
         }
         .grid-checkbox {
           position: absolute;

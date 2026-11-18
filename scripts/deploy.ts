@@ -65,7 +65,7 @@ function getNextVersionedUrl(currentUrl: string, resourcePrefix: string, cardNam
   const normalizedUrl = currentUrl.startsWith(expectedPath) ? currentUrl : expectedPath;
   const parsedUrl = new URL(normalizedUrl, 'http://localhost');
   const currentTag = parseInt(parsedUrl.searchParams.get('hacstag') ?? '0', 10);
-  const nextTag = Number.isFinite(currentTag) && currentTag > 0 ? currentTag + 1 : 1;
+  const nextTag = Math.max(Number.isFinite(currentTag) && currentTag > 0 ? currentTag + 1 : 1, Date.now());
 
   parsedUrl.pathname = expectedPath;
   parsedUrl.searchParams.set('hacstag', String(nextTag));
@@ -179,7 +179,7 @@ function buildOperations(msg: HaMessage): ResourceOperation[] {
     const resource = resources.find((r) => r.url?.includes(cardName));
 
     if (!resource) {
-      const url = `${resourcePrefix}/${cardName}/${cardName}.js?hacstag=1`;
+      const url = getNextVersionedUrl('', resourcePrefix, cardName);
       console.log(`Resource for ${cardName} not found — will create it`);
       operations.push({ action: 'create', cardName, url });
       continue;

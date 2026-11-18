@@ -15,7 +15,7 @@ class GroupingItemRow extends LitElement {
     const isCompact = store.config.grouping?.compact || nothing;
     const isSelected = item.isSelected || nothing;
     return html`
-      <div class="item" modified=${isModified} disabled=${isDisabled} compact=${isCompact}>
+      <div class="item" selected=${isSelected} modified=${isModified} disabled=${isDisabled} compact=${isCompact}>
         <ha-icon class="icon" selected=${isSelected} .icon="mdi:${item.icon}" @click=${this.handleToggle}></ha-icon>
         <div class="name-and-volume">
           <span class="name">${item.name}</span>
@@ -53,7 +53,7 @@ class GroupingItemRow extends LitElement {
         padding-right: 0.5rem;
         flex-shrink: 0;
       }
-      .icon[selected] {
+      .item[selected] .icon {
         color: var(--accent-color);
       }
       .item[modified] .name {
@@ -68,8 +68,8 @@ class GroupingItemRow extends LitElement {
         flex-direction: column;
         flex: 1;
       }
-      .volume {
-        --accent-color: var(--secondary-text-color);
+      .item[selected] .volume {
+        --sonos-volume-slider-color: var(--accent-color);
       }
     `;
   }

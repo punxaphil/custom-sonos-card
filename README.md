@@ -313,7 +313,7 @@ player:
       imageUrl: '{{ states("sensor.my_cover_image_entity") }}'
   backgroundOverlayColor: 'rgba(0,0,0, 0.3)' # When artworkAsBackground is true, this sets the background overlay color for controls and header.
   controlsAndHeaderBackgroundOpacity: 0.7 # default is 0.9. Adjusts the opacity of the header and controls background when artworkAsBackground is enabled. Range 0-1.
-  controlsColor: pink # default is theme color. Use this to change the color of player control icons.
+  controlsColor: pink # Overrides all player control icons. Defaults to primary for play/pause and secondary text color for the other controls.
   controlsLargeIcons: true # default is false. Makes the player control icons larger.
   controlsMargin: '0 3rem' # default is '0.25rem'. Use this to change the margin around the player controls area.
   headerEntityFontSize: 0.8 # default is 1. Unit is 'rem'. Use this to change the font size of the entity name in the player header.
@@ -428,7 +428,7 @@ grouping:
   title: ''
   compact: true # default is false. Makes the grouping section more compact.
   dontSwitchPlayer: true # default is false. Will not switch to another player if main player is ungrouped.
-  buttonColor: black # default is theme accent color. Use this to change the background/accent color of grouping buttons.
+  buttonColor: black # Overrides grouping button backgrounds. Defaults to primary for select all, error for select none, and accent for predefined groups.
   buttonFontSize: 1.2 # default is 1. Unit is 'em'. Use this to change the font size of grouping buttons.
   buttonIcons: # Use this to set custom icons for the grouping buttons.
     predefinedGroup: mdi:account-group # default is mdi:speaker-multiple
@@ -524,9 +524,17 @@ cards:
 
 The following variables are being used and can be set in your theme to change the appearance of the card:
 
+The card uses `--primary-color` for play/pause, progress indicators, and general highlights. Other player controls and the player name use `--secondary-text-color`.
+
+In Groups, icons, text, and playing indicators use `--secondary-text-color`. The selected group uses an accent-tinted background; other groups use primary-tinted backgrounds. `groups.backgroundColor` overrides the tinted backgrounds.
+
+In Grouping, checked icons and slider fills use accent; unchecked slider fills use primary. Player names, volume icons, and percentages retain their normal text colors. Select all uses primary, select none uses error, and predefined group buttons use accent. Disabled controls retain their disabled styling.
+
 ```
 --accent-color
 --primary-color
+--primary-text-color
+--error-color
 --secondary-text-color
 --secondary-background-color
 --disabled-text-color
@@ -665,9 +673,8 @@ The shortcut button will appear in the media browser header (both in Favorites a
 
 ## Dynamic volume level slider
 
-The volume level slider is dynamically adjusting its scale. If volume is below 20% it will show a scale up to 30%. Above
-20% it will show a scale up to 100%. The color will also change from green to red clearly indicating which scale is
-being used.
+The volume level slider dynamically adjusts its scale. Below the threshold (20% by default), it shows a scale up to 30%.
+At or above the threshold, it shows a scale up to 100% and uses `--error-color` for the slider fill. While dragging, the scale remains fixed but the warning color follows the current volume.
 
 ![dynamic_volumes.png](https://github.com/punxaphil/custom-sonos-card/raw/main/img/dynamic_volumes.png)
 
@@ -720,8 +727,7 @@ card_mod:
     ha-card {
       color: white !important;
       background: gray;
-      --accent-color: pink;
-      --primary-color: white;
+      --primary-color: pink;
       --secondary-text-color: white;
       --secondary-background-color: pink;
     }
@@ -792,8 +798,8 @@ For SSH to work, passwordless login (e.g. using ssh-copy-id) is expected to alre
 ### Development Workflow
 
 1. Make your changes in `src/`.
-2. Run `npm run deploy` to build and deploy to your HA instance for manual testing. The deploy script automatically increments the resource version (`hacstag`) so HA picks up the new build without cache issues.
-   - If you instead want to manually copy the built file to your HA instance, you can find it in `dist/custom-sonos-card.js`. Copy this file to your HA `www/community/custom-sonos-card/` directory and update the resource reference in your Lovelace config if needed.
+2. Run `npm run deploy` to build and deploy to your HA instance for manual testing. The deploy script uploads both JavaScript and precompressed gzip files and advances the resource version (`hacstag`) to at least the current timestamp so HA picks up the new build without reusing an older cached version.
+   - If you instead want to manually copy the built file to your HA instance, you can find it in `dist/custom-sonos-card.js`. Copy this file to your HA `www/community/custom-sonos-card/` directory and update the resource reference in your Lovelace config if needed. If a `.js.gz` file already exists beside it, regenerate or remove that compressed copy too, since HA may serve it instead.
 3. Commit using [Conventional Commits](https://www.conventionalcommits.org/) format (e.g. `feat: add new feature`, `fix: resolve bug`, `feat(favorites): scoped feature`). This is used for automatic release note generation.
 
 ### Pull Requests

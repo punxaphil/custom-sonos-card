@@ -75,9 +75,6 @@ class PlayerFavoriteButton extends LitElement {
       [hidden] {
         display: none !important;
       }
-      .favorite-button.is-favorite {
-        color: var(--accent-color);
-      }
       .favorite-button.loading {
         opacity: 0.5;
       }

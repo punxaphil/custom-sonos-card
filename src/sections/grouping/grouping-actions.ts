@@ -20,6 +20,7 @@ class GroupingActions extends LitElement {
     return html`
       <div class="predefined-groups" compact=${isCompact}>
         <sonos-grouping-button
+          class="select-all"
           ?hidden=${hideUngroupButtons || !notJoinedCount}
           @click=${() => this.dispatch({ type: 'select-all' })}
           .icon=${joinAllIcon}
@@ -27,6 +28,7 @@ class GroupingActions extends LitElement {
           .fontSize=${fontSize}
         ></sonos-grouping-button>
         <sonos-grouping-button
+          class="select-none"
           ?hidden=${hideUngroupButtons || !joinedCount}
           @click=${() => this.dispatch({ type: 'deselect-all' })}
           .icon=${unJoinAllIcon}
@@ -54,6 +56,12 @@ class GroupingActions extends LitElement {
 
   static get styles() {
     return css`
+      .select-all {
+        --grouping-button-color: var(--primary-color);
+      }
+      .select-none {
+        --grouping-button-color: var(--error-color);
+      }
       .predefined-groups {
         margin: 1rem;
         display: flex;

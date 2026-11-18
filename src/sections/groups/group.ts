@@ -75,11 +75,18 @@ class Group extends LitElement {
   static get styles() {
     return css`
       mwc-list-item {
+        --group-color: var(--primary-color);
+        --mdc-theme-primary: var(--group-color);
         height: fit-content;
         margin: 1rem;
         border-radius: 1rem;
-        background: var(--secondary-background-color);
+        color: var(--secondary-text-color);
+        background: color-mix(in srgb, var(--group-color) 12%, var(--secondary-background-color));
         padding-left: 0;
+      }
+
+      mwc-list-item[selected] {
+        --group-color: var(--accent-color);
       }
 
       mwc-list-item.compact {
@@ -87,6 +94,7 @@ class Group extends LitElement {
       }
 
       .row {
+        color: var(--secondary-text-color);
         display: flex;
         margin: 1em 0;
         align-items: center;
@@ -102,12 +110,10 @@ class Group extends LitElement {
         white-space: initial;
         font-size: calc(var(--sonos-font-size, 1rem) * 1.1);
         font-weight: bold;
-        color: var(--secondary-text-color);
       }
 
       .song-title {
         font-size: calc(var(--sonos-font-size, 1rem) * 0.9);
-        font-weight: bold;
       }
 
       .compact ha-icon {

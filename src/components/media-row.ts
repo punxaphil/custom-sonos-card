@@ -48,46 +48,58 @@ class MediaRow extends LitElement {
         style="${cssVars}"
       >
         <div class="row">
-          ${this.showCheckbox
-            ? html`<div class="icon-slot">
-                <ha-checkbox .checked=${this.checked} @change=${this.onCheckboxChange} @click=${(e: Event) => e.stopPropagation()}></ha-checkbox>
-              </div>`
-            : this.showQueueButton
+          ${
+            this.showCheckbox
               ? html`<div class="icon-slot">
-                  <sonos-icon-button
-                    class=${classMap({ 'queue-btn': true, disabled: this.queueButtonDisabled })}
-                    .path=${mdiSkipNext}
-                    ?disabled=${this.queueButtonDisabled}
-                    @click=${this.onQueueClick}
-                  ></sonos-icon-button>
+                  <ha-checkbox .checked=${this.checked} @change=${this.onCheckboxChange} @click=${(e: Event) => e.stopPropagation()}></ha-checkbox>
                 </div>`
-              : nothing}
+              : this.showQueueButton
+                ? html`<div class="icon-slot">
+                    <sonos-icon-button
+                      class=${classMap({ 'queue-btn': true, disabled: this.queueButtonDisabled })}
+                      .path=${mdiSkipNext}
+                      ?disabled=${this.queueButtonDisabled}
+                      @click=${this.onQueueClick}
+                    ></sonos-icon-button>
+                  </div>`
+                : nothing
+          }
           ${renderFavoritesItem(this.item)}
         </div>
         <div class="meta-content" slot="meta">
           <sonos-playing-bars .show=${this.playing}></sonos-playing-bars>
-          ${hasBadges
-            ? html`<div class="badges">
-                ${showClickableHeart
-                  ? html`<div class="badge-toggle ${this.favoriteLoading ? 'loading' : ''}" @click=${this.onFavoriteClick}>
-                      ${this.favoriteLoading
-                        ? html`<ha-circular-progress indeterminate size="tiny"></ha-circular-progress>`
-                        : html`<ha-svg-icon class=${this.isFavorite ? 'accent' : ''} .path=${this.isFavorite ? mdiHeart : mdiHeartOutline}></ha-svg-icon>`}
-                    </div>`
-                  : this.showFavoriteBadge
-                    ? html`<ha-svg-icon class="accent" .path=${mdiHeart}></ha-svg-icon>`
-                    : nothing}
-                ${showClickableLibrary
-                  ? html`<div class="badge-toggle ${this.libraryLoading ? 'loading' : ''}" @click=${this.onLibraryClick}>
-                      ${this.libraryLoading
-                        ? html`<ha-circular-progress indeterminate size="tiny"></ha-circular-progress>`
-                        : html`<ha-svg-icon class=${this.isInLibrary ? 'accent' : ''} .path=${mdiBookshelf}></ha-svg-icon>`}
-                    </div>`
-                  : this.showLibraryBadge
-                    ? html`<ha-svg-icon class="accent" .path=${mdiBookshelf}></ha-svg-icon>`
-                    : nothing}
-              </div>`
-            : nothing}
+          ${
+            hasBadges
+              ? html`<div class="badges">
+                  ${
+                    showClickableHeart
+                      ? html`<div class="badge-toggle ${this.favoriteLoading ? 'loading' : ''}" @click=${this.onFavoriteClick}>
+                          ${
+                            this.favoriteLoading
+                              ? html`<ha-circular-progress indeterminate size="tiny"></ha-circular-progress>`
+                              : html`<ha-svg-icon class=${this.isFavorite ? 'accent' : ''} .path=${this.isFavorite ? mdiHeart : mdiHeartOutline}></ha-svg-icon>`
+                          }
+                        </div>`
+                      : this.showFavoriteBadge
+                        ? html`<ha-svg-icon class="accent" .path=${mdiHeart}></ha-svg-icon>`
+                        : nothing
+                  }
+                  ${
+                    showClickableLibrary
+                      ? html`<div class="badge-toggle ${this.libraryLoading ? 'loading' : ''}" @click=${this.onLibraryClick}>
+                          ${
+                            this.libraryLoading
+                              ? html`<ha-circular-progress indeterminate size="tiny"></ha-circular-progress>`
+                              : html`<ha-svg-icon class=${this.isInLibrary ? 'accent' : ''} .path=${mdiBookshelf}></ha-svg-icon>`
+                          }
+                        </div>`
+                      : this.showLibraryBadge
+                        ? html`<ha-svg-icon class="accent" .path=${mdiBookshelf}></ha-svg-icon>`
+                        : nothing
+                  }
+                </div>`
+              : nothing
+          }
           <slot></slot>
         </div>
       </mwc-list-item>
@@ -155,7 +167,7 @@ class MediaRow extends LitElement {
         }
 
         .button.search-highlight {
-          outline: 2px solid var(--accent-color, #03a9f4);
+          outline: 2px solid var(--primary-color, #03a9f4);
           outline-offset: -2px;
         }
 
@@ -225,7 +237,7 @@ class MediaRow extends LitElement {
         }
 
         .badges ha-svg-icon.accent {
-          color: var(--accent-color, #03a9f4);
+          color: var(--primary-color, #03a9f4);
           opacity: 1;
         }
 

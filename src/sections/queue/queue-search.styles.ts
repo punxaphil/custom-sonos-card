@@ -5,7 +5,7 @@ export const queueSearchStyles = css`
     display: contents;
   }
   :host > sonos-icon-button[selected] {
-    color: var(--accent-color);
+    color: var(--primary-color);
   }
   .search-row {
     display: flex;
@@ -30,7 +30,7 @@ export const queueSearchStyles = css`
   }
   input:focus {
     outline: none;
-    border-color: var(--accent-color, #03a9f4);
+    border-color: var(--primary-color, #03a9f4);
   }
   input.no-match {
     border-color: var(--error-color, red);
@@ -46,6 +46,6 @@ export const queueSearchStyles = css`
     --icon-size: 1.2rem;
   }
   .search-row sonos-icon-button[selected] {
-    color: var(--accent-color);
+    color: var(--primary-color);
   }
 `;

@@ -36,15 +36,17 @@ export class Volumes extends LitElement {
     const buttonStyle = sliderHeight ? `height: ${sliderHeight}rem;--icon-button-size: ${sliderHeight}rem;--icon-size: ${sliderHeight * 0.75}rem;` : '';
     return html` <div class="row">
       <div class="volume-name">
-        ${updateMembers && groupName
-          ? html`
-              <div class="volume-name-text grouped-name">
-                <span class="grouped-name-prefix">${name} (</span>
-                <span class="grouped-name-main">${groupName}</span>
-                <span class="grouped-name-suffix">)</span>
-              </div>
-            `
-          : html`<div class="volume-name-text">${name}</div>`}
+        ${
+          updateMembers && groupName
+            ? html`
+                <div class="volume-name-text grouped-name">
+                  <span class="grouped-name-prefix">${name} (</span>
+                  <span class="grouped-name-main">${groupName}</span>
+                  <span class="grouped-name-suffix">)</span>
+                </div>
+              `
+            : html`<div class="volume-name-text">${name}</div>`
+        }
       </div>
       <div class="slider-row">
         <sonos-icon-button
@@ -169,7 +171,7 @@ export class Volumes extends LitElement {
       }
 
       *[show-switches] {
-        color: var(--accent-color);
+        color: var(--primary-color);
       }
 
       [hidden] {
