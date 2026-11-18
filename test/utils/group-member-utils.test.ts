@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { HomeAssistant } from 'custom-card-helpers';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { MediaPlayer } from '../../src/model/media-player';
+import Store from '../../src/model/store';
+import { CardConfig, Section } from '../../src/types';
 import { getAllMediaPlayers, getGroupMemberCandidates, isGroupPlayer } from '../../src/utils/group-member-utils';
 import { newConfig } from './utils.test';
 
@@ -72,5 +74,53 @@ describe('getAllMediaPlayers', () => {
 
   it('lists each player once when enabled', () => {
     expect(getAllMediaPlayers(groups, enabled).map((player) => player.id)).toEqual([LIVING_ROOM_ID, KITCHEN_ID]);
+  });
+});
+
+describe('Store group players', () => {
+  const entities = [SYNC_GROUP_ID, LIVING_ROOM_ID, KITCHEN_ID];
+  const createStore = (config: Partial<CardConfig>, states = hass.states) =>
+    new Store(
+      { ...hass, states },
+      newConfig({ entities, doNotRememberSelectedPlayer: true, ...config }),
+      Section.VOLUMES,
+      document.createElement('div'),
+      SYNC_GROUP_ID,
+    );
+
+  it('retains and selects a sync group configured alongside its members when enabled', () => {
+    const store = createStore({ allowGroupMembersOutsideOfEntities: true });
+
+    expect(store.allGroups.map((group) => group.id)).toContain(SYNC_GROUP_ID);
+    expect(store.activePlayer.id).toBe(SYNC_GROUP_ID);
+    expect(store.activePlayer.members.map((member) => member.id)).toEqual([LIVING_ROOM_ID, KITCHEN_ID]);
+    expect(store.allMediaPlayers.map((player) => player.id)).toEqual([LIVING_ROOM_ID, KITCHEN_ID]);
+  });
+
+  it.each([false, undefined])('preserves sync group filtering when the option is %s', (allowGroupMembersOutsideOfEntities) => {
+    const store = createStore({ allowGroupMembersOutsideOfEntities });
+
+    expect(store.allGroups.map((group) => group.id)).toEqual([LIVING_ROOM_ID, KITCHEN_ID]);
+    expect(store.activePlayer.id).not.toBe(SYNC_GROUP_ID);
+  });
+
+  it('excludes unavailable sync groups even when enabled', () => {
+    const store = createStore({ allowGroupMembersOutsideOfEntities: true }, { ...hass.states, [SYNC_GROUP_ID]: { ...syncGroup, state: 'unavailable' } });
+
+    expect(store.allGroups.map((group) => group.id)).not.toContain(SYNC_GROUP_ID);
+  });
+
+  it('keeps only the leader of a native speaker group when enabled', () => {
+    const groupMembers = [LIVING_ROOM_ID, KITCHEN_ID];
+    const store = createStore(
+      { entities: groupMembers, allowGroupMembersOutsideOfEntities: true },
+      {
+        [LIVING_ROOM_ID]: entity(LIVING_ROOM_ID, groupMembers),
+        [KITCHEN_ID]: entity(KITCHEN_ID, groupMembers),
+      },
+    );
+
+    expect(store.allGroups.map((group) => group.id)).toEqual([LIVING_ROOM_ID]);
+    expect(store.activePlayer.members.map((member) => member.id)).toEqual(groupMembers);
   });
 });

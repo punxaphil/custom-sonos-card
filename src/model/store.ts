@@ -13,7 +13,7 @@ import {
   Section,
 } from '../types';
 import { entityMatchMxmp, entityMatchSonos, getGroupPlayerIds, isSonosCard, sortEntities, supportsTurnOn } from '../utils/utils';
-import { getAllMediaPlayers } from '../utils/group-member-utils';
+import { getAllMediaPlayers, isGroupPlayer } from '../utils/group-member-utils';
 import { MediaPlayer } from './media-player';
 import { HassEntity } from 'home-assistant-js-websocket';
 import { nothing } from 'lit';
@@ -149,7 +149,7 @@ export default class Store {
       const isGrouped = groupIds?.length > 1;
       const isMainInGroup = isGrouped && groupIds && groupIds[0] === hassEntity.entity_id;
       const available = this.hass.states[hassEntity.entity_id]?.state !== 'unavailable';
-      return (!isGrouped || isMainInGroup) && available;
+      return ((this.config.allowGroupMembersOutsideOfEntities && isGroupPlayer(hassEntity)) || !isGrouped || isMainInGroup) && available;
     } catch (e) {
       console.error('Failed to determine main player', JSON.stringify(hassEntity), e);
       return false;
