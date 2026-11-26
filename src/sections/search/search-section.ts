@@ -49,7 +49,14 @@ export class Search extends LitElement {
     this.searchService?.dispose();
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<Search>): void {
+    if (changedProperties.has('results')) {
+      const previousResults = changedProperties.get('results') ?? [];
+      if (previousResults.length !== this.results.length || previousResults.some((item, index) => item.uri !== this.results[index].uri)) {
+        this.searchResults?.clearSelectionState();
+        this.hasSelection = false;
+      }
+    }
     if (changedProperties.has('store') && !this.searchService) {
       this.musicAssistantService = new MusicAssistantService(this.store.hass);
       this.searchService = new SearchService(this);

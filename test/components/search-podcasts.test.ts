@@ -66,7 +66,7 @@ describe('podcast search navigation', () => {
     expect(onBrowse).not.toHaveBeenCalled();
   });
 
-  it('updates radio visibility when selected result types change or a podcast is added to the selection', async () => {
+  it.each(['shrink', 'replace', 'reorder', 'clear'] as const)('synchronizes selection and resets it when results %s', async (change) => {
     vi.stubGlobal(
       'ResizeObserver',
       class {
@@ -104,12 +104,25 @@ describe('podcast search navigation', () => {
     expect(results.hasSelection).toBe(true);
     expect(header.hasSelection).toBe(true);
     expect(header.showRadio).toBe(false);
-    element.results = [element.results[0]];
+    element.results = element.results.map((item) => ({ ...item, favorite: true }));
     await element.updateComplete;
+    expect(results.hasSelection).toBe(true);
+    expect(header.hasSelection).toBe(true);
+    const changedResults = {
+      shrink: [element.results[0]],
+      replace: [{ ...PODCAST, uri: 'library://podcast/another' }],
+      reorder: [...element.results].reverse(),
+      clear: [],
+    };
+    element.results = changedResults[change];
+    await element.updateComplete;
+    await results.updateComplete;
+    await header.updateComplete;
+    expect(results.hasSelection).toBe(false);
+    expect(header.hasSelection).toBe(false);
     expect(header.showRadio).toBe(true);
-    element.results = [PODCAST];
-    await element.updateComplete;
-    expect(header.showRadio).toBe(false);
+    expect(header.shadowRoot!.querySelector<SelectionActions>('sonos-selection-actions')!.hasSelection).toBe(false);
+    await expect(results.executeSelectionAction({ enqueue: 'play' })).resolves.toBeUndefined();
   });
 
   it('renders episodes and plays the clicked episode through the existing media control service', async () => {
