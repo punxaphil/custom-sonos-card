@@ -20,10 +20,13 @@ export class SearchBrowseView extends LitElement {
   @state() private browseResults: SearchResultItem[] = [];
   @state() private browseLoading = false;
   @state() private browseError: string | null = null;
+  private browseRequestId = 0;
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has('item') && this.item) {
       this.loadCollection();
+    } else if (changedProperties.has('item')) {
+      this.browseRequestId++;
     }
   }
 
@@ -85,20 +88,30 @@ export class SearchBrowseView extends LitElement {
   }
 
   private async loadCollection() {
+    const requestId = ++this.browseRequestId;
+    const item = this.item!;
     this.browseLoading = true;
     this.browseResults = [];
     this.browseError = null;
     try {
-      this.browseResults = await this.musicAssistantService.getCollectionItems(this.item!.uri, this.item!.mediaType, this.massQueueConfigEntryId);
+      const results = await this.musicAssistantService.getCollectionItems(item.uri, item.mediaType, this.massQueueConfigEntryId);
+      if (requestId === this.browseRequestId) {
+        this.browseResults = results;
+      }
     } catch (e) {
       console.error('Failed to browse collection:', e);
-      this.browseError = e instanceof Error ? e.message : 'Failed to browse collection';
+      if (requestId === this.browseRequestId) {
+        this.browseError = e instanceof Error ? e.message : 'Failed to browse collection';
+      }
     } finally {
-      this.browseLoading = false;
+      if (requestId === this.browseRequestId) {
+        this.browseLoading = false;
+      }
     }
   }
 
   private goBack() {
+    this.browseRequestId++;
     this.browseResults = [];
     this.browseLoading = false;
     this.browseError = null;

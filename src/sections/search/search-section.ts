@@ -173,7 +173,6 @@ export class Search extends LitElement {
       this.toggleViewMode();
     } else if (detail.type === 'invert-selection') {
       this.searchResults?.handleInvertSelection();
-      this.requestUpdate();
     } else if (detail.type === 'selection-action') {
       this.searchResults?.executeSelectionAction(detail.action);
     }

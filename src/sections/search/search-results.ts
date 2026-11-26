@@ -152,6 +152,7 @@ export class SearchResults extends LitElement {
 
   handleInvertSelection() {
     this.selectedIndices = invertSelection(this.selectedIndices, this.results.length);
+    this.dispatchEvent(customEvent('has-selection-change', this.hasSelection));
   }
 
   clearSelectionState() {
