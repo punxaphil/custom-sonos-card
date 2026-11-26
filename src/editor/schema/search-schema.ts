@@ -5,6 +5,7 @@ const mediaTypeOptions = {
   album: 'Album',
   playlist: 'Playlist',
   radio: 'Radio',
+  podcast: 'Podcast',
 };
 
 const viewModeOptions = {

@@ -17,6 +17,7 @@ const PLAY_MENU_ACTIONS: PlayMenuAction[] = [
 export class PlayMenu extends LitElement {
   @property({ type: Boolean }) disabled = false;
   @property({ type: Boolean }) hasSelection = false;
+  @property({ type: Boolean }) showRadio = true;
   /** When true, renders as an already-open dropdown panel instead of a trigger button */
   @property({ type: Boolean }) inline = false;
 
@@ -44,8 +45,8 @@ export class PlayMenu extends LitElement {
       <div class="inline-menu" @click=${(e: Event) => e.stopPropagation()}>
         <sonos-icon-button class="close-btn" .path=${mdiClose} @click=${this.closeMenu} title="Close"></sonos-icon-button>
         ${PLAY_MENU_ACTIONS.map(
-          (_action, index) => html`
-            <div class="inline-menu-item" @click=${() => this.selectAction(index)}>
+          (action, index) => html`
+            <div class="inline-menu-item" ?hidden=${action.radioMode && !this.showRadio} @click=${() => this.selectAction(index)}>
               <ha-svg-icon .path=${this.getActionIcon(index)}></ha-svg-icon>
               <span>${this.getActionLabel(index)}</span>
             </div>
@@ -61,7 +62,7 @@ export class PlayMenu extends LitElement {
         <ha-svg-icon slot="icon" .path=${mdiPlayBoxMultiple}></ha-svg-icon>
         Play Now (clear queue)
       </ha-dropdown-item>
-      <ha-dropdown-item value="1">
+      <ha-dropdown-item value="1" ?hidden=${!this.showRadio}>
         <ha-svg-icon slot="icon" .path=${mdiAccessPoint}></ha-svg-icon>
         Start Radio
       </ha-dropdown-item>
@@ -113,6 +114,9 @@ export class PlayMenu extends LitElement {
   static styles = css`
     :host {
       display: contents;
+    }
+    [hidden] {
+      display: none !important;
     }
     .inline-menu {
       position: relative;

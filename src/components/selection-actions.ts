@@ -10,6 +10,7 @@ export class SelectionActions extends LitElement {
   @property({ type: Boolean }) hasSelection = false;
   @property({ type: Boolean }) disabled = false;
   @property({ type: Boolean }) showInvert = true;
+  @property({ type: Boolean }) showRadio = true;
 
   render() {
     return html`
@@ -18,7 +19,12 @@ export class SelectionActions extends LitElement {
           ? html`<sonos-icon-button .path=${mdiSelectInverse} @click=${this.invertSelection} title="Invert selection"></sonos-icon-button>`
           : nothing
       }
-      <sonos-play-menu .hasSelection=${this.hasSelection} .disabled=${this.disabled} @play-menu-action=${this.onPlayMenuAction}></sonos-play-menu>
+      <sonos-play-menu
+        .hasSelection=${this.hasSelection}
+        .disabled=${this.disabled}
+        .showRadio=${this.showRadio}
+        @play-menu-action=${this.onPlayMenuAction}
+      ></sonos-play-menu>
     `;
   }
 

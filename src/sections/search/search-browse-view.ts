@@ -19,6 +19,7 @@ export class SearchBrowseView extends LitElement {
   @property() massQueueConfigEntryId = '';
   @state() private browseResults: SearchResultItem[] = [];
   @state() private browseLoading = false;
+  @state() private browseError: string | null = null;
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has('item') && this.item) {
@@ -41,7 +42,7 @@ export class SearchBrowseView extends LitElement {
             <ha-svg-icon slot="icon" .path=${mdiPlayBoxMultiple}></ha-svg-icon>
             Play Now (clear queue)
           </ha-dropdown-item>
-          <ha-dropdown-item value="1">
+          <ha-dropdown-item value="1" ?hidden=${this.item.mediaType === 'podcast'}>
             <ha-svg-icon slot="icon" .path=${mdiAccessPoint}></ha-svg-icon>
             Start Radio
           </ha-dropdown-item>
@@ -66,7 +67,8 @@ export class SearchBrowseView extends LitElement {
         <sonos-icon-button .path=${typeIcon} disabled class="type-indicator"></sonos-icon-button>
       </div>
       <div class="loading" ?hidden=${!this.browseLoading || this.browseResults.length > 0}><ha-spinner></ha-spinner></div>
-      <div class="no-results" ?hidden=${this.browseLoading || this.browseResults.length > 0}>No items found</div>
+      <div class="no-results" ?hidden=${!this.browseError}>${this.browseError}</div>
+      <div class="no-results" ?hidden=${this.browseLoading || !!this.browseError || this.browseResults.length > 0}>No items found</div>
       <div class="list" ?hidden=${this.browseResults.length === 0}>
         <mwc-list multi>
           ${repeat(
@@ -84,10 +86,13 @@ export class SearchBrowseView extends LitElement {
 
   private async loadCollection() {
     this.browseLoading = true;
+    this.browseResults = [];
+    this.browseError = null;
     try {
       this.browseResults = await this.musicAssistantService.getCollectionItems(this.item!.uri, this.item!.mediaType, this.massQueueConfigEntryId);
     } catch (e) {
       console.error('Failed to browse collection:', e);
+      this.browseError = e instanceof Error ? e.message : 'Failed to browse collection';
     } finally {
       this.browseLoading = false;
     }
@@ -96,6 +101,7 @@ export class SearchBrowseView extends LitElement {
   private goBack() {
     this.browseResults = [];
     this.browseLoading = false;
+    this.browseError = null;
     this.dispatchEvent(customEvent('go-back'));
   }
 

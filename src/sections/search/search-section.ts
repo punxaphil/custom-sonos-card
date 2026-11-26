@@ -121,6 +121,7 @@ export class Search extends LitElement {
             .mediaTypes=${this.mediaTypes}
             .selectMode=${this.selectMode}
             .hasSelection=${this.hasSelection}
+            .showRadio=${!this.searchResults?.hasPodcastSelection(this.results)}
             .libraryFilter=${this.libraryFilter}
             .viewMode=${this.viewMode}
             .store=${this.store}
@@ -144,7 +145,7 @@ export class Search extends LitElement {
             .musicAssistantService=${this.musicAssistantService}
             .massQueueConfigEntryId=${this.massQueueConfigEntryId}
             @browse-collection=${(e: CustomEvent) => (this.browsingItem = e.detail)}
-            @has-selection-change=${(e: CustomEvent) => (this.hasSelection = e.detail)}
+            @has-selection-change=${this.handleSelectionChange}
             @results-updated=${(e: CustomEvent) => (this.results = e.detail)}
           ></sonos-search-results>
         </div>
@@ -154,6 +155,11 @@ export class Search extends LitElement {
 
   private get searchConfig() {
     return this.store.config.search ?? {};
+  }
+
+  private handleSelectionChange({ detail }: CustomEvent<boolean>) {
+    this.hasSelection = detail;
+    this.requestUpdate();
   }
 
   private handleHeaderAction({ detail }: CustomEvent<SearchHeaderAction>) {
@@ -167,6 +173,7 @@ export class Search extends LitElement {
       this.toggleViewMode();
     } else if (detail.type === 'invert-selection') {
       this.searchResults?.handleInvertSelection();
+      this.requestUpdate();
     } else if (detail.type === 'selection-action') {
       this.searchResults?.executeSelectionAction(detail.action);
     }

@@ -2,7 +2,24 @@ import { OperationProgress } from '../../types';
 import type { MusicAssistantService } from '../../services/music-assistant-service';
 import type { PlayMenuAction } from '../../types';
 
-export type SearchMediaType = 'artist' | 'album' | 'track' | 'playlist' | 'radio';
+export type SearchMediaType = 'artist' | 'album' | 'track' | 'playlist' | 'radio' | 'podcast';
+
+export type MusicAssistantMediaType = SearchMediaType | 'podcast_episode';
+
+export interface MusicAssistantCollectionItem {
+  media_title: string;
+  media_content_id: string;
+  media_image?: string | null;
+  media_artist?: string;
+  media_album_name?: string;
+  favorite?: boolean;
+  release_date?: string | null;
+}
+
+export interface MusicAssistantCollectionResponse {
+  tracks?: MusicAssistantCollectionItem[];
+  episodes?: MusicAssistantCollectionItem[];
+}
 
 export type LibraryFilter = 'all' | 'library' | 'non-library';
 
@@ -65,13 +82,14 @@ export interface MusicAssistantSearchResponse {
   tracks?: MusicAssistantSearchResult[];
   playlists?: MusicAssistantSearchResult[];
   radio?: MusicAssistantSearchResult[];
+  podcasts?: MusicAssistantSearchResult[];
 }
 
 export interface SearchResultItem {
   title: string;
   subtitle?: string;
   uri: string;
-  mediaType: SearchMediaType;
+  mediaType: MusicAssistantMediaType;
   imageUrl?: string;
   favorite?: boolean;
   inLibrary?: boolean;
