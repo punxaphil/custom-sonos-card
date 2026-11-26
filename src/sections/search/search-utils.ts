@@ -1,5 +1,5 @@
-import { mdiAccount, mdiAlbum, mdiMusic, mdiPlaylistMusic, mdiRadio } from '@mdi/js';
-import { LibraryFilter, SearchMediaType, SearchResultItem, SearchState, SearchViewMode } from './search.types';
+import { mdiAccount, mdiAlbum, mdiMusic, mdiPlaylistMusic, mdiPodcast, mdiRadio } from '@mdi/js';
+import { LibraryFilter, MusicAssistantMediaType, SearchMediaType, SearchResultItem, SearchState, SearchViewMode } from './search.types';
 import { MediaPlayerItem } from '../../types';
 import type { MusicAssistantService } from '../../services/music-assistant-service';
 
@@ -11,9 +11,11 @@ const MEDIA_TYPE_ICONS: Record<string, string> = {
   playlist: mdiPlaylistMusic,
   radio: mdiRadio,
   track: mdiMusic,
+  podcast: mdiPodcast,
+  podcast_episode: mdiPodcast,
 };
 
-export function getMediaTypeIcon(mediaType: SearchMediaType): string {
+export function getMediaTypeIcon(mediaType: MusicAssistantMediaType): string {
   return MEDIA_TYPE_ICONS[mediaType] ?? mdiMusic;
 }
 
@@ -36,6 +38,7 @@ export function getSearchTypeLabels(mediaTypes: Set<SearchMediaType>): string {
     album: 'albums',
     playlist: 'playlists',
     radio: 'radio',
+    podcast: 'podcasts',
   };
   return Array.from(mediaTypes)
     .map((t) => labelMap[t])
@@ -93,7 +96,7 @@ export async function toggleMassItemProperty(
   return kind === 'favorite' ? svc.addToFavorites(configEntryId, item.uri) : svc.addToLibrary(configEntryId, item.uri);
 }
 
-const ALL_SEARCH_TYPES: SearchMediaType[] = ['track', 'artist', 'album', 'playlist', 'radio'];
+const ALL_SEARCH_TYPES: SearchMediaType[] = ['track', 'artist', 'album', 'playlist', 'radio', 'podcast'];
 
 export async function performMassSearch(
   svc: MusicAssistantService,

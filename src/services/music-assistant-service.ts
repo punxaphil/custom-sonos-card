@@ -8,8 +8,15 @@ import {
   MusicAssistantQueueResponse,
   TemplateResult,
 } from '../types';
-import { MusicAssistantSearchResponse, MusicAssistantSearchResult, SearchMediaType, SearchResultItem } from '../sections/search/search.types';
+import {
+  MusicAssistantMediaType,
+  MusicAssistantSearchResponse,
+  MusicAssistantSearchResult,
+  SearchMediaType,
+  SearchResultItem,
+} from '../sections/search/search.types';
 import { MediaPlayer } from '../model/media-player';
+import { getMusicAssistantCollectionItems } from './music-assistant-collection-service';
 
 import { EnqueueMode, MusicAssistantFavoritesMediaType } from '../types';
 
@@ -57,7 +64,7 @@ export class MusicAssistantService {
    */
   async getFavorites(
     configEntryId: string,
-    mediaTypes: MusicAssistantFavoritesMediaType[] = ['track', 'album', 'artist', 'playlist', 'radio'],
+    mediaTypes: MusicAssistantFavoritesMediaType[] = ['track', 'album', 'artist', 'playlist', 'radio', 'podcast'],
   ): Promise<MediaPlayerItem[]> {
     const allFavorites: MediaPlayerItem[] = [];
 
@@ -120,6 +127,8 @@ export class MusicAssistantService {
         return 'Playlists';
       case 'radio':
         return 'Radio';
+      case 'podcast':
+        return 'Podcasts';
       default:
         return mediaType;
     }
@@ -206,6 +215,8 @@ export class MusicAssistantService {
         return response.playlists ?? [];
       case 'radio':
         return response.radio ?? [];
+      case 'podcast':
+        return response.podcasts ?? [];
       default:
         return [];
     }
@@ -382,41 +393,8 @@ export class MusicAssistantService {
   /**
    * Get collection items based on media type
    */
-  async getCollectionItems(uri: string, mediaType: SearchMediaType, massConfigEntryId: string): Promise<SearchResultItem[]> {
-    return this.getCollectionTracks(`get_${mediaType}_tracks`, uri, massConfigEntryId);
-  }
-
-  private async getCollectionTracks(service: string, uri: string, massQueueConfigEntryId: string): Promise<SearchResultItem[]> {
-    try {
-      const ret = await this.hass.callWS<{ response: { tracks: MassQueueItem[] } }>({
-        type: 'call_service',
-        domain: 'mass_queue',
-        service,
-        service_data: { uri, config_entry_id: massQueueConfigEntryId },
-        return_response: true,
-      });
-      const items = ret.response?.tracks;
-      if (!Array.isArray(items)) {
-        return [];
-      }
-      return items.map((item) => this.mapCollectionTrack(item));
-    } catch (e) {
-      console.error(`Failed to get collection tracks (${service}):`, e);
-      throw e;
-    }
-  }
-
-  private mapCollectionTrack(item: MassQueueItem): SearchResultItem {
-    const artist = item.media_artist || '';
-    const title = item.media_title || '';
-    return {
-      title: artist ? `${artist} - ${title}` : title,
-      subtitle: item.media_album_name || undefined,
-      uri: item.media_content_id,
-      mediaType: 'track',
-      imageUrl: item.media_image || undefined,
-      favorite: item.favorite,
-    };
+  async getCollectionItems(uri: string, mediaType: MusicAssistantMediaType, massQueueConfigEntryId: string): Promise<SearchResultItem[]> {
+    return getMusicAssistantCollectionItems(this.hass, uri, mediaType, massQueueConfigEntryId);
   }
 
   private async findRelatedEntityId(mediaPlayer: MediaPlayer, entityType: string, namePart: string): Promise<string | undefined> {
@@ -500,7 +478,13 @@ export class MusicAssistantService {
    * Remove an item from favorites via Music Assistant API
    * Uses music/favorites/remove_item which requires media_type and library_item_id
    */
-  async removeFromFavorites(massQueueConfigEntryId: string, uri: string, mediaType: SearchMediaType, itemId?: string, provider?: string): Promise<boolean> {
+  async removeFromFavorites(
+    massQueueConfigEntryId: string,
+    uri: string,
+    mediaType: MusicAssistantMediaType,
+    itemId?: string,
+    provider?: string,
+  ): Promise<boolean> {
     try {
       const libraryItemId = await this.resolveLibraryItemId(massQueueConfigEntryId, uri, mediaType, itemId, provider);
 
@@ -536,7 +520,13 @@ export class MusicAssistantService {
   /**
    * Remove an item from the library via Music Assistant API
    */
-  async removeFromLibrary(massQueueConfigEntryId: string, uri: string, mediaType: SearchMediaType, itemId?: string, provider?: string): Promise<boolean> {
+  async removeFromLibrary(
+    massQueueConfigEntryId: string,
+    uri: string,
+    mediaType: MusicAssistantMediaType,
+    itemId?: string,
+    provider?: string,
+  ): Promise<boolean> {
     try {
       const libraryItemId = await this.resolveLibraryItemId(massQueueConfigEntryId, uri, mediaType, itemId, provider);
 
@@ -562,7 +552,7 @@ export class MusicAssistantService {
   private async resolveLibraryItemId(
     massQueueConfigEntryId: string,
     uri: string,
-    mediaType: SearchMediaType,
+    mediaType: MusicAssistantMediaType,
     itemId?: string,
     provider?: string,
   ): Promise<string | undefined> {

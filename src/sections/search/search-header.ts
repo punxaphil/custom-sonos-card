@@ -8,6 +8,7 @@ import {
   mdiDotsVertical,
   mdiMusic,
   mdiPlaylistMusic,
+  mdiPodcast,
   mdiRadio,
   mdiViewGrid,
   mdiViewList,
@@ -26,6 +27,7 @@ const ALL_HEADER_ICONS: HeaderIcon[] = [
   { type: 'playlist', icon: mdiPlaylistMusic, title: 'Playlists' },
   { type: 'album', icon: mdiAlbum, title: 'Albums' },
   { type: 'radio', icon: mdiRadio, title: 'Radio' },
+  { type: 'podcast', icon: mdiPodcast, title: 'Podcasts' },
   { type: 'library-filter', icon: mdiBookshelf, title: 'Library filter' },
 ];
 
@@ -42,6 +44,7 @@ export class SearchHeader extends LitElement {
   @property({ attribute: false }) mediaTypes!: Set<SearchMediaType>;
   @property({ type: Boolean }) selectMode = false;
   @property({ type: Boolean }) hasSelection = false;
+  @property({ type: Boolean }) showRadio = true;
   @property({ attribute: false }) operationProgress: OperationProgress | null = null;
   @property() libraryFilter: LibraryFilter = 'all';
   @property() viewMode: SearchViewMode = 'list';
@@ -172,6 +175,7 @@ export class SearchHeader extends LitElement {
           <sonos-selection-actions
             ?hidden=${!this.selectMode}
             .hasSelection=${this.hasSelection}
+            .showRadio=${this.showRadio}
             .disabled=${this.operationProgress !== null}
             .showInvert=${this.hasSelection}
             @invert-selection=${() => this.dispatch({ type: 'invert-selection' })}

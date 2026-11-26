@@ -49,7 +49,14 @@ export class Search extends LitElement {
     this.searchService?.dispose();
   }
 
-  protected willUpdate(changedProperties: PropertyValues): void {
+  protected willUpdate(changedProperties: PropertyValues<Search>): void {
+    if (changedProperties.has('results')) {
+      const previousResults = changedProperties.get('results') ?? [];
+      if (previousResults.length !== this.results.length || previousResults.some((item, index) => item.uri !== this.results[index].uri)) {
+        this.searchResults?.clearSelectionState();
+        this.hasSelection = false;
+      }
+    }
     if (changedProperties.has('store') && !this.searchService) {
       this.musicAssistantService = new MusicAssistantService(this.store.hass);
       this.searchService = new SearchService(this);
@@ -121,6 +128,7 @@ export class Search extends LitElement {
             .mediaTypes=${this.mediaTypes}
             .selectMode=${this.selectMode}
             .hasSelection=${this.hasSelection}
+            .showRadio=${!this.searchResults?.hasPodcastSelection(this.results)}
             .libraryFilter=${this.libraryFilter}
             .viewMode=${this.viewMode}
             .store=${this.store}
@@ -144,7 +152,7 @@ export class Search extends LitElement {
             .musicAssistantService=${this.musicAssistantService}
             .massQueueConfigEntryId=${this.massQueueConfigEntryId}
             @browse-collection=${(e: CustomEvent) => (this.browsingItem = e.detail)}
-            @has-selection-change=${(e: CustomEvent) => (this.hasSelection = e.detail)}
+            @has-selection-change=${this.handleSelectionChange}
             @results-updated=${(e: CustomEvent) => (this.results = e.detail)}
           ></sonos-search-results>
         </div>
@@ -154,6 +162,11 @@ export class Search extends LitElement {
 
   private get searchConfig() {
     return this.store.config.search ?? {};
+  }
+
+  private handleSelectionChange({ detail }: CustomEvent<boolean>) {
+    this.hasSelection = detail;
+    this.requestUpdate();
   }
 
   private handleHeaderAction({ detail }: CustomEvent<SearchHeaderAction>) {

@@ -414,7 +414,7 @@ export type PlayMenuAction = {
 
 export type EnqueueMode = 'add' | 'next' | 'replace' | 'replace_next' | 'play';
 
-export type MusicAssistantFavoritesMediaType = 'track' | 'album' | 'artist' | 'playlist' | 'radio';
+export type MusicAssistantFavoritesMediaType = 'track' | 'album' | 'artist' | 'playlist' | 'radio' | 'podcast';
 
 export type BatchOperationFn = (onProgress: (completed: number) => void, shouldCancel: () => boolean) => Promise<void>;
 

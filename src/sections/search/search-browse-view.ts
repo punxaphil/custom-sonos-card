@@ -19,10 +19,14 @@ export class SearchBrowseView extends LitElement {
   @property() massQueueConfigEntryId = '';
   @state() private browseResults: SearchResultItem[] = [];
   @state() private browseLoading = false;
+  @state() private browseError: string | null = null;
+  private browseRequestId = 0;
 
   protected willUpdate(changedProperties: PropertyValues): void {
     if (changedProperties.has('item') && this.item) {
       this.loadCollection();
+    } else if (changedProperties.has('item')) {
+      this.browseRequestId++;
     }
   }
 
@@ -41,7 +45,7 @@ export class SearchBrowseView extends LitElement {
             <ha-svg-icon slot="icon" .path=${mdiPlayBoxMultiple}></ha-svg-icon>
             Play Now (clear queue)
           </ha-dropdown-item>
-          <ha-dropdown-item value="1">
+          <ha-dropdown-item value="1" ?hidden=${this.item.mediaType === 'podcast'}>
             <ha-svg-icon slot="icon" .path=${mdiAccessPoint}></ha-svg-icon>
             Start Radio
           </ha-dropdown-item>
@@ -66,7 +70,8 @@ export class SearchBrowseView extends LitElement {
         <sonos-icon-button .path=${typeIcon} disabled class="type-indicator"></sonos-icon-button>
       </div>
       <div class="loading" ?hidden=${!this.browseLoading || this.browseResults.length > 0}><ha-spinner></ha-spinner></div>
-      <div class="no-results" ?hidden=${this.browseLoading || this.browseResults.length > 0}>No items found</div>
+      <div class="no-results" ?hidden=${!this.browseError}>${this.browseError}</div>
+      <div class="no-results" ?hidden=${this.browseLoading || !!this.browseError || this.browseResults.length > 0}>No items found</div>
       <div class="list" ?hidden=${this.browseResults.length === 0}>
         <mwc-list multi>
           ${repeat(
@@ -83,19 +88,33 @@ export class SearchBrowseView extends LitElement {
   }
 
   private async loadCollection() {
+    const requestId = ++this.browseRequestId;
+    const item = this.item!;
     this.browseLoading = true;
+    this.browseResults = [];
+    this.browseError = null;
     try {
-      this.browseResults = await this.musicAssistantService.getCollectionItems(this.item!.uri, this.item!.mediaType, this.massQueueConfigEntryId);
+      const results = await this.musicAssistantService.getCollectionItems(item.uri, item.mediaType, this.massQueueConfigEntryId);
+      if (requestId === this.browseRequestId) {
+        this.browseResults = results;
+      }
     } catch (e) {
       console.error('Failed to browse collection:', e);
+      if (requestId === this.browseRequestId) {
+        this.browseError = e instanceof Error ? e.message : 'Failed to browse collection';
+      }
     } finally {
-      this.browseLoading = false;
+      if (requestId === this.browseRequestId) {
+        this.browseLoading = false;
+      }
     }
   }
 
   private goBack() {
+    this.browseRequestId++;
     this.browseResults = [];
     this.browseLoading = false;
+    this.browseError = null;
     this.dispatchEvent(customEvent('go-back'));
   }
 

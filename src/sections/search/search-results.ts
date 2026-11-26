@@ -146,8 +146,13 @@ export class SearchResults extends LitElement {
     return this.selectedIndices.size > 0;
   }
 
+  hasPodcastSelection(results: SearchResultItem[] = this.results): boolean {
+    return Array.from(this.selectedIndices).some((index) => results[index]?.mediaType === 'podcast');
+  }
+
   handleInvertSelection() {
     this.selectedIndices = invertSelection(this.selectedIndices, this.results.length);
+    this.dispatchEvent(customEvent('has-selection-change', this.hasSelection));
   }
 
   clearSelectionState() {
@@ -190,7 +195,7 @@ export class SearchResults extends LitElement {
       this.dispatchEvent(customEvent('has-selection-change', this.selectedIndices.size > 0));
       return;
     }
-    if (item.mediaType === 'album' || item.mediaType === 'playlist' || item.mediaType === 'artist') {
+    if (item.mediaType === 'album' || item.mediaType === 'playlist' || item.mediaType === 'artist' || item.mediaType === 'podcast') {
       this.dispatchEvent(customEvent('browse-collection', item));
       return;
     }

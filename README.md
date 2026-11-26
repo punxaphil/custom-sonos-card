@@ -478,7 +478,7 @@ search:
   title: Search # default is 'Search'. Use this to change the title for the search section.
   hideActivePlayerName: true # default is false. Hides the current player/group name in the search header.
   massConfigEntryId: '' # Leave empty to auto-discover Music Assistant. Only needed if you have multiple Music Assistant instances.
-  defaultMediaType: track # default is none. Pre-select a media type (track, artist, album, playlist).
+  defaultMediaType: track # default is none. Pre-select a media type (track, artist, album, playlist, radio, podcast).
   searchLimit: 50 # default is 50. Maximum number of results to show per search.
   autoSearchMinChars: 3 # default is 3. Minimum characters before auto-search triggers.
 ```
@@ -492,10 +492,14 @@ If you use Music Assistant queue, install [mass_queue](https://github.com/droans
 
 **Search Features:**
 
-- Search for tracks, artists, albums, or playlists
+- Search for tracks, artists, albums, playlists, radio, or podcast shows
+- Browse albums, artists, playlists, and podcast episodes (requires [mass_queue](https://github.com/droans/mass_queue))
+- Play podcast shows or individual episodes; Music Assistant handles show playback and resume behavior
 - Auto-search as you type (configurable)
 - Select multiple items and play or queue them
 - State persists when switching sections
+
+Music Assistant favorites include tracks, albums, artists, playlists, radio, and podcast shows. Podcast favorites use the existing Favorites view and appear under "Podcasts" when `mediaBrowser.favorites.sortByType` is enabled.
 
 ## Using individual section cards
 
